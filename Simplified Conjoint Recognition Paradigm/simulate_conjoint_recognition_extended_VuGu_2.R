@@ -1,0 +1,158 @@
+
+#Load (or install and load) packages we will use
+library(pacman) 
+p_load('tidyverse', 'jsonlite', 'data.table', 'stringr', 'psych', 'MPTinR') 
+library(papaja)
+library(afex)
+
+n_stim <- 50
+n_part <- 200
+
+id <- rep(1:100, each = 3*n_stim)
+probe <- rep(c(rep("same US",n_stim),rep("same US valence",n_stim),rep("opposite US valence",n_stim)),n_part)
+US_valence <- rep(c(rep("positive",n_stim/2),rep("negative",n_stim/2)),3*n_part)
+verbatim <- rep(NA,3*n_stim*n_part)
+gist <- rep(NA,3*n_stim*n_part)
+guessing_old <- rep(NA,3*n_stim*n_part)
+guessing_OP  <- rep(NA,3*n_stim*n_part)
+response     <- rep(NA,3*n_stim*n_part)
+
+simulated_responses <- data.frame(id
+                                  ,probe
+                                  ,US_valence
+                                  ,verbatim
+                                  ,gist
+                                  ,guessing_old
+                                  ,guessing_OP
+                                  ,response)
+
+V_p <- .5
+V_r <- .5
+G_p <- .5
+G_r <- .5
+b <- .5
+a <- .5
+
+V_u <- .5
+G_u <- .5
+
+for(i in 1:nrow(simulated_responses)){
+  if(simulated_responses$probe[i]== "same US"){
+    simulated_responses$verbatim[i] <- rbinom(1,1,V_p)
+    simulated_responses$gist[i] <- rbinom(1,1,G_p)
+    simulated_responses$guessing_old[i] <- rbinom(1,1,b)
+    simulated_responses$guessing_OP[i] <- rbinom(1,1,a)
+  }
+  if(simulated_responses$probe[i]== "same US valence"){
+    simulated_responses$verbatim[i] <- rbinom(1,1,V_r)
+    simulated_responses$gist[i] <- rbinom(1,1,G_r)
+    simulated_responses$guessing_old[i] <- rbinom(1,1,b)
+    simulated_responses$guessing_OP[i] <- rbinom(1,1,a)
+  }
+  if(simulated_responses$probe[i]== "opposite US valence"){
+    simulated_responses$verbatim[i] <- rbinom(1,1,V_u)
+    simulated_responses$gist[i] <- rbinom(1,1,G_u)
+    simulated_responses$guessing_old[i] <- rbinom(1,1,b)
+    simulated_responses$guessing_OP[i] <- rbinom(1,1,a)
+  }
+}
+
+for(i in 1:nrow(simulated_responses)){
+  if(simulated_responses$probe[i] == "same US"){
+    if(simulated_responses$verbatim[i] == 1){
+      simulated_responses$response[i] <- "same US"
+    }
+    if(simulated_responses$verbatim[i] == 0){
+      if(simulated_responses$gist[i] == 1){
+        if(simulated_responses$guessing_OP[i] == 1){
+          simulated_responses$response[i] <- "same US"
+        }
+        if(simulated_responses$guessing_OP[i] == 0){
+          simulated_responses$response[i] <- "same US valence"
+        }
+      }
+      if(simulated_responses$gist[i] == 0){
+        if(simulated_responses$guessing_old[i] == 1){
+          if(simulated_responses$guessing_OP[i] == 1){
+            simulated_responses$response[i] <- "same US"
+          }
+          if(simulated_responses$guessing_OP[i] == 0){
+            simulated_responses$response[i] <- "same US valence"
+          }
+        }
+        if(simulated_responses$guessing_old[i] == 0){
+          simulated_responses$response[i] <- "new pair"
+        }
+      }
+    }
+  }
+  if(simulated_responses$probe[i] == "same US valence"){
+    if(simulated_responses$verbatim[i] == 1){
+      simulated_responses$response[i] <- "same US valence"
+    }
+    if(simulated_responses$verbatim[i] == 0){
+      if(simulated_responses$gist[i] == 1){
+        if(simulated_responses$guessing_OP[i] == 1){
+          simulated_responses$response[i] <- "same US"
+        }
+        if(simulated_responses$guessing_OP[i] == 0){
+          simulated_responses$response[i] <- "same US valence"
+        }
+      }
+      if(simulated_responses$gist[i] == 0){
+        if(simulated_responses$guessing_old[i] == 1){
+          if(simulated_responses$guessing_OP[i] == 1){
+            simulated_responses$response[i] <- "same US"
+          }
+          if(simulated_responses$guessing_OP[i] == 0){
+            simulated_responses$response[i] <- "same US valence"
+          }
+        }
+        if(simulated_responses$guessing_old[i] == 0){
+          simulated_responses$response[i] <- "new pair"
+        }
+      }
+    }
+  }
+  if(simulated_responses$probe[i] == "opposite US valence"){
+    if(simulated_responses$verbatim[i] == 1){
+      simulated_responses$response[i] <- "new pair"
+    }
+    if(simulated_responses$verbatim[i] == 0){
+      if(simulated_responses$gist[i] == 1){
+        simulated_responses$response[i] <- "new pair"
+      }
+      if(simulated_responses$gist[i] == 0){
+        if(simulated_responses$guessing_old[i] == 1){
+          if(simulated_responses$guessing_OP[i] == 1){
+            simulated_responses$response[i] <- "same US"
+          }
+          if(simulated_responses$guessing_OP[i] == 0){
+            simulated_responses$response[i] <- "same US valence"
+          }
+        }
+        if(simulated_responses$guessing_old[i] == 0){
+          simulated_responses$response[i] <- "new pair"
+        }
+      }
+    }
+  }
+}
+
+simulated_responses$probe <- factor(simulated_responses$probe, levels = c("same US","same US valence","opposite US valence"))
+simulated_responses$US_valence <- factor(simulated_responses$US_valence, levels = c("positive","negative"))
+simulated_responses$response <- factor(simulated_responses$response, levels = c("same US","same US valence","new pair"))
+
+freq_choice= simulated_responses %>% 
+  group_by(US_valence, probe, response) %>% 
+  summarise(freq_eval = n()) 
+
+#check if the .eqn file is correct
+check.mpt("conjoint_recognition_extended_VGu.eqn")
+
+#test the model fit
+#all tasks' order - do not fit the data well
+model_mpt_main= fit.mpt(data = freq_choice$freq_eval
+                         ,model.filename = "conjoint_recognition_extended_VGu.eqn")
+model_mpt_main
+
