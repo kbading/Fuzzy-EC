@@ -232,7 +232,8 @@ pchisq(q = model_mpt_D_n_0$goodness.of.fit[[2]] - model_mpt_main$goodness.of.fit
        ,df = model_mpt_D_n_0$goodness.of.fit[[3]] - model_mpt_main$goodness.of.fit[[3]]
        ,lower.tail = FALSE)
 
-#### result: D_n = 0 does not produce misfit, but biased parameter estimates
+#### recap: true D_n > 0
+#### result: restriction "D_n = 0" does not produce misfit, but biased parameter estimates
 #### --> accurate: a
 #### --> overestimation: D_a, D_b
 #### --> underestimation: c_a, c_b, d_a, d_b, b
@@ -242,8 +243,8 @@ pchisq(q = model_mpt_D_n_0$goodness.of.fit[[2]] - model_mpt_main$goodness.of.fit
 
 
 # Simulation 2: D_n = 0
-D_a <- .5
-D_b <- .5
+D_a <- .2
+D_b <- .2
 D_n <- 0
 
 c_a <- .5
@@ -439,7 +440,8 @@ pchisq(q = model_mpt_D_n_fixed$goodness.of.fit[[2]] - model_mpt_main$goodness.of
        ,df = model_mpt_D_n_fixed$goodness.of.fit[[3]] - model_mpt_main$goodness.of.fit[[3]]
        ,lower.tail = FALSE)
 
-#### result: D_n = D_a = D_b produces misfit, and biased parameter estimates
+#### recap: true D_n = 0
+#### result: restriction "D_n = D_a = D_b" produces misfit, and biased parameter estimates
 #### --> accurate: a
 #### --> underestimation: D_a, D_b
 #### --> overestimation: D_n, c_a, c_b, d_a, d_b, b
@@ -449,11 +451,10 @@ model_mpt_D_n_free = fit.mpt(data = freq_choice$freq_eval
                               ,restrictions.filename = list("D_a=D_b"))
 model_mpt_D_n_free
 
-pchisq(q = model_mpt_D_n_free$goodness.of.fit[[2]] - model_mpt_main$goodness.of.fit[[2]]
-       ,df = model_mpt_D_n_free$goodness.of.fit[[3]] - model_mpt_main$goodness.of.fit[[3]]
-       ,lower.tail = FALSE)
-
 #### result: D_n = free produces misfit, and biased parameter estimates, and very large CIs
 #### --> accurate: a
 #### --> (slight) underestimation: D_a, D_b
 #### --> (slight) overestimation: D_n, c_a, c_b, d_a, d_b, b
+
+
+

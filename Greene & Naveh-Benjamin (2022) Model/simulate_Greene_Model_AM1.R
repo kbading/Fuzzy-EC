@@ -27,17 +27,19 @@ simulated_responses_AM <- data.frame(id
 
 V_i <- .5
 V_r <- .5
-G_i <- 0
-G_r <- 0
-f <- 0
+G_i <- .1
+G_r <- .1
+f <- .2
 a <- .5
 b <- .5
 a_b <- .5
 
-V_uw <- .5
-V_uo <- .5
+V_uw <- 0
+V_uo <- 0
 G_uw <- 0
 G_uo <- 0
+
+
 
 for(i in 1:nrow(simulated_responses_AM)){
   if(simulated_responses_AM$probe[i]== "I"){
