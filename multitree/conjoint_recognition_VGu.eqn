@@ -1,0 +1,19 @@
+
+Intact        II     Vi
+Intact        II     (1-Vi)*Gi*a
+Intact        IR     (1-Vi)*Gi*(1-a)
+Intact        II     (1-Vi)*(1-Gi)*b*ab
+Intact        IR     (1-Vi)*(1-Gi)*b*(1-ab)
+Intact        IU     (1-Vi)*(1-Gi)*(1-b)
+Related       RR     Vr
+Related       RI     (1-Vr)*Gr*a
+Related       RR     (1-Vr)*Gr*(1-a)
+Related       RI     (1-Vr)*(1-Gr)*b*ab
+Related       RR     (1-Vr)*(1-Gr)*b*(1-ab)
+Related       RU     (1-Vr)*(1-Gr)*(1-b)
+Unrelated     UI     Vu
+Unrelated     UI     (1-Vu)*Gu*a
+Unrelated     UR     (1-Vu)*Gu*(1-a)
+Unrelated     UI     (1-Vu)*(1-Gu)*b*ab
+Unrelated     UR     (1-Vu)*(1-Gu)*b*(1-ab)
+Unrelated     UU     (1-Vu)*(1-Gu)*(1-b)
