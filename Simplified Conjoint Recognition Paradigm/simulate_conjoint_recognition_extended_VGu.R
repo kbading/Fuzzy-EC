@@ -152,6 +152,7 @@ check.mpt("conjoint_recognition_extended_VGu.eqn")
 #test the model fit
 #all tasks' order - do not fit the data well
 model_mpt_main= fit.mpt(data = freq_choice$freq_eval
-                         ,model.filename = "conjoint_recognition_extended_VGu.eqn")
+                         ,model.filename = "conjoint_recognition_extended_VGu.eqn"
+                        , restrictions.filename = list("VG_u=V_r"))
 model_mpt_main
 
