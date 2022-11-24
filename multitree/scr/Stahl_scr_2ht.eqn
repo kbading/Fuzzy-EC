@@ -1,0 +1,17 @@
+
+Target	      TT     Vt
+Target        TT     (1-Vt)*Gt*a
+Target        TR     (1-Vt)*Gt*(1-a)
+Target        TT     (1-Vt)*(1-Gt)*b*a
+Target        TR     (1-Vt)*(1-Gt)*b*(1-a)
+Target        TN     (1-Vt)*(1-Gt)*(1-b)
+Related       RR     Vr
+Related       RT     (1-Vr)*Gr*a
+Related       RR     (1-Vr)*Gr*(1-a)
+Related       RT     (1-Vr)*(1-Gr)*b*a
+Related       RR     (1-Vr)*(1-Gr)*b*(1-a)
+Related       RN     (1-Vr)*(1-Gr)*(1-b)
+Unrelated     UN     Dn
+Unrelated     UT     (1-Dn)*b*a
+Unrelated     UR     (1-Dn)*b*(1-a)
+Unrelated     UN     (1-Dn)*(1-b)
