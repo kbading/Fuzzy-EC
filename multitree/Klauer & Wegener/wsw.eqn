@@ -1,0 +1,25 @@
+
+SourceA	AAC	D_a*c_a
+SourceA	AAC	D_a*(1-c_a)*d_a*(1/4)
+SourceA	AAI	D_a*(1-c_a)*d_a*(1-(1/4))
+SourceA	AAC	D_a*(1-c_a)*(1-d_a)*a*(1/4)
+SourceA	AAI	D_a*(1-c_a)*(1-d_a)*a*(1-(1/4))
+SourceA	ABI	D_a*(1-c_a)*(1-d_a)*(1-a)
+SourceA	AAC	(1-D_a)*b*a*(1/4)
+SourceA AAI	(1-D_a)*b*a*(1-(1/4))
+SourceA	ABI	(1-D_a)*b*(1-a)
+SourceA	ANN	(1-D_a)*(1-b)
+SourceB	BBC	D_b*c_b
+SourceB	BBC	D_b*(1-c_b)*d_b*(1/4)
+SourceB	BBI	D_b*(1-c_b)*d_b*(1-(1/4))
+SourceB	BAI	D_b*(1-c_b)*(1-d_b)*a
+SourceB	BBC	D_b*(1-c_b)*(1-d_b)*(1-a)*(1/4)
+SourceB	BBI	D_b*(1-c_b)*(1-d_b)*(1-a)*(1-(1/4))
+SourceB	BAC	(1-D_b)*b*a
+SourceB	BBC	(1-D_b)*b*(1-a)*(1/4)
+SourceB BBI	(1-D_b)*b*(1-a)*(1-1/4)
+SourceB	BNN	(1-D_b)*(1-b)
+New	NNN	D_n
+New	NAI	(1-D_n)*b*a
+New	NBI	(1-D_n)*b*(1-a)
+New	NNN	(1-D_n)*(1-b)
