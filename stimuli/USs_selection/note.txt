@@ -1,1 +1,1 @@
-# For the R script to work, we need a "Images" folder with the OASIS pictures -- they can be downloaded here: https://benedekkurdi.com/oasis.php
+# For the R script to work, we need an "Images" folder with the OASIS pictures -- they can be downloaded here: https://benedekkurdi.com/oasis.php
