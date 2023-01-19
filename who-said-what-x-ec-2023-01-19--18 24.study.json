@@ -135,7 +135,7 @@
         {
           "title": "",
           "message": "before:prepare",
-          "code": "// retrieve prolific pic\r\nif (typeof jatos !== \"undefined\") {\r\n   this.data.prolific_pid = jatos.urlQueryParameters.PROLIFIC_PID;\r\n}\r\n\r\n\r\nthis.parameters.cs_male = ['m1.jpg','m2.jpg','m3.jpg','m4.jpg','m5.jpg','m6.jpg','m7.jpg','m8.jpg','m9.jpg','m10.jpg','m11.jpg','m12.jpg','m13.jpg','m14.jpg','m15.jpg','m16.jpg','m17.jpg','m18.jpg','m19.jpg','m20.jpg','m21.jpg','m22.jpg','m23.jpg','m24.jpg','m25.jpg','m26.jpg','m27.jpg','m28.jpg','m29.jpg','m30.jpg']\r\n\r\nthis.parameters.cs_female = ['f1.jpg','f2.jpg','f3.jpg','f4.jpg','f5.jpg','f6.jpg','f7.jpg','f8.jpg','f9.jpg','f10.jpg','f11.jpg','f12.jpg','f13.jpg','f14.jpg','f15.jpg','f16.jpg','f17.jpg','f18.jpg','f19.jpg','f20.jpg','f21.jpg','f22.jpg','f23.jpg','f24.jpg','f25.jpg','f26.jpg','f27.jpg','f28.jpg','f29.jpg','f30.jpg']\r\n\r\nthis.parameters.cs_male = this.random.shuffle(this.parameters.cs_male)\r\nthis.parameters.cs_female = this.random.shuffle(this.parameters.cs_female)\r\n\r\n this.parameters.cs1_pos = this.parameters.cs_male.shift()\r\n this.parameters.cs2_pos = this.parameters.cs_male.shift()\r\n this.parameters.cs3_pos = this.parameters.cs_male.shift()\r\n this.parameters.cs4_pos = this.parameters.cs_male.shift()\r\n this.parameters.cs5_pos = this.parameters.cs_male.shift()\r\n this.parameters.cs6_pos = this.parameters.cs_male.shift()\r\n\r\n this.parameters.cs1_neg = this.parameters.cs_male.shift()\r\n this.parameters.cs2_neg = this.parameters.cs_male.shift()\r\n this.parameters.cs3_neg = this.parameters.cs_male.shift()\r\n this.parameters.cs4_neg = this.parameters.cs_male.shift()\r\n this.parameters.cs5_neg = this.parameters.cs_male.shift()\r\n this.parameters.cs6_neg = this.parameters.cs_male.shift()\r\n\r\n this.parameters.dist1 = this.parameters.cs_male.shift()\r\n this.parameters.dist2 = this.parameters.cs_male.shift()\r\n this.parameters.dist3 = this.parameters.cs_male.shift()\r\n this.parameters.dist4 = this.parameters.cs_male.shift()\r\n this.parameters.dist5 = this.parameters.cs_male.shift()\r\n this.parameters.dist6 = this.parameters.cs_male.shift()\r\n this.parameters.dist7 = this.parameters.cs_male.shift()\r\n this.parameters.dist8 = this.parameters.cs_male.shift()\r\n this.parameters.dist9 = this.parameters.cs_male.shift()\r\n this.parameters.dist10 = this.parameters.cs_male.shift()\r\n this.parameters.dist11 = this.parameters.cs_male.shift()\r\n this.parameters.dist12 = this.parameters.cs_male.shift()\r\n\r\n this.parameters.cs7_pos = this.parameters.cs_female.shift()\r\n this.parameters.cs8_pos = this.parameters.cs_female.shift()\r\n this.parameters.cs9_pos = this.parameters.cs_female.shift()\r\n this.parameters.cs10_pos = this.parameters.cs_female.shift()\r\n this.parameters.cs11_pos = this.parameters.cs_female.shift()\r\n this.parameters.cs12_pos = this.parameters.cs_female.shift()\r\n\r\n this.parameters.cs7_neg = this.parameters.cs_female.shift()\r\n this.parameters.cs8_neg = this.parameters.cs_female.shift()\r\n this.parameters.cs9_neg = this.parameters.cs_female.shift()\r\n this.parameters.cs10_neg = this.parameters.cs_female.shift()\r\n this.parameters.cs11_neg = this.parameters.cs_female.shift()\r\n this.parameters.cs12_neg = this.parameters.cs_female.shift()\r\n\r\n this.parameters.dist13 = this.parameters.cs_female.shift()\r\n this.parameters.dist14 = this.parameters.cs_female.shift()\r\n this.parameters.dist15 = this.parameters.cs_female.shift()\r\n this.parameters.dist16 = this.parameters.cs_female.shift()\r\n this.parameters.dist17 = this.parameters.cs_female.shift()\r\n this.parameters.dist18 = this.parameters.cs_female.shift()\r\n this.parameters.dist19 = this.parameters.cs_female.shift()\r\n this.parameters.dist20 = this.parameters.cs_female.shift()\r\n this.parameters.dist21 = this.parameters.cs_female.shift()\r\n this.parameters.dist22 = this.parameters.cs_female.shift()\r\n this.parameters.dist23 = this.parameters.cs_female.shift()\r\n this.parameters.dist24 = this.parameters.cs_female.shift()\r\n \r\n this.parameters.us_pos = ['p1.jpg','p2.jpg','p3.jpg','p4.jpg','p5.jpg','p6.jpg','p7.jpg','p8.jpg','p9.jpg','p10.jpg','p11.jpg','p12.jpg']\r\n this.parameters.us_neg = ['n1.jpg','n2.jpg','n3.jpg','n4.jpg','n5.jpg','n6.jpg','n7.jpg','n8.jpg','n9.jpg','n10.jpg','n11.jpg','n12.jpg']\r\n\r\n this.parameters.us_pos = this.random.shuffle(this.parameters.us_pos)\r\n this.parameters.us_neg = this.random.shuffle(this.parameters.us_neg)\r\n \r\n this.parameters.us1_pos = this.parameters.us_pos.shift()\r\n this.parameters.us2_pos = this.parameters.us_pos.shift()\r\n this.parameters.us3_pos = this.parameters.us_pos.shift()\r\n this.parameters.us4_pos = this.parameters.us_pos.shift()\r\n this.parameters.us5_pos = this.parameters.us_pos.shift()\r\n this.parameters.us6_pos = this.parameters.us_pos.shift()\r\n this.parameters.us7_pos = this.parameters.us_pos.shift()\r\n this.parameters.us8_pos = this.parameters.us_pos.shift()\r\n this.parameters.us9_pos = this.parameters.us_pos.shift()\r\n this.parameters.us10_pos = this.parameters.us_pos.shift()\r\n this.parameters.us11_pos = this.parameters.us_pos.shift()\r\n this.parameters.us12_pos = this.parameters.us_pos.shift()\r\n\r\n this.parameters.us1_neg = this.parameters.us_neg.shift()\r\n this.parameters.us2_neg = this.parameters.us_neg.shift()\r\n this.parameters.us3_neg = this.parameters.us_neg.shift()\r\n this.parameters.us4_neg = this.parameters.us_neg.shift()\r\n this.parameters.us5_neg = this.parameters.us_neg.shift()\r\n this.parameters.us6_neg = this.parameters.us_neg.shift()\r\n this.parameters.us7_neg = this.parameters.us_neg.shift()\r\n this.parameters.us8_neg = this.parameters.us_neg.shift()\r\n this.parameters.us9_neg = this.parameters.us_neg.shift()\r\n this.parameters.us10_neg = this.parameters.us_neg.shift()\r\n this.parameters.us11_neg = this.parameters.us_neg.shift()\r\n this.parameters.us12_neg = this.parameters.us_neg.shift()\r\n \r\n "
+          "code": "// retrieve prolific pic\r\nif (typeof jatos !== \"undefined\") {\r\n   this.data.prolific_pid = jatos.urlQueryParameters.PROLIFIC_PID;\r\n}\r\n\r\n\r\nthis.parameters.cs_male = ['m1.jpg','m2.jpg','m3.jpg','m4.jpg','m5.jpg','m6.jpg','m7.jpg','m8.jpg','m9.jpg','m10.jpg','m11.jpg','m12.jpg','m13.jpg','m14.jpg','m15.jpg','m16.jpg','m17.jpg','m18.jpg','m19.jpg','m20.jpg','m21.jpg','m22.jpg','m23.jpg','m24.jpg','m25.jpg','m26.jpg','m27.jpg','m28.jpg','m29.jpg','m30.jpg']\r\n\r\nthis.parameters.cs_female = ['f1.jpg','f2.jpg','f3.jpg','f4.jpg','f5.jpg','f6.jpg','f7.jpg','f8.jpg','f9.jpg','f10.jpg','f11.jpg','f12.jpg','f13.jpg','f14.jpg','f15.jpg','f16.jpg','f17.jpg','f18.jpg','f19.jpg','f20.jpg','f21.jpg','f22.jpg','f23.jpg','f24.jpg','f25.jpg','f26.jpg','f27.jpg','f28.jpg','f29.jpg','f30.jpg']\r\n\r\nthis.parameters.us_pos = ['p1.jpg','p2.jpg','p3.jpg','p4.jpg','p5.jpg','p6.jpg','p7.jpg','p8.jpg','p9.jpg','p10.jpg','p11.jpg','p12.jpg']\r\n \r\nthis.parameters.us_neg = ['n1.jpg','n2.jpg','n3.jpg','n4.jpg','n5.jpg','n6.jpg','n7.jpg','n8.jpg','n9.jpg','n10.jpg','n11.jpg','n12.jpg']\r\n\r\nthis.parameters.us_pos = this.random.shuffle(this.parameters.us_pos)\r\nthis.parameters.us_neg = this.random.shuffle(this.parameters.us_neg)\r\nthis.parameters.cs_male = this.random.shuffle(this.parameters.cs_male)\r\nthis.parameters.cs_female = this.random.shuffle(this.parameters.cs_female)\r\n \r\nvar triallist = [];\r\nvar position_cs_us = [];\r\nvar dists = [];\r\n\r\nfor ( var i=0 ; i < 6; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['positive'];\r\n  triallist[i].cs_category = ['male'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_male[i];\r\n  triallist[i].us = us_pos[i];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  //first select targetpos\r\n  triallist[i].idtarg = pos[0]\r\n  // assign target and distracter images\r\n  dists_pos = us_pos.slice(0,12);\r\n  dists_pos.splice(i,1);\r\n  dists_neg = us_neg.slice(0,12)\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = dists_pos.slice(0,3);\r\n  dists_neg = dists_neg.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = triallist[i].us;\r\n  triallist[i].uss[pos[1]] = dists[0];\r\n  triallist[i].uss[pos[2]] = dists[1];\r\n  triallist[i].uss[pos[3]] = dists[2];\r\n  triallist[i].uss[pos[4]] = dists[3];\r\n  triallist[i].uss[pos[5]] = dists[4];\r\n  triallist[i].uss[pos[6]] = dists[5];\r\n  triallist[i].uss[pos[7]] = dists[6];\r\n};\r\n\r\nfor ( var i=6 ; i < 12; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['negative'];\r\n  triallist[i].cs_category = ['male'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_male[i];\r\n  triallist[i].us = us_neg[i-6];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  //first select targetpos\r\n  triallist[i].idtarg = pos[0]\r\n  // assign target and distracter images\r\n  dists_neg = us_neg.slice(0,12);\r\n  dists_neg.splice(i-6,1);\r\n  dists_pos = us_pos.slice(0,12)\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = dists_neg.slice(0,3);\r\n  dists_pos = dists_pos.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = triallist[i].us;\r\n  triallist[i].uss[pos[1]] = dists[0];\r\n  triallist[i].uss[pos[2]] = dists[1];\r\n  triallist[i].uss[pos[3]] = dists[2];\r\n  triallist[i].uss[pos[4]] = dists[3];\r\n  triallist[i].uss[pos[5]] = dists[4];\r\n  triallist[i].uss[pos[6]] = dists[5];\r\n  triallist[i].uss[pos[7]] = dists[6];\r\n};\r\n\r\nfor ( var i=12 ; i < 18; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['positive'];\r\n  triallist[i].cs_category = ['female'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_female[i-12];\r\n  triallist[i].us = us_pos[i-6];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  //first select targetpos\r\n  triallist[i].idtarg = pos[0]\r\n  // assign target and distracter images\r\n  dists_pos = us_pos.slice(0,12);\r\n  dists_pos.splice(i-6,1);\r\n  dists_neg = us_neg.slice(0,12)\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = dists_pos.slice(0,3);\r\n  dists_neg = dists_neg.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = triallist[i].us;\r\n  triallist[i].uss[pos[1]] = dists[0];\r\n  triallist[i].uss[pos[2]] = dists[1];\r\n  triallist[i].uss[pos[3]] = dists[2];\r\n  triallist[i].uss[pos[4]] = dists[3];\r\n  triallist[i].uss[pos[5]] = dists[4];\r\n  triallist[i].uss[pos[6]] = dists[5];\r\n  triallist[i].uss[pos[7]] = dists[6];\r\n};\r\n\r\nfor ( var i=18 ; i < 24; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['negative'];\r\n  triallist[i].cs_category = ['female'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_female[i-12];\r\n  triallist[i].us = us_neg[i-12];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  //first select targetpos\r\n  triallist[i].idtarg = pos[0]\r\n  // assign target and distracter images\r\n  dists_neg = us_neg.slice(0,12);\r\n  dists_neg.splice(i-12,1);\r\n  dists_pos = us_pos.slice(0,12)\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = dists_neg.slice(0,3);\r\n  dists_pos = dists_pos.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = triallist[i].us;\r\n  triallist[i].uss[pos[1]] = dists[0];\r\n  triallist[i].uss[pos[2]] = dists[1];\r\n  triallist[i].uss[pos[3]] = dists[2];\r\n  triallist[i].uss[pos[4]] = dists[3];\r\n  triallist[i].uss[pos[5]] = dists[4];\r\n  triallist[i].uss[pos[6]] = dists[5];\r\n  triallist[i].uss[pos[7]] = dists[6];\r\n};\r\n\r\nfor ( var i=24 ; i < 36; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['dist'];\r\n  triallist[i].cs_category = ['male'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_male[i-12];\r\n  triallist[i].us = [''];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  // assign target and distracter images\r\n  dists_pos = us_pos.slice(0,12);\r\n  dists_neg = us_neg.slice(0,12)\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = dists_pos.slice(0,4);\r\n  dists_neg = dists_neg.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = dists[0];\r\n  triallist[i].uss[pos[1]] = dists[1];\r\n  triallist[i].uss[pos[2]] = dists[2];\r\n  triallist[i].uss[pos[3]] = dists[3];\r\n  triallist[i].uss[pos[4]] = dists[4];\r\n  triallist[i].uss[pos[5]] = dists[5];\r\n  triallist[i].uss[pos[6]] = dists[6];\r\n  triallist[i].uss[pos[7]] = dists[7];\r\n};\r\n\r\nfor ( var i=36 ; i < 48; i++) {\r\n  triallist[i] = new Object();\r\n  // fixation cross trial?\r\n  triallist[i].us_valence = ['dist'];\r\n  triallist[i].cs_category = ['female'];\r\n  //cs and us (remove 'static/' to reduce data file size)\r\n  triallist[i].cs = cs_female[i-24];\r\n  triallist[i].us = [''];\r\n  //idmem options: shuffle positions\r\n  var pos = this.random.shuffle([0,1,2,3,4,5,6,7])\r\n  // assign target and distracter images\r\n  dists_pos = us_pos.slice(0,12);\r\n  dists_neg = us_neg.slice(0,12)\r\n  dists_pos = this.random.shuffle(dists_pos);\r\n  dists_neg = this.random.shuffle(dists_neg);\r\n  dists_pos = dists_pos.slice(0,4);\r\n  dists_neg = dists_neg.slice(0,4);\r\n  dists = concat(dists_pos,dists_neg);\r\n  dists = this.random.shuffle(dists);\r\n  triallist[i].uss = new Array;\r\n  triallist[i].uss[pos[0]] = dists[0];\r\n  triallist[i].uss[pos[1]] = dists[1];\r\n  triallist[i].uss[pos[2]] = dists[2];\r\n  triallist[i].uss[pos[3]] = dists[3];\r\n  triallist[i].uss[pos[4]] = dists[4];\r\n  triallist[i].uss[pos[5]] = dists[5];\r\n  triallist[i].uss[pos[6]] = dists[6];\r\n  triallist[i].uss[pos[7]] = dists[7];\r\n};\r\n\r\nif(typeof(jatos) != 'undefined'){\r\n  //jatos.studySessionData.triallist = triallist;\r\n  jatos.setStudySessionData(triallist);\r\n} else {\r\n  this.parent.parent.parent.parameters.triallist = triallist;\r\n}"
         }
       ],
       "title": "consent",
@@ -610,7 +610,7 @@
       ],
       "title": "memory_loop",
       "_collapsed": false,
-      "_tab": "Content"
+      "_tab": "Scripts"
     },
     "16": {
       "id": "16",
@@ -656,172 +656,27 @@
       "templateParameters": {
         "columns": [
           {
-            "name": "cs",
+            "name": "para1",
             "type": "string"
           },
           {
-            "name": "us",
+            "name": "para2",
             "type": "string"
           },
           {
-            "name": "us_valence",
+            "name": "para3",
             "type": "string"
           },
           {
-            "name": "time",
+            "name": "para4",
             "type": "string"
           }
         ],
-        "rows": [
-          [
-            "${this.state.cs1_pos}",
-            "${this.state.us1_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs2_pos}",
-            "${this.state.us2_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs3_pos}",
-            "${this.state.us3_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs4_pos}",
-            "${this.state.us4_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs5_pos}",
-            "${this.state.us5_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs6_pos}",
-            "${this.state.us6_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs7_pos}",
-            "${this.state.us7_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs8_pos}",
-            "${this.state.us8_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs9_pos}",
-            "${this.state.us9_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs10_pos}",
-            "${this.state.us10_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs11_pos}",
-            "${this.state.us11_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs12_pos}",
-            "${this.state.us12_pos}",
-            "pos",
-            "2500"
-          ],
-          [
-            "${this.state.cs1_neg}",
-            "${this.state.us1_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs2_neg}",
-            "${this.state.us2_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs3_neg}",
-            "${this.state.us3_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs4_neg}",
-            "${this.state.us4_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs5_neg}",
-            "${this.state.us5_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs6_neg}",
-            "${this.state.us6_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs7_neg}",
-            "${this.state.us7_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs8_neg}",
-            "${this.state.us8_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs9_neg}",
-            "${this.state.us9_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs10_neg}",
-            "${this.state.us10_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs11_neg}",
-            "${this.state.us11_neg}",
-            "neg",
-            "2500"
-          ],
-          [
-            "${this.state.cs12_neg}",
-            "${this.state.us12_neg}",
-            "neg",
-            "2500"
-          ]
-        ]
+        "rows": []
       },
       "sample": {
-        "mode": "sequential",
-        "n": "24"
+        "mode": "draw-shuffle",
+        "n": ""
       },
       "files": [
         {
@@ -1180,12 +1035,12 @@
         {
           "title": "",
           "message": "before:prepare",
-          "code": ""
+          "code": "if(typeof(jatos) != 'undefined'){\r\n  console.log(jatos.studySessionData)\r\n  debugger\r\n  this.options.templateParameters = jatos.studySessionData;\r\n} else {\r\n  this.options.templateParameters = this.parameters.triallist;\r\n}"
         }
       ],
       "title": "learning_block_1",
       "_collapsed": false,
-      "_tab": "Content",
+      "_tab": "Scripts",
       "skipCondition": "",
       "tardy": false,
       "indexParameter": "count_trial_learning"
@@ -1350,628 +1205,51 @@
       "templateParameters": {
         "columns": [
           {
-            "name": "cs",
+            "name": "para1",
             "type": "string"
           },
           {
-            "name": "us_valence",
+            "name": "para2",
             "type": "string"
           },
           {
-            "name": "image1",
+            "name": "para3",
             "type": "string"
           },
           {
-            "name": "image2",
+            "name": "para4",
             "type": "string"
           },
           {
-            "name": "image3",
+            "name": "para5",
             "type": "string"
           },
           {
-            "name": "image4",
+            "name": "para6",
             "type": "string"
           },
           {
-            "name": "image5",
+            "name": "para7",
             "type": "string"
           },
           {
-            "name": "image6",
+            "name": "para8",
             "type": "string"
           },
           {
-            "name": "image7",
+            "name": "para9",
             "type": "string"
           },
           {
-            "name": "image8",
+            "name": "para10",
             "type": "string"
           }
         ],
-        "rows": [
-          [
-            "${this.state.cs1_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs2_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs3_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs4_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs5_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs6_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs7_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs8_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs9_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs10_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs11_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs12_pos}",
-            "pos",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs1_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs2_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs3_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs4_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs5_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs6_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs7_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs8_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs9_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs10_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs11_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.cs12_neg}",
-            "neg",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist1}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist2}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist3}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist4}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist5}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist6}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist7}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist8}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist9}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist10}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist11}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist12}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist13}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist14}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist15}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist16}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist17}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist18}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist19}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist20}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist21}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist22}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist23}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ],
-          [
-            "${this.state.dist24}",
-            "new",
-            "n1.jpg",
-            "n2.jpg",
-            "n3.jpg",
-            "n4.jpg",
-            "p1.jpg",
-            "p2.jpg",
-            "p3.jpg",
-            "p4.jpg"
-          ]
-        ]
+        "rows": []
       },
       "sample": {
-        "mode": "sequential",
-        "n": "48"
+        "mode": "draw-shuffle",
+        "n": ""
       },
       "files": [
         {
@@ -2330,12 +1608,12 @@
         {
           "title": "",
           "message": "before:prepare",
-          "code": ""
+          "code": "if(typeof(jatos) != 'undefined'){\r\n  this.options.templateParameters = jatos.studySessionData;\r\n} else {\r\n  this.options.templateParameters = this.parent.parameters.triallist;\r\n}"
         }
       ],
-      "title": "memory_block_1",
+      "title": "memory_loop",
       "_collapsed": false,
-      "_tab": "Content",
+      "_tab": "Scripts",
       "skipCondition": "",
       "tardy": false,
       "indexParameter": "count_trial_learning"
@@ -2407,8 +1685,8 @@
         }
       ],
       "title": "blank_memory_1",
-      "_tab": "Content",
-      "timeout": "1000"
+      "_tab": "Scripts",
+      "timeout": "500"
     },
     "32": {
       "id": "32",
@@ -2765,8 +2043,8 @@
         }
       ],
       "title": "learning_trial",
-      "_tab": "Content",
-      "timeout": "${ this.parameters.time}"
+      "_tab": "Behavior",
+      "timeout": "2500"
     },
     "59": {
       "id": "59",
@@ -2928,8 +2206,8 @@
       "messageHandlers": [
         {
           "title": "",
-          "message": "",
-          "code": ""
+          "message": "run",
+          "code": "debugger"
         }
       ],
       "title": "mem1",
@@ -2942,7 +2220,7 @@
         {
           "required": true,
           "type": "html",
-          "content": "<style>\r\n      div.breite_reparieren {\r\n        width: 1000px;\r\n        margin: 0 auto 0 auto;\r\n        position: absolute;\r\n        left: 0;\r\n        right: 0;\r\n        top: 0;\r\n      }\r\n      img {\r\n        object-fit: contain;\r\n        height: auto;\r\n      }\r\n      img.CS {\r\n        display: block;\r\n        margin: 0 auto 0 auto;\r\n        width: 25%;\r\n      }\r\n      div.behaelter_aller_optionen {\r\n        display: flex;\r\n        gap: 5px;\r\n        flex-wrap: wrap;\r\n      }\r\n      div.behaelter_einer_option {\r\n        width: 20%;\r\n        flex: 1 1 20%;\r\n        height: auto;\r\n      }\r\n      img.option_image {\r\n        width: 100%;\r\n      }\r\n      p.prompt {\r\n        text-align: center;\r\n      }\r\n</style>\r\n\r\n  <div class=\"breite_reparieren\">\r\n    <img class=\"CS\" width=\"1300\" height=\"975\" src=\"${ this.files[this.parameters.cs] }\">\r\n    <p class=\"prompt\">Mit welchem der folgenden Bilder wurde das obige Bild gepaart?</p>\r\n    <div class=\"behaelter_aller_optionen\">\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image1] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im1\" name=\"image\" value=\"1\" required >\r\n<label>Bild 1</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image2] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im2\" name=\"image\" value=\"2\" required >\r\n<label>Bild 2</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image3] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im3\" name=\"image\" value=\"3\" required >\r\n<label>Bild 3</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image4] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im4\" name=\"image\" value=\"4\" required >\r\n<label>Bild 4</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image5] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im5\" name=\"image\" value=\"5\" required >\r\n<label>Bild 5</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image6] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im6\" name=\"image\" value=\"6\" required >\r\n<label>Bild 6</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image7] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im7\" name=\"image\" value=\"7\" required >\r\n<label>Bild 7</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.image8] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im8\" name=\"image\" value=\"8\" required >\r\n<label>Bild 8</label>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <button id=\"option_next\" type=\"submit\" style=\"display: block; margin-left: auto\" >Weiter</button>\r\n  </div>\r\n\r\n"
+          "content": "<style>\r\n      div.breite_reparieren {\r\n        width: 1000px;\r\n        margin: 0 auto 0 auto;\r\n        position: absolute;\r\n        left: 0;\r\n        right: 0;\r\n        top: 0;\r\n      }\r\n      img {\r\n        object-fit: contain;\r\n        height: auto;\r\n      }\r\n      img.CS {\r\n        display: block;\r\n        margin: 0 auto 0 auto;\r\n        width: 25%;\r\n      }\r\n      div.behaelter_aller_optionen {\r\n        display: flex;\r\n        gap: 5px;\r\n        flex-wrap: wrap;\r\n      }\r\n      div.behaelter_einer_option {\r\n        width: 20%;\r\n        flex: 1 1 20%;\r\n        height: auto;\r\n      }\r\n      img.option_image {\r\n        width: 100%;\r\n      }\r\n      p.prompt {\r\n        text-align: center;\r\n      }\r\n</style>\r\n\r\n  <div class=\"breite_reparieren\">\r\n    <img class=\"CS\" width=\"1300\" height=\"975\" src=\"${ this.files[this.parameters.cs] }\">\r\n    <p class=\"prompt\">Mit welchem der folgenden Bilder wurde das obige Bild gepaart?</p>\r\n    <div class=\"behaelter_aller_optionen\">\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[0]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im1\" name=\"image\" value=\"1\" required >\r\n<label>Bild 1</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[1]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im2\" name=\"image\" value=\"2\" required >\r\n<label>Bild 2</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[2]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im3\" name=\"image\" value=\"3\" required >\r\n<label>Bild 3</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[3]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im4\" name=\"image\" value=\"4\" required >\r\n<label>Bild 4</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[4]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im5\" name=\"image\" value=\"5\" required >\r\n<label>Bild 5</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[5]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im6\" name=\"image\" value=\"6\" required >\r\n<label>Bild 6</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[6]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im7\" name=\"image\" value=\"7\" required >\r\n<label>Bild 7</label>\r\n        </div>\r\n      </div>\r\n      <div class=\"behaelter_einer_option\">\r\n        <img class=\"option_image\" width=\"731\" height=\"975\" src=\"${ this.files[this.parameters.uss[7]] }\">\r\n        <div>\r\n<input type=\"radio\" id=\"im8\" name=\"image\" value=\"8\" required >\r\n<label>Bild 8</label>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <button id=\"option_next\" type=\"submit\" style=\"display: block; margin-left: auto\" >Weiter</button>\r\n  </div>\r\n\r\n"
         }
       ],
       "scrollTop": true,
