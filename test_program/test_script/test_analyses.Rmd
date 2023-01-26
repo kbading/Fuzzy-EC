@@ -1,0 +1,1059 @@
+---
+title: "Experiment 3 -- Main analyses"
+author: "Jérémy Béna"
+output:
+  html_document:
+    toc: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Load packages and read the data
+
+```{r set}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra') 
+set_sum_contrasts()
+
+#function to display results from Bayesian analyses conducted with the package bfrr
+printBFRR <- function(bf, RR=TRUE){
+  result = paste0(" $BF_{H1: ", bf$H1_model, "}=$ ", ifelse((bf$BF>999)|(bf$BF<.001), format(bf$BF, scientific=TRUE), format(bf$BF, digits=2)))
+  if(RR) result <- paste0(result, " (Robustness Region: ", bf$RR$sd[1], ", ", bf$RR$sd[2], ")" ) 
+  #print(result) # use for debugging in the console
+  result
+}
+
+#read the dataset we created in a previous R script
+dat = readRDS("data_wrep_final.RDS") #40 rows for each participant (because 40 different CSs)
+
+#the "eval_condition" factor is not very helpful as it confounds two factors (order and tasks); separate the two
+dat = dat %>% separate(eval_condition, c("eval_task","eval_task_order"), sep = "_ratings_")
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$subject = as.factor(dat$subject)
+dat$us_valence = as.factor(dat$us_valence)
+dat$eval_task = as.factor(dat$eval_task)
+dat$eval_task_order = as.factor(dat$eval_task_order)
+dat$failed_check_tbs = as.factor(dat$failed_check_tbs)
+dat$failed_check_vma = as.factor(dat$failed_check_vma)
+dat$failed_check_3bs = as.factor(dat$failed_check_3bs)
+```
+# Exclude participants
+
+```{r, exclude_instruction_checks}
+#exclude participants that failed instruction-understanding checks
+
+#how much participants failed the tbs, vma, or 3bs?
+# table(dat$failed_check_tbs)/40
+# table(dat$failed_check_vma)/40
+# table(dat$failed_check_3bs)/40
+
+dat = dat %>% filter((failed_check_vma=="not_failed" & eval_task == "Wrep") |
+                    (failed_check_3bs == "not_failed" & eval_task == "3BS_study") |
+                    (failed_check_tbs == "not_failed" & eval_task == "TBSrep")
+                    )
+
+addmargins(table(dat$eval_task)/40)
+
+length(unique(dat$subject)) # N of participants after instruction-understanding check exclusion
+```
+
+```{r count}
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+length(unique(dat$subject)) # N of participants after exclusion
+#185 participants kept after data exclusion 
+
+#How many participant in each evaluative condition after data exclusion?
+addmargins(table(dat$eval_task)/40)
+```
+
+# Evaluative conditioning results
+
+```{r eval_change}
+####
+#EVALUATIVE CHANGE IN GENERAL
+####
+
+#compute evaluative change scores
+#first, rescale the prerating and postrating scales (0 to 400 instead of -200 to 200)
+dat$scale_prerating = dat$scale_prerating + 200
+dat$scale_postrating = dat$scale_postrating + 200
+
+#compute the difference between pre- and post-ratings for each CS
+dat_eval_change = dat %>% 
+  group_by(subject, c, u, us_valence) %>% 
+  summarise(eval_change_score = scale_postrating - scale_prerating)
+
+#add this evaluative change score to the dataset
+dat = full_join(dat, dat_eval_change
+                , by = c("subject"="subject", "us_valence"="us_valence", "c"="c", "u"="u"))
+
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(subject, us_valence) %>%
+  summarize(mean_eval_change = mean(eval_change_score))
+
+#check data distribution
+plot(density(dat_ev$mean_eval_change[dat_ev$us_valence=="positive"]))
+plot(density(dat_ev$mean_eval_change[dat_ev$us_valence=="negative"]))
+```
+
+```{r eval_change_test}
+dat_ = dat %>%
+  group_by(subject, us_valence) %>%
+  mutate(mean_eval_change = mean(eval_change_score))
+mod1 = aov_ez(dat_
+              ,id = "subject"
+              ,dv = "mean_eval_change"
+              ,within = "us_valence"
+              ,between = c("eval_task","eval_task_order")
+)
+
+mod1_print = apa_print(mod1)
+
+apa_table(
+  mod1_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence irrespective of Task condition"
+)
+
+# Descriptive statistics: evaluative change scores as a function of US Valence
+knitr::kable(describeBy(dat_ev$mean_eval_change, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+#to compute Bayes Factors similarly to how Waroquier et al. did, we will compute the difference of evaluative change scores between positive and negative USs
+
+#first, make a wide data frame so that we can compute the differences
+dat_ev_wide = dat_ev %>% pivot_wider(names_from = "us_valence"
+                                     ,values_from = "mean_eval_change")
+
+#compute the difference
+dat_ev_wide$diff_overall = dat_ev_wide$positive-dat_ev_wide$negative
+
+#use the bfrr package to compute Bayes Factors. The package is helpful because it allows one to
+##conveniently specify H1 and to compute robustness regions, as in Waroquier et al.
+bf_ev_overall = bfrr(
+  sample_mean = mean(dat_ev_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_wide$diff_overall)/sqrt(length(dat_ev_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5, #as in Waroquier et al.
+  tail = 1, #one sided 
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 100)
+  )
+)
+
+#summary(bf_ev_overall)
+```
+
+```{r plotevalchange, fig.cap="Pre-post evaluative change as a function of US Valence and Task condition. Dots are the individual observations, and error bars are the 95% Confidence Intervals. *Note:* TBS = Two-buttons-sets procedure; VMA = Valence Memory Attribution task; 3ACE = Three-attribution, continuous evaluative ratings task."}
+dat$task = as.factor(recode(dat$eval_task, "TBSrep"="TBS"
+       ,"Wrep"="VMA"
+       ,"3BS_study"="3ACE"))
+
+dat$task = fct_relevel(dat$task, "TBS", "VMA", "3ACE")
+
+dat$`US Valence` = dat$us_valence
+
+#visualize the data
+apa_beeplot(data=dat, id="subject", dv="eval_change_score", factors=c("task","US Valence"), intercept =0, use = "all.obs", ylim=c(-50,50),
+            xlab = "Task"
+            ,ylab = "Evaluative change score")
+```
+
+# Two-buttons-sets procedure
+
+```{r tbs_count}
+####
+#TBS PROCEDURE
+####
+
+#keep only participants that performed the TBS
+dat_tbs = dat %>% filter(eval_task == "TBSrep") %>% droplevels()
+
+##alternatively, we can keep only participants that performed the TBS as the first or second evaluative task (the TBS condition)
+#dat_tbs = dat %>% filter(eval_task == "TBSrep") %>% droplevels()
+
+#length(unique(dat_tbs$subject)) #127 participants
+
+#recode the tbs response into two variables: whether participant gave a positive or negative response (tbs_val_resp)
+##and whether participants used the memory of the attitude button set (tbs_button_resp)
+dat_tbs$response_tbs = str_remove(dat_tbs$response_tbs, "_response")
+dat_tbs = dat_tbs %>% separate(response_tbs, c("tbs_val_resp","tbs_button_resp"))
+
+dat_tbs$tbs_button_resp = as.factor(dat_tbs$tbs_button_resp)
+
+#count memory and attitude button responses
+# n_attrib_tbs = dat_tbs %>% 
+#   group_by(subject, tbs_button_resp, .drop=FALSE) %>% tally()
+# colnames(n_attrib_tbs) = c("subject", "attrib_buttons", "n_attrib_tbs")
+
+#at the aggregated level
+#knitr::kable(describeBy(n_attrib_tbs$n, n_attrib_tbs$tbs_button_resp, mat=TRUE), digits=2)
+```
+
+```{r tbs_correct_proportions_overall}
+#for each participant, compute the proportion of correct identifications in the TBS
+#meaning, say "positive" if the CS was paired with a positive US, and say "negative if the CS was paired with a negative US
+dat_tbs$tbs_correct = as.factor(ifelse(substr(dat_tbs$us_valence, 1, 3) == dat_tbs$tbs_val_resp, "correct", "incorrect"))
+
+#saveRDS(dat_tbs, "data/appendix/appendix_exp3_tbs.RDS")
+
+prop_correct_tbs = dat_tbs %>% 
+  group_by(subject, tbs_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_tbs) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_correct_o = t.test(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"], mu = 0.5)
+d_prop_correct_o = cohens_d(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"], mu = .5)
+
+bf_prop_overall_tbs = bfrr(
+  sample_mean = mean(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"])/sqrt(length(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_tbs$prop[prop_correct_tbs$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 10) 
+  )
+)
+#summary(bf_prop_overall_tbs)
+```
+
+```{r tbs_correct_proportions_memory}
+#proportion correct only for memory buttons in the TBS
+prop_correct_tbs_mem = dat_tbs %>% filter(tbs_button_resp == "memory") %>%
+  group_by(subject, tbs_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_tbs_mem) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_correct_m = t.test(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"], mu = 0.5)
+d_prop_correct_m = cohens_d(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"], mu = .5)
+
+bf_prop_tbs_memory = bfrr(
+  sample_mean = mean(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"])/sqrt(length(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_tbs_mem$prop[prop_correct_tbs_mem$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 10) 
+  )
+)
+#summary(bf_prop_tbs_memory)
+```
+
+```{r tbs_correct_proportions_attitudes}
+#proportion correct only for attitude buttons in the TBS
+prop_correct_tbs_att = dat_tbs %>% filter(tbs_button_resp == "attitude") %>%
+  group_by(subject, tbs_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_tbs_att) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_correct_a = t.test(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"], mu = 0.5)
+d_prop_correct_a = cohens_d(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"], mu = .5)
+
+bf_prop_tbs_att = bfrr(
+  sample_mean = mean(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"])/sqrt(length(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_tbs_att$prop[prop_correct_tbs_att$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 10) 
+  )
+)
+summary(bf_prop_tbs_att)
+```
+
+```{r tbs_table}
+## frequencies
+
+frq_table = dat_tbs %>% 
+    group_by(tbs_button_resp, tbs_val_resp, us_valence) %>% 
+    summarise(n = n())
+
+frq_table_mem = subset(frq_table, tbs_button_resp=="memory")
+frq_table_mem_pos = subset(frq_table, tbs_button_resp=="memory" & tbs_val_resp=="pos")
+frq_table_mem_neg = subset(frq_table, tbs_button_resp=="memory" & tbs_val_resp=="neg")
+
+frq_table_att = subset(frq_table, tbs_button_resp=="attitude")
+frq_table_att_pos = subset(frq_table, tbs_button_resp=="attitude" & tbs_val_resp=="pos")
+frq_table_att_neg = subset(frq_table, tbs_button_resp=="attitude" & tbs_val_resp=="neg")
+
+tbs_table = data.frame(list(expand.grid(
+  Val = c("pos", "neg"),
+  Set = c("Memory", "Attitude")),
+  Response = c(sum(frq_table_mem$n),
+               paste0("(", round(sum(frq_table_mem$n)/sum(frq_table_mem$n, frq_table_att$n),digits = 2), ")"),
+               sum(frq_table_att$n),
+               paste0("(", round(sum(frq_table_att$n)/sum(frq_table_mem$n, frq_table_att$n),digits = 2), ")")),
+  CS.p = c(paste0(frq_table_mem_pos$n[frq_table_mem_pos$us_valence=="positive"], " (", round(frq_table_mem_pos$n[frq_table_mem_pos$us_valence=="positive"]/sum(frq_table_mem$n),digits = 2), ")"),
+           paste0(frq_table_mem_neg$n[frq_table_mem_pos$us_valence=="positive"], " (", round(frq_table_mem_neg$n[frq_table_mem_neg$us_valence=="positive"]/sum(frq_table_mem$n),digits = 2), ")"),
+           paste0(frq_table_att_pos$n[frq_table_mem_pos$us_valence=="positive"], " (", round(frq_table_att_pos$n[frq_table_att_pos$us_valence=="positive"]/sum(frq_table_att$n),digits = 2), ")"),
+           paste0(frq_table_att_neg$n[frq_table_mem_pos$us_valence=="positive"], " (", round(frq_table_att_neg$n[frq_table_att_neg$us_valence=="positive"]/sum(frq_table_att$n),digits = 2), ")")),
+  CS.n = c(paste0(frq_table_mem_pos$n[frq_table_mem_pos$us_valence=="negative"], " (", round(frq_table_mem_pos$n[frq_table_mem_pos$us_valence=="negative"]/sum(frq_table_mem$n),digits = 2), ")"),
+           paste0(frq_table_mem_neg$n[frq_table_mem_pos$us_valence=="negative"], " (", round(frq_table_mem_neg$n[frq_table_mem_neg$us_valence=="negative"]/sum(frq_table_mem$n),digits = 2), ")"),
+           paste0(frq_table_att_pos$n[frq_table_mem_pos$us_valence=="negative"], " (", round(frq_table_att_pos$n[frq_table_att_pos$us_valence=="negative"]/sum(frq_table_att$n),digits = 2), ")"),
+           paste0(frq_table_att_neg$n[frq_table_mem_pos$us_valence=="negative"], " (", round(frq_table_att_neg$n[frq_table_att_neg$us_valence=="negative"]/sum(frq_table_att$n),digits = 2), ")"))
+))
+
+tbs_table =  tbs_table[, c(2, 3, 1, 4, 5)]
+
+kbl(tbs_table, booktabs=TRUE, align="c", caption="Exp.3, TBS response frequencies (proportions).", label="freqtable3") %>%
+  kable_styling(latex_options = c("scale_down")) %>%
+  collapse_rows(columns = 1, latex_hline = "major", valign = "middle")
+```
+
+```{r tbs_chisq_memory, include=FALSE}
+tab_chisq = as.matrix(rbind(c(475,158),c(117, 431)))
+khi_tbs = chisq.test(tab_chisq)
+khi_p <- ifelse(khi_tbs$p.value > .001, paste0("*p* = ", khi_tbs$p.value), "*p* < .001")
+khi_tbs
+```
+
+```{r prepare_plot_tbs}
+dat_tbs$tbs_button_resp = fct_relevel(dat_tbs$tbs_button_resp, "memory", "attitude")
+
+dat_tbs_plot = dat_tbs %>%
+  group_by(subject, us_valence, tbs_button_resp) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) 
+
+dat_tbs_plot_wide = dat_tbs_plot %>% pivot_wider(names_from = us_valence
+                                                 ,values_from = mean_eval_change)
+
+dat_tbs_plot_wide$EC_score = dat_tbs_plot_wide$positive - dat_tbs_plot_wide$negative
+```
+
+```{r overall_tbs_figure, fig.cap="Difference between evaluative change scores for CS+ and CS- (EC scores) as a function of Response button sets (TBS Task condition). Dots are the individual observations, and error bars are the 95% Confidence Intervals."}
+apa_beeplot(data=dat_tbs_plot_wide, id="subject", dv="EC_score", factors="tbs_button_resp", intercept =0, use = "all.obs", ylim=c(-200,200), xlab = 'TBS response button set', ylab = 'Evaluative Conditioning effect score')
+```
+
+```{r mixed_tbs}
+#mixed-effects logistic regression
+
+dat_tbs$tbs_val_resp_bin = recode(dat_tbs$tbs_val_resp, "pos"=1, "neg"=0)
+mixedmod_val = glmer(tbs_val_resp_bin ~ us_valence*tbs_button_resp + (1 + us_valence|subject), family = binomial, data=dat_tbs, control=glmerControl(optimizer = "bobyqa"))
+
+summary(mixedmod_val)
+
+#button set: memory
+mixedmod_val_mem = glmer(tbs_val_resp_bin ~ us_valence + (1 + us_valence|subject), family = binomial, data=subset(dat_tbs, tbs_button_resp=="memory"), control=glmerControl(optimizer = "bobyqa"))
+
+summary(mixedmod_val_mem)
+
+#button set: attitude
+mixedmod_val_att = glmer(tbs_val_resp_bin ~ us_valence + (1 + us_valence|subject), family = binomial, data=subset(dat_tbs, tbs_button_resp=="attitude"), control=glmerControl(optimizer = "bobyqa"))
+
+summary(mixedmod_val_att)
+```
+
+# Additional results
+
+## Valence Memory Attribution (VMA) task 
+
+```{r vma}
+####
+#VMA TASK (whether it was administered first or second) - mimics analyses of Waroquier et al.
+####
+
+dat_vma = dat %>% filter(eval_task=="Wrep") %>% droplevels()
+
+#saveRDS(dat_vma, "data/appendix/appendix_exp3_vma.RDS")
+```
+
+```{r vma_correct_proportions_overall}
+#for each participant, compute the proportion of correct identifications in the VMA
+#meaning, say "positive" if the CS was paired with a positive US, and say "negative if the CS was paired with a negative US
+dat_vma$vma_correct = as.factor(ifelse(substr(dat_vma$response_valence_id, 1, 3) == substr(dat_vma$us_valence, 1, 3), "correct", "incorrect"))
+
+prop_correct_vma = dat_vma %>% 
+  group_by(subject, vma_correct, .drop=FALSE) %>%  #drop=FALSE to keep "correct" and "incorrect" rows for all participants
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+#filter "NaN" because it does not make sense to include participants that did not provide responses (concerns mainly "guess" responses)
+
+colnames(prop_correct_vma) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"]), digits = 2)
+
+#tests
+t_prop_vma_o = t.test(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"], mu = 0.5)
+d_prop_vma_o = cohens_d(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"], mu = .5)
+
+bf_prop_overall = bfrr(
+  sample_mean = mean(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"])-.5, # mean of the sample minus the test value .5
+  sample_se = sd(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"])/sqrt(length(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_vma$prop[prop_correct_vma$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+  )
+summary(bf_prop_overall)
+```
+
+```{r vma_correct_proportions_memory}
+#proportion correct only for memory attributions in the VMA
+prop_correct_vma_mem = dat_vma %>% filter(attrib_buttons == "memory_attrib_button") %>%
+  group_by(subject, vma_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_vma_mem) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"]), digits = 2)
+
+#tests
+t_prop_vma_m = t.test(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"], mu = 0.5)
+d_prop_vma_m = cohens_d(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"], mu = .5)
+
+bf_prop_memory = bfrr(
+  sample_mean = mean(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"])-.5, # mean of the sample minus the test value .5
+  sample_se = sd(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"])/sqrt(length(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_vma_mem$prop[prop_correct_vma_mem$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+
+summary(bf_prop_memory)
+```
+
+```{r vma_correct_proportions_feeling}
+#proportion correct only for feeling attributions in the VMA
+prop_correct_vma_feel = dat_vma %>% filter(attrib_buttons == "intuition_feeling_button") %>%
+  group_by(subject, vma_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_vma_feel) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"]), digits = 2)
+
+#tests
+t_prop_vma_f = t.test(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"], mu = 0.5)
+d_prop_vma_f = cohens_d(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"], mu = .5)
+
+bf_prop_feel = bfrr(
+  sample_mean = mean(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"])-.5, # mean of the sample minus the test value .5
+  sample_se = sd(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"])/sqrt(length(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_vma_feel$prop[prop_correct_vma_feel$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_feel)
+```
+
+```{r vma_correct_proportions_guessing}
+#proportion correct only for guess attributions in the VMA
+prop_correct_vma_guess = dat_vma %>% filter(attrib_buttons == "guess_attrib_button") %>%
+  group_by(subject, vma_correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_vma_guess) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"]), digits = 2)
+
+#tests
+t_prop_vma_g = t.test(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"], mu = 0.5)
+d_prop_vma_g = cohens_d(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"], mu = .5)
+
+bf_prop_guess = bfrr(
+  sample_mean = mean(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"])-.5, # mean of the sample minus the test value .5
+  sample_se = sd(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"])/sqrt(length(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_vma_guess$prop[prop_correct_vma_guess$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_guess)
+```
+
+
+```{r overall_vma_figure, eval=FALSE, fig.cap="Difference between evaluative change scores for CS+ and CS- (EC scores) as a function of Attributions (VMA Task condition). Dots are the individual observations, and error bars are the 95% Confidence Intervals."}
+dat_vma$attrib_plot = as.factor(recode(dat_vma$attrib_buttons, "guess_attrib_button"="random guessing"
+       ,"intuition_feeling_button"="intuition"
+       ,"memory_attrib_button"="memory"))
+
+dat_vma$attrib_plot = fct_relevel(dat_vma$attrib_plot, "memory", "intuition", "random guessing")
+
+dat_vma_plot = dat_vma %>%
+  group_by(subject, us_valence, attrib_plot) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) 
+
+dat_vma_plot_wide = dat_vma_plot %>% pivot_wider(names_from = us_valence
+                                                 ,values_from = mean_eval_change)
+
+dat_vma_plot_wide$EC_score = dat_vma_plot_wide$positive - dat_vma_plot_wide$negative
+
+apa_beeplot(data=dat_vma_plot_wide, id="subject", dv="EC_score", factors="attrib_plot", intercept =0, use = "all.obs", ylim=c(-200,200)
+            ,ylab = "Evaluative Conditioning effect score"
+            ,xlab="Attribution")
+```
+
+```{r vma_eval_change_memory}
+####
+#EVALUATIVE CHANGE AS A FUNCTION OF VALENCE MEMORY ATTRIBUTIONS IN THE VMA TASK
+####
+
+#for each attribution
+###memory
+dat_ev_vma_memory = dat_vma %>% filter(attrib_buttons == "memory_attrib_button") %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) %>% filter(n() > 1)
+
+mod_memory_vma = aov_ez(dat_ev_vma_memory
+                                ,id = "subject"
+                                ,dv = "mean_eval_change"
+                                ,within = "us_valence"
+)
+
+mod_memory_vma_print = apa_print(mod_memory_vma)
+
+apa_table(
+  mod_memory_vma_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence for CSs that received a 'Memory' attribution in the Valence Memory Attribution task"
+)
+
+knitr::kable(describeBy(dat_ev_vma_memory$mean_eval_change, dat_ev_vma_memory$us_valence, mat=TRUE), digits = 2)
+
+dat_ev_vma_memory_wide = dat_ev_vma_memory %>% pivot_wider(names_from = "us_valence"
+                                                                           ,values_from = "mean_eval_change")
+
+dat_ev_vma_memory_wide$diff_overall = dat_ev_vma_memory_wide$positive-dat_ev_vma_memory_wide$negative 
+
+dat_ev_vma_memory_wide = dat_ev_vma_memory_wide %>% filter(!is.na(diff_overall))
+
+bf_ev_memory = bfrr(
+  sample_mean = mean(dat_ev_vma_memory_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_vma_memory_wide$diff_overall)/sqrt(length(dat_ev_vma_memory_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_vma_memory_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 500)
+  )
+)
+
+summary(bf_ev_memory)
+```
+
+```{r vma_eval_change_intuition}
+###feeling
+dat_ev_vma_feeling = dat_vma %>%  filter(attrib_buttons == "intuition_feeling_button") %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) %>% filter(n() > 1)
+
+mod_feeling_vma = aov_ez(dat_ev_vma_feeling
+                                 ,id = "subject"
+                                 ,dv = "mean_eval_change"
+                                 ,within = "us_valence"
+)
+
+mod_feeling_vma_print = apa_print(mod_feeling_vma)
+
+apa_table(
+  mod_feeling_vma_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence for CSs that received an 'Intuition' attribution in the Valence Memory Attribution task"
+)
+
+knitr::kable(describeBy(dat_ev_vma_feeling$mean_eval_change, dat_ev_vma_feeling$us_valence, mat=TRUE), digits=2)
+
+dat_ev_vma_feeling_wide = dat_ev_vma_feeling %>% pivot_wider(names_from = "us_valence"
+                                                                             ,values_from = "mean_eval_change")
+
+dat_ev_vma_feeling_wide$diff_overall = dat_ev_vma_feeling_wide$positive-dat_ev_vma_feeling_wide$negative 
+
+dat_ev_vma_feeling_wide = dat_ev_vma_feeling_wide %>% filter(!is.na(diff_overall))
+
+bf_ev_feeling = bfrr(
+  sample_mean = mean(dat_ev_vma_feeling_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_vma_feeling_wide$diff_overall)/sqrt(length(dat_ev_vma_feeling_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_vma_feeling_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 500)
+  )
+)
+
+summary(bf_ev_feeling)
+```
+
+```{r vma_eval_change_guessing}
+###guess
+dat_ev_vma_guess = dat_vma %>% filter(attrib_buttons == "guess_attrib_button") %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) %>% filter(n() > 1)
+
+mod_guess_vma = aov_ez(dat_ev_vma_guess
+                               ,id = "subject"
+                               ,dv = "mean_eval_change"
+                               ,within = "us_valence"
+)
+
+mod_guess_vma_print = apa_print(mod_guess_vma)
+
+apa_table(
+  mod_guess_vma_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence for CSs that received a 'Guess' attribution in the Valence Memory Attribution task"
+)
+
+knitr::kable(describeBy(dat_ev_vma_guess$mean_eval_change, dat_ev_vma_guess$us_valence, mat=TRUE), digits=2)
+
+dat_ev_vma_guess_wide = dat_ev_vma_guess %>% pivot_wider(names_from = "us_valence"
+                                                                         ,values_from = "mean_eval_change")
+
+dat_ev_vma_guess_wide$diff_overall = dat_ev_vma_guess_wide$positive-dat_ev_vma_guess_wide$negative 
+
+dat_ev_vma_guess_wide = dat_ev_vma_guess_wide %>% filter(!is.na(diff_overall))
+
+bf_ev_guess = bfrr(
+  sample_mean = mean(dat_ev_vma_guess_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_vma_guess_wide$diff_overall)/sqrt(length(dat_ev_vma_guess_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_vma_guess_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 500)
+  )
+)
+
+summary(bf_ev_guess)
+#plot(bf_ev_guess)
+```
+
+```{r vma_eval_change_no_struct_k}
+#recode intuition and guessing attributions into "no_conscious_s_k"
+dat_vma = dat_vma %>% mutate(recode_attrib = as.factor(ifelse(attrib_buttons=="memory_attrib_button", "conscious", "no_conscious_sk")))
+
+#check whether it worked as intended
+table(dat_vma$attrib_buttons, dat_vma$recode_attrib)
+  
+#for no conscious structural knowledge (intuition and guessing)
+dat_ev_vma_no_conscious = dat_vma %>% filter(recode_attrib == "no_conscious_sk") %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) %>% filter(n() > 1)
+
+mod_noc_vma = aov_ez(dat_ev_vma_no_conscious
+                                ,id = "subject"
+                                ,dv = "mean_eval_change"
+                                ,within = "us_valence"
+)
+
+mod_noc_vma_print = apa_print(mod_noc_vma)
+
+apa_table(
+  mod_noc_vma_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence for CSs that received an 'Intuition' or 'Guess' (no conscious structural knowledge) attribution in the Valence Memory Attribution task"
+)
+
+knitr::kable(describeBy(dat_ev_vma_no_conscious$mean_eval_change, dat_ev_vma_no_conscious$us_valence, mat=TRUE), digits=2)
+
+dat_ev_vma_no_conscious_wide = dat_ev_vma_no_conscious %>% pivot_wider(names_from = "us_valence"
+                                                                           ,values_from = "mean_eval_change")
+
+dat_ev_vma_no_conscious_wide$diff_overall = dat_ev_vma_no_conscious_wide$positive-dat_ev_vma_no_conscious_wide$negative 
+
+dat_ev_vma_no_conscious_wide = dat_ev_vma_no_conscious_wide %>% filter(!is.na(diff_overall))
+
+bf_ev_no_conscious = bfrr(
+  sample_mean = mean(dat_ev_vma_no_conscious_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_vma_no_conscious_wide$diff_overall)/sqrt(length(dat_ev_vma_no_conscious_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_vma_no_conscious_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 500)
+  )
+)
+
+summary(bf_ev_no_conscious)
+#plot(bf_ev_no_conscious)
+```
+
+## Three-attribution, continuous evaluation (3ACE) task
+
+```{r 3bs}
+####
+#3BS PROCEDURE (3BS in analysis is analogous to 3ACE in text)
+####
+
+#keep only participants that performed the TBS
+dat_3bs = dat %>% filter(eval_task == "3BS_study") %>% droplevels()
+
+length(unique(dat_3bs$subject)) #52 participants
+
+dat_3bs$scales_3BS_state = as.factor(dat_3bs$scales_3BS_state)
+
+dat_3bs$scale_3bs_intuition = as.numeric(dat_3bs$scale_3bs_intuition)
+dat_3bs$scale_3bs_guess = as.numeric(dat_3bs$scale_3bs_guess)
+
+#for each participant, compute the proportion of correct identifications in the 3BS
+#meaning, say "positive" if the CS was paired with a positive US, and say "negative if the CS was paired with a negative US
+dat_3bs$correct = NA
+
+#first, compute correct responses
+dat_3bs$correct[dat_3bs$scales_3BS_state=="memory_button"] = ifelse(substr(dat_3bs$us_valence[dat_3bs$scales_3BS_state=="memory_button"], 1, 3) == substr(dat_3bs$response_3bs[dat_3bs$scales_3BS_state=="memory_button"], 1, 3), "correct", "incorrect")
+
+#recode the responses on the intuition and guess scale so that negative scores
+##indicate "negative" and positive scores indicate "positive"
+dat_3bs$recode_intuition_scale = NA
+dat_3bs$recode_intuition_scale[dat_3bs$scales_3BS_state=="intuition_scale"] = ifelse(dat_3bs$scale_3bs_intuition[dat_3bs$scales_3BS_state=="intuition_scale"] > 0, "pos", ifelse(dat_3bs$scale_3bs_intuition[dat_3bs$scales_3BS_state=="intuition_scale"] < 0, "neg", 0))
+
+dat_3bs$recode_guess_scale = NA
+dat_3bs$recode_guess_scale[dat_3bs$scales_3BS_state=="guess_scale"] = ifelse(dat_3bs$scale_3bs_guess[dat_3bs$scales_3BS_state=="guess_scale"] > 0, "pos", ifelse(dat_3bs$scale_3bs_guess[dat_3bs$scales_3BS_state=="guess_scale"] < 0, "neg", 0))
+
+dat_3bs$correct[dat_3bs$scales_3BS_state=="intuition_scale"] = ifelse(substr(dat_3bs$us_valence[dat_3bs$scales_3BS_state=="intuition_scale"], 1, 3) == dat_3bs$recode_intuition_scale[dat_3bs$scales_3BS_state=="intuition_scale"], "correct", "incorrect")
+
+dat_3bs$correct[dat_3bs$scales_3BS_state=="guess_scale"] = ifelse(substr(dat_3bs$us_valence[dat_3bs$scales_3BS_state=="guess_scale"], 1, 3) == dat_3bs$recode_guess_scale[dat_3bs$scales_3BS_state=="guess_scale"], "correct", "incorrect")
+
+dat_3bs$correct = as.factor(dat_3bs$correct)
+
+#saveRDS(dat_3bs, "data/appendix/appendix_exp3_3ace.RDS")
+#compute the difference between pre- and post-ratings for each CS in the 3ACE task
+dat_eval_change_intuition = subset(dat_3bs, scales_3BS_state=="intuition_scale") %>%
+  group_by(subject, c, u, scales_3BS_state, us_valence) %>%
+  summarise(eval_change_score_3bs_intuition = scale_3bs_intuition - scale_prerating)
+dat_eval_change_guess = subset(dat_3bs, scales_3BS_state=="guess_scale") %>%
+  group_by(subject, c, u, scales_3BS_state, us_valence) %>%
+  summarise(eval_change_score_3bs_guess = scale_3bs_guess - scale_prerating)
+#for analyses with intuition and guessing grouped together, create another dataset
+dat_intui_guess = full_join(dat_eval_change_intuition, dat_eval_change_guess
+                , by = c("subject"="subject", "scales_3BS_state"="scales_3BS_state",
+                         "us_valence"="us_valence", "c"="c", "u"="u")) 
+#put scores into the same column
+dat_intui_guess$eval_change_score_3bs_intuition_guess = coalesce(dat_intui_guess$eval_change_score_3bs_intuition, dat_intui_guess$eval_change_score_3bs_guess)
+```
+
+```{r 3bs_correct_proportions_overall}
+#proportion of correct responses
+prop_correct_3bs = dat_3bs %>% 
+  group_by(subject, correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_3bs) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_3bs_o = t.test(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"], mu = 0.5)
+d_prop_3bs_o = cohens_d(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"], mu = .5)
+
+bf_prop_overall_3bs = bfrr(
+  sample_mean = mean(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"])/sqrt(length(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_3bs$prop[prop_correct_3bs$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_overall_3bs)
+```
+
+```{r 3bs_correct_proportions_memory}
+#proportion of correct memory attributions
+prop_correct_3bs_mem = dat_3bs %>% filter(scales_3BS_state == "memory_button") %>%
+  group_by(subject, correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_3bs_mem) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+knitr::kable(describe(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_3bs_m = t.test(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"], mu = 0.5)
+d_prop_3bs_m = cohens_d(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"], mu = .5)
+
+bf_prop_mem_3bs = bfrr(
+  sample_mean = mean(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"])/sqrt(length(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_3bs_mem$prop[prop_correct_3bs_mem$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_mem_3bs)
+```
+
+```{r 3bs_correct_proportions_intuition}
+#proportion of correct intuition scale uses
+prop_correct_3bs_intuition = dat_3bs %>% filter(scales_3BS_state == "intuition_scale") %>%
+  group_by(subject, correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_3bs_intuition) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_3bs_i = t.test(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"], mu = 0.5)
+d_prop_3bs_i = cohens_d(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"], mu = .5)
+
+bf_prop_intuition_3bs = bfrr(
+  sample_mean = mean(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"])/sqrt(length(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_3bs_intuition$prop[prop_correct_3bs_intuition$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_intuition_3bs)
+```
+
+```{r 3bs_correct_proportions_guessing}
+#proportion of correct guess scale uses
+prop_correct_3bs_guess = dat_3bs %>% filter(scales_3BS_state == "guess_scale") %>%
+  group_by(subject, correct, .drop=FALSE) %>% 
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) %>% group_by(subject) %>% filter(!is.nan(freq))
+
+colnames(prop_correct_3bs_guess) = c("subject", "correct_response", "n_count", "prop")
+
+#at the aggregated level
+#knitr::kable(describe(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"]), digits=2)
+
+#tests
+t_prop_3bs_g = t.test(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"], mu = 0.5)
+d_prop_3bs_g = cohens_d(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"], mu = .5)
+
+bf_prop_guess_3bs = bfrr(
+  sample_mean = mean(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"])-.5, # mean of the sample
+  sample_se = sd(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"])/sqrt(length(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"])), # SE of the sample
+  sample_df = length(prop_correct_3bs_guess$prop[prop_correct_3bs_guess$correct_response=="correct"]) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = .15, 
+  tail = 1, #one-tailed
+  criterion = 3, 
+  rr_interval = list( # ranges to vary H1 parameters for robustness regions
+    sd = c(0, 2) 
+  )
+)
+summary(bf_prop_guess_3bs)
+```
+
+```{r 3bs_eval_change_memory}
+####
+#EVALUATIVE CHANGE AS A FUNCTION OF VALENCE MEMORY ATTRIBUTIONS IN THE 3BS TASK
+####
+###memory button
+dat_ev_3bs_memory = dat_3bs %>%  filter(scales_3BS_state == "memory_button") %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score)) %>% filter(n() > 1)
+mod_memory_3bs = aov_ez(dat_ev_3bs_memory
+                                ,id = "subject"
+                                ,dv = "mean_eval_change"
+                                ,within = "us_valence"
+)
+mod_memory_3bs_print = apa_print(mod_memory_3bs)
+
+apa_table(
+  mod_memory_3bs_print$table
+  ,caption = "Repeated-measures ANOVA: Evaluative change scores as a function of US Valence for CSs that received a memory-buttons set response (3BS procedure)"
+)
+
+
+knitr::kable(describeBy(dat_ev_3bs_memory$mean_eval_change, dat_ev_3bs_memory$us_valence, mat=TRUE), digits=2)
+dat_ev_3bs_memory_wide = dat_ev_3bs_memory %>% pivot_wider(names_from = "us_valence"
+                                                                           ,values_from = "mean_eval_change")
+dat_ev_3bs_memory_wide$diff_overall = dat_ev_3bs_memory_wide$positive-dat_ev_3bs_memory_wide$negative 
+dat_ev_3bs_memory_wide = dat_ev_3bs_memory_wide %>% filter(!is.na(diff_overall))
+bf_ev_memory_3bs = bfrr(
+  sample_mean = mean(dat_ev_3bs_memory_wide$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_3bs_memory_wide$diff_overall)/sqrt(length(dat_ev_3bs_memory_wide$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_3bs_memory_wide$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 200)
+  )
+)
+summary(bf_ev_memory_3bs)
+```
+
+```{r 3bseval_change_intuition_3ace_ratings}
+##intuition scale
+dat_ev_3bs_intuition_3ace_ratings = dat_eval_change_intuition %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score_3bs_intuition)) %>% filter(n() > 1)
+mod_intuition_3bs_3ace_ratings = aov_ez(dat_ev_3bs_intuition_3ace_ratings
+                                   ,id = "subject"
+                                   ,dv = "mean_eval_change"
+                                   ,within = "us_valence"
+)
+
+mod_intuition_3bs_3ace_ratings
+```
+
+```{r 3bs_eval_change_guessing_3ace_ratings}
+##guess scale
+dat_ev_3bs_guess_3ace_ratings = dat_eval_change_guess %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score_3bs_guess)) %>% filter(n() > 1)
+mod_guess_3bs_3ace_ratings = aov_ez(dat_ev_3bs_guess_3ace_ratings
+                               ,id = "subject"
+                               ,dv = "mean_eval_change"
+                               ,within = "us_valence"
+)
+mod_guess_3bs_3ace_ratings
+
+dat_ev_3bs_guess_wide_3ace_ratings = dat_ev_3bs_guess_3ace_ratings %>% pivot_wider(names_from = "us_valence"
+            ,values_from = "mean_eval_change")
+dat_ev_3bs_guess_wide_3ace_ratings$diff_overall = dat_ev_3bs_guess_wide_3ace_ratings$positive-dat_ev_3bs_guess_wide_3ace_ratings$negative 
+dat_ev_3bs_guess_wide_3ace_ratings = dat_ev_3bs_guess_wide_3ace_ratings %>% filter(!is.na(diff_overall))
+bf_ev_guess_3bs_3ace_ratings = bfrr(
+  sample_mean = mean(dat_ev_3bs_guess_wide_3ace_ratings$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_3bs_guess_wide_3ace_ratings$diff_overall)/sqrt(length(dat_ev_3bs_guess_wide_3ace_ratings$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_3bs_guess_wide_3ace_ratings$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 200)
+  )
+)
+summary(bf_ev_guess_3bs_3ace_ratings)
+```
+
+```{r 3bs_eval_change_no_struct_k_3ace_ratings}
+#for no conscious structural knowledge (intuition and guessing)
+dat_ev_3bs_no_conscious_3ace_ratings = dat_intui_guess %>%
+  group_by(subject, us_valence) %>%
+  summarise(mean_eval_change = mean(eval_change_score_3bs_intuition_guess)) %>% filter(n() > 1)
+mod_noc_3bs_3ace_ratings = aov_ez(dat_ev_3bs_no_conscious_3ace_ratings
+                                ,id = "subject"
+                                ,dv = "mean_eval_change"
+                                ,within = "us_valence"
+)
+
+mod_noc_3bs_3ace_ratings
+
+dat_ev_3bs_no_conscious_wide_3ace_ratings = dat_ev_3bs_no_conscious_3ace_ratings %>% pivot_wider(names_from = "us_valence"
+            ,values_from = "mean_eval_change")
+dat_ev_3bs_no_conscious_wide_3ace_ratings$diff_overall = dat_ev_3bs_no_conscious_wide_3ace_ratings$positive-dat_ev_3bs_no_conscious_wide_3ace_ratings$negative 
+dat_ev_3bs_no_conscious_wide_3ace_ratings = dat_ev_3bs_no_conscious_wide_3ace_ratings %>% filter(!is.na(diff_overall))
+
+bf_ev_no_conscious_3bs_3ace_ratings = bfrr(
+  sample_mean = mean(dat_ev_3bs_no_conscious_wide_3ace_ratings$diff_overall), # mean of the sample
+  sample_se = sd(dat_ev_3bs_no_conscious_wide_3ace_ratings$diff_overall)/sqrt(length(dat_ev_3bs_no_conscious_wide_3ace_ratings$diff_overall)), # SE of the sample
+  sample_df = length(dat_ev_3bs_no_conscious_wide_3ace_ratings$diff_overall) - 1, # degrees of freedom
+  model = "normal",
+  mean = 0, 
+  sd = 23.5,
+  tail = 1,
+  criterion = 3, 
+  rr_interval = list(
+    # mean = c(-2, 2),
+    sd = c(0, 200)
+  )
+)
+
+summary(bf_ev_no_conscious_3bs_3ace_ratings)
+```
