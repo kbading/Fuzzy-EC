@@ -166,12 +166,9 @@ table(dat_final$ppt,dat_final$cs_category) # yes
 table(dat_final$ppt,dat_final$cs_category,dat_final$us_valence) # yes
 
 ```
-# check whether there are always 4 positive and 4 negative options in the memory task
+# To Do: check whether there are always 4 positive and 4 negative options in the memory task
 ```{r}
 
-mem_options <- dat_final$uss[[1]]
-
-for
 
 ```
 
