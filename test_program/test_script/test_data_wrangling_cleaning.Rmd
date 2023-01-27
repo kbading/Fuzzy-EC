@@ -169,9 +169,65 @@ table(dat_final$ppt,dat_final$cs_category,dat_final$us_valence) # yes
 # To Do: check whether there are always 4 positive and 4 negative options in the memory task
 ```{r}
 
+dat_final$correct_pos <- ifelse(dat_final$idtarg == 0
+                                , "us1"
+                                , ifelse(dat_final$idtarg == 1
+                                         , "us2"
+                                         , ifelse(dat_final$idtarg == 2
+                                                  , "us3"
+                                                  , ifelse(dat_final$idtarg == 3
+                                                           , "us4"
+                                                           , ifelse(dat_final$idtarg == 4
+                                                                    , "us5"
+                                                                    ,ifelse(dat_final$idtarg == 5
+                                                                            , "us6"
+                                                                            , ifelse(dat_final$idtarg == 6
+                                                                                     , "us7"
+                                                                                     , ifelse(dat_final$idtarg == 7
+                                                                                              , "us8", dat_final$idtarg))))))))
+
+
 
 ```
 
-# To do list
-+ check whether we can identify the correct US in the "source memory" task (I think we do, with `idtarg` and `uss`) -- I think I have some R code for this from a previous study, I will check
-+ ???
+# check whether we can identify the correct US in the "source memory" task 
+(I think we do, with `idtarg` and `uss`) -- I think I have some R code for this from a previous study, I will check
+
+Karoline: Im not sure we need to identify the correct US as we already have column 'us' that states the paired US for a given CS. Or am I misunderstanding something here? I figured it might be useful to check if participants chose the correct US for "old" CSs.
+I tried to achieve this by translating 'idtarg' (position 0,1,2,3,4,5,6,7) into the "terminology" of 'source_mem' (e.g. "us1" indicates that image on position 0 was selected). We could then go on to compare 'correct_pos' and and 'source_mem': same value --> correct US was chosen (= 1), different value --> incorrect US was chosen (= 0), NA when CSs is a distractor (i.e. no correct US exists) or when "old" CS was classified as "new" (i.e. when no source memory task was performed). We could of course also create other codings (e.g. 0 instead of NA when CSs is a distractor) --> lets discuss what kind of variable we want here
+
+```{r}
+
+dat_final$correct_pos <- ifelse(dat_final$idtarg == 0
+                                , "us1"
+                                , ifelse(dat_final$idtarg == 1
+                                         , "us2"
+                                         , ifelse(dat_final$idtarg == 2
+                                                  , "us3"
+                                                  , ifelse(dat_final$idtarg == 3
+                                                           , "us4"
+                                                           , ifelse(dat_final$idtarg == 4
+                                                                    , "us5"
+                                                                    ,ifelse(dat_final$idtarg == 5
+                                                                            , "us6"
+                                                                            , ifelse(dat_final$idtarg == 6
+                                                                                     , "us7"
+                                                                                     , ifelse(dat_final$idtarg == 7
+                                                                                              , "us8", dat_final$idtarg))))))))
+# create NAs for source_mem
+dat_final$source_mem <- ifelse(dat_final$source_mem %in% c("us1","us2","us3","us4","us5","us6","us7","us8"),dat_final$source_mem,NA)
+
+dat_final$source_correct <- ifelse(dat_final$source_mem == dat_final$correct_pos, 1, 0)
+
+
+```
+
+# check whether we can identify the valence of the chosen US in the "source memory" task 
+
+```{r}
+
+
+
+
+```
+
