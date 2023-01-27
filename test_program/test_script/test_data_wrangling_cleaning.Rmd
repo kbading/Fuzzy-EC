@@ -29,7 +29,7 @@ p_load('tidyverse', 'jsonlite', 'psych', 'readbulk')
 I performed the test in "local" lab.js (I exported the lab.js study program for offline data collection) -- if we collect data this way, we will have one .csv file for each participant. So, first, we need to retrieve and merge all the .csv (for the example here, I did two runs).
 
 ```{r read_data, message=FALSE, warning=FALSE}
-dat = read_bulk("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/test_data/") #will need to change the directory
+dat = read_bulk("../test_data/") #will need to change the directory
 
 # # Read the text file from JATOS (first batch)...
 # read_file('jatos_results_20220630194157_firstbatch.txt')%>%
@@ -142,7 +142,7 @@ We don't need the `dat_learning` dataset as the relevant information it contains
 
 #join recognition and source memory responses 
 dat_mem = full_join(dat_reco, dat_source,
-                               , by = c("ppt"="ppt", "cs" = "cs", "us"="us", "uss"="uss", "idtarg"="idtarg", "cs_category"="cs_category", "us_valence"="us_valence", "count_trial_memory"="count_trial_memory"))
+                               by = c("ppt"="ppt", "cs" = "cs", "us"="us", "uss"="uss", "idtarg"="idtarg", "cs_category"="cs_category", "us_valence"="us_valence", "count_trial_memory"="count_trial_memory"))
 
 #join memory dataset and rating dataset
 dat_final = full_join(dat_mem, dat_ratings
@@ -156,9 +156,25 @@ dat_final = full_join(dat_mem, dat_ratings
 saveRDS(dat_final, "data_wsw_final.RDS") #RDS can handle lists such as in the `uss` list
 ```
 
-# To do list
+# check whether same number of old/new CSs, male and female CSs, male old, male new, female old, female new CSs
+# check whether each CS condition is associated with the same number of positive and negative USs
 
-+ check whether same number of old/new CSs, male and female CSs, male old, male new, female old, female new CSs
-+ check whether each CS condition is associated with the same number of positive and negative USs
+```{r}
+
+table(dat_final$ppt,dat_final$us_valence)  # yes
+table(dat_final$ppt,dat_final$cs_category) # yes
+table(dat_final$ppt,dat_final$cs_category,dat_final$us_valence) # yes
+
+```
+# check whether there are always 4 positive and 4 negative options in the memory task
+```{r}
+
+mem_options <- dat_final$uss[[1]]
+
+for
+
+```
+
+# To do list
 + check whether we can identify the correct US in the "source memory" task (I think we do, with `idtarg` and `uss`) -- I think I have some R code for this from a previous study, I will check
 + ???
