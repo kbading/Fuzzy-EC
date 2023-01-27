@@ -115,6 +115,47 @@ count_pairings %>%
   summarise(count = n_distinct(cs_us))
 #seems ok! 24 unique CS-US pairs
 ```
+# check if each cs-us pair is presented once in all 24-trial sets of learning procedure
+
+```{r}
+
+dat_learning$block <- ifelse(dat_learning$count_trial_learning %in% c(0:23)
+                             ,1
+                             ,ifelse(dat_learning$count_trial_learning %in% c(24:47)
+                                     ,2
+                                     ,ifelse(dat_learning$count_trial_learning %in% c(48:71)
+                                             ,3
+                                             ,ifelse(dat_learning$count_trial_learning %in% c(72:95)
+                                                     ,4
+                                                     ,ifelse(dat_learning$count_trial_learning %in% c(96:119)
+                                                                                                      ,5,6)))))
+table(dat_learning$ppt,dat_learning$block)
+
+count_cs_block = unique(dat_learning[,c('ppt','cs','block')])
+
+dat_count_cs_block = count_cs_block %>%                           
+  group_by(ppt,block) %>%
+  summarise(count = n_distinct(cs))
+
+table(dat_count_cs_block$count==24)
+
+count_us_block = unique(dat_learning[,c('ppt','us','block')])
+
+dat_count_us_block = count_us_block %>%                           
+  group_by(ppt,block) %>%
+  summarise(count = n_distinct(us))
+
+table(dat_count_us_block$count==24)
+
+count_pairings_block = unique(dat_learning[,c('ppt','block','cs','us')])
+count_pairings_block$cs_us = paste0(count_pairings_block$cs, count_pairings_block$us)
+
+count_pairings_block %>%                           
+ group_by(ppt,block) %>%
+  summarise(count = n_distinct(cs_us))
+
+```
+
 
 ### Memory task
 
@@ -244,8 +285,3 @@ for(i in 1:nrow(dat_final)){
 
 
 ```
-
-# To Do
-
-check if each cs-us pair is presented once in all 24-trial sets of learning procedure
-count_learning_trial
