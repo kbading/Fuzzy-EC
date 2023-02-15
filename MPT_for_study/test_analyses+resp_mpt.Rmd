@@ -239,12 +239,12 @@ dat_pos = dat_pos %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
 )
 )
 
-#/!\/!\/!\
-##ONLY run this code for TESTS
-#we dont have "posUSposincor" in the test data, so I fake one "PosUSposincor" response
-# a = which(dat_pos$resp_mpt=="PosUSposcor")
-# dat_pos$resp_mpt[a[2]] = "PosUSposincor"
-#//!\/!\
+# /!\/!\/!\
+# #ONLY run this code for TESTS
+# we dont have "posUSposincor" in the test data, so I fake one "PosUSposincor" response
+a = which(dat_pos$resp_mpt=="PosUSposcor")
+dat_pos$resp_mpt[a[2]] = "PosUSposincor"
+# //!\/!\
 
 ##Tree: US- and select only relevant columns
 dat_neg = dat %>% filter(us_valence == "negative") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
@@ -319,7 +319,7 @@ mod_mpt = traitMPT(
   , n.burnin = 200000
   , n.thin   = 40
   , n.chains = 4
-  , restrictions = list("Dn=Dpos=Dneg")
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25")
 )
 
 summary(mod_mpt)
