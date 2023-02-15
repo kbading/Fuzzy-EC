@@ -1,0 +1,353 @@
+---
+title: "Untitled"
+author: 'Karoline "The Lazy Bird" Bading'
+date: "13 4 2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("apa_scatterplot.R")
+library(papaja)
+library(afex)
+library(reshape2)
+library(stats)
+library(truncnorm)
+library(TreeBUGS)
+```
+
+# Create empty data frame
+
+```{r}
+N = 500
+Ncs = 80
+us_valence = c("positive","negative")
+relation = c("assimilative","contrastive")
+
+data_empty <- data.frame(
+  id = rep(1:N, each = Ncs)
+  , us_valence = rep(rep(us_valence, each = Ncs/2),N)
+  , relation = rep(rep(relation, each = Ncs/4),N*2)
+  , propositional_valence = NA
+  , noise_mpt = NA
+  , noise_rating = NA
+)
+```
+
+## Create propositional valence (1)
+
+```{r}
+
+data_1 <- data_empty
+
+rho_pn <- 1
+rho_ac <- 0
+rho_cc <- 1
+
+sigma <- c(
+  AP = 0.25
+  , AN = 0.25
+  , CP = 0.25
+  , CN = 0.25
+)
+
+id_effects <- data.frame(
+  AP = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN <- id_effects$AP * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP <- id_effects$AP * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN <- id_effects$CP * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+
+
+id_effects$AP <- sigma["AP"] * (id_effects$AP)
+id_effects$AN <- sigma["AN"] * (id_effects$AN)
+id_effects$CP <- sigma["CP"] * (id_effects$CP)
+id_effects$CN <- sigma["CN"] * (id_effects$CN)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP = 0
+    , AN = 0 
+    , CP = 0
+    , CN = 0  
+  )
+)
+
+data_1$propositional_valence <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP"] + id_effects$AP[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN"] + id_effects$AN[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP"] + id_effects$CP[data_1$id]
+                    , fixed_effects$average_baseline["CN"] + id_effects$CN[data_1$id]
+           )
+  )
+)
+
+data_1 <- data_1[,c("id","us_valence","relation","propositional_valence","noise_mpt","noise_rating")]
+data_1$inf_prob <- pnorm(data_1$propositional_valence,0,1)
+# check asymmetry
+
+par(mfrow = c(1,1))
+apa_beeplot(data = data_1, id = "id", dv = "propositional_valence", factors = c("us_valence","relation"))
+apa_beeplot(data = data_1, id = "id", dv = "inf_prob", factors = c("us_valence","relation"))
+
+xxx <- aggregate(data= data_1, inf_prob ~ id * us_valence * relation, FUN = mean)
+yyy <- dcast(data= xxx, value.var = "inf_prob", id * us_valence ~ relation)
+yyy$diff <- yyy$assimilative - yyy$contrastive
+mean(yyy$diff)
+cor.test(yyy$assimilative,yyy$contrastive)
+cor.test(yyy$assimilative,yyy$diff)
+cor.test(yyy$contrastive,yyy$diff)
+apa_beeplot(data=yyy,dv="diff",id = "id")
+
+```
+
+## Create MPT task responses (1)
+
+```{r}
+data_1$meaning <- "negative"
+data_1$meaning[
+  (data_1$relation == "assimilative" & data_1$us_valence == "positive")|
+    (data_1$relation == "contrastive" & data_1$us_valence == "negative")
+  ] <- "positive"
+
+data_1$inf_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$inf_prob)
+
+data_1$mpt_response <- ifelse(
+      data_1$inf_mpt == 1
+      , data_1$meaning
+      , NA)
+
+data_1$mpt_response[is.na(data_1$mpt_response)] <- sample(
+  c("positive", "negative")
+  , replace = TRUE
+  , size = sum(is.na(data_1$mpt_response))
+)
+
+data_1$category <- paste0(
+  ifelse(data_1$us_valence == "positive", "P", "N")
+  , ifelse(data_1$relation == "assimilative", "A", "C")
+  , data_1$mpt_response
+)
+
+tmp <- table(data_1$id, data_1$category)
+
+mpt_data_1 <- data.frame(
+  PApositive = tmp[, "PApositive"]
+)
+for (i in colnames(tmp)) {
+  mpt_data_1[[i]] <- tmp[, i]
+}
+
+```
+
+## Estimate MPT model (1)
+
+```{r}
+library(TreeBUGS)
+model_1 <- traitMPT(
+  eqnfile = "mandy-model_new.eqn"
+  , data = mpt_data_1
+  , n.iter   = 400000
+  , n.adapt  =  20000
+  , n.burnin = 200000
+  , n.thin   =     40
+  , n.chains = 4
+  , restrictions = list(
+    "m1 = m2 = m3 = m4", "p1 = p2 = p3 = p4"
+  )
+)
+model_1_fit <- PPP(model_1, M = 5e3)
+```
+
+## Create propositional valence (2)
+
+```{r}
+
+data_2 <- data_empty
+
+rho_pn <- 1
+rho_ac <- 0
+rho_cc <- 1
+
+sigma <- c(
+  AP = 0.25
+  , AN = 0.25
+  , CP = 0.25
+  , CN = 0.25
+)
+
+id_effects <- data.frame(
+  AP = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN <- id_effects$AP * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP <- id_effects$AP * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN <- id_effects$CP * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+
+
+id_effects$AP <- sigma["AP"] * (id_effects$AP)
+id_effects$AN <- sigma["AN"] * (id_effects$AN)
+id_effects$CP <- sigma["CP"] * (id_effects$CP)
+id_effects$CN <- sigma["CN"] * (id_effects$CN)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP = 0
+    , AN = 0 
+    , CP = -0.5
+    , CN = -0.5  
+  )
+)
+
+data_2$propositional_valence <- ifelse(
+  data_2$us_valence == "positive" & data_2$relation == "assimilative"
+  , fixed_effects$average_baseline["AP"] + id_effects$AP[data_2$id]
+  , ifelse(data_2$us_valence == "negative" & data_2$relation == "assimilative"
+           , fixed_effects$average_baseline["AN"] + id_effects$AN[data_2$id]
+           , ifelse(data_2$us_valence == "positive" & data_2$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP"] + id_effects$CP[data_2$id]
+                    , fixed_effects$average_baseline["CN"] + id_effects$CN[data_2$id]
+           )
+  )
+)
+
+data_2 <- data_2[,c("id","us_valence","relation","propositional_valence","noise_mpt","noise_rating")]
+data_2$inf_prob <- pnorm(data_2$propositional_valence,0,1)
+# check asymmetry
+
+par(mfrow = c(1,1))
+apa_beeplot(data = data_2, id = "id", dv = "propositional_valence", factors = c("us_valence","relation"))
+apa_beeplot(data = data_2, id = "id", dv = "inf_prob", factors = c("us_valence","relation"))
+
+xxx <- aggregate(data= data_2, inf_prob ~ id * us_valence * relation, FUN = mean)
+yyy <- dcast(data= xxx, value.var = "inf_prob", id * us_valence ~ relation)
+yyy$diff <- yyy$assimilative - yyy$contrastive
+mean(yyy$diff)
+cor.test(yyy$assimilative,yyy$contrastive)
+cor.test(yyy$assimilative,yyy$diff)
+cor.test(yyy$contrastive,yyy$diff)
+apa_beeplot(data=yyy,dv="diff",id = "id")
+
+```
+
+## Create MPT task responses (2)
+
+```{r}
+data_2$meaning <- "negative"
+data_2$meaning[
+  (data_2$relation == "assimilative" & data_2$us_valence == "positive")|
+    (data_2$relation == "contrastive" & data_2$us_valence == "negative")
+  ] <- "positive"
+
+data_2$inf_mpt <- rbinom(n = nrow(data_2), size = 1, prob = data_2$inf_prob)
+
+data_2$mpt_response <- ifelse(
+      data_2$inf_mpt == 1
+      , data_2$meaning
+      , NA)
+
+data_2$mpt_response[is.na(data_2$mpt_response)] <- sample(
+  c("positive", "negative")
+  , replace = TRUE
+  , size = sum(is.na(data_2$mpt_response))
+)
+
+data_2$category <- paste0(
+  ifelse(data_2$us_valence == "positive", "P", "N")
+  , ifelse(data_2$relation == "assimilative", "A", "C")
+  , data_2$mpt_response
+)
+
+tmp <- table(data_2$id, data_2$category)
+
+mpt_data_2 <- data.frame(
+  PApositive = tmp[, "PApositive"]
+)
+for (i in colnames(tmp)) {
+  mpt_data_2[[i]] <- tmp[, i]
+}
+
+```
+
+## Estimate MPT model (2)
+
+```{r}
+model_2 <- traitMPT(
+  eqnfile = "mandy-model_new.eqn"
+  , data = mpt_data_2
+  , n.iter   = 400000
+  , n.adapt  =  20000
+  , n.burnin = 200000
+  , n.thin   = 40
+  , n.chains = 4
+  , restrictions = list(
+    "m1 = m2 = m3 = m4", "p1 = p2 = p3 = p4"
+  )
+)
+model_2_fit <- PPP(model_2, M = 5e3)
+```
+
+```{r}
+save(data_1,file="1_symmetrical_sample.RData")
+save(data_2,file="1_asymmetrical_sample.RData")
+
+extract_modelfit <- function(x) {
+  data.frame(
+    T1_observed    = median(x$T1.obs)
+    , T1_predicted = median(x$T1.pred)
+    , T1_ppp       = x$T1.p
+  )
+}
+
+extract_modelfitT2 <- function(x) {
+  data.frame(
+    T2_observed    = median(x$T2.obs)
+    , T2_predicted = median(x$T2.pred)
+    , T2_ppp       = x$T2.p
+  )
+}
+
+saveRDS(
+      object = list(
+        model_1_summary = summary(model_1)
+        , model_1_fit_T1 = extract_modelfit(model_1_fit)
+        , model_1_fit_T2 = extract_modelfitT2(model_1_fit)
+      )
+      , file =  "model_1_fit_short.rds"
+      )
+
+saveRDS(
+      object = list(model_fit_1 = model_1_fit)
+      , file =  "model_1_long.rds"
+      )
+
+saveRDS(
+      object = list(
+        model_2_summary = summary(model_2)
+        , model_2_fit_T1 = extract_modelfit(model_2_fit)
+        , model_2_fit_T2 = extract_modelfitT2(model_2_fit)
+      )
+      , file =  "model_2_fit_short.rds"
+      )
+
+saveRDS(
+      object = list(model_fit_2 = model_2_fit)
+      , file =  "model_2_long.rds"
+      )
+
+individual_parameters_1 <- as.data.frame(getParam(model_1, parameter = "theta"))
+individual_parameters_1$id <- seq_len(nrow(individual_parameters_1))
+saveRDS(individual_parameters_1, file = "1_ind_par_sym.rds")
+
+individual_parameters_2 <- as.data.frame(getParam(model_2, parameter = "theta"))
+individual_parameters_2$id <- seq_len(nrow(individual_parameters_2))
+saveRDS(individual_parameters_2, file = "1_ind_par_asym.rds")
+
+```
+
