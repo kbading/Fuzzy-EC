@@ -1,0 +1,27 @@
+#KW WSW Model
+PosUS	PosUSposcor	Dpos*Cpos
+PosUS 	PosUSposcor	Dpos*(1-Cpos)*dpos*(1/4)
+PosUS 	PosUSposincor	Dpos*(1-Cpos)*dpos*(1-(1/4))
+PosUS	PosUSposcor	Dpos*(1-Cpos)*(1-dpos)*a*(1/4)
+PosUS	PosUSposincor	Dpos*(1-Cpos)*(1-dpos)*a*(1-(1/4))
+PosUS	PosUSnegincor	Dpos*(1-Cpos)*(1-dpos)*(1-a)	
+PosUS	PosUSposcor	(1-Dpos)*b*a*(1/4)
+PosUS	PosUSposincor	(1-Dpos)*b*a*(1-(1/4))
+PosUS	PosUSnegincor	(1-Dpos)*b*(1-a)
+PosUS	PosUSnew	(1-Dpos)*(1-b)
+
+NegUS	NegUSnegcor	Dneg*Cneg
+NegUS 	NegUSnegcor	Dneg*(1-Cneg)*dneg*(1/4)
+NegUS 	NegUSnegincor	Dneg*(1-Cneg)*dneg*(1-(1/4))
+NegUS	NegUSposincor	Dneg*(1-Cneg)*(1-dneg)*a
+NegUS 	NegUSnegcor	Dneg*(1-Cneg)*(1-dneg)*(1-a)*(1/4)
+NegUS	NegUSnegincor	Dneg*(1-Cneg)*(1-dneg)*(1-a)*(1-(1/4))
+NegUS	NegUSposincor	(1-Dneg)*b*a
+NegUS	NegUSnegcor	(1-Dneg)*b*(1-a)*(1/4)
+NegUS	NegUSnegincor	(1-Dneg)*b*(1-a)*(1-(1/4))
+NegUS	NegUSnew	(1-Dneg)*(1-b)
+
+New	Newnew		Dn
+New	Newposincor	(1-Dn)*b*a
+New	Newnegincor	(1-Dn)*b*(1-a)
+New	Newnew		(1-Dn)*(1-b)
