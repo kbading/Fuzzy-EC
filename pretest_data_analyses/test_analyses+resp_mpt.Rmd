@@ -1,0 +1,340 @@
+---
+title: "Who said what EC: A basis for analyses"
+author: "Jérémy Béna"
+output:
+  html_document:
+    toc: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Load packages and read the data
+
+```{r set}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS') 
+set_sum_contrasts()
+
+#read the dataset we created in a previous R script
+dat = readRDS("data_wsw_final_pretest.RDS") 
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+```
+
+# Exclude participants
+
+```{r exclude}
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+length(unique(dat$url.srid)) # N of participants after exclusion
+```
+
+# Code responses in the recognition/CS-US pairing memory tasks
+
+```{r recode}
+#create a new factor to distinguish between old and new CSs 
+dat$cs_exposure = ifelse(dat$us_valence == "dist", "new", "old")
+table(dat$cs_exposure, dat$us_valence)
+
+#indicate whether the recognition decision is correct (hit and cr) or not (fa and miss)
+dat = dat %>%
+  mutate(reco_accuracy = ifelse((cs_exposure=="old" & reco_resp == "old"), "hit"
+                                ,ifelse((cs_exposure=="old" & reco_resp == "new"), "miss"
+                                ,ifelse((cs_exposure=="new" & reco_resp == "old"), "fa", "cr"))
+                                ))
+
+#indicate whether source memory is correct regarding valence (positive or negative)
+dat$correct_us_source = NA
+dat$source_mem_resp = NA
+
+for(i in 1:length(dat$url.srid)){
+  dat$correct_us_source[i] = dat$uss[[i]][dat$idtarg[i]+1]
+  dat$source_mem_resp[i] = dat$uss[[i]][as.numeric(substr(dat$source_mem, 3, 3))[i]]
+}
+
+#calculate whether us valence and us identity memory are correct or not
+dat = dat %>%
+  mutate(val_us_accuracy = ifelse(substr(source_mem_resp, 0, 1) == substr(correct_us_source, 0, 1), "val_correct", "val_incorrect")
+        ,id_us_accuracy = ifelse(source_mem_resp == correct_us_source, "id_correct", "id_incorrect")
+         )
+
+table(dat$val_us_accuracy)
+table(dat$id_us_accuracy)
+
+#replace NA with "no_resp" when no response was provided in the source memory task, 
+##whether this is correct (for old css) or not (for new css)
+dat = dat %>% mutate(val_us_accuracy = replace_na(val_us_accuracy, "no_resp")
+                     ,id_us_accuracy = replace_na(id_us_accuracy, "no_resp"))
+```
+
+# Evaluative ratings
+
+```{r eval_change}
+####
+#EVALUATIVE CONDITIONING
+####
+
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+knitr::kable(dat_ev, format = "html")
+
+#check data distribution
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="positive"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="dist"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+```
+
+```{r eval_ratings}
+mod1 = aov_ez(dat_ev
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              ,within = "us_valence"
+)
+
+mod1_print = apa_print(mod1)
+
+apa_table(
+  mod1_print$table
+  ,caption = "Repeated-measures ANOVA: Ratings as a function of US"
+)
+
+# Descriptive statistics: evaluative change scores as a function of US Valence
+knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+```
+
+```{r plot_ratings, fig.cap="Evaluative ratings as a function of US Valence. Dots are the individual observations, and error bars are the 95% Confidence Intervals. *Note:* TBS = Two-buttons-sets procedure; VMA = Valence Memory Attribution task; 3ACE = Three-attribution, continuous evaluative ratings task."}
+dat_ev$`US Valence` = dat_ev$us_valence
+
+#visualize the data
+apa_beeplot(data=dat_ev, id="url.srid", dv="eval_rating", factors=c("US Valence"), use = "all.obs", ylim=c(0,11),
+            xlab = "US"
+            ,ylab = "Mean evaluative ratings")
+```
+# Recognition memory
+
+```{r recognition}
+####
+#RECOGNITION MEMORY
+####
+
+#compute recognition memory performance by computing freq("old"|old) (hits) and freq("old"|new) (fa)
+dat = dat %>% mutate(reco_resp_bin = ifelse(reco_resp=="old", 1, 0))
+
+dat_reco_agg = dat %>%
+  group_by(url.srid, cs_exposure) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg, format = "html")
+
+dat_reco_wide = dat_reco_agg %>% pivot_wider(names_from = "cs_exposure"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide$reco_corrected = dat_reco_wide$old - dat_reco_wide$new
+
+describeBy(dat_reco_agg$prop_old, dat_reco_agg$cs_exposure)
+describe(dat_reco_wide$reco_corrected)
+
+#by us valence
+
+dat_reco_agg_val = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg_val, format = "html")
+
+dat_reco_wide_val = dat_reco_agg_val %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide_val$reco_corrected_pos = dat_reco_wide_val$positive - dat_reco_wide_val$dist
+dat_reco_wide_val$reco_corrected_neg = dat_reco_wide_val$negative - dat_reco_wide_val$dist
+
+describeBy(dat_reco_agg_val$prop_old, dat_reco_agg_val$us_valence)
+describe(dat_reco_wide_val$reco_corrected_pos)
+describe(dat_reco_wide_val$reco_corrected_neg)
+```
+
+# CS-US pairing memory
+
+```{r source}
+#Valence 
+
+dat = dat %>% mutate(val_us_accuracy_bin = ifelse(val_us_accuracy=="val_correct", 1, 0))
+
+dat_source_mem = dat %>% filter(us_valence != "dist" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_source = mean(val_us_accuracy_bin))
+
+knitr::kable(dat_source_mem, format = "html")
+
+dat_source_mem_wide = dat_source_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_source")
+
+dat_reco_agg_val_old = dat_reco_agg_val %>% filter(us_valence != "dist")
+dat_reco_source = full_join(dat_reco_agg_val_old, dat_source_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_reco_source$prop_correct_source, dat_reco_source$us_valence)
+
+#Identity
+dat = dat %>% mutate(id_us_accuracy_bin = ifelse(id_us_accuracy=="id_correct", 1, 0))
+
+dat_id_mem = dat %>% filter(us_valence != "dist" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_id = mean(id_us_accuracy_bin))
+
+knitr::kable(dat_id_mem, format = "html")
+
+dat_id_mem_wide = dat_id_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_id")
+
+dat_mem = full_join(dat_reco_source, dat_id_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_mem$prop_correct_id, dat_mem$us_valence)
+
+knitr::kable(dat_mem, format = "html")
+
+```
+
+# Response frequencies + MPT model
+
+```{r}
+#compute response frequencies for MPT analyses
+
+#First, remove NA in source memory responses and in the column storing the correct us
+dat = dat %>% mutate(correct_us_source = replace_na(correct_us_source, "zz")
+                     ,source_mem_resp = replace_na(source_mem_resp, "zz"))
+
+##Create three datasets, one for each tree; them, we will merge them
+
+##Tree: US+ and select only relevant columns
+dat_pos = dat %>% filter(us_valence == "positive") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "PosUSnew" as we are in the US+ tree
+##then, if US identity response correct, response is "PosUSposcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "PosUSposincor" if valence is correct; else, "PosUSnegincor"
+dat_pos = dat_pos %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"PosUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"PosUSposcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "PosUSposincor"
+                                                              , "PosUSnegincor"
+                                                       )
+                                               )
+)
+)
+
+# /!\/!\/!\
+# #ONLY run this code for TESTS
+# we dont have "posUSposincor" in the test data, so I fake one "PosUSposincor" response
+# a = which(dat_pos$resp_mpt=="PosUSposcor")
+# dat_pos$resp_mpt[a[2]] = "PosUSposincor"
+# //!\/!\
+
+##Tree: US- and select only relevant columns
+dat_neg = dat %>% filter(us_valence == "negative") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "NegUSnew" as we are in the US- tree
+##then, if US identity response correct, response is "NegUSnegcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "NegUSnegincor" if valence is correct; else, "NegUSposincor"
+dat_neg = dat_neg %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"NegUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"NegUSnegcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "NegUSnegincor"
+                                                              , "NegUSposincor"
+                                                       )
+                                               )
+)
+)
+
+#Tree: New and select only relevant columns
+dat_new = dat %>% filter(us_valence == "dist") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "Newnew" as we are in the New CS tree
+##then, US memory responses are necessarily incorrect as no US was displayed
+##if the selected US is positive, response is "Newposincor"
+##if the selected US is negative, response is "Newnegincor"
+dat_new = dat_new %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"Newnew"
+                                               ,ifelse(substr(source_mem_resp, 0, 1)=="p"
+                                                              , "Newposincor"
+                                                              , "Newnegincor")
+)
+)
+
+#Merge datasets so that all responses are available into a single dataframe
+##proceed in two stets: CS-US+ and CS-US- trees
+dat_mpt.1 = full_join(dat_pos, dat_neg
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+
+#add new CS tree
+dat_mpt = full_join(dat_mpt.1, dat_new
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+```
+
+```{r}
+#participants frequencies for each response type, even if 0 responses for a given participant
+dat_mpt_freq = dat_mpt %>% #in dat_mpt
+  group_by(url.srid, resp_mpt, .drop=FALSE) %>% #group observations by participant (url.srid) and resp_mpt (already capturing the tree)
+  tally %>% 
+  spread(resp_mpt, n, fill=0) #use a "wide" format
+
+dat_mpt_freq_fit = dat_mpt_freq %>% ungroup() %>% select(-url.srid) 
+
+#aggregated level if needed
+dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
+  group_by(resp_mpt, .drop=FALSE) %>% #group observations by resp_mpt (already capturing the tree)
+  tally
+```
+
+```{r}
+#we'll use this model
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+#Fit the model and estimate parameters
+mod_mpt = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = dat_mpt_freq %>% ungroup() %>% select(-url.srid)
+  , n.iter   = 400000
+  , n.adapt  =  20000
+  , n.burnin = 200000
+  , n.thin   = 40
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25")
+)
+
+summary(mod_mpt)
+
+TreeBUGS::plotFit(mod_mpt)
+TreeBUGS::plotFreq(mod_mpt)
+TreeBUGS::plotParam(mod_mpt)
+
+mod_mpt_ppp = PPP(mod_mpt, M = 5e3)
+
+#MPT on aggregated frequencies
+mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+        ,model.filename = "KW_wsw_model.eqn"
+        ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+        )
+mod_agg
+```
+
