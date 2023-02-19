@@ -338,3 +338,51 @@ mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
 mod_agg
 ```
 
+# Correlations between MPT parameters and CS ratings
+
+
+```{r}
+
+individual_parameters <- as.data.frame(getParam(mod_mpt, parameter = "theta"))
+individual_parameters$id <- 1:nrow(individual_parameters)
+agg_data <- aggregate(eval_rating ~ us_valence + url.srid, data = dat_ev, FUN = mean)
+library(reshape2)
+agg_data_d <- dcast(agg_data, value.var = "eval_rating", url.srid ~ us_valence)
+agg_data_d$id <- 1:nrow(agg_data_d)
+
+para_ratings <- merge(agg_data_d, individual_parameters, by = "id")
+
+#para_ratings <- subset(para_ratings, url.srid %in% c("9860","9862","9864"))
+
+cor.test(para_ratings$Dn,para_ratings$dist)
+cor.test(para_ratings$Dn,para_ratings$positive)
+cor.test(para_ratings$Dn,para_ratings$negative)
+
+cor.test(para_ratings$a,para_ratings$dist)
+cor.test(para_ratings$a,para_ratings$positive)
+cor.test(para_ratings$a,para_ratings$negative)
+
+cor.test(para_ratings$b,para_ratings$dist)
+cor.test(para_ratings$b,para_ratings$positive)
+cor.test(para_ratings$b,para_ratings$negative)
+
+cor.test(para_ratings$Cneg,para_ratings$dist)
+cor.test(para_ratings$Cneg,para_ratings$positive)
+cor.test(para_ratings$Cneg,para_ratings$negative)
+
+cor.test(para_ratings$Cpos,para_ratings$dist)
+cor.test(para_ratings$Cpos,para_ratings$positive)
+cor.test(para_ratings$Cpos,para_ratings$negative)
+
+cor.test(para_ratings$dpos,para_ratings$dist)
+cor.test(para_ratings$dpos,para_ratings$positive)
+cor.test(para_ratings$dpos,para_ratings$negative)
+
+cor.test(para_ratings$dneg,para_ratings$dist)
+cor.test(para_ratings$dneg,para_ratings$positive)
+cor.test(para_ratings$dneg,para_ratings$negative)
+
+
+
+```
+
