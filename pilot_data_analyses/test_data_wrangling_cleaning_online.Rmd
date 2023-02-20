@@ -1,0 +1,324 @@
+---
+title: "Data wrangling and cleaning -- WSW study program test | first, incomplete, version"
+author: "Karoline Bading // Jérémy Béna"
+date: $26^{th}$ of January 2023
+output:
+  html_document:
+    toc: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Set-up
+
+## Call packages
+
+```{r packages}
+#Data wrangling and cleaning
+
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'jsonlite', 'psych', 'readbulk')
+```
+
+## Read the data
+
+I performed the test in "local" lab.js (I exported the lab.js study program for offline data collection) -- if we collect data this way, we will have one .csv file for each participant. So, first, we need to retrieve and merge all the .csv (for the example here, I did two runs).
+
+```{r read_data, message=FALSE, warning=FALSE}
+# dat = read_bulk("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/test_data/") #will need to change the directory
+
+# Read the text file from JATOS (first batch)...
+read_file('C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_pilot_study_raw.txt')%>%
+#... split it into lines ...
+ str_split('\n') %>% first() %>%
+#... filter empty rows ...
+ discard(function(x) x == '') %>%
+#... parse JSON into a data.frame
+ map_dfr(fromJSON, flatten=T) -> dat
+```
+
+# Data cleaning and wrangling
+
+## Data cleaning
+
+The dataset `dat` we now have contains a lot of columns we do not need, so we will select only the useful columns. In addition, some useful information (e.g., whether a participant declared they were serious) is only available in one row, which is problematic to, e.g., exclude such a participant -- so we repeat `age`, `gender`, `serious`, and `pay_attention` on each row of each participant.
+
+```{r data_cleaning}
+table(dat$pay_attention) #1 participant declared they did not pay attention -- we will exclude them in another .Rmd?
+table(dat$serious) #0 participant declared they provided non-serious responses -- we will exclude them in another .Rmd?
+
+# table(dat$gender)
+# 
+# table(dat$age) #maybe rework the trial to allow only for numeric responses
+
+#add participant number -- not useful with jatos, ppt = url.srid
+##find where data of a new participant appears (i.e., when "sender" == "consent")
+# n_ppt = which(dat$sender=="consent")
+# 
+# #add this information in a "ppt" column
+# dat$ppt = NA
+# dat$ppt[n_ppt] = 1:length(n_ppt)
+                      
+#repeat ppt, age, gender, pay attention, and serious on every line of each participant; then select only useful variables
+dat = dat %>%
+   fill(url.srid, .direction = "down") %>% 
+  group_by(url.srid) %>% 
+  fill(consent, serious, pay_attention, .direction = "down") %>%
+  fill(serious, pay_attention, .direction = "up") %>% 
+  select(url.srid, sender, duration, ended_on, serious, pay_attention, response, response_action #general information
+         , count_trial_learning, cs, cs_category, us,us_valence, uss #learning phase
+         , count_trial_memory, idtarg, reco_resp, source_mem  #memory phase
+         , count_trial_ratings, cs_rating #rating phase 
+         ) 
+```
+
+## Make the final dataset
+
+In the experiment, there were three main tasks (learning phase; source memory task; rating task). For each task, we create a dataset to select the critical information and rearrange the data if necessary. The main idea is to create a final dataset with 48 (24 CSs paired with USs in the learning phase + 24 new neutral stimuli) \* N_participants rows. At each CS\*Participant level, all responses provided by the participants will be available (e.g., for a given CS and participant, the recognition, CS-US pairing memory, and rating responses).
+
+### Learning phase
+
+Besides making a dataset for the learning phase, we test whether 24 US and 24 unique CS-US pairs displayed six times each for each participant.
+
+```{r learning}
+#learning phase
+#keep only the rows of the conditioning phase trials
+dat_learning = dat %>% filter(sender == "learning_trial")  %>%
+  select(url.srid, count_trial_learning, cs, cs_category, us,us_valence, uss)
+
+#check if we have all the different USs (24) across participants 
+length(unique(dat_learning$us)) #we have
+
+#check if, for each participant, all USs were used
+count_us = unique(dat_learning[,c('url.srid','us')])
+
+dat_count_us = count_us %>%                           
+  group_by(url.srid) %>%
+  summarise(count = n_distinct(us))
+
+table(dat_count_us$count==24) #yes
+
+#check if for each participant, all different CSs were used
+count_cs = unique(dat_learning[,c('url.srid','cs')])
+
+#count if we have only 24 unique cs-us pairs between participants
+count_pairings = unique(dat_learning[,c('url.srid','cs','us')])
+count_pairings$cs_us = paste0(count_pairings$cs, count_pairings$us)
+
+count_pairings %>%                           
+ group_by(url.srid) %>%
+  summarise(count = n_distinct(cs_us))
+#seems ok! 24 unique CS-US pairs
+```
+
+# check if each cs-us pair is presented once in all 24-trial sets of learning procedure
+
+```{r}
+
+dat_learning$block <- ifelse(dat_learning$count_trial_learning %in% c(0:23)
+                             ,1
+                             ,ifelse(dat_learning$count_trial_learning %in% c(24:47)
+                                     ,2
+                                     ,ifelse(dat_learning$count_trial_learning %in% c(48:71)
+                                             ,3
+                                             ,ifelse(dat_learning$count_trial_learning %in% c(72:95)
+                                                     ,4
+                                                     ,ifelse(dat_learning$count_trial_learning %in% c(96:119)
+                                                                                                      ,5,6)))))
+table(dat_learning$url.srid,dat_learning$block)
+
+count_cs_block = unique(dat_learning[,c('url.srid','cs','block')])
+
+dat_count_cs_block = count_cs_block %>%                           
+  group_by(url.srid,block) %>%
+  summarise(count = n_distinct(cs))
+
+table(dat_count_cs_block$count==24)
+
+count_us_block = unique(dat_learning[,c('url.srid','us','block')])
+
+dat_count_us_block = count_us_block %>%                           
+  group_by(url.srid,block) %>%
+  summarise(count = n_distinct(us))
+
+table(dat_count_us_block$count==24)
+
+count_pairings_block = unique(dat_learning[,c('url.srid','block','cs','us')])
+count_pairings_block$cs_us = paste0(count_pairings_block$cs, count_pairings_block$us)
+
+count_pairings_block %>%                           
+ group_by(url.srid,block) %>%
+  summarise(count = n_distinct(cs_us))
+
+count_pairings_block
+```
+
+### Memory task
+
+```{r memory}
+dat_reco = dat %>% filter(sender=="recognition_trial") %>%
+  select(url.srid, count_trial_memory, cs, cs_category, us, us_valence, uss, idtarg, reco_resp)
+
+dat_source = dat %>% filter(sender=="source_trial") %>%
+  select(url.srid, count_trial_memory, cs, cs_category, us, us_valence, uss, idtarg, source_mem)
+```
+
+#### 48 unique CSs in the memory task?
+
+```{r}
+#check if, for each participant, all CS (48) in the recognition task
+count_us_mem = unique(dat_reco[,c('url.srid','cs')])
+
+dat_count_cs = count_us_mem %>%                           
+  group_by(url.srid) %>%
+  summarise(count = n_distinct(cs))
+
+table(dat_count_cs$count==48) #no, 24 only displayed multiple times
+
+table(dat_reco$cs, dat_reco$url.srid) #problem here
+```
+
+### Ratings
+
+```{r ratings}
+dat_ratings = dat %>% filter(sender=="rating_trial") %>%
+  select(url.srid, count_trial_ratings, cs, cs_category, us, us_valence, cs_rating, serious, pay_attention)
+```
+
+#### 48 unique CSs in the rating task?
+
+```{r}
+#check if, for each participant, all CS (48) in the recognition task
+count_us_rat = unique(dat_ratings[,c('url.srid','cs')])
+
+dat_count_cs_rat = count_us_rat %>%                           
+  group_by(url.srid) %>%
+  summarise(count = n_distinct(cs))
+
+table(dat_count_cs_rat$count==48) #no, 24 only displayed multiple times
+
+table(dat_reco$cs, dat_reco$url.srid) #problem here
+```
+
+### Put the memory and rating datasets together
+
+We don't need the `dat_learning` dataset as the relevant information it contains also appears in the other datasets (specifically, the `cs`, `us`, `uss`, `idtarg` variables).
+
+```{r make_dataset}
+#make the final data set -- based on multiple "full_join" to integrate all conditions and responses based on ppts, cs, us
+
+#join recognition and source memory responses 
+dat_mem = full_join(dat_reco, dat_source,
+                               by = c("url.srid"="url.srid", "cs" = "cs", "us"="us", "uss"="uss", "idtarg"="idtarg", "cs_category"="cs_category", "us_valence"="us_valence", "count_trial_memory"="count_trial_memory"))
+
+#join memory dataset and rating dataset
+dat_final = full_join(dat_mem, dat_ratings
+                               , by = c("url.srid"="url.srid", "cs" = "cs", "us"="us","cs_category"="cs_category", "us_valence"="us_valence"))
+```
+
+# check whether same number of old/new CSs, male and female CSs, male old, male new, female old, female new CSs
+
+# check whether each CS condition is associated with the same number of positive and negative USs
+
+```{r}
+
+table(dat_final$url.srid,dat_final$us_valence)  # yes
+table(dat_final$url.srid,dat_final$cs_category) # yes
+table(dat_final$url.srid,dat_final$cs_category,dat_final$us_valence) # yes
+```
+
+# check whether we can identify if participants chose the correct US for "old" CSs
+
+I tried to achieve this by translating 'idtarg' (position 0,1,2,3,4,5,6,7) into the "terminology" of 'source_mem' (e.g. "us1" indicates that image on position 0 was selected). We could then go on to compare 'correct_pos' and and 'source_mem': same value --\> correct US was chosen (= 1), different value --\> incorrect US was chosen (= 0), NA when CSs is a distractor (i.e. no correct US exists) or when "old" CS was classified as "new" (i.e. when no source memory task was performed). We could of course also create other codings (e.g. 0 instead of NA when CSs is a distractor) --\> lets discuss what kind of variable we want here
+
+# Problem here: old vs. new CSs ?
+
+It's as if no CSs were new -- all are associated with a us and a us valence in the data
+
+```{r}
+table(dat_final$cs, dat_final$url.srid)
+table(dat_final$cs, dat_final$us_valence, dat_final$url.srid)
+```
+
+```{r}
+# dat_final$correct_pos <- ifelse(dat_final$idtarg == 0
+#                                 , "us1"
+#                                 , ifelse(dat_final$idtarg == 1
+#                                          , "us2"
+#                                          , ifelse(dat_final$idtarg == 2
+#                                                   , "us3"
+#                                                   , ifelse(dat_final$idtarg == 3
+#                                                            , "us4"
+#                                                            , ifelse(dat_final$idtarg == 4
+#                                                                     , "us5"
+#                                                                     ,ifelse(dat_final$idtarg == 5
+#                                                                             , "us6"
+#                                                                             , ifelse(dat_final$idtarg == 6
+#                                                                                      , "us7"
+#                                                                                      , ifelse(dat_final$idtarg == 7
+#                                                                                               , "us8", dat_final$idtarg))))))))
+# create NAs for source_mem
+# dat_final$source_mem <- ifelse(dat_final$source_mem %in% c("us1","us2","us3","us4","us5","us6","us7","us8"),dat_final$source_mem,NA)
+# 
+# dat_final$source_correct <- ifelse(dat_final$source_mem == dat_final$correct_pos, 1, 0)
+
+
+```
+
+# Problem here: not the same format of the `uss` column
+
+# check whether we can identify the valence of the chosen US in the "source memory" task
+
+```{r, eval=FALSE}
+
+# dat_final$chosen_us <- NA
+# dat_final$chosen_valence <- NA
+# dat_final$correct_valence <- NA
+# 
+# for(i in 1:nrow(dat_final)){
+#   if(dat_final$reco_resp[i] == "old"){
+#     
+#     tmp_p <- dat_final$source_mem[i]
+#     tmp_pos <- ifelse(tmp_p == "us1"
+#                                 , 1
+#                                 , ifelse(tmp_p == "us2"
+#                                          , 2
+#                                          , ifelse(tmp_p == "us3"
+#                                                   , 3
+#                                                   , ifelse(tmp_p == "us4"
+#                                                            , 4
+#                                                            , ifelse(tmp_p == "us5"
+#                                                                     , 5
+#                                                                     ,ifelse(tmp_p == "us6"
+#                                                                             , 6
+#                                                                             , ifelse(tmp_p == "us7"
+#                                                                                      , 7
+#                                                                                      , ifelse(tmp_p == "us8"
+#                                                                                               , 8, NA))))))))
+#     tmp <- dat_final$uss[i]
+#     # tmp = unlist(tmp)
+#     # tmp = tmp %>% str_replace("\"", "")
+#     # tmp = tmp %>% str_replace("\"", "")
+#     # tmp = tmp %>% str_replace("c(", "")
+#     # tmp = tmp %>% str_replace(")", "")
+#   
+#     dat_final$chosen_us[i] <- tmp[tmp_pos]
+#     
+#     dat_final$chosen_valence <- gsub('[0-9]+', '', dat_final$chosen_us)
+#     dat_final$chosen_valence <- ifelse(dat_final$chosen_valence == "p","positive","negative")
+#     dat_final$correct_valence <- ifelse(dat_final$chosen_valence == dat_final$us_valence, 1, 0)
+#   }
+# }
+
+```
+
+# Write the final dataset (for use in the analysis `.Rmd`)
+
+```{r write_data}
+#write the final dataset we will use for analyses in another R script
+saveRDS(dat_final, "C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS") #RDS can handle lists such as in the `uss` list
+```
