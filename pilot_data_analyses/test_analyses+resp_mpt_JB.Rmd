@@ -20,7 +20,7 @@ p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra
 set_sum_contrasts()
 
 #read the dataset we created in a previous R script
-dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS") 
+dat = readRDS("data_wsw_final_pilot.RDS") 
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
@@ -624,9 +624,137 @@ dat_source_us_theme = dat_us_old %>%
             ,mean_id_mem = mean(as.numeric(id_us_accuracy_bin)))
 dat_source_us_theme
 
+dat_source_us_theme$mem_diff <- dat_source_us_theme$mean_val_mem - dat_source_us_theme$mean_id_mem
+
 dat_source_us_theme_sorted = dat_source_us_theme %>% 
   as.data.frame() %>% 
   arrange(desc(mean_val_mem))
 dat_source_us_theme_sorted
+
+dat_source_us_theme_sorted_2 = dat_source_us_theme %>% 
+  as.data.frame() %>% 
+  arrange(desc(mem_diff))
+dat_source_us_theme_sorted_2
+```
+
+# Thematic confusion? Some more analyses (KB)
+
+```{r}
+us_theme_short <- us_theme[,c("us_name","valence","Theme","Category")]
+us_theme_short <- rename(us_theme_short, "valence_cUS" = "valence")
+us_theme_short <- rename(us_theme_short, "theme_cUS" = "Theme")
+us_theme_short <- rename(us_theme_short, "category_cUS" = "Category")
+dat_us_2 = full_join(dat_us, us_theme_short, by= c("source_mem_resp"="us_name"))
+
+# p1 = road
+p1.data <- subset(dat_us_2, us == "p1")
+p1.old <- subset(p1.data, reco_resp == "old")
+p1.old.idin <- subset(p1.old, id_us_accuracy == "id_incorrect")
+p1.old.idin$Theme[1]
+table(p1.old.idin$valence_cUS)
+table(p1.old.idin$valence_cUS,p1.old.idin$theme_cUS)
+
+# p2 = sunset
+p2.data <- subset(dat_us_2, us == "p2")
+p2.old <- subset(p2.data, reco_resp == "old")
+p2.old.idin <- subset(p2.old, id_us_accuracy == "id_incorrect")
+p2.old.idin$Theme[1]
+table(p2.old.idin$valence_cUS)
+table(p2.old.idin$valence_cUS,p2.old.idin$theme_cUS)
+
+# p3 = sunflower
+p3.data <- subset(dat_us_2, us == "p3")
+p3.old <- subset(p3.data, reco_resp == "old")
+p3.old.idin <- subset(p3.old, id_us_accuracy == "id_incorrect")
+p3.old.idin$Theme[1]
+table(p3.old.idin$valence_cUS)
+table(p3.old.idin$valence_cUS,p3.old.idin$theme_cUS)
+
+# p4 = skydiving
+p4.data <- subset(dat_us_2, us == "p4")
+p4.old <- subset(p4.data, reco_resp == "old")
+p4.old.idin <- subset(p4.old, id_us_accuracy == "id_incorrect")
+p4.old.idin$Theme[1]
+table(p4.old.idin$valence_cUS)
+table(p4.old.idin$valence_cUS,p4.old.idin$theme_cUS)
+
+# p5 = nature (2)
+p5.data <- subset(dat_us_2, us == "p5")
+p5.old <- subset(p5.data, reco_resp == "old")
+p5.old.idin <- subset(p5.old, id_us_accuracy == "id_incorrect")
+p5.old.idin$Theme[1]
+table(p5.old.idin$valence_cUS)
+table(p5.old.idin$valence_cUS,p5.old.idin$theme_cUS)
+
+# p6 = beach (1)
+p6.data <- subset(dat_us_2, us == "p6")
+p6.old <- subset(p6.data, reco_resp == "old")
+p6.old.idin <- subset(p6.old, id_us_accuracy == "id_incorrect")
+p6.old.idin$Theme[1]
+table(p6.old.idin$valence_cUS)
+table(p6.old.idin$valence_cUS,p6.old.idin$theme_cUS)
+
+# p7 = beach (1)
+p7.data <- subset(dat_us_2, us == "p7")
+p7.old <- subset(p7.data, reco_resp == "old")
+p7.old.idin <- subset(p7.old, id_us_accuracy == "id_incorrect")
+p7.old.idin$Theme[1]
+table(p7.old.idin$valence_cUS)
+table(p7.old.idin$valence_cUS,p7.old.idin$theme_cUS)
+
+
+```
+
+## different approach
+
+```{r}
+
+# chosen p1 = road
+c.p1.data <- subset(dat_us_2, source_mem_resp == "p1")
+c.p1.old.idin <- subset(c.p1.data, id_us_accuracy == "id_incorrect")
+table(c.p1.old.idin$valence)
+table(c.p1.old.idin$valence,c.p1.old.idin$theme)
+
+# chosen p2 = sunset
+c.p2.data <- subset(dat_us_2, source_mem_resp == "p2")
+c.p2.old.idin <- subset(c.p2.data, id_us_accuracy == "id_incorrect")
+table(c.p2.old.idin$valence)
+table(c.p2.old.idin$valence,c.p2.old.idin$theme)
+
+# chosen p3 = sunflower
+c.p3.data <- subset(dat_us_2, source_mem_resp == "p3")
+c.p3.old.idin <- subset(c.p3.data, id_us_accuracy == "id_incorrect")
+table(c.p3.old.idin$valence)
+table(c.p3.old.idin$valence,c.p3.old.idin$theme)
+
+# chosen p4 = skydiving
+c.p4.data <- subset(dat_us_2, source_mem_resp == "p4")
+c.p4.old.idin <- subset(c.p4.data, id_us_accuracy == "id_incorrect")
+c.p4.old.idin$theme_cUS[1]
+table(c.p4.old.idin$valence)
+table(c.p4.old.idin$valence,c.p4.old.idin$theme)
+
+# chosen p5 = nature
+c.p5.data <- subset(dat_us_2, source_mem_resp == "p5")
+c.p5.old.idin <- subset(c.p5.data, id_us_accuracy == "id_incorrect")
+c.p5.old.idin$theme_cUS[1]
+table(c.p5.old.idin$valence)
+table(c.p5.old.idin$valence,c.p5.old.idin$theme)
+
+# chosen p6 = beach
+c.p6.data <- subset(dat_us_2, source_mem_resp == "p6")
+c.p6.old.idin <- subset(c.p6.data, id_us_accuracy == "id_incorrect")
+c.p6.old.idin$theme_cUS[1]
+table(c.p6.old.idin$valence)
+table(c.p6.old.idin$valence,c.p6.old.idin$theme)
+
+# chosen p6 = beach
+c.p6.data <- subset(dat_us_2, source_mem_resp == "p6")
+c.p6.old.idin <- subset(c.p6.data, id_us_accuracy == "id_incorrect")
+c.p6.old.idin$theme_cUS[1]
+table(c.p6.old.idin$valence)
+table(c.p6.old.idin$valence,c.p6.old.idin$theme)
+
+
 ```
 
