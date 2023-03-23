@@ -1,0 +1,601 @@
+---
+title : 'Symmetrical vs. asymmetrical relational pairs: Pilot study'
+author: "Marius Barth"
+date  : "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    toc         : true
+    toc_float   : true
+---
+
+```{r setup, include = FALSE}
+library(TreeBUGS)
+library(afex)
+library(emmeans)
+library(ggeffects)
+library(papaja)
+library(lme4)
+library(car)
+
+knitr::opts_chunk$set(
+  echo = TRUE
+  , cache = TRUE
+)
+
+study_folder <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "pilot_data_analyses"
+  #, "Pilot (project seminar)"
+)
+```
+
+```{r load-and-prepare-data}
+
+dat = readRDS("ind_par_rate.RDS")
+
+
+```
+
+```{r}
+# delta_group <- transformedParameters(
+#   mpt_model
+#   , transformedParameters = list(
+#     "delta_p = p1_asymmetrical - p1_symmetrical"
+#     , "delta_m = m1_asymmetrical - m1_symmetrical"
+#     , "delta_g = g_asymmetrical - g_symmetrical"
+#   )
+#   , level = "group"
+# )
+# summary(delta_group, quantiles = c(0.05, .25, .50, .75, .95))
+```
+
+
+
+
+
+
+```{r}
+# reshape individual parameter estimates
+#individual_parameters <- as.data.frame(getParam(mpt_model, parameter = "theta"))
+individual_parameters <- dat
+parameter_names <- colnames(individual_parameters)[6:12]
+
+#saveRDS(individual_parameters, file = "individual-parameters-1.rds")
+
+parameters_long <- tidyr::pivot_longer(
+  individual_parameters
+  , cols = all_of(parameter_names)
+  , names_to = c("parameter", "relation_pair")
+  , names_sep = "_"
+)
+parameters_long$parameter <- gsub(parameters_long$parameter, pattern = "1", replacement = "")
+
+parameters_wide <- tidyr::pivot_wider(
+  parameters_long
+  , id_cols = c("id", "relation_pair")
+  , names_from = "parameter"
+)
+
+parameters_wider <- tidyr::pivot_wider(
+  parameters_long
+  , id_cols = "id"
+  , names_from = c("relation_pair", "parameter")
+)
+
+rating_wide <- tidyr::pivot_wider(
+  rating_agg
+  , id_cols = c("id", "US_valence", "relation_type")
+  , values_from = "rating"
+  , names_from = "relation_pair"
+  , names_prefix = "rating_"
+)
+
+rating_wide_2 <- tidyr::pivot_wider(
+  rating_agg
+  , id_cols = c("id", "US_valence", "relation_pair")
+  , values_from = "rating"
+  , names_from = "relation_type"
+  , names_prefix = "rating_"
+)
+
+rating_wide_2$AC.diff <- abs(rating_wide_2$rating_assimilative) - abs(rating_wide_2$rating_contrastive)
+
+rating_wide_3 <- tidyr::pivot_wider(
+  rating_wide_2
+  , id_cols = c("id", "US_valence")
+  , values_from = "AC.diff"
+  , names_from = "relation_pair"
+  , names_prefix = ""
+)
+
+ratings_with_parameters <- merge(rating_agg, parameters_wide, by = c("id", "relation_pair"))
+ratings_with_parameters_wider <- merge(rating_wide, parameters_wider)
+ratings_with_parameters_wider_3 <- merge(rating_wide_3,parameters_wider)
+```
+
+```{r}
+apa_barplot(data = rating_agg
+            , id = "id"
+            , dv = "rating"
+            , factors = c("relation_pair","US_valence"))
+```
+
+
+## Linear models similar to Kukken et al.
+
+Kukken et al.:
+
+> The model included a fixed intercept, fixed effects for the *m* and *p* predictors, and fixed effects for the factors US valence and relation. Additionally, fixed effects for all interaction terms between US valence, relation, and the *m* parameter, and US valence, relation, and the *p* parameter were included. We followed Barr, Levy, Scheepers, and Tily's (2013) advice to use a maximal random-effects structure: The repeated measures nature of the data was accordingly modeled by including a per-participant random adjustment to the fixed intercept ("random intercept"), and per-participant random adjustments to the slopes of the factors US valence, relation, and their interaction. Furthermore, we included a random intercept for the CSs
+
+This is what we implemented here with separate models for symmetrical vs. asymmetrical relational qualifiers.
+<!-- Because we only had one CS per within-subjects condition, we dropped the random effects for CSs. -->
+All continuous predictors were centered and we used effect coding for categorical predictors.
+
+
+### Symmetrical relational qualifier
+
+```{r}
+contrasts(ratings_with_parameters$US_valence) <- "contr.sum"
+contrasts(ratings_with_parameters$relation_type) <- "contr.sum"
+contrasts(ratings_with_parameters$relation_pair) <- "contr.sum"
+center <- function(x) { x - mean(x, na.rm = TRUE) }
+
+linear_model <- lm(
+  rating ~ center(p) * US_valence * relation_type + center(m) * US_valence * relation_type
+  , data = subset(ratings_with_parameters, relation_pair == "symmetrical")
+)
+
+ratings_widest <- tidyr::pivot_wider(
+  subset(ratings_with_parameters, relation_pair == "symmetrical")
+  , id_cols = c("g", "m", "p")
+  , names_from = c("relation_type", "US_valence")
+  , values_from = "rating"
+)
+
+model <- lm(
+  cbind(contrastive_positive, assimilative_positive, contrastive_negative, assimilative_negative) ~ center(p) + center(m)
+  , data = ratings_widest
+)
+
+model_tests <- Anova(
+  model
+  , idata = data.frame(
+    US_valence = factor(rep(c("positive", "negative"), each = 2))
+    , relation_type = factor(rep(c("contrastive", "assimilative"), times = 2))
+  )
+  , idesign = ~ US_valence * relation_type
+  , type = 3
+  , multivariate = FALSE
+)
+
+# lme_model <- lmer(
+#   formula = rating ~ center(p) * US_valence * relation_type + center(m) * US_valence * relation_type + (0 + relation_type:US_valence  | id)
+#   , data = subset(ratings_with_parameters, relation_pair == "symmetrical")
+# )
+
+apa_out <- apa_print(model_tests)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for the symmetrical relational qualifiers"
+)
+
+
+
+
+
+```
+
+#### Simple-slopes analysis
+
+```{r}
+emtrends(
+  linear_model
+  , specs =  ~ US_valence + relation_type
+  , var = "p"
+) |> summary(infer = TRUE) |> knitr::kable()
+```
+
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ p + US_valence + relation_type
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+```{r}
+emtrends(
+  linear_model
+  , specs =  ~ US_valence + relation_type
+  , var = "m"
+) |> summary(infer = TRUE) |> knitr::kable()
+```
+
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ m + US_valence + relation_type
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+### Asymmetrical relational qualifier
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * US_valence * relation_type + center(m) * US_valence * relation_type
+  , subset(ratings_with_parameters, relation_pair == "asymmetrical")
+)
+
+ratings_widest <- tidyr::pivot_wider(
+  subset(ratings_with_parameters, relation_pair == "asymmetrical")
+  , id_cols = c("g", "m", "p")
+  , names_from = c("relation_type", "US_valence")
+  , values_from = "rating"
+)
+
+model <- lm(
+  cbind(contrastive_positive, assimilative_positive, contrastive_negative, assimilative_negative) ~ center(p) + center(m)
+  , data = ratings_widest
+)
+
+model_tests <- Anova(
+  model
+  , idata = data.frame(
+    US_valence = factor(rep(c("positive", "negative"), each = 2))
+    , relation_type = factor(rep(c("contrastive", "assimilative"), times = 2))
+  )
+  , idesign = ~ US_valence * relation_type
+  , type = 3
+  , multivariate = FALSE
+)
+
+apa_out <- apa_print(model_tests)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for the asymmetrical relational qualifiers"
+)
+```
+
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ p + US_valence + relation_type
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ m + US_valence + relation_type
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+#### Simple-slopes analysis
+
+<!-- todo -->
+
+### Combined analysis of both symmetrical and asymmetrical relational qualifiers
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * US_valence * relation_type * relation_pair + center(m) * US_valence * relation_type * relation_pair 
+  , ratings_with_parameters
+)
+
+ratings_widest_both <- tidyr::pivot_wider(
+  ratings_with_parameters
+  , id_cols = c("g", "m", "p", "id", "relation_pair")
+  , names_from = c("relation_type", "US_valence")
+  , values_from = "rating"
+)
+# Das hier sind die Daten:
+ratings_widest_both <- tidyr::pivot_wider(
+  ratings_widest_both
+  , id_cols = "id"
+  , names_from = "relation_pair"
+  , values_from = c("g", "m", "p", "assimilative_negative", "assimilative_positive", "contrastive_negative", "contrastive_positive")
+)
+model <- lm(
+  formula = cbind(
+    assimilative_positive_symmetrical,
+    assimilative_negative_symmetrical,
+    contrastive_positive_symmetrical,
+    contrastive_negative_symmetrical,
+    assimilative_positive_asymmetrical,
+    assimilative_negative_asymmetrical,
+    contrastive_positive_asymmetrical,
+    contrastive_negative_asymmetrical
+  ) ~ center(m_symmetrical) + center(p_symmetrical) + center(m_asymmetrical) + center(p_asymmetrical)
+  , data = ratings_widest_both
+)
+# Hier bin ich mir noch nicht sicher:
+model_tests <- Anova(
+  model
+  , idata = data.frame(
+    US_valence = factor(rep(c("positive", "negative"), times = 4, each = 1))
+    , relation_type = factor(rep(c("assimilative", "contrastive"), times = 2, each = 2))
+    , relation_pair= factor(rep(c("symmetrical", "asymmetrical"), times = 1, each = 4))
+  )
+  , idesign = ~ US_valence * relation_type * relation_pair
+  , type = 3
+  , multivariate = FALSE
+)
+
+apa_out <- apa_print(model_tests)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+# apa_table(
+#   apa_out
+#   , caption = "Linear regression for both relational qualifiers combined"
+# )
+```
+
+
+### Difference scores
+
+For both model parameters and evaluative ratings, we calculated differences between symmetrical and asymmetrical conditions, i.e. $\Delta p = p_{\mathrm{asymmetrical}} - p_{\mathrm{symmetrical}}$.
+
+```{r}
+differences <- data.frame(
+  id = ratings_widest_both$id
+)
+
+vars <- gsub(
+  setdiff(colnames(ratings_widest_both), "id")
+  , pattern = "_symmetrical|_asymmetrical$"
+  , replacement = ""
+) |> unique()
+
+for (i in vars) {
+  differences[[i]] <- ratings_widest_both[[paste0(i, "_asymmetrical")]] - ratings_widest_both[[paste0(i, "_symmetrical")]]
+}
+
+model <- lm(
+  formula = cbind(
+    assimilative_positive,
+    assimilative_negative,
+    contrastive_positive,
+    contrastive_negative
+  ) ~ center(m) + center(p)
+  , data = differences
+)
+model_tests <- Anova(
+  model
+  , idata = data.frame(
+    US_valence = factor(rep(c("positive", "negative"), times = 2, each = 1))
+    , relation_type = factor(rep(c("assimilative", "contrastive"), times = 1, each = 2))
+  )
+  , idesign = ~ US_valence * relation_type
+  , type = 3
+  , multivariate = FALSE
+)
+apa_out <- apa_print(model_tests)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(apa_out)
+```
+
+
+# Analyse p-differences
+
+
+
+```{r}
+ratings_with_parameters_wider_3$p.diff <- ratings_with_parameters_wider_3$asymmetrical_p - ratings_with_parameters_wider_3$symmetrical_p
+ratings_with_parameters_wider_3$m.diff <- ratings_with_parameters_wider_3$asymmetrical_m - ratings_with_parameters_wider_3$symmetrical_m
+ratings_with_parameters_wider_3$rating.diff <- ratings_with_parameters_wider_3$asymmetrical - ratings_with_parameters_wider_3$symmetrical
+
+
+CP <- subset(ratings_with_parameters_wider_3,US_valence =="positive")
+cor.test(CP$p.diff,CP$rating.diff)
+cor.test(CP$m.diff,CP$rating.diff)
+CN <- subset(ratings_with_parameters_wider_3,US_valence =="negative")
+cor.test(CN$p.diff,CN$rating.diff)
+cor.test(CN$m.diff,CN$rating.diff)
+
+linear_model <- lm(
+   rating.diff ~ center(p.diff) * US_valence + center(m.diff) * US_valence
+   , ratings_with_parameters_wider_3
+)
+
+ratings_widest <- tidyr::pivot_wider(
+  ratings_with_parameters_wider_3
+  , id_cols = c("m.diff", "p.diff")
+  , names_from = c("US_valence")
+  , values_from = "rating.diff"
+)
+
+model <- lm(
+  cbind(positive, negative) ~ center(p.diff) + center(m.diff)
+  , data = ratings_widest
+)
+
+model_tests <- Anova(
+  model
+  , idata = data.frame(
+    US_valence = factor(rep(c("positive", "negative"), each = 1))
+    #, relation_type = factor(rep(c("contrastive", "assimilative"), times = 2))
+  )
+  , idesign = ~ US_valence
+  , type = 3
+  , multivariate = FALSE
+)
+
+apa_out <- apa_print(model_tests)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for the asymmetrical relational qualifiers"
+)
+
+
+
+
+# linear_model_2 <- lm(
+#   rating.diff ~ center(p.diff) * US_valence + center(m.diff) * US_valence
+#   , ratings_with_parameters_wider_3
+# )
+# 
+# linear_model <- lm(
+#   rating.diff ~ center(p.diff) * center(m.diff) * US_valence
+#   , ratings_with_parameters_wider_3
+# )
+# 
+# apa_out <- apa_print(linear_model)
+# apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+# apa_table(
+#   apa_out
+#   , caption = "Linear regression for both relational qualifiers combined"
+# )
+
+
+
+```
+
+```{r}
+ggeffects::ggpredict(
+  linear_model_2
+  , terms = ~ p.diff + US_valence
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+```{r}
+ggeffects::ggpredict(
+  linear_model_2
+  , terms = ~ m.diff + US_valence
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+
+## Model allowing for interaction between parameters
+
+### Symmetrical relational qualifier
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * center(m) * US_valence * relation_type
+  , subset(ratings_with_parameters, relation_pair == "symmetrical")
+)
+apa_out <- apa_print(linear_model)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for symmetrical relationcal qualifiers"
+)
+```
+
+### Aymmetrical relational qualifier
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * center(m) * US_valence * relation_type
+  , subset(ratings_with_parameters, relation_pair == "asymmetrical")
+)
+apa_out <- apa_print(linear_model)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for asymmetrical relational qualifiers"
+)
+```
+
+
+### Only asymmetrical relational qualifiers
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * center(m) * US_valence * relation_type
+  , subset(ratings_with_parameters, relation_pair == "symmetrical")
+)
+apa_out <- apa_print(linear_model)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for symmetrical relational qualifiers"
+)
+```
+
+
+### Combined analysis of both symmetrical and asymmetrical relational qualifiers
+
+```{r}
+linear_model <- lm(
+  rating ~ center(p) * center(m) * US_valence * relation_type * relation_pair
+  , ratings_with_parameters
+)
+apa_out <- apa_print(linear_model)
+apa_out$table$term[] <- gsub(apa_out$table$term, pattern = "Center|1", replacement = "")
+apa_table(
+  apa_out
+  , caption = "Linear regression for both relational qualifiers combined"
+)
+```
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ p + US_valence + relation_type + relation_pair
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+```{r}
+ggeffects::ggpredict(
+  linear_model
+  , terms = ~ m + US_valence + relation_type + relation_pair
+) |> plot(rawdata = TRUE, jitter = 0)
+```
+
+
+## Supplementary analyses
+
+### Would it help to increase the number of CSs per within-Ss condition?
+
+To explore whether increasing the number of CSs in each within-Ss condition would help,
+we doubled our data and pretended that we observed two evaluative ratings per within-Ss condition
+(we also added some random noise to have a residual-variance component).
+
+```{r fake-data}
+set.seed(42L)
+fake_data <- rbind(ratings_with_parameters, ratings_with_parameters)
+fake_data$rating <- fake_data$rating + rnorm(nrow(fake_data))
+contrasts(fake_data$US_valence) <- "contr.sum"
+contrasts(fake_data$relation_type) <- "contr.sum"
+contrasts(fake_data$relation_pair) <- "contr.sum"
+```
+
+
+```{r}
+lme_symmetrical <- lmer(
+  formula = rating ~ center(p) * US_valence * relation_type + center(m) * US_valence * relation_type + (relation_type * US_valence  | id)
+  , data = subset(fake_data, relation_pair == "symmetrical")
+)
+summary(lme_symmetrical)
+```
+
+```{r}
+lme_asymmetrical <- lmer(
+  formula = rating ~ (center(p) + center(m)) * US_valence * relation_type + (relation_type * US_valence  | id)
+  , data = subset(fake_data, relation_pair == "asymmetrical")
+)
+summary(lme_asymmetrical)
+```
+
+```{r}
+lme_joint <- lmer(
+  formula = rating ~ (center(p) + center(m)) * US_valence * relation_type * relation_pair + (relation_type * US_valence * relation_pair  | id)
+  , data = fake_data
+  , control = lmerControl(
+    
+  )
+)
+summary(lme_joint)
+```
+
+Model seems to converge and to be estimable. Hooray!
+<!--
+todo:
+  (\Delta_eval_rating) ~ \Delta_p | symmetrisch - asymmetrisch
+-->

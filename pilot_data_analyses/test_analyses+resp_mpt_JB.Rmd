@@ -20,7 +20,8 @@ p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra
 set_sum_contrasts()
 
 #read the dataset we created in a previous R script
-dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS") 
+# dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS")
+dat = readRDS("data_wsw_final_pilot.RDS")
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
