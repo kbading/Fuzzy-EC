@@ -20,9 +20,7 @@ p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra
 set_sum_contrasts()
 
 #read the dataset we created in a previous R script
-
-dat = readRDS("data_wsw_final_pilot.RDS") 
-
+dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS") 
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
@@ -758,5 +756,78 @@ table(c.p6.old.idin$valence)
 table(c.p6.old.idin$valence,c.p6.old.idin$theme)
 
 
+```
+
+# Thematic confusion? Some "more more" analyses (JB)
+
+```{r}
+#read again the datafile with stimulus information
+us_theme = read.csv("selected_pictures_wsw.csv")
+us_theme$us_name = paste0(substr(us_theme$valence, 0, 1), us_theme$n)
+us_theme = us_theme %>% select(us_name, Theme, Category, valence, Valence_mean)
+
+#we will use it to identify the correct us (the one displayed with a given cs in the learning phase)
+##and to identify the selected us (the one selected in the "source" memory task)
+us_theme_cor = us_theme
+us_theme_selected = us_theme
+
+#for ease of processing, rename the columns
+colnames(us_theme_cor) = c("us_name_cor", "Theme_cor", "Category_cor", "valence_cor", "Valence_mean_cor")
+colnames(us_theme_selected) = c("us_name_selected", "Theme_selected", "Category_selected", "valence_selected", "Valence_mean_selected")
+  
+#combine the three data sets
+dat_us_cor = full_join(dat, us_theme_cor, by= c("us"="us_name_cor"))
+dat_us_all = full_join(dat_us_cor, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#keep only incorrect identifications (when the wrong US was selected)
+dat_us_all = dat_us_all %>% filter(us_valence != "dist" & id_us_accuracy_bin=="0" & source_mem_resp != "zz")
+
+#category and theme are factors
+dat_us_all$Category_cor = as.factor(dat_us_all$Category_cor)
+dat_us_all$Category_selected = as.factor(dat_us_all$Category_selected)
+dat_us_all$Theme_cor = as.factor(dat_us_all$Theme_cor)
+dat_us_all$Theme_selected = as.factor(dat_us_all$Theme_selected)
+
+#select only the useful columns
+dat_us_all = dat_us_all %>% select(url.srid, correct_us_source, source_mem_resp, Theme_cor, Theme_selected, Category_cor, Category_selected, valence_cor, valence_selected, uss)
+
+#for each "source" response, check which specific us was selected
+count_us_responses = dat_us_all %>% group_by(correct_us_source, source_mem_resp) %>%
+  summarize(n_selected = n())
+
+#combine the count_us_responses dataset with stimulus identification information
+dat_count1 = full_join(count_us_responses, us_theme_cor, by= c("correct_us_source"="us_name_cor"))
+dat_count2 = full_join(dat_count1, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#now, count how many times each specific US appeared in the trials selected above in total
+count_uss_displayed = unlist(dat_us_all$uss)  
+count_uss = as.data.frame(table(count_uss_displayed))
+
+#add this information to the dataset dat_count2 created above
+dat_count = full_join(dat_count2, count_uss, by= c("source_mem_resp"="count_uss_displayed"))
+
+#simple table to display US valence response as a function of correct US valence
+table(dat_count$valence_selected, dat_count$valence_cor)
+
+#as a function of correct category
+table(dat_count$valence_selected, dat_count$valence_cor, dat_count$Category_cor)
+
+#selected valence as a function of theme
+table(dat_count$valence_selected, dat_count$Theme_cor)
+
+#correct the frequency of US selection by the total number of times it appeared 
+dat_count$n_selected = dat_count$n_selected/dat_count$Freq
+
+#calculate the proportions based on categories and valence of the correct us
+dat_count_test_cat = dat_count %>% group_by(Category_cor, Category_selected, valence_cor) %>%
+  summarize(n_selected_mean = mean(n_selected))
+
+dat_count_test_cat
+
+#calculate the proportions based on themes
+dat_count_test_theme = dat_count %>% group_by(Theme_cor, Theme_selected) %>%
+  summarize(n_selected_mean = mean(n_selected))
+
+print.data.frame(dat_count_test_theme)
 ```
 
