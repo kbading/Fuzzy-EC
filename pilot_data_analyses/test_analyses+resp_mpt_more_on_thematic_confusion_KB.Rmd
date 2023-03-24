@@ -1,0 +1,1153 @@
+---
+title: "Who said what EC: A basis for analyses"
+author: "Jérémy Béna"
+output:
+  html_document:
+    toc: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Load packages and read the data
+
+```{r set}
+#Load (or install and load) packages
+require(pacman)
+library(reshape2)
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS') 
+set_sum_contrasts()
+
+#read the dataset we created in a previous R script
+# dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS")
+
+dat = readRDS("data_wsw_final_pilot.RDS")
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+```
+
+# Exclude participants
+
+```{r exclude}
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+length(unique(dat$url.srid)) # N of participants after exclusion
+```
+
+# Code responses in the recognition/CS-US pairing memory tasks
+
+```{r recode}
+#create a new factor to distinguish between old and new CSs 
+dat$cs_exposure = ifelse(dat$us_valence == "dist", "new", "old")
+table(dat$cs_exposure, dat$us_valence)
+
+#indicate whether the recognition decision is correct (hit and cr) or not (fa and miss)
+dat = dat %>%
+  mutate(reco_accuracy = ifelse((cs_exposure=="old" & reco_resp == "old"), "hit"
+                                ,ifelse((cs_exposure=="old" & reco_resp == "new"), "miss"
+                                ,ifelse((cs_exposure=="new" & reco_resp == "old"), "fa", "cr"))
+                                ))
+
+#indicate whether source memory is correct regarding valence (positive or negative)
+dat$correct_us_source = NA
+dat$source_mem_resp = NA
+
+for(i in 1:length(dat$url.srid)){
+  dat$correct_us_source[i] = dat$uss[[i]][dat$idtarg[i]+1]
+  dat$source_mem_resp[i] = dat$uss[[i]][as.numeric(substr(dat$source_mem, 3, 3))[i]]
+}
+
+#calculate whether us valence and us identity memory are correct or not
+dat = dat %>%
+  mutate(val_us_accuracy = ifelse(substr(source_mem_resp, 0, 1) == substr(correct_us_source, 0, 1), "val_correct", "val_incorrect")
+        ,id_us_accuracy = ifelse(source_mem_resp == correct_us_source, "id_correct", "id_incorrect")
+         )
+
+table(dat$val_us_accuracy)
+table(dat$id_us_accuracy)
+
+#replace NA with "no_resp" when no response was provided in the source memory task, 
+##whether this is correct (for old css) or not (for new css)
+dat = dat %>% mutate(val_us_accuracy = replace_na(val_us_accuracy, "no_resp")
+                     ,id_us_accuracy = replace_na(id_us_accuracy, "no_resp"))
+```
+
+# Evaluative ratings
+
+```{r eval_change}
+####
+#EVALUATIVE CONDITIONING
+####
+
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+knitr::kable(dat_ev, format = "html")
+
+#check data distribution
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="positive"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="dist"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+```
+
+```{r eval_ratings}
+# mod1 = aov_ez(dat_ev
+#               ,id = "url.srid"
+#               ,dv = "eval_rating"
+#               ,within = "us_valence"
+# )
+# 
+# mod1_print = apa_print(mod1)
+# 
+# apa_table(
+#   mod1_print$table
+#   ,caption = "Repeated-measures ANOVA: Ratings as a function of US"
+# )
+# 
+# # Descriptive statistics: evaluative change scores as a function of US Valence
+# knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+```
+
+```{r plot_ratings, fig.cap="Evaluative ratings as a function of US Valence. Dots are the individual observations, and error bars are the 95% Confidence Intervals. *Note:* TBS = Two-buttons-sets procedure; VMA = Valence Memory Attribution task; 3ACE = Three-attribution, continuous evaluative ratings task."}
+# dat_ev$`US Valence` = dat_ev$us_valence
+# 
+# #visualize the data
+# apa_beeplot(data=dat_ev, id="url.srid", dv="eval_rating", factors=c("US Valence"), use = "all.obs", ylim=c(0,11),
+#             xlab = "US"
+#             ,ylab = "Mean evaluative ratings")
+```
+# Recognition memory
+
+```{r recognition}
+####
+#RECOGNITION MEMORY
+####
+
+#compute recognition memory performance by computing freq("old"|old) (hits) and freq("old"|new) (fa)
+dat = dat %>% mutate(reco_resp_bin = ifelse(reco_resp=="old", 1, 0))
+
+dat_reco_agg = dat %>%
+  group_by(url.srid, cs_exposure) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg, format = "html")
+
+dat_reco_wide = dat_reco_agg %>% pivot_wider(names_from = "cs_exposure"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide$reco_corrected = dat_reco_wide$old - dat_reco_wide$new
+
+describeBy(dat_reco_agg$prop_old, dat_reco_agg$cs_exposure)
+describe(dat_reco_wide$reco_corrected)
+
+#by us valence
+
+dat_reco_agg_val = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg_val, format = "html")
+
+dat_reco_wide_val = dat_reco_agg_val %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide_val$reco_corrected_pos = dat_reco_wide_val$positive - dat_reco_wide_val$dist
+dat_reco_wide_val$reco_corrected_neg = dat_reco_wide_val$negative - dat_reco_wide_val$dist
+
+describeBy(dat_reco_agg_val$prop_old, dat_reco_agg_val$us_valence)
+describe(dat_reco_wide_val$reco_corrected_pos)
+describe(dat_reco_wide_val$reco_corrected_neg)
+```
+
+# CS-US pairing memory
+
+```{r source}
+#Valence 
+
+dat = dat %>% mutate(val_us_accuracy_bin = ifelse(val_us_accuracy=="val_correct", 1, 0))
+
+dat_source_mem = dat %>% filter(us_valence != "dist" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_source = mean(val_us_accuracy_bin))
+
+knitr::kable(dat_source_mem, format = "html")
+
+dat_source_mem_wide = dat_source_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_source")
+
+dat_reco_agg_val_old = dat_reco_agg_val %>% filter(us_valence != "dist")
+dat_reco_source = full_join(dat_reco_agg_val_old, dat_source_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_reco_source$prop_correct_source, dat_reco_source$us_valence)
+
+#Identity
+dat = dat %>% mutate(id_us_accuracy_bin = ifelse(id_us_accuracy=="id_correct", 1, 0))
+
+dat_id_mem = dat %>% filter(us_valence != "dist" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_id = mean(id_us_accuracy_bin))
+
+knitr::kable(dat_id_mem, format = "html")
+
+dat_id_mem_wide = dat_id_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_id")
+
+dat_mem = full_join(dat_reco_source, dat_id_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_mem$prop_correct_id, dat_mem$us_valence)
+
+knitr::kable(dat_mem, format = "html")
+
+```
+
+# Response frequencies + MPT model
+
+```{r}
+#compute response frequencies for MPT analyses
+
+#First, remove NA in source memory responses and in the column storing the correct us
+dat = dat %>% mutate(correct_us_source = replace_na(correct_us_source, "zz")
+                     ,source_mem_resp = replace_na(source_mem_resp, "zz"))
+
+dat1 <- dat
+dat2 <- subset(dat,!(correct_us_source %in% c("n4","n8","n12")))
+
+dat <- dat1
+#dat <- dat2
+
+##Create three datasets, one for each tree; them, we will merge them
+
+##Tree: US+ and select only relevant columns
+dat_pos = dat %>% filter(us_valence == "positive") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "PosUSnew" as we are in the US+ tree
+##then, if US identity response correct, response is "PosUSposcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "PosUSposincor" if valence is correct; else, "PosUSnegincor"
+dat_pos = dat_pos %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"PosUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"PosUSposcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "PosUSposincor"
+                                                              , "PosUSnegincor"
+                                                       )
+                                               )
+)
+)
+
+# /!\/!\/!\
+# #ONLY run this code for TESTS
+# we dont have "posUSposincor" in the test data, so I fake one "PosUSposincor" response
+# a = which(dat_pos$resp_mpt=="PosUSposcor")
+# dat_pos$resp_mpt[a[2]] = "PosUSposincor"
+# //!\/!\
+
+##Tree: US- and select only relevant columns
+dat_neg = dat %>% filter(us_valence == "negative") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "NegUSnew" as we are in the US- tree
+##then, if US identity response correct, response is "NegUSnegcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "NegUSnegincor" if valence is correct; else, "NegUSposincor"
+dat_neg = dat_neg %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"NegUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"NegUSnegcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "NegUSnegincor"
+                                                              , "NegUSposincor"
+                                                       )
+                                               )
+)
+)
+
+#Tree: New and select only relevant columns
+dat_new = dat %>% filter(us_valence == "dist") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "Newnew" as we are in the New CS tree
+##then, US memory responses are necessarily incorrect as no US was displayed
+##if the selected US is positive, response is "Newposincor"
+##if the selected US is negative, response is "Newnegincor"
+dat_new = dat_new %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"Newnew"
+                                               ,ifelse(substr(source_mem_resp, 0, 1)=="p"
+                                                              , "Newposincor"
+                                                              , "Newnegincor")
+)
+)
+
+#Merge datasets so that all responses are available into a single dataframe
+##proceed in two stets: CS-US+ and CS-US- trees
+dat_mpt.1 = full_join(dat_pos, dat_neg
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+
+#add new CS tree
+dat_mpt = full_join(dat_mpt.1, dat_new
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+```
+
+```{r}
+#participants frequencies for each response type, even if 0 responses for a given participant
+dat_mpt_freq = dat_mpt %>% #in dat_mpt
+  group_by(url.srid, resp_mpt, .drop=FALSE) %>% #group observations by participant (url.srid) and resp_mpt (already capturing the tree)
+  tally %>%
+  spread(resp_mpt, n, fill=0) #use a "wide" format
+
+dat_mpt_freq_fit = dat_mpt_freq %>% ungroup() %>% select(-url.srid)
+
+#aggregated level if needed
+dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
+  group_by(resp_mpt, .drop=FALSE) %>% #group observations by resp_mpt (already capturing the tree)
+  tally
+```
+
+```{r}
+#we'll use this model
+# MPTinR::check.mpt("KW_wsw_model.eqn")
+# 
+# #Fit the model and estimate parameters
+# # mod_mpt = traitMPT(
+# #   eqnfile = "KW_wsw_model.eqn"
+# #   , data = dat_mpt_freq %>% ungroup() %>% select(-url.srid)
+# #   , n.iter   = 400000
+# #   , n.adapt  =  20000
+# #   , n.burnin = 200000
+# #   , n.thin   = 40
+# #   , n.chains = 4
+# #   , restrictions = list("Dn=Dpos=Dneg","G=0.25")
+# # )
+# # 
+# # save(mod_mpt, file ="fit_MPT.RData")
+# load("fit_MPT.RData")
+# 
+# summary(mod_mpt)
+# 
+# TreeBUGS::plotFit(mod_mpt)
+# TreeBUGS::plotFreq(mod_mpt)
+# TreeBUGS::plotParam(mod_mpt)
+# 
+# mod_mpt_ppp = PPP(mod_mpt, M = 5e3)
+# mod_mpt_ppp
+
+```
+
+# Correlations between MPT parameters and CS ratings
+
+
+```{r}
+
+# individual_parameters <- as.data.frame(getParam(mod_mpt, parameter = "theta"))
+# individual_parameters$id <- 1:nrow(individual_parameters)
+# agg_data <- aggregate(eval_rating ~ us_valence + url.srid, data = dat_ev, FUN = mean)
+# library(reshape2)
+# agg_data_d <- dcast(agg_data, value.var = "eval_rating", url.srid ~ us_valence)
+# agg_data_d$id <- 1:nrow(agg_data_d)
+# 
+# para_ratings <- merge(agg_data_d, individual_parameters, by = "id")
+# 
+# #para_ratings <- subset(para_ratings, url.srid %in% c("9860","9862","9864"))
+# 
+# cor.test(para_ratings$Dn,para_ratings$dist)
+# cor.test(para_ratings$Dn,para_ratings$positive)
+# cor.test(para_ratings$Dn,para_ratings$negative)
+# 
+# cor.test(para_ratings$a,para_ratings$dist)
+# cor.test(para_ratings$a,para_ratings$positive)
+# cor.test(para_ratings$a,para_ratings$negative)
+# 
+# cor.test(para_ratings$b,para_ratings$dist)
+# cor.test(para_ratings$b,para_ratings$positive)
+# cor.test(para_ratings$b,para_ratings$negative)
+# 
+# cor.test(para_ratings$Cneg,para_ratings$dist)
+# cor.test(para_ratings$Cneg,para_ratings$positive)
+# cor.test(para_ratings$Cneg,para_ratings$negative)
+# 
+# cor.test(para_ratings$Cpos,para_ratings$dist)
+# cor.test(para_ratings$Cpos,para_ratings$positive)
+# cor.test(para_ratings$Cpos,para_ratings$negative)
+# 
+# cor.test(para_ratings$dpos,para_ratings$dist)
+# cor.test(para_ratings$dpos,para_ratings$positive)
+# cor.test(para_ratings$dpos,para_ratings$negative)
+# 
+# cor.test(para_ratings$dneg,para_ratings$dist)
+# cor.test(para_ratings$dneg,para_ratings$positive)
+# cor.test(para_ratings$dneg,para_ratings$negative)
+```
+
+```{r}
+
+# dat_reco_wide_val$id <- 1:nrow(dat_reco_wide_val)
+# 
+# dat_reco_wide_val_param <- merge(dat_reco_wide_val, individual_parameters, by = "id")
+# 
+# cor.test(dat_reco_wide_val_param$reco_corrected_pos, dat_reco_wide_val_param$reco_corrected_pos)
+# 
+# cor.test(dat_reco_wide_val_param$reco_corrected_neg, dat_reco_wide_val_param$reco_corrected_neg)
+```
+
+```{r}
+# dat_mem_pos = dat_mem %>% filter(us_valence=="positive")
+# dat_mem_neg = dat_mem %>% filter(us_valence=="negative")
+# 
+# dat_mem_pos$id <- 1:nrow(dat_mem_pos)
+# dat_mem_neg$id <- 1:nrow(dat_mem_neg)
+# 
+# dat_pos_m = full_join(dat_mem_pos, individual_parameters, by = c("id"="id"))
+# dat_neg_m = full_join(dat_mem_neg, individual_parameters, by = c("id"="id"))
+# 
+# cor.test(dat_pos_m$prop_correct_source, dat_pos_m$dpos)
+# cor.test(dat_neg_m$prop_correct_source, dat_neg_m$dneg)
+# 
+# cor.test(dat_pos_m$prop_correct_id, dat_pos_m$Cpos)
+# cor.test(dat_neg_m$prop_correct_id, dat_neg_m$Cneg)
+
+```
+
+# G statistics MPT analyses
+
+```{r}
+# MPTinR::check.mpt("KW_wsw_model.eqn")
+# 
+#MPT on aggregated frequencies
+mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+        ,model.filename = "KW_wsw_model.eqn"
+        ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+        )
+mod_agg
+# 
+# #main model with dpos = 0
+# model_mpt_no_dpos = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","dpos=0"))
+# model_mpt_no_dpos
+# 
+# #main model with dneg = 0
+# model_mpt_no_dneg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","dneg=0"))
+# model_mpt_no_dneg
+# 
+# #main model with dpos = dneg
+# model_mpt_dpos_dneg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","dpos=dneg"))
+# model_mpt_dpos_dneg
+# 
+# #main model with Cpos = 0
+# model_mpt_no_Cpos = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","Cpos=0"))
+# model_mpt_no_Cpos
+# 
+# #main model with Cneg = 0
+# model_mpt_no_Cneg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","Cneg=0"))
+# model_mpt_no_Cneg
+# 
+# #main model with Cneg = 0
+# model_mpt_Cpos_Cneg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","Cneg=Cpos"))
+# model_mpt_Cpos_Cneg
+# 
+# #main model with a = .5
+# model_mpt_a5 = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#                          ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25","a=0.5"))
+# model_mpt_a5
+# 
+# #test if nested models decrease model fit
+# 
+# #delta G^2 model_no_dpos - main_model
+# pchisq(q = model_mpt_no_dpos$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_no_dpos$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #no dpos does not decrease model fit
+# 
+# #delta G^2 model_no_dpos - main_model
+# pchisq(q = model_mpt_no_dneg$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_no_dneg$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #no dneg does not decrease model fit
+# 
+# #delta G^2 model_dpos_dneg - main_model
+# pchisq(q = model_mpt_dpos_dneg$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_dpos_dneg$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #dpos = dneg does not decrease model fit
+# 
+# #delta G^2 model_no_Cpos - main_model
+# pchisq(q = model_mpt_no_Cpos$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_no_Cpos$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #no Cpos decreases model fit
+# 
+# #delta G^2 model_no_Cneg - main_model
+# pchisq(q = model_mpt_no_Cneg$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_no_Cneg$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #no Cneg decreases model fit
+# 
+# #delta G^2 model_Cpos_Cneg - main_model
+# pchisq(q = model_mpt_Cpos_Cneg$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_Cpos_Cneg$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+# 
+# #Cpos = Cneg does not decrease model fit
+# 
+# #delta G^2 model_a5 - main_model
+# pchisq(q = model_mpt_a5$goodness.of.fit[[2]] - mod_agg$goodness.of.fit[[2]]
+#        ,df = model_mpt_a5$goodness.of.fit[[3]] - mod_agg$goodness.of.fit[[3]]
+#        ,lower.tail = FALSE)
+
+#a = .5 does not decrease model fit
+```
+
+# test regression models parameter estimates -- evaluative ratings
+
+```{r}
+# #scale predictors 
+# para_ratings = para_ratings %>% mutate(
+#   Dn_scale = scale(Dn, center=TRUE, scale=FALSE)
+#   ,dneg_scale = scale(dneg, center=TRUE, scale=FALSE)
+#   ,dpos_scale = scale(dpos, center=TRUE, scale=FALSE)
+#   ,a_scale = scale(a, center=TRUE, scale=FALSE)
+#   ,b_scale = scale(b, center=TRUE, scale=FALSE)
+#   ,Cneg_scale = scale(Cneg, center=TRUE, scale=FALSE)
+#   ,Cpos_scale = scale(Cpos, center=TRUE, scale=FALSE)
+#   )
+# 
+# #new items
+# mod_new = lm(formula = dist~Dn_scale+b_scale+a_scale
+#                   ,data = para_ratings
+#                   )
+# 
+# summary(mod_new)
+# sjPlot::plot_model(mod_new, show.values = TRUE, width = 0.1)+
+#   ylab("Increase in evaluative ratings as a function of MPT parameter estimates")
+# 
+# sjPlot::tab_model(mod_new, 
+#           show.intercept = F, 
+#           p.style = "numeric_stars")
+# 
+# #positive
+# mod_pos = lm(formula = positive~Dn_scale+Cpos_scale+dpos_scale+b_scale+a_scale
+#                   ,data = para_ratings
+#                   )
+# 
+# summary(mod_pos)
+# sjPlot::plot_model(mod_pos, show.values = TRUE, width = 0.1)+
+#   ylab("Increase in evaluative ratings as a function of MPT parameter estimates")
+# 
+# sjPlot::tab_model(mod_pos, 
+#           show.intercept = F, 
+#           p.style = "numeric_stars")
+# 
+# 
+# #negative
+# mod_neg = lm(formula = negative~Dn_scale+Cneg_scale+dneg_scale+b_scale+a_scale
+#                   ,data = para_ratings
+#                   )
+# 
+# summary(mod_neg)
+# sjPlot::plot_model(mod_neg, show.values = TRUE, width = 0.1)+
+#   ylab("Increase in evaluative ratings as a function of MPT parameter estimates")
+# 
+# sjPlot::tab_model(mod_neg, 
+#           show.intercept = F, 
+#           p.style = "numeric_stars")
+# 
+# sjPlot::tab_model(mod_pos, mod_neg,mod_new, 
+#           collapse.ci = TRUE, 
+#           p.style     = "numeric_stars")
+# 
+
+```
+
+# Thematic confusion? Some analyses
+
+```{r}
+#read the file with information regarding each us
+us_theme = read.csv("selected_pictures_wsw.csv")
+
+#retrieve the name of each us in the file
+us_theme$us_name = paste0(substr(us_theme$valence, 0, 1), us_theme$n)
+
+#combine the two data sets
+dat_us = full_join(dat, us_theme, by= c("us"="us_name"))
+
+#explore if recognition accuracy depends on the specific us category/theme
+dat_us$Category = as.factor(dat_us$Category)
+dat_us$theme = as.factor(dat_us$theme)
+
+dat_us$Category = dat_us$Category %>% str_replace_na("z_new")
+dat_us$theme = dat_us$theme %>% str_replace_na("z_new")
+
+table(dat_us$reco_accuracy, dat_us$Category)
+tab_reco_cat = addmargins(table(dat_us$reco_accuracy, dat_us$Category), 1)
+
+#hit/total
+tab_reco_cat[3,]/tab_reco_cat[5,]
+#recognition accuracy seems better for objects than for animals and scenes
+
+table(dat_us$reco_accuracy, dat_us$theme)
+tab_reco_theme = addmargins(table(dat_us$reco_accuracy, dat_us$theme), 1)
+
+tab_reco_theme[3,]/tab_reco_theme[5,]
+
+#source memory now: whether it was correctly identified as the us or not
+
+dat_us_old = dat_us %>% filter(us_valence != "dist" & reco_resp == "old")
+
+dat_source_us = dat_us_old %>%
+  group_by(Category) %>%
+  summarize(mean_val_mem = mean(as.numeric(val_us_accuracy_bin))
+            ,mean_id_mem = mean(as.numeric(id_us_accuracy_bin)))
+dat_source_us
+
+dat_source_us_theme = dat_us_old %>%
+  group_by(theme, Category, us) %>%
+  summarize(mean_val_mem = mean(as.numeric(val_us_accuracy_bin))
+            ,mean_id_mem = mean(as.numeric(id_us_accuracy_bin)))
+dat_source_us_theme
+
+dat_source_us_theme$mem_diff <- dat_source_us_theme$mean_val_mem - dat_source_us_theme$mean_id_mem
+
+dat_source_us_theme_sorted = dat_source_us_theme %>% 
+  as.data.frame() %>% 
+  arrange(desc(mean_val_mem))
+dat_source_us_theme_sorted
+
+dat_source_us_theme_sorted_2 = dat_source_us_theme %>% 
+  as.data.frame() %>% 
+  arrange(desc(mem_diff))
+dat_source_us_theme_sorted_2
+```
+
+# Thematic confusion? Some more analyses (KB)
+
+```{r}
+us_theme_short <- us_theme[,c("us_name","valence","Theme","Category")]
+us_theme_short <- rename(us_theme_short, "valence_cUS" = "valence")
+us_theme_short <- rename(us_theme_short, "theme_cUS" = "Theme")
+us_theme_short <- rename(us_theme_short, "category_cUS" = "Category")
+dat_us_2 = full_join(dat_us, us_theme_short, by= c("source_mem_resp"="us_name"))
+
+# p1 = road
+p1.data <- subset(dat_us_2, us == "p1")
+p1.old <- subset(p1.data, reco_resp == "old")
+p1.old.idin <- subset(p1.old, id_us_accuracy == "id_incorrect")
+p1.old.idin$Theme[1]
+table(p1.old.idin$valence_cUS)
+table(p1.old.idin$valence_cUS,p1.old.idin$theme_cUS)
+
+# p2 = sunset
+p2.data <- subset(dat_us_2, us == "p2")
+p2.old <- subset(p2.data, reco_resp == "old")
+p2.old.idin <- subset(p2.old, id_us_accuracy == "id_incorrect")
+p2.old.idin$Theme[1]
+table(p2.old.idin$valence_cUS)
+table(p2.old.idin$valence_cUS,p2.old.idin$theme_cUS)
+
+# p3 = sunflower
+p3.data <- subset(dat_us_2, us == "p3")
+p3.old <- subset(p3.data, reco_resp == "old")
+p3.old.idin <- subset(p3.old, id_us_accuracy == "id_incorrect")
+p3.old.idin$Theme[1]
+table(p3.old.idin$valence_cUS)
+table(p3.old.idin$valence_cUS,p3.old.idin$theme_cUS)
+
+# p4 = skydiving
+p4.data <- subset(dat_us_2, us == "p4")
+p4.old <- subset(p4.data, reco_resp == "old")
+p4.old.idin <- subset(p4.old, id_us_accuracy == "id_incorrect")
+p4.old.idin$Theme[1]
+table(p4.old.idin$valence_cUS)
+table(p4.old.idin$valence_cUS,p4.old.idin$theme_cUS)
+
+# p5 = nature (2)
+p5.data <- subset(dat_us_2, us == "p5")
+p5.old <- subset(p5.data, reco_resp == "old")
+p5.old.idin <- subset(p5.old, id_us_accuracy == "id_incorrect")
+p5.old.idin$Theme[1]
+table(p5.old.idin$valence_cUS)
+table(p5.old.idin$valence_cUS,p5.old.idin$theme_cUS)
+
+# p6 = beach (1)
+p6.data <- subset(dat_us_2, us == "p6")
+p6.old <- subset(p6.data, reco_resp == "old")
+p6.old.idin <- subset(p6.old, id_us_accuracy == "id_incorrect")
+p6.old.idin$Theme[1]
+table(p6.old.idin$valence_cUS)
+table(p6.old.idin$valence_cUS,p6.old.idin$theme_cUS)
+
+# p7 = beach (1)
+p7.data <- subset(dat_us_2, us == "p7")
+p7.old <- subset(p7.data, reco_resp == "old")
+p7.old.idin <- subset(p7.old, id_us_accuracy == "id_incorrect")
+p7.old.idin$Theme[1]
+table(p7.old.idin$valence_cUS)
+table(p7.old.idin$valence_cUS,p7.old.idin$theme_cUS)
+
+
+```
+
+## different approach
+
+```{r}
+
+# chosen p1 = road
+c.p1.data <- subset(dat_us_2, source_mem_resp == "p1")
+c.p1.old.idin <- subset(c.p1.data, id_us_accuracy == "id_incorrect")
+table(c.p1.old.idin$valence)
+table(c.p1.old.idin$valence,c.p1.old.idin$theme)
+
+# chosen p2 = sunset
+c.p2.data <- subset(dat_us_2, source_mem_resp == "p2")
+c.p2.old.idin <- subset(c.p2.data, id_us_accuracy == "id_incorrect")
+table(c.p2.old.idin$valence)
+table(c.p2.old.idin$valence,c.p2.old.idin$theme)
+
+# chosen p3 = sunflower
+c.p3.data <- subset(dat_us_2, source_mem_resp == "p3")
+c.p3.old.idin <- subset(c.p3.data, id_us_accuracy == "id_incorrect")
+table(c.p3.old.idin$valence)
+table(c.p3.old.idin$valence,c.p3.old.idin$theme)
+
+# chosen p4 = skydiving
+c.p4.data <- subset(dat_us_2, source_mem_resp == "p4")
+c.p4.old.idin <- subset(c.p4.data, id_us_accuracy == "id_incorrect")
+c.p4.old.idin$theme_cUS[1]
+table(c.p4.old.idin$valence)
+table(c.p4.old.idin$valence,c.p4.old.idin$theme)
+
+# chosen p5 = nature
+c.p5.data <- subset(dat_us_2, source_mem_resp == "p5")
+c.p5.old.idin <- subset(c.p5.data, id_us_accuracy == "id_incorrect")
+c.p5.old.idin$theme_cUS[1]
+table(c.p5.old.idin$valence)
+table(c.p5.old.idin$valence,c.p5.old.idin$theme)
+
+# chosen p6 = beach
+c.p6.data <- subset(dat_us_2, source_mem_resp == "p6")
+c.p6.old.idin <- subset(c.p6.data, id_us_accuracy == "id_incorrect")
+c.p6.old.idin$theme_cUS[1]
+table(c.p6.old.idin$valence)
+table(c.p6.old.idin$valence,c.p6.old.idin$theme)
+
+# chosen p6 = beach
+c.p6.data <- subset(dat_us_2, source_mem_resp == "p6")
+c.p6.old.idin <- subset(c.p6.data, id_us_accuracy == "id_incorrect")
+c.p6.old.idin$theme_cUS[1]
+table(c.p6.old.idin$valence)
+table(c.p6.old.idin$valence,c.p6.old.idin$theme)
+
+
+```
+
+# Thematic confusion? Some "more more" analyses (JB)
+
+```{r}
+#read again the datafile with stimulus information
+us_theme = read.csv("selected_pictures_wsw.csv")
+us_theme$us_name = paste0(substr(us_theme$valence, 0, 1), us_theme$n)
+us_theme = us_theme %>% select(us_name, Theme, Category, valence, Valence_mean)
+
+#we will use it to identify the correct us (the one displayed with a given cs in the learning phase)
+##and to identify the selected us (the one selected in the "source" memory task)
+us_theme_cor = us_theme
+us_theme_selected = us_theme
+
+#for ease of processing, rename the columns
+colnames(us_theme_cor) = c("us_name_cor", "Theme_cor", "Category_cor", "valence_cor", "Valence_mean_cor")
+colnames(us_theme_selected) = c("us_name_selected", "Theme_selected", "Category_selected", "valence_selected", "Valence_mean_selected")
+  
+#combine the three data sets
+dat_us_cor = full_join(dat, us_theme_cor, by= c("us"="us_name_cor"))
+dat_us_all = full_join(dat_us_cor, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#keep only incorrect identifications (when the wrong US was selected)
+dat_us_all = dat_us_all %>% filter(us_valence != "dist" & id_us_accuracy_bin=="0" & source_mem_resp != "zz")
+
+#category and theme are factors
+dat_us_all$Category_cor = as.factor(dat_us_all$Category_cor)
+dat_us_all$Category_selected = as.factor(dat_us_all$Category_selected)
+dat_us_all$Theme_cor = as.factor(dat_us_all$Theme_cor)
+dat_us_all$Theme_selected = as.factor(dat_us_all$Theme_selected)
+
+#select only the useful columns
+dat_us_all = dat_us_all %>% select(url.srid, correct_us_source, source_mem_resp, Theme_cor, Theme_selected, Category_cor, Category_selected, valence_cor, valence_selected, uss)
+
+#for each "source" response, check which specific us was selected
+count_us_responses = dat_us_all %>% group_by(correct_us_source, source_mem_resp) %>%
+  summarize(n_selected = n())
+
+#combine the count_us_responses dataset with stimulus identification information
+dat_count1 = full_join(count_us_responses, us_theme_cor, by= c("correct_us_source"="us_name_cor"))
+dat_count2 = full_join(dat_count1, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#now, count how many times each specific US appeared in the trials selected above in total
+count_uss_displayed = unlist(dat_us_all$uss)  
+count_uss = as.data.frame(table(count_uss_displayed))
+
+#add this information to the dataset dat_count2 created above
+dat_count = full_join(dat_count2, count_uss, by= c("source_mem_resp"="count_uss_displayed"))
+
+#simple table to display US valence response as a function of correct US valence
+table(dat_count$valence_selected
+      #, dat_count$valence_cor
+      )
+
+#as a function of correct category
+table(dat_count$valence_selected, dat_count$valence_cor, dat_count$Category_cor)
+
+#selected valence as a function of theme
+table(dat_count$valence_selected, dat_count$Theme_cor)
+
+#correct the frequency of US selection by the total number of times it appeared 
+dat_count$n_selected = dat_count$n_selected/dat_count$Freq
+
+#calculate the proportions based on categories and valence of the correct us
+dat_count_test_cat = dat_count %>% group_by(Category_cor, Category_selected, valence_cor) %>%
+  summarize(n_selected_mean = mean(n_selected))
+
+dat_count_test_cat
+
+#calculate the proportions based on themes
+dat_count_test_theme = dat_count %>% group_by(Theme_cor, Theme_selected) %>%
+  summarize(n_selected_mean = mean(n_selected))
+
+print.data.frame(dat_count_test_theme)
+```
+
+# Thematic confusion? Some "more more more" analyses (KB)
+
+```{r}
+#read again the datafile with stimulus information
+us_theme = read.csv("selected_pictures_wsw.csv")
+us_theme$us_name = paste0(substr(us_theme$valence, 0, 1), us_theme$n)
+us_theme = us_theme %>% select(us_name, Theme, Category, valence, Valence_mean)
+
+#we will use it to identify the correct us (the one displayed with a given cs in the learning phase)
+##and to identify the selected us (the one selected in the "source" memory task)
+us_theme_cor = us_theme
+us_theme_selected = us_theme
+
+#for ease of processing, rename the columns
+colnames(us_theme_cor) = c("us_name_cor", "Theme_cor", "Category_cor", "valence_cor", "Valence_mean_cor")
+colnames(us_theme_selected) = c("us_name_selected", "Theme_selected", "Category_selected", "valence_selected", "Valence_mean_selected")
+  
+#combine the three data sets
+dat_us_cor = full_join(dat, us_theme_cor, by= c("us"="us_name_cor"))
+dat_us_all = full_join(dat_us_cor, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#keep only incorrect identifications (when the wrong US was selected)
+dat_us_all = dat_us_all %>% filter(us_valence != "dist" & id_us_accuracy_bin=="0" & source_mem_resp != "zz")
+
+#category and theme are factors
+dat_us_all$Category_cor = as.factor(dat_us_all$Category_cor)
+dat_us_all$Category_selected = as.factor(dat_us_all$Category_selected)
+dat_us_all$Theme_cor = as.factor(dat_us_all$Theme_cor)
+dat_us_all$Theme_selected = as.factor(dat_us_all$Theme_selected)
+
+#select only the useful columns
+dat_us_all = dat_us_all %>% select(url.srid, correct_us_source, source_mem_resp, Theme_cor, Theme_selected, Category_cor, Category_selected, valence_cor, valence_selected, uss)
+
+#for each "source" response, check which specific us was selected
+count_us_responses = dat_us_all %>% group_by(correct_us_source, source_mem_resp) %>%
+  summarize(n_selected = n())
+
+#combine the count_us_responses dataset with stimulus identification information
+dat_count1 = full_join(count_us_responses, us_theme_cor, by= c("correct_us_source"="us_name_cor"))
+dat_count2 = full_join(dat_count1, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#now, count for each correct US how many times the other USs were displayed as a response option
+
+correct_us <- unique(dat_count2$correct_us_source)
+correct_us_rep <- rep(correct_us,each = 24)
+us_option <- rep(correct_us,24)
+
+salut <- data.frame(correct_us_source = correct_us_rep
+                    ,source_mem_resp = us_option)
+
+salut$count.baseline <- 0
+salut$count.presented <- 0
+salut$relative.count <- 0
+
+for(i in 1:nrow(salut)){
+  tmp <- subset(dat_us_all,correct_us_source == salut$correct_us_source[i])
+  tmp.2 <- data.frame(options = unlist(tmp$uss))
+  tmp.2$options <- factor(tmp.2$options, levels = unique(dat_count2$correct_us_source))
+  tmp.3 <- table(tmp.2$options)
+  tmp.4 <- tmp.3[names(tmp.3)==salut$source_mem_resp[i]][[1]]
+  salut$count.baseline[i] <- nrow(tmp)
+  salut$count.presented[i] <- tmp.4
+  salut$relative.count[i] <- tmp.4/nrow(tmp)
+}
+
+salut.2 <- merge(salut,count_us_responses, by = c("correct_us_source","source_mem_resp"), all.x = TRUE)
+salut.2$source_mem_resp <- factor(salut.2$source_mem_resp, levels = unique(dat_count2$correct_us_source))
+salut.2$correct_us_source <- factor(salut.2$correct_us_source, levels = unique(dat_count2$correct_us_source))
+salut.2 <- mutate_all(salut.2, ~replace_na(.,0))
+salut.2$relative.n_selected <- salut.2$n_selected/salut.2$count.baseline
+salut.2$conditional <- salut.2$relative.n_selected/salut.2$relative.count
+
+salut.3 = full_join(salut.2, us_theme_cor, by= c("correct_us_source"="us_name_cor"))
+salut.4 = full_join(salut.3, us_theme_selected, by= c("source_mem_resp"="us_name_selected"))
+
+#systematic approach?
+
+### Are within-valence errors driven by certain categories?
+chosen.only <- subset(salut.4,n_selected > 0)
+chosen.only$sel_val_cor <- ifelse(chosen.only$valence_cor == chosen.only$valence_selected,1,0)
+table(chosen.only$sel_val_cor)
+apa_barplot(data = chosen.only
+            , main = ""
+            , id = "correct_us_source"
+            , dv = "sel_val_cor"
+            , factors = c("valence_cor","Category_cor"))
+
+aov_ez(data = chosen.only
+      , id = "correct_us_source"
+      , dv = "sel_val_cor"
+      , between = c("valence_cor","Category_cor"))
+
+# --> 3 Category_cor x 2 valence_cor combinations seem to contribute pretty evenly to within-valence errors
+
+### For each combination, are within-valence errors driven by match between Category_cor and Category_selected?
+
+# positive animals
+only.animal.pos.pos <- subset(salut.4,Category_cor == "Animal" & valence_cor == "positive" & sel_val_cor == 1)
+apa_barplot(data = only.animal.pos.pos
+            , main = "animal & positive & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+#--> positive animals not over-represented
+
+## for reference
+only.animal.pos.neg <- subset(salut.4,Category_cor == "Animal" & valence_cor == "positive" & sel_val_cor == 0)
+apa_barplot(data = only.animal.pos.neg
+            , main = "animal & positive & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+#--> negative animals not over-represented
+
+## difference scores
+only.animal.pos <- subset(salut.4,Category_cor == "Animal" & valence_cor == "positive")
+OAP.agg <- aggregate(data = only.animal.pos, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OAP.agg.2 <- dcast(OAP.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OAP.agg.2$diff <- OAP.agg.2$`1` - OAP.agg.2$`0`
+OAP.agg.2$id <- 1
+apa_barplot(data = OAP.agg.2
+            , main = "animal & positive"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+
+#positive objects
+only.object.pos.pos <- subset(salut.4,Category_cor == "Object" & valence_cor == "positive" & sel_val_cor == 1)
+apa_barplot(data = only.object.pos.pos
+            , main = "object & positive & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> positive objects not over-represented
+
+## for reference
+only.object.pos.neg <- subset(salut.4,Category_cor == "Object" & valence_cor == "positive" & sel_val_cor == 0)
+apa_barplot(data = only.object.pos.neg
+            , main = "object & positive & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative objects not over-represented
+
+## difference scores
+only.object.pos <- subset(salut.4,Category_cor == "Object" & valence_cor == "positive")
+OOP.agg <- aggregate(data = only.object.pos, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OOP.agg.2 <- dcast(OOP.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OOP.agg.2$diff <- OOP.agg.2$`1` - OOP.agg.2$`0`
+OOP.agg.2$id <- 1
+apa_barplot(data = OOP.agg.2
+            , main = "object & positive"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+#positive scenes
+only.scene.pos.pos <- subset(salut.4,Category_cor == "Scene" & valence_cor == "positive" & sel_val_cor == 1)
+apa_barplot(data = only.scene.pos.pos
+            , main = "scene & positive & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> positive scenes: highest bar (but tiny difference)
+
+# for reference
+only.scene.pos.neg <- subset(salut.4,Category_cor == "Scene" & valence_cor == "positive" & sel_val_cor == 0)
+apa_barplot(data = only.scene.pos.neg
+            , main = "scene & positive & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative scenes: highest bar (but tiny difference)
+
+## difference scores
+only.scene.pos <- subset(salut.4,Category_cor == "Scene" & valence_cor == "positive")
+OSP.agg <- aggregate(data = only.scene.pos, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OSP.agg.2 <- dcast(OSP.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OSP.agg.2$diff <- OSP.agg.2$`1` - OSP.agg.2$`0`
+OSP.agg.2$id <- 1
+apa_barplot(data = OSP.agg.2
+            , main = "scene & positive"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+# negative animals
+only.animal.neg.neg <- subset(salut.4,Category_cor == "Animal" & valence_cor == "negative" & sel_val_cor == 1)
+apa_barplot(data = only.animal.neg.neg
+            , main = "animal & negative & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative animalss: visibly highest bar
+
+## for reference
+only.animal.neg.pos <- subset(salut.4,Category_cor == "Animal" & valence_cor == "negative" & sel_val_cor == 0)
+apa_barplot(data = only.animal.neg.pos
+            , main = "animal & negative & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative animals: second highest bar
+
+## difference scores
+only.animal.neg <- subset(salut.4,Category_cor == "Animal" & valence_cor == "negative")
+OAN.agg <- aggregate(data = only.animal.neg, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OAN.agg.2 <- dcast(OAN.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OAN.agg.2$diff <- OAN.agg.2$`1` - OAN.agg.2$`0`
+OAN.agg.2$id <- 1
+apa_barplot(data = OAN.agg.2
+            , main = "animal & negative"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+# negative objects
+only.object.neg.neg <- subset(salut.4,Category_cor == "Object" & valence_cor == "negative" & sel_val_cor == 1)
+apa_barplot(data = only.object.neg.neg
+            , main = "object & negative & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative objects not over-represented
+
+
+## for reference
+only.object.neg.pos <- subset(salut.4,Category_cor == "Object" & valence_cor == "negative" & sel_val_cor == 0)
+apa_barplot(data = only.object.neg.pos
+            , main = "object & negative & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> positive objects not over-represented
+
+## difference scores
+only.object.neg <- subset(salut.4,Category_cor == "Object" & valence_cor == "negative")
+OON.agg <- aggregate(data = only.object.neg, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OON.agg.2 <- dcast(OON.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OON.agg.2$diff <- OON.agg.2$`1` - OON.agg.2$`0`
+OON.agg.2$id <- 1
+apa_barplot(data = OON.agg.2
+            , main = "objects & negative"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+# negative scenes
+only.scene.neg.neg <- subset(salut.4,Category_cor == "Scene" & valence_cor == "negative" & sel_val_cor == 1)
+apa_barplot(data = only.scene.neg.neg
+            , main = "scene & negative & negative"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> negative scenes not over-represented
+
+
+## for reference
+only.scene.neg.pos <- subset(salut.4,Category_cor == "Scene" & valence_cor == "negative" & sel_val_cor == 0)
+apa_barplot(data = only.scene.neg.pos
+            , main = "scene & negative & positive"
+            , id = "correct_us_source"
+            , dv = "conditional"
+            , ylim = c(0,1)
+            , factors = c("Category_selected"))
+
+#--> positive scenes not over-represented
+
+## difference scores
+only.scene.neg <- subset(salut.4,Category_cor == "Scene" & valence_cor == "negative")
+OSN.agg <- aggregate(data = only.scene.neg, FUN = mean, conditional ~ sel_val_cor * Category_selected)
+OSN.agg.2 <- dcast(OSN.agg, value.var = "conditional", Category_selected ~ sel_val_cor)
+OSN.agg.2$diff <- OSN.agg.2$`1` - OSN.agg.2$`0`
+OSN.agg.2$id <- 1
+apa_barplot(data = OSN.agg.2
+            , main = "scenes & negative"
+            , id = "id"
+            , dv = "diff"
+            , ylim = c(-1,1)
+            , factors = c("Category_selected"))
+
+
+```
