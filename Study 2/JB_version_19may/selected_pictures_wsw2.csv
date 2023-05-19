@@ -1,0 +1,25 @@
+,X,Theme,Category,Source,Valence_mean,Valence_SD,Valence_N,Arousal_mean,Arousal_SD,Arousal_N,theme,theme_long,valence,n
+1,I117,Car accident 2,Object,Pixabay,1.972222222,1.008916633,108,4.086538462,1.8386919,104,Car ,Car accide,negative,1
+2,I229,Destruction 6,Scene,Pixabay,2.00990099,1.187392517,101,4.097087379,2.130610532,103,Dest,Destructio,negative,2
+3,I865,War 2 ,Scene,Pixabay,2.396039604,1.51709728,101,4.582524272,1.876188626,103,War,War 2,negative,3
+4,I274,Dog 24,Animal,Wikipedia,1.892156863,1.080033578,102,4.772277228,2.158152859,101,Dog ,Dog 24,negative,4
+5,I636,Plane crash 1,Object,Pixabay,2.598039216,1.322013196,102,4.00990099,1.70584319,101,Plan,Plane cras,negative,5
+6,I83,Bloody knife 2,Object,Flickr/Steven Depolo,2.257425743,1.101394256,101,3.902912621,1.992705143,103,Bloo,Bloody kni,negative,6
+7,I326,Fire 9,Scene,Pixabay,1.470588235,0.740696519,102,5.148514851,1.888841648,101,Fire,Fire 9,negative,7
+8,I631,Pigeon 6,Animal,Flickr/internets_dairy,2.324074074,1.100795835,108,3.817307692,2.013374808,104,Pige,Pigeon 6,negative,8
+9,I740,Shot 3,Object,Pixabay,1.916666667,0.977551777,108,4.173076923,2.031032583,104,Shot,Shot 3,negative,9
+10,I234,Dirt 1,Scene,Pixabay,1.607843137,0.822419309,102,4.98019802,1.97979897,101,Dirt,Dirt 1,negative,10
+11,I383,Garbage dump 5,Scene,Pixabay,2.137254902,1.005324594,102,3.326732673,1.697697917,101,Garb,Garbage du,negative,11
+12,I166,Cockroach 1,Animal,Pixabay,2.058823529,1.175858897,102,4.346534653,2.174560386,101,Cock,Cockroach ,negative,12
+13,I617,Performance 1,Scene,Pixabay,5.574257426,1.089463489,101,3.86407767,1.720969538,103,Perf,Performanc,positive,1
+14,I346,Flowers 3,Object,Pixabay,5.792079208,1.098333571,101,3.708737864,1.845137053,103,Flow,Flowers 3,positive,2
+15,I291,Elephant 1,Animal,Pixabay,5.862745098,0.975331532,102,4.386138614,1.56185977,101,Elep,Elephant 1,positive,3
+16,I434,Horse 1,Animal,Pixabay,5.935185185,1.052572711,108,3.721153846,1.714907401,104,Hors,Horse 1,positive,4
+17,I813,Sunset 4,Scene,Pixabay,6.107843137,0.994110008,102,4.316831683,1.832652139,101,Suns,Sunset 4,positive,5
+18,I335,Fireworks 2,Scene,Pixabay,6.274509804,0.902766515,102,4.98019802,1.743446002,101,Fire,Fireworks ,positive,6
+19,I430,Happy pose 3,Scene,Wikipedia,5.742574257,0.986442754,101,3.932038835,1.670165754,103,Happ,Happy pose,positive,7
+20,I96,Bridge 1,Scene,Pixabay,5.891089109,0.99900941,101,3.553398058,1.775255603,103,Brid,Bridge 1,positive,8
+21,I661,Rainbow 2,Scene,Pixabay,6.257425743,0.955546601,101,4.902912621,1.700718205,103,Rain,Rainbow 2,positive,9
+22,I372,Galaxy 2,Scene,Pixabay,5.772277228,1.028408364,101,4.436893204,1.918281006,103,Gala,Galaxy 2,positive,10
+23,I66,Beach 8,Scene,Pixabay,5.852941176,1.008842674,102,3.891089109,1.886271402,101,Beac,Beach 8,positive,11
+24,I178,Cold 8,Object,Pixabay,5.524752475,1.162704257,101,3.485436893,1.685370022,103,Cold,Cold 8,positive,12
