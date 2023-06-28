@@ -23,7 +23,7 @@ set_sum_contrasts()
 #read the dataset we created in a previous R script
 # dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS")
 
-dat = readRDS("test_data_2606.RDS")
+dat = readRDS("test_data_2706.RDS")
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
@@ -328,7 +328,7 @@ mod_mpt = traitMPT(
   , n.burnin = 200000
   , n.thin   = 40
   , n.chains = 4
-  , restrictions = list("Dn=Dpos=Dneg","G=0.25","Cneg = Cpos","dneg = dpos")
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25")
 )
 
 save(mod_mpt, file ="fit_MPT.RData")
@@ -532,6 +532,67 @@ mod_agg
 
 #a = .5 does not decrease model fit
 ```
+
+```{r}
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$C <- NA
+regression_data$d <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$d[i] <- para_ratings$dpos[tmp_id]
+  }
+    if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$d[i] <- para_ratings$dneg[tmp_id]
+  }
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  , data = data
+)
+summary(model)
+
+ggpredict(model, terms = ~ C * d * us_valence) |>
+  plot(rawdata = TRUE)
+
+
+```
+
+
+
+
 
 # test regression models parameter estimates -- evaluative ratings
 

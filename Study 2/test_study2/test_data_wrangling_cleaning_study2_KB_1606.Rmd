@@ -30,7 +30,7 @@ I used the data from the two studies on Jatos (wsw first run and wsw second run)
 
 ```{r read_data, message=FALSE, warning=FALSE}
 # Read the text file from JATOS (first batch)...
-read_file('test_data_2606.txt')%>%
+read_file('test_data_2706.txt')%>%
 #... split it into lines ...
  str_split('\n') %>% first() %>%
 #... filter empty rows ...
@@ -222,5 +222,5 @@ dat_final = full_join(dat_mem, dat_ratings
 
 ```{r write_data}
 #write the final dataset we will use for analyses in another R script
-saveRDS(dat_final, "test_data_2606.RDS") #RDS can handle lists such as in the `uss` list
+saveRDS(dat_final, "test_data_2706.RDS") #RDS can handle lists such as in the `uss` list
 ```
