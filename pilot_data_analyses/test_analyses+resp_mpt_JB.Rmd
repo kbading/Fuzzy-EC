@@ -310,7 +310,7 @@ dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
 
 ```{r}
 #we'll use this model
-MPTinR::check.mpt("KW_wsw_model.eqn")
+#MPTinR::check.mpt("KW_wsw_model.eqn")
 
 #Fit the model and estimate parameters
 # mod_mpt = traitMPT(
