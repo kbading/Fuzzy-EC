@@ -18,6 +18,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
 require(pacman)
 p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS') 
 set_sum_contrasts()
+library(lme4)
+library(ggeffects)
 
 #read the dataset we created in a previous R script
 dat = readRDS("data_wsw_final_pilot.RDS") 
@@ -384,7 +386,7 @@ para_ratings <- merge(agg_data_d, individual_parameters, by = "url.srid")
 # regression 1
 
 para_ratings$ec <- para_ratings$positive-para_ratings$negative
-contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 model <- lm(
   formula = ec ~ (cntr(a) + cntr(b) + cntr(Dn) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg))
@@ -403,6 +405,29 @@ ggpredict(model, terms = ~ Cneg + Cpos) |>
 
 ```{r}
 # regression 2
+
+para_ratings <- subset(para_ratings, ec >=0)
+# contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+model <- lm(
+  formula = ec ~ (cntr(a) + cntr(b) + cntr(Dn) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg))
+  , data = para_ratings
+)
+summary(model)
+ggpredict(model, terms = ~ dpos + dneg) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ dneg + dpos) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ Cpos + Cneg) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ Cneg + Cpos) |>
+  plot(rawdata = TRUE)
+
+```
+
+
+```{r}
+# regression 3
 
 id <- rep(1:length(para_ratings$url.srid),each = 2)
 us_valence <- rep(c("positive","negative"),7)
@@ -436,8 +461,7 @@ for(i in 1:nrow(regression_data)){
 data <- regression_data
 data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
 
-library(lme4)
-library(ggeffects)
+
 
 contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
@@ -456,7 +480,7 @@ ggpredict(model, terms = ~ dneg * Cneg * us_valence) |>
 ```
 
 ```{r}
-# regression 3
+# regression 4
 
 id <- rep(1:length(para_ratings$url.srid),each = 2)
 us_valence <- rep(c("positive","negative"),7)
