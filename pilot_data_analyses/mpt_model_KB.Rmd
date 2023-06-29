@@ -381,6 +381,82 @@ para_ratings <- merge(agg_data_d, individual_parameters, by = "url.srid")
 # 
 # #para_ratings <- subset(para_ratings, url.srid %in% c("9860","9862","9864"))
 
+# regression 1
+
+para_ratings$ec <- para_ratings$positive-para_ratings$negative
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+model <- lm(
+  formula = ec ~ (cntr(a) + cntr(b) + cntr(Dn) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg))
+  , data = para_ratings
+)
+summary(model)
+ggpredict(model, terms = ~ dpos + dneg) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ dneg + dpos) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ Cpos + Cneg) |>
+  plot(rawdata = TRUE)
+ggpredict(model, terms = ~ Cneg + Cpos) |>
+  plot(rawdata = TRUE)
+```
+
+```{r}
+# regression 2
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$Cpos <- NA
+regression_data$Cneg <- NA
+regression_data$dpos <- NA
+regression_data$dneg <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+    regression_data$rating[i] <- para_ratings$positive[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ (cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+  , data = data
+)
+summary(model)
+
+ggpredict(model, terms = ~ dpos * Cpos * us_valence) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model, terms = ~ dneg * Cneg * us_valence) |>
+  plot(rawdata = TRUE)
+```
+
+```{r}
+# regression 3
 
 id <- rep(1:length(para_ratings$url.srid),each = 2)
 us_valence <- rep(c("positive","negative"),7)
@@ -433,6 +509,9 @@ model <- lmer(
 summary(model)
 
 ggpredict(model, terms = ~ d * C * us_valence) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model, terms = ~ C * d * us_valence) |>
   plot(rawdata = TRUE)
 
 
