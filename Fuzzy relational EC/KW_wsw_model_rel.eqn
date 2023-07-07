@@ -1,0 +1,49 @@
+#KW WSW Model
+PA	PAposIcor	D_PA*C_PA
+PA 	PAposIcor	D_PA*(1-C_PA)*I_PA*(G)
+PA 	PAposIincor	D_PA*(1-C_PA)*I_PA*(1-G)
+PA	PAposIcor	D_PA*(1-C_PA)*(1-I_PA)*a*(G)
+PA	PAposIincor	D_PA*(1-C_PA)*(1-I_PA)*a*(1-G)
+PA	PAnegIincor	D_PA*(1-C_PA)*(1-I_PA)*(1-a)	
+PA	PAposIcor	(1-D_PA)*b*a*G
+PA	PAposIincor	(1-D_PA)*b*a*(1-G)
+PA	PAnegIincor	(1-D_PA)*b*(1-a)
+PA	PAnew	(1-D_PA)*(1-b)
+
+NA	NAnegIcor	D_NA*C_NA
+NA 	NAnegIcor	D_NA*(1-C_NA)*I_NA*(G)
+NA 	NAnegIincor	D_NA*(1-C_NA)*I_NA*(1-G)
+NA	NAposIincor	D_NA*(1-C_NA)*(1-I_NA)*a
+NA	NAnegIcor	D_NA*(1-C_NA)*(1-I_NA)*(1-a)*(G)
+NA	NAnegIincor	D_NA*(1-C_NA)*(1-I_NA)*(1-a)*(1-G)
+NA	NAposIincor	(1-D_NA)*b*a
+NA	NAnegIcor	(1-D_NA)*b*(1-a)*(G)
+NA	NAnegIincor	(1-D_NA)*b*(1-a)*(1-G)
+NA	NAnew	(1-D_NA)*(1-b)
+
+PC	PCnegIcor	D_PC*C_PC
+PC 	PCnegIcor	D_PC*(1-C_PC)*I_PC*(G)
+PC 	PCnegIincor	D_PC*(1-C_PC)*I_PC*(1-G)
+PC	PCposIincor	D_PC*(1-C_PC)*(1-I_PC)*a
+PC	PCnegIcor	D_PC*(1-C_PC)*(1-I_PC)*(1-a)*(G)
+PC	PCnegIincor	D_PC*(1-C_PC)*(1-I_PC)*(1-a)*(1-G)
+PC	PCposIincor	(1-D_PC)*b*a
+PC	PCnegIcor	(1-D_PC)*b*(1-a)*(G)
+PC	PCnegIincor	(1-D_PC)*b*(1-a)*(1-G)
+PC	PCnew	(1-D_PC)*(1-b)
+
+NC	NCposIcor	D_NC*C_NC
+NC 	NCposIcor	D_NC*(1-C_NC)*I_NC*(G)
+NC 	NCposIincor	D_NC*(1-C_NC)*I_NC*(1-G)
+NC	NCposIcor	D_NC*(1-C_NC)*(1-I_NC)*a*(G)
+NC	NCposIincor	D_NC*(1-C_NC)*(1-I_NC)*a*(1-G)
+NC	NCnegIincor	D_NC*(1-C_NC)*(1-I_NC)*(1-a)	
+NC	NCposIcor	(1-D_NC)*b*a*G
+NC	NCposIincor	(1-D_NC)*b*a*(1-G)
+NC	NCnegIincor	(1-D_NC)*b*(1-a)
+NC	NCnew	(1-D_NC)*(1-b)
+
+New	Newnew		D_neu
+New	NewposIincor	(1-D_neu)*b*a
+New	NewnegIincor	(1-D_neu)*b*(1-a)
+New	Newnew		(1-D_neu)*(1-b)

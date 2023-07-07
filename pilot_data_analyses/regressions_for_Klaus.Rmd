@@ -3,8 +3,10 @@ title: "Different regressions to predict CS ratings from ('who said what') MPT p
 author: "Karoline Bading"
 output:
   html_document:
-    toc: true
+    toc: yes
     code_folding: show
+  pdf_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -371,11 +373,33 @@ agg_data_d <- dcast(agg_data, value.var = "eval_rating", url.srid ~ us_valence)
 para_ratings <- merge(agg_data_d, individual_parameters, by = "url.srid")
 ```
 
-# Regressions analyses
+# Regression analyses
+
+## Checking partial correlations
+
+```{r}
+xxx <- para_ratings
+xxx$url.srid <- NULL
+xxx$ec <- xxx$positive - xxx$negative
+format(round(cor(xxx),3))
+
+
+
+library(psych)
+partial.r(xxx, cs(ec, dpos), cs(Cpos,Cneg,dneg,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, dneg), cs(Cpos,Cneg,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, Cpos), cs(dneg,Cneg,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, Cneg), cs(dneg,Cpos,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, a), cs(dneg,Cpos,dpos,Cneg,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, b), cs(dneg,Cpos,dpos,Cneg,a,Dn), method="pearson")
+partial.r(xxx, cs(ec, Dn), cs(dneg,Cpos,dpos,Cneg,a,b), method="pearson")
+```
 
 ## Checking bivariate correlations between MPT parameters
 
 We will focus on the MPT parameters that are the most interesting for predicting the CS ratings: Cpos, Cneg, dpos, dneg.
+
+### Cpos
 
 The MPT parameter Cpos (recollection of paired US for positively paired CSs) is positively correlated with Dn, a, Cneg, dpos and dneg, and negatively correlated with b.
 The correlations with Cneg, dpos and dneg are quite strong, suggesting an underlying ability to store and retrieve information from the pairing procedure, and may lead to multicollinearity whenever Cpos and any of the other three MPT parameters are included as competing predictors in a regression model.
@@ -390,6 +414,8 @@ cor.test(para_ratings$Cpos, para_ratings$dpos)
 cor.test(para_ratings$Cpos, para_ratings$dneg)
 
 ```
+
+### Cneg
 
 The MPT parameter Cneg (recollection of paired US for negatively paired CSs) is positively correlated with Dn, a, Cpos, dpos and dneg, and negatively correlated with b (same pattern as for Cpos).
 The positive correlations with Cpos, dpos and dneg again suggest an underlying ability to store and retrieve information from the pairing procedure.
@@ -406,6 +432,8 @@ cor.test(para_ratings$Cneg, para_ratings$dneg)
 
 ```
 
+### dpos
+
 The MPT parameter dpos (recollection of paired US valence for positively paired CSs) is positively correlated with a, b, Cpos, Cneg and dneg, and negatively correlated with Dn.
 As before, the positive correlations with Cpos, Cneg and dneg suggest an underlying ability to store and retrieve information from the pairing procedure.
 The correlation between dpos and Cpos is particularly strong and may therefore lead to multicollinearity whenever the two MPT parameters are included as competing predictors in a regression model.
@@ -420,6 +448,8 @@ cor.test(para_ratings$dpos, para_ratings$Cneg)
 cor.test(para_ratings$dpos, para_ratings$dneg)
 
 ```
+
+### dneg
 
 The MPT parameter dneg (recollection of paired US valence for negatively paired CSs) is positively correlated with Dn, a, Cpos, Cneg and dneg, and negatively correlated with b.
 As before, the positive correlations with Cpos, Cneg and dpos suggest an underlying ability to store and retrieve information from the pairing procedure.
@@ -438,8 +468,10 @@ cor.test(para_ratings$dneg, para_ratings$dpos)
 
 ## Checking bivariate correlations between MPT parameters and ratings
 
+### Unpaired "new" CSs
+
 The correlations between the mean rating of "new" CSs (that were not presented during the pairing procedure) and Dn, a, b, Cneg, Cpos, dneg is descriptively positive, while the correlation between the mean rating of "new" CSs and dpos is descriptively negative.
-The correlations between the mean rating of "new" CSs and Cpos, Cneg, dpos and dneg are all rather small, suggesting that ratings of "new" CSs is not related to recollection of US and/or US valence for previously paired "old" CSs.
+The correlations between the mean rating of "new" CSs and Cpos, Cneg, dpos and dneg are all rather small, suggesting that ratings of "new" CSs is not related to recollection of the US identity and/or US valence for previously paired "old" CSs.
 The positive correlation between the mean rating of "new" CSs and the b Parameter (guessing "old") indicates that participants with a stronger tendency toward guessing "old" might express this tendency in more positive ratings for "new" CSs.
 This seems sensible since (real or imagined) exposure is known to lead to more positive evaluations (mere exposure effect).
 
@@ -454,6 +486,8 @@ cor.test(para_ratings$dpos,para_ratings$dist)
 cor.test(para_ratings$dneg,para_ratings$dist)
 
 ```
+
+### Positively paired "old" CSs
 
 The correlations between the mean rating of positively paired CSs and all seven MPT parameters are descriptively positive.
 The correlations between the mean rating of positively paired CSs and Cpos, Cneg, dpos and dneg are noticeably larger (than those with Dn, a and b)  suggesting that ratings of positively paired CSs is mostly related to recollection of US and/or US valence for previously paired "old" CSs.
@@ -471,6 +505,8 @@ cor.test(para_ratings$dpos,para_ratings$positive)
 cor.test(para_ratings$dneg,para_ratings$positive)
 
 ```
+
+### Negatively paired "old" CSs
 
 The correlations between the mean rating of negatively paired CSs and all seven MPT parameters are descriptively positive.
 It seems odd that larger Cneg and dneg parameters predict more positive rather than more negative ratings for negatively paired CSs.
@@ -539,7 +575,8 @@ contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model <- lmer(
-  formula = rating ~ (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  formula = rating ~ #(cntr(d)+cntr(C)) * us_valence + (1 | id)
+  (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
   , data = data
 )
 
@@ -590,6 +627,9 @@ The baseline-corrected mean CS ratings will then be predicted from US valence an
 para_ratings$positive_bc <- para_ratings$positive - para_ratings$dist
 para_ratings$negative_bc <- para_ratings$negative - para_ratings$dist
 
+t.test(para_ratings$positive_bc,para_ratings$negative_bc, paired = TRUE)
+t.test(para_ratings$positive,para_ratings$negative, paired = TRUE)
+
 id <- rep(1:length(para_ratings$url.srid),each = 2)
 us_valence <- rep(c("positive","negative"),7)
 
@@ -632,7 +672,8 @@ contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model <- lmer(
-  formula = rating ~ (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  formula = rating ~ #(cntr(d) + cntr(C)) * us_valence + (1 | id)
+    (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
   , data = data
 )
 
@@ -644,7 +685,7 @@ None of the main effects of the MPT parameters and their interactions with US va
 ```{r}
 
 summary(model)
-
+vif(model)
 ```
 
 Our focus of interest are again the interactions between US valence and C as well as between US valence and d.
@@ -730,7 +771,8 @@ contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model <- lmer(
-  formula = rating ~ (cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+  formula = rating ~ (cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+    #(cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
   , data = data
 )
 
@@ -777,7 +819,7 @@ ggpredict(model, terms = ~ Cpos * us_valence) |>
 
 ```
 
-The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cpos and ratings for negatively paired CSs.
+The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cneg and ratings for negatively paired CSs.
 As illustrated by following figure, this suggested pattern in only party accurate: for ratings of both positively and negatively paired CSs, there is a positive relationship with Cneg.
 This pattern is in line with the positive weight for the main effect of Cneg.
 The positive weight for the interaction between Cneg and US valence therefore serves to achieve a stronger positive relationship between CSneg and ratings of positively paired CSs than between CSneg and ratings of negatively paired CSs.
@@ -850,7 +892,8 @@ contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model <- lmer(
-  formula = rating ~ (cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+  formula = rating ~ (cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+    #(cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
   , data = data
 )
 
@@ -900,17 +943,18 @@ ggpredict(model, terms = ~ Cpos * us_valence) |>
 
 ```
 
+The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cneg and ratings for negatively paired CSs.
+As illustrated by following figure, this suggested pattern in only party accurate: for ratings of both positively and negatively paired CSs, there is a positive relationship with Cneg.
+This pattern is in line with the positive weight for the main effect of Cneg.
+The positive weight for the interaction between Cneg and US valence therefore serves to achieve a stronger positive relationship between CSneg and ratings of positively paired CSs than between CSneg and ratings of negatively paired CSs.
+This pattern is also visible in the following figure.
+
 ```{r}
 
 ggpredict(model, terms = ~ Cneg * us_valence) |>
   plot(rawdata = TRUE)
 
 ```
-
-The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cpos and ratings for negatively paired CSs.
-As illustrated by following figure, this suggested pattern in only party accurate: for ratings of both positively and negatively paired CSs, there is a positive relationship with Cneg.
-This pattern is in line with the positive weight for the main effect of Cneg.
-The positive weight for the interaction between Cneg and US valence therefore serves to achieve a stronger positive relationship between CSneg and ratings of positively paired CSs than between CSneg and ratings of negatively paired CSs.
 
 ## Regression analysis 3a: Predict EC effects from MPT parameters
 
@@ -920,21 +964,30 @@ The individual EC effects will then be predicted from individual MPT parameters 
 ```{r}
 
 para_ratings$ec <- para_ratings$positive-para_ratings$negative
+#para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
+#para_ratings <- subset(para_ratings, ec >= 0)
 contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 model <- lm(
-  formula = ec ~ (cntr(a) + cntr(b) + cntr(Dn) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) + cntr(Cpos):cntr(dpos) + cntr(Cneg):cntr(dneg)
+  formula = ec ~ (cntr(b) + cntr(Dn) + cntr(Cneg) + cntr(dneg) + cntr(dpos)
+
+
+                  
+                  
+                  
+                  )
   , data = para_ratings
 )
 
 
 ```
 
-As indicated by the marginally significant intercept, the is a tendency for an EC effect.
+As indicated by the marginally significant intercept, there is a tendency for an EC effect.
 None of the main effects of the MPT parameters or the interactions with US valence reach significance.
 
 ```{r}
 summary(model)
+vif(model)
 ```
 
 Our focus of interest are now the main effects of Cpos, Cneg, dpos and dneg.
@@ -943,16 +996,14 @@ As illustrated by the following figure, this positive weight indicates that EC e
 
 ```{r}
 
-ggpredict(model, terms = ~ dpos * Cpos) |>
-  plot(rawdata = TRUE)
-
-ggpredict(model, terms = ~ dneg * Cneg) |>
+ggpredict(model, terms = ~ dpos) |>
   plot(rawdata = TRUE)
 
 ```
 
 Again in line with expectations, the regression weight for the main effect of dneg is also positive (though much smaller than the weight for the main effect of dpos).
 As illustrated by the following figure, this positive weight indicates that also EC effects increase as a function of dneg.
+However, the predictive relationship is very weak.
 
 ```{r}
 
@@ -961,64 +1012,27 @@ ggpredict(model, terms = ~ dneg) |>
 
 ```
 
+The regression weight for the main effect of Cpos is negative indicating that EC effects decrease as a function of Cpos.
+This suprising pattern is illustrated in the following figure.
 
 ```{r}
 
-ggpredict(model, terms = ~ dneg) |>
+ggpredict(model, terms = ~ Cpos) |>
   plot(rawdata = TRUE)
 
 ```
 
+Finally, the regression weight for the main effect of Cneg is positive (though very small).
+As illustrated by the following figure, this indicates that EC effects increase as a function of Cneg.
+However, the predictive relationship is weak.
+
 ```{r}
 
-ggpredict(model, terms = ~ Cpos + Cneg) |>
+ggpredict(model, terms = ~ Cneg) |>
   plot(rawdata = TRUE)
 
 ```
 
-```{r}
-
-ggpredict(model, terms = ~ Cneg + Cpos) |>
-  plot(rawdata = TRUE)
-
-```
-
-## Regression analysis 3b: Predict baseline-corrected EC effects from MPT parameters
-Individual baseline-corrected EC effects will be calculated by subtracting the baseline-corrected mean rating of negatively paired CSs from the baseline-corrected mean rating of positively paired CSs.
-The individual baseline-corrected EC effects will then be predicted from individual MPT parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]).
-
-```{r}
-
-para_ratings$ec <- para_ratings$positive_bc-para_ratings$negative_bc
-contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
-cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
-model <- lm(
-  formula = ec ~ (cntr(a) + cntr(b) + cntr(Dn) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg))
-  , data = para_ratings
-)
-
-
-```
-
-We find ...
-
-```{r}
-summary(model)
-```
-
-Our focus of interest is on ...
-
-```{r}
-
-ggpredict(model, terms = ~ dpos + dneg) |>
-  plot(rawdata = TRUE)
-ggpredict(model, terms = ~ dneg + dpos) |>
-  plot(rawdata = TRUE)
-ggpredict(model, terms = ~ Cpos + Cneg) |>
-  plot(rawdata = TRUE)
-ggpredict(model, terms = ~ Cneg + Cpos) |>
-  plot(rawdata = TRUE)
-
-```
+#
 
 

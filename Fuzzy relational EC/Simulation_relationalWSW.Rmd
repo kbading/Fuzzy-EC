@@ -1,0 +1,557 @@
+---
+title: "Untitled"
+author: 'Karoline "The Lazy Bird" Bading'
+date: "30 6 2023"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("apa_scatterplot.R")
+library(papaja)
+library(afex)
+library(reshape2)
+library(stats)
+library(truncnorm)
+library(TreeBUGS)
+```
+
+# Create empty data frame
+
+```{r}
+N = 50
+Ncs = 90
+us_valence = c("positive","negative","none")
+relation = c("assimilative","contrastive","none")
+
+data_empty <- data.frame(
+  id = rep(1:N, each = Ncs)
+  , us_valence = rep(rep(us_valence, each = Ncs/3),N)
+  , relation = rep(c(rep(rep(relation[1:2], each = Ncs/6),2),rep(relation[3], Ncs/3)),N)
+  , correct_inference = rep(c(rep("posI",15),rep("negI",15),rep("negI",15),rep("posI",15),rep("none",30)),N)
+  , correct_category = rep(c(rep("PA",15),rep("PC",15),rep("NA",15),rep("NC",15),rep("new",30)),N)
+  , D = NA
+  , C = NA
+  , d = NA
+  , b = NA
+  , a = NA
+)
+
+
+```
+
+## Create D
+
+```{r}
+
+data_1 <- data_empty
+
+rho_pn_D <- 1
+rho_ac_D <- 1
+rho_cc_D <- 1
+
+sigma <- c(
+  AP_D = 0.25
+  , AN_D = 0.25
+  , CP_D = 0.25
+  , CN_D = 0.25
+  , new_D = 0.25
+)
+
+id_effects <- data.frame(
+  AP_D = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN_D <- id_effects$AP_D# * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP_D <- id_effects$AP_D# * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN_D <- id_effects$AP_D# * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+id_effects$new_D <- id_effects$AP_D
+
+id_effects$AP_D <- sigma["AP_D"] * (id_effects$AP_D)
+id_effects$AN_D <- sigma["AN_D"] * (id_effects$AN_D)
+id_effects$CP_D <- sigma["CP_D"] * (id_effects$CP_D)
+id_effects$CN_D <- sigma["CN_D"] * (id_effects$CN_D)
+id_effects$new_D <- sigma["new_D"] * (id_effects$new_D)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP_D = 0
+    , AN_D = 0 
+    , CP_D = 0
+    , CN_D = 0 
+    , new_D = 0 
+  )
+)
+
+data_1$D <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP_D"] + id_effects$AP_D[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN_D"] + id_effects$AN_D[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP_D"] + id_effects$CP_D[data_1$id]
+                    , ifelse(data_1$us_valence == "negative" & data_1$relation == "contrastive"
+                             , fixed_effects$average_baseline["CN_D"] + id_effects$CN_D[data_1$id]
+                             , fixed_effects$average_baseline["new_D"] + id_effects$new_D[data_1$id]
+                    ))))
+
+data_1$D_prob <- pnorm(data_1$D,0,1)
+
+
+# # check asymmetry
+# 
+# par(mfrow = c(1,1))
+# apa_beeplot(data = data_1, id = "id", dv = "propositional_valence", factors = c("us_valence","relation"))
+# apa_beeplot(data = data_1, id = "id", dv = "inf_prob", factors = c("us_valence","relation"))
+# 
+# xxx <- aggregate(data= data_1, inf_prob ~ id * us_valence * relation, FUN = mean)
+# yyy <- dcast(data= xxx, value.var = "inf_prob", id * us_valence ~ relation)
+# yyy$diff <- yyy$assimilative - yyy$contrastive
+# mean(yyy$diff)
+# cor.test(yyy$assimilative,yyy$contrastive)
+# cor.test(yyy$assimilative,yyy$diff)
+# cor.test(yyy$contrastive,yyy$diff)
+# apa_beeplot(data=yyy,dv="diff",id = "id")
+
+```
+
+## Create C
+
+```{r}
+
+rho_pn_C <- 1
+rho_ac_C <- 1
+rho_cc_C <- 1
+
+sigma <- c(
+  AP_C = 0.25
+  , AN_C = 0.25
+  , CP_C = 0.25
+  , CN_C = 0.25
+  , new_C = 0.25
+)
+
+id_effects <- data.frame(
+  AP_C = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN_C <- id_effects$AP_C# * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP_C <- id_effects$AP_C# * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN_C <- id_effects$AP_C# * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+id_effects$new_C <- id_effects$AP_C
+
+id_effects$AP_C <- sigma["AP_C"] * (id_effects$AP_C)
+id_effects$AN_C <- sigma["AN_C"] * (id_effects$AN_C)
+id_effects$CP_C <- sigma["CP_C"] * (id_effects$CP_C)
+id_effects$CN_C <- sigma["CN_C"] * (id_effects$CN_C)
+id_effects$new_C <- sigma["new_C"] * (id_effects$new_C)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP_C = 0
+    , AN_C = 0 
+    , CP_C = 0
+    , CN_C = 0 
+    , new_C = 0 
+  )
+)
+
+data_1$C <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP_C"] + id_effects$AP_C[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN_C"] + id_effects$AN_C[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP_C"] + id_effects$CP_C[data_1$id]
+                    , ifelse(data_1$us_valence == "negative" & data_1$relation == "contrastive"
+                             , fixed_effects$average_baseline["CN_C"] + id_effects$CN_C[data_1$id]
+                             , fixed_effects$average_baseline["new_C"] + id_effects$new_C[data_1$id]
+                    ))))
+
+data_1$C_prob <- pnorm(data_1$C,0,1)
+
+```
+
+## Create d
+
+```{r}
+
+rho_pn_I <- 1
+rho_ac_I <- 1
+rho_cc_I <- 1
+
+sigma <- c(
+  AP_I = 0.25
+  , AN_I = 0.25
+  , CP_I = -1
+  , CN_I = -1
+  , new_I = 0.25
+)
+
+id_effects <- data.frame(
+  AP_I = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN_I <- id_effects$AP_I# * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP_I <- id_effects$AP_I# * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN_I <- id_effects$AP_I# * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+id_effects$new_I <- id_effects$AP_I
+
+id_effects$AP_I <- sigma["AP_I"] * (id_effects$AP_I)
+id_effects$AN_I <- sigma["AN_I"] * (id_effects$AN_I)
+id_effects$CP_I <- sigma["CP_I"] * (id_effects$CP_I)
+id_effects$CN_I <- sigma["CN_I"] * (id_effects$CN_I)
+id_effects$new_I <- sigma["new_I"] * (id_effects$new_I)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP_I = 0
+    , AN_I = 0 
+    , CP_I = 0
+    , CN_I = 0 
+    , new_I = 0 
+  )
+)
+
+data_1$d <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP_I"] + id_effects$AP_I[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN_I"] + id_effects$AN_I[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP_I"] + id_effects$CP_I[data_1$id]
+                    , ifelse(data_1$us_valence == "negative" & data_1$relation == "contrastive"
+                             , fixed_effects$average_baseline["CN_I"] + id_effects$CN_I[data_1$id]
+                             , fixed_effects$average_baseline["new_I"] + id_effects$new_I[data_1$id]
+                    ))))
+
+data_1$d_prob <- pnorm(data_1$d,0,1)
+
+```
+
+## Create b
+
+```{r}
+
+rho_pn_b <- 1
+rho_ac_b <- 1
+rho_cc_b <- 1
+
+sigma <- c(
+  AP_b = 0.25
+  , AN_b = 0.25
+  , CP_b = 0.25
+  , CN_b = 0.25
+  , new_b = 0.25
+)
+
+id_effects <- data.frame(
+  AP_b = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN_b <- id_effects$AP_b# * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP_b <- id_effects$AP_b# * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN_b <- id_effects$AP_b# * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+id_effects$new_b <- id_effects$AP_b
+
+id_effects$AP_b <- sigma["AP_b"] * (id_effects$AP_b)
+id_effects$AN_b <- sigma["AN_b"] * (id_effects$AN_b)
+id_effects$CP_b <- sigma["CP_b"] * (id_effects$CP_b)
+id_effects$CN_b <- sigma["CN_b"] * (id_effects$CN_b)
+id_effects$new_b <- sigma["new_b"] * (id_effects$new_b)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP_b = 0
+    , AN_b = 0 
+    , CP_b = 0
+    , CN_b = 0 
+    , new_b = 0 
+  )
+)
+
+data_1$b <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP_b"] + id_effects$AP_b[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN_b"] + id_effects$AN_b[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP_b"] + id_effects$CP_b[data_1$id]
+                    , ifelse(data_1$us_valence == "negative" & data_1$relation == "contrastive"
+                             , fixed_effects$average_baseline["CN_b"] + id_effects$CN_b[data_1$id]
+                             , fixed_effects$average_baseline["new_b"] + id_effects$new_b[data_1$id]
+                    ))))
+
+data_1$b_prob <- pnorm(data_1$b,0,1)
+
+```
+
+## Create a
+
+```{r}
+
+rho_pn_a <- 1
+rho_ac_a <- 1
+rho_cc_a <- 1
+
+sigma <- c(
+  AP_a = 0.25
+  , AN_a = 0.25
+  , CP_a = 0.25
+  , CN_a = 0.25
+  , new_a = 0.25
+)
+
+id_effects <- data.frame(
+  AP_a = rnorm(n = N, mean = 0, sd = 1)
+)
+
+id_effects$AN_a <- id_effects$AP_a# * rho_pn^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_pn^2)
+id_effects$CP_a <- id_effects$AP_a# * rho_ac^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_ac^2)
+id_effects$CN_a <- id_effects$AP_a# * rho_cc^2 + rnorm(n = N, mean = 0, sd = 1) * (1-rho_cc^2)
+id_effects$new_a <- id_effects$AP_a
+
+id_effects$AP_a <- sigma["AP_a"] * (id_effects$AP_a)
+id_effects$AN_a <- sigma["AN_a"] * (id_effects$AN_a)
+id_effects$CP_a <- sigma["CP_a"] * (id_effects$CP_a)
+id_effects$CN_a <- sigma["CN_a"] * (id_effects$CN_a)
+id_effects$new_a <- sigma["new_a"] * (id_effects$new_a)
+
+fixed_effects <- list(
+  average_baseline = c(
+    AP_a = 0
+    , AN_a = 0 
+    , CP_a = 0
+    , CN_a = 0 
+    , new_a = 0 
+  )
+)
+
+data_1$a <- ifelse(
+  data_1$us_valence == "positive" & data_1$relation == "assimilative"
+  , fixed_effects$average_baseline["AP_a"] + id_effects$AP_a[data_1$id]
+  , ifelse(data_1$us_valence == "negative" & data_1$relation == "assimilative"
+           , fixed_effects$average_baseline["AN_a"] + id_effects$AN_[data_1$id]
+           , ifelse(data_1$us_valence == "positive" & data_1$relation == "contrastive"
+                    , fixed_effects$average_baseline["CP_a"] + id_effects$CP_a[data_1$id]
+                    , ifelse(data_1$us_valence == "negative" & data_1$relation == "contrastive"
+                             , fixed_effects$average_baseline["CN_a"] + id_effects$CN_a[data_1$id]
+                             , fixed_effects$average_baseline["new_a"] + id_effects$new_a[data_1$id]
+                    ))))
+
+data_1$a_prob <- pnorm(data_1$a,0,1)
+data_1$G_prob <- 0.5
+```
+
+## Create MPT task responses (1)
+
+```{r}
+#data_1$meaning <- "negative"
+# data_1$meaning[
+#   (data_1$relation == "assimilative" & data_1$us_valence == "positive")|
+#     (data_1$relation == "contrastive" & data_1$us_valence == "negative")
+#   ] <- "positive"
+
+data_1$D_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$D_prob)
+data_1$C_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$C_prob)
+data_1$d_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$d_prob)
+data_1$b_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$b_prob)
+data_1$a_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$a_prob)
+data_1$G_mpt <- rbinom(n = nrow(data_1), size = 1, prob = data_1$G_prob)
+
+
+data_1$category <- NA
+
+for(i in 1:nrow(data_1)){
+  if(data_1$correct_inference[i] == "none"){
+    if(data_1$D_mpt[i] == 1){
+      data_1$category[i] <- "Newnew"
+    }
+    if(data_1$D_mpt[i] == 0){
+       if(data_1$b_mpt[i] == 1){
+         if(data_1$a_mpt[i] == 1){
+           data_1$category[i] <- "NewposIincor"
+         }
+         if(data_1$a_mpt[i] == 0){
+           data_1$category[i] <- "NewnegIincor"
+         }
+       }
+      if(data_1$b_mpt[i] == 0){
+        data_1$category[i] <- "Newnew"
+      }
+    }
+  }
+  if(data_1$us_valence[i] == "positive" & data_1$relation[i] == "assimilative"){
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 0){
+      data_1$category[i] <- "PAnew"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0){
+      data_1$category[i] <- "PAnegIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PAposIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PAposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0){
+      data_1$category[i] <- "PAnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PAposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PAposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PAposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PAposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 1){
+      data_1$category[i] <- "PAposIcor"
+    }
+  }
+  if(data_1$us_valence[i] == "negative" & data_1$relation[i] == "contrastive"){
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 0){
+      data_1$category[i] <- "NCnew"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0){
+      data_1$category[i] <- "NCnegIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NCposIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NCposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0){
+      data_1$category[i] <- "NCnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NCposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NCposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NCposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NCposIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 1){
+      data_1$category[i] <- "NCposIcor"
+    }
+  }
+  
+  if(data_1$us_valence[i] == "negative" & data_1$relation[i] == "assimilative"){
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 0){
+      data_1$category[i] <- "NAnew"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NAnegIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NAnegIcor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1){
+      data_1$category[i] <- "NAposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NAnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NAnegIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1){
+      data_1$category[i] <- "NAposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "NAnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "NAnegIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 1){
+      data_1$category[i] <- "NAnegIcor"
+    }
+  }
+  if(data_1$us_valence[i] == "positive" & data_1$relation[i] == "contrastive"){
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 0){
+      data_1$category[i] <- "PCnew"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PCnegIincor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PCnegIcor"
+    }
+    if(data_1$D_mpt[i] == 0 & data_1$b_mpt[i] == 1 & data_1$a_mpt[i] == 1){
+      data_1$category[i] <- "PCposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PCnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 0 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PCnegIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 0 & data_1$a_mpt[i] == 1){
+      data_1$category[i] <- "PCposIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 0){
+      data_1$category[i] <- "PCnegIincor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 0 & data_1$d_mpt[i] == 1 & data_1$G_mpt[i] == 1){
+      data_1$category[i] <- "PCnegIcor"
+    }
+    if(data_1$D_mpt[i] == 1 & data_1$C_mpt[i] == 1){
+      data_1$category[i] <- "PCnegIcor"
+    }
+  }
+}
+
+# data_1$mpt_response[is.na(data_1$mpt_response)] <- sample(
+#   c("positive", "negative")
+#   , replace = TRUE
+#   , size = sum(is.na(data_1$mpt_response))
+# )
+# 
+# data_1$category <- paste0(
+#   ifelse(data_1$us_valence == "positive", "P", "N")
+#   , ifelse(data_1$relation == "assimilative", "A", "C")
+#   , data_1$mpt_response
+# )
+
+tmp <- table(data_1$id, data_1$category)
+
+mpt_data_1 <- data.frame(
+  PAposIcor = tmp[, "PAposIcor"]
+)
+for (i in colnames(tmp)) {
+  mpt_data_1[[i]] <- tmp[, i]
+}
+
+```
+
+## Estimate MPT model (1)
+
+```{r}
+library(TreeBUGS)
+model_1 <- traitMPT(
+  eqnfile = "KW_wsw_model_rel.eqn"
+  , data = mpt_data_1
+  , n.iter   = 4000
+  , n.adapt  =  2000
+  , n.burnin = 2000
+  , n.thin   =     40
+  , n.chains = 4
+  , restrictions = list(
+    "D_PA=D_NA=D_PC=D_NC=D_neu", "G = 0.5"
+  )
+)
+model_1_fit <- PPP(model_1, M = 5e3)
+```
