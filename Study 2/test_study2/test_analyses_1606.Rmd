@@ -23,7 +23,7 @@ set_sum_contrasts()
 #read the dataset we created in a previous R script
 # dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/pilot_study/data/data_wsw_final_pilot.RDS")
 
-dat = readRDS("test_data_2706.RDS")
+dat = readRDS("study2.RDS")
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
@@ -37,7 +37,7 @@ dat$reco_resp = as.factor(dat$reco_resp)
 ```{r exclude}
 #exclude participants declaring they did not take their responses seriously
 ##or did not pay attention
-dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+dat = dat %>% filter(pay_attention != 0 & serious != 0 & order != "mem_first") %>% droplevels() #drop level to remove excluded ppts
 length(unique(dat$url.srid)) # N of participants after exclusion
 ```
 
@@ -122,7 +122,7 @@ knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digi
 dat_ev$`US Valence` = dat_ev$us_valence
 
 #visualize the data
-apa_beeplot(data=dat_ev, id="url.srid", dv="eval_rating", factors=c("US Valence"), use = "all.obs", ylim=c(0,11),
+apa_beeplot(data=dat_ev, id="url.srid", dv="eval_rating", factors=c("us_valence"), use = "all.obs", ylim=c(0,11),
             xlab = "US"
             ,ylab = "Mean evaluative ratings")
 ```
@@ -323,9 +323,9 @@ MPTinR::check.mpt("KW_wsw_model.eqn")
 mod_mpt = traitMPT(
   eqnfile = "KW_wsw_model.eqn"
   , data = dat_mpt_freq %>% ungroup() %>% select(-url.srid)
-  , n.iter   = 400000
-  , n.adapt  =  20000
-  , n.burnin = 200000
+  , n.iter   = 40000
+  , n.adapt  =  2000
+  , n.burnin = 20000
   , n.thin   = 40
   , n.chains = 4
   , restrictions = list("Dn=Dpos=Dneg","G=0.25")
@@ -433,11 +433,11 @@ cor.test(para_ratings$Cneg,para_ratings$dpos)
 # MPTinR::check.mpt("KW_wsw_model.eqn")
 # 
 #MPT on aggregated frequencies
-mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+mod_agg_2 = fit.mpt(data = dat_mpt_freq_agg$n
         ,model.filename = "KW_wsw_model.eqn"
         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
         )
-mod_agg
+mod_agg_2
 # 
 # #main model with dpos = 0
 # model_mpt_no_dpos = fit.mpt(data = dat_mpt_freq_agg$n
