@@ -618,11 +618,7 @@ model <- lmer(
   , data = data
 )
 
-model <- lmer(
-  formula = rating ~ #(cntr(d)+cntr(C)) * us_valence + (1 | id)
-  (cntr(d) + cntr(C)) * us_valence + (1 | id)
-  , data = data
-)
+summary(model)
 
 
 
@@ -675,7 +671,7 @@ t.test(para_ratings$positive_bc,para_ratings$negative_bc, paired = TRUE)
 t.test(para_ratings$positive,para_ratings$negative, paired = TRUE)
 
 id <- rep(1:length(para_ratings$url.srid),each = 2)
-us_valence <- rep(c("positive","negative"),7)
+us_valence <- rep(c("positive","negative"),nrow(para_ratings))
 
 regression_data <- data.frame(id = id
                               , us_valence = us_valence)
@@ -885,7 +881,7 @@ The baseline-corrected mean CS ratings will then be predicted from US valence an
 ```{r}
 
 id <- rep(1:length(para_ratings$url.srid),each = 2)
-us_valence <- rep(c("positive","negative"),7)
+us_valence <- rep(c("positive","negative"),nrow(para_ratings))
 
 regression_data <- data.frame(id = id
                               , us_valence = us_valence)
@@ -1010,18 +1006,17 @@ The individual EC effects will then be predicted from individual MPT parameters 
 ```{r}
 
 para_ratings$ec <- para_ratings$positive-para_ratings$negative
-#para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
+para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
 #para_ratings <- subset(para_ratings, ec >= 0)
 #contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 model <- lm(
-  formula = ec ~ ((cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg))
+  formula = ec.2 ~ (cntr(b) + cntr(Cpos) + cntr(dpos) + cntr(dneg))
 
 
                   
                   
-                  
-                  )
+
   , data = para_ratings
 )
 
