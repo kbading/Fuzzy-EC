@@ -1,0 +1,1038 @@
+---
+title: "Different regressions to predict CS ratings from ('who said what') MPT parameters"
+author: "Karoline Bading"
+output:
+  html_document:
+    toc: yes
+    code_folding: show
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Load packages and read the data
+
+```{r set}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS') 
+set_sum_contrasts()
+
+#read the dataset we created in a previous R script
+dat = readRDS("data_wsw_final_pilot.RDS") 
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+```
+
+# Exclude participants
+
+```{r exclude}
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+length(unique(dat$url.srid)) # N of participants after exclusion
+```
+
+# Code responses in the recognition/CS-US pairing memory tasks
+
+```{r recode}
+#create a new factor to negativeinguish between old and new CSs 
+dat$cs_exposure = ifelse(dat$us_valence == "negative", "new", "old")
+table(dat$cs_exposure, dat$us_valence)
+
+#indicate whether the recognition decision is correct (hit and cr) or not (fa and miss)
+dat = dat %>%
+  mutate(reco_accuracy = ifelse((cs_exposure=="old" & reco_resp == "old"), "hit"
+                                ,ifelse((cs_exposure=="old" & reco_resp == "new"), "miss"
+                                ,ifelse((cs_exposure=="new" & reco_resp == "old"), "fa", "cr"))
+                                ))
+
+#indicate whether source memory is correct regarding valence (positive or negative)
+dat$correct_us_source = NA
+dat$source_mem_resp = NA
+
+for(i in 1:length(dat$url.srid)){
+  dat$correct_us_source[i] = dat$uss[[i]][dat$idtarg[i]+1]
+  dat$source_mem_resp[i] = dat$uss[[i]][as.numeric(substr(dat$source_mem, 3, 3))[i]]
+}
+
+#calculate whether us valence and us identity memory are correct or not
+dat = dat %>%
+  mutate(val_us_accuracy = ifelse(substr(source_mem_resp, 0, 1) == substr(correct_us_source, 0, 1), "val_correct", "val_incorrect")
+        ,id_us_accuracy = ifelse(source_mem_resp == correct_us_source, "id_correct", "id_incorrect")
+         )
+
+table(dat$val_us_accuracy)
+table(dat$id_us_accuracy)
+
+#replace NA with "no_resp" when no response was provided in the source memory task, 
+##whether this is correct (for old css) or not (for new css)
+dat = dat %>% mutate(val_us_accuracy = replace_na(val_us_accuracy, "no_resp")
+                     ,id_us_accuracy = replace_na(id_us_accuracy, "no_resp"))
+```
+
+# Evaluative ratings
+
+```{r eval_change}
+####
+#EVALUATIVE CONDITIONING
+####
+
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+knitr::kable(dat_ev, format = "html")
+
+#check data negativeribution
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="positive"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+```
+
+```{r eval_ratings}
+mod1 = aov_ez(dat_ev
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              ,within = "us_valence"
+)
+
+mod1_print = apa_print(mod1)
+
+apa_table(
+  mod1_print$table
+  ,caption = "Repeated-measures ANOVA: Ratings as a function of US"
+)
+
+# Descriptive statistics: evaluative change scores as a function of US Valence
+knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+```
+
+```{r plot_ratings, fig.cap="Evaluative ratings as a function of US Valence. Dots are the individual observations, and error bars are the 95% Confidence Intervals. *Note:* TBS = Two-buttons-sets procedure; VMA = Valence Memory Attribution task; 3ACE = Three-attribution, continuous evaluative ratings task."}
+dat_ev$`US Valence` = dat_ev$us_valence
+
+#visualize the data
+apa_beeplot(data=dat_ev, id="url.srid", dv="eval_rating", factors=c("US Valence"), use = "all.obs", ylim=c(0,11),
+            xlab = "US"
+            ,ylab = "Mean evaluative ratings")
+```
+
+# Recognition memory
+
+```{r recognition}
+####
+#RECOGNITION MEMORY
+####
+
+#compute recognition memory performance by computing freq("old"|old) (hits) and freq("old"|new) (fa)
+dat = dat %>% mutate(reco_resp_bin = ifelse(reco_resp=="old", 1, 0))
+
+dat_reco_agg = dat %>%
+  group_by(url.srid, cs_exposure) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg, format = "html")
+
+dat_reco_wide = dat_reco_agg %>% pivot_wider(names_from = "cs_exposure"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide$reco_corrected = dat_reco_wide$old - dat_reco_wide$new
+
+describeBy(dat_reco_agg$prop_old, dat_reco_agg$cs_exposure)
+describe(dat_reco_wide$reco_corrected)
+
+#by us valence
+
+dat_reco_agg_val = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_old = mean(reco_resp_bin))
+
+knitr::kable(dat_reco_agg_val, format = "html")
+
+dat_reco_wide_val = dat_reco_agg_val %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_old")
+
+dat_reco_wide_val$reco_corrected_pos = dat_reco_wide_val$positive - dat_reco_wide_val$negative
+dat_reco_wide_val$reco_corrected_neg = dat_reco_wide_val$negative - dat_reco_wide_val$negative
+
+describeBy(dat_reco_agg_val$prop_old, dat_reco_agg_val$us_valence)
+describe(dat_reco_wide_val$reco_corrected_pos)
+describe(dat_reco_wide_val$reco_corrected_neg)
+```
+
+# CS-US pairing memory
+
+```{r source}
+#Valence 
+
+dat = dat %>% mutate(val_us_accuracy_bin = ifelse(val_us_accuracy=="val_correct", 1, 0))
+
+dat_source_mem = dat %>% filter(us_valence != "negative" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_source = mean(val_us_accuracy_bin))
+
+knitr::kable(dat_source_mem, format = "html")
+
+dat_source_mem_wide = dat_source_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_source")
+
+dat_reco_agg_val_old = dat_reco_agg_val %>% filter(us_valence != "negative")
+dat_reco_source = full_join(dat_reco_agg_val_old, dat_source_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_reco_source$prop_correct_source, dat_reco_source$us_valence)
+
+#Identity
+dat = dat %>% mutate(id_us_accuracy_bin = ifelse(id_us_accuracy=="id_correct", 1, 0))
+
+dat_id_mem = dat %>% filter(us_valence != "negative" & reco_accuracy == "hit") %>%
+  group_by(url.srid, us_valence) %>%
+  summarise(prop_correct_id = mean(id_us_accuracy_bin))
+
+knitr::kable(dat_id_mem, format = "html")
+
+dat_id_mem_wide = dat_id_mem %>% pivot_wider(names_from = "us_valence"
+                                                 ,values_from = "prop_correct_id")
+
+dat_mem = full_join(dat_reco_source, dat_id_mem,
+                               by = c("url.srid"="url.srid", "us_valence"="us_valence"))
+
+describeBy(dat_mem$prop_correct_id, dat_mem$us_valence)
+
+knitr::kable(dat_mem, format = "html")
+
+```
+
+# Response frequencies + MPT model
+
+```{r}
+#compute response frequencies for MPT analyses
+
+#First, remove NA in source memory responses and in the column storing the correct us
+dat = dat %>% mutate(correct_us_source = replace_na(correct_us_source, "zz")
+                     ,source_mem_resp = replace_na(source_mem_resp, "zz"))
+
+##Create three datasets, one for each tree; them, we will merge them
+
+##Tree: US+ and select only relevant columns
+dat_pos = dat %>% filter(us_valence == "positive") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "PosUSnew" as we are in the US+ tree
+##then, if US identity response correct, response is "PosUSposcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "PosUSposincor" if valence is correct; else, "PosUSnegincor"
+dat_pos = dat_pos %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"PosUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"PosUSposcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "PosUSposincor"
+                                                              , "PosUSnegincor"
+                                                       )
+                                               )
+)
+)
+
+# /!\/!\/!\
+# #ONLY run this code for TESTS
+# we dont have "posUSposincor" in the test data, so I fake one "PosUSposincor" response
+# a = which(dat_pos$resp_mpt=="PosUSposcor")
+# dat_pos$resp_mpt[a[2]] = "PosUSposincor"
+# //!\/!\
+
+##Tree: US- and select only relevant columns
+dat_neg = dat %>% filter(us_valence == "negative") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "NegUSnew" as we are in the US- tree
+##then, if US identity response correct, response is "NegUSnegcor"
+##last, if US valence (in the absence of correct US identity response) is correct, "NegUSnegincor" if valence is correct; else, "NegUSposincor"
+dat_neg = dat_neg %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"NegUSnew"
+                                               ,ifelse(source_mem_resp == correct_us_source
+                                                       ,"NegUSnegcor"
+                                                       ,ifelse(substr(source_mem_resp, 0, 1)==substr(correct_us_source, 0, 1)
+                                                              , "NegUSnegincor"
+                                                              , "NegUSposincor"
+                                                       )
+                                               )
+)
+)
+
+#Tree: New and select only relevant columns
+dat_new = dat %>% filter(us_valence == "negative") %>% select(url.srid, cs, us_valence, correct_us_source, source_mem_resp)
+
+#we compute responses as follows:
+##if response == "zz", this means ppts provided a "new" response -- this is a "Newnew" as we are in the New CS tree
+##then, US memory responses are necessarily incorrect as no US was displayed
+##if the selected US is positive, response is "Newposincor"
+##if the selected US is negative, response is "Newnegincor"
+dat_new = dat_new %>% mutate(resp_mpt = ifelse(source_mem_resp == "zz"
+                                               ,"Newnew"
+                                               ,ifelse(substr(source_mem_resp, 0, 1)=="p"
+                                                              , "Newposincor"
+                                                              , "Newnegincor")
+)
+)
+
+#Merge datasets so that all responses are available into a single dataframe
+##proceed in two stets: CS-US+ and CS-US- trees
+dat_mpt.1 = full_join(dat_pos, dat_neg
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+
+#add new CS tree
+dat_mpt = full_join(dat_mpt.1, dat_new
+                    ,by = c("url.srid"="url.srid", "cs"="cs", "us_valence"="us_valence", "correct_us_source"="correct_us_source","source_mem_resp"="source_mem_resp", "resp_mpt"="resp_mpt"))
+```
+
+```{r}
+# #participants frequencies for each response type, even if 0 responses for a given participant
+# dat_mpt_freq = dat_mpt %>% #in dat_mpt
+#   group_by(url.srid, resp_mpt, .drop=FALSE) %>% #group observations by participant (url.srid) and resp_mpt (already capturing the tree)
+#   tally %>% 
+#   spread(resp_mpt, n, fill=0) #use a "wide" format
+# 
+# dat_mpt_freq_fit = dat_mpt_freq %>% ungroup() %>% select(-url.srid) 
+# 
+# #aggregated level if needed
+# dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
+#   group_by(resp_mpt, .drop=FALSE) %>% #group observations by resp_mpt (already capturing the tree)
+#   tally
+```
+
+```{r}
+
+tmp <- table(dat_mpt$url.srid, dat_mpt$resp_mpt)
+mpt_data <- data.frame(
+  NegUSnegcor = tmp[, "NegUSnegcor"]
+)
+for (i in colnames(tmp)) {
+  mpt_data[[i]] <- tmp[, i]
+}
+
+```
+
+```{r}
+#we'll use this model
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("mod_mpt_KB.rds")) {
+  mod_mpt_KB <- readRDS("mod_mpt_KB.rds")
+} else {
+
+  mod_mpt_KB = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e4
+  , n.adapt  =  2e4
+  , n.burnin = 2e4
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25")
+  , ppp = 5e3
+  )
+  saveRDS(mod_mpt_KB, file = "mod_mpt_KB.rds")
+}
+
+#Fit the model and estimate parameters
+
+summary(mod_mpt_KB)
+
+TreeBUGS::plotFit(mod_mpt_KB)
+TreeBUGS::plotFreq(mod_mpt_KB)
+TreeBUGS::plotParam(mod_mpt_KB)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(mod_mpt_KB, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$url.srid <- rownames(individual_parameters)
+saveRDS(individual_parameters, file = "individual-parameters-KB.rds")
+
+
+agg_data <- aggregate(eval_rating ~ us_valence + url.srid, data = dat_ev, FUN = mean)
+library(reshape2)
+agg_data_d <- dcast(agg_data, value.var = "eval_rating", url.srid ~ us_valence)
+para_ratings <- merge(agg_data_d, individual_parameters, by = "url.srid")
+```
+
+# Regression analyses
+
+## Checking partial correlations
+
+```{r}
+xxx <- para_ratings
+xxx$url.srid <- NULL
+xxx$ec <- xxx$positive - xxx$negative
+format(round(cor(xxx),3))
+
+
+
+library(psych)
+partial.r(xxx, cs(ec, dpos), cs(Cpos,Cneg,dneg,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, dneg), cs(Cpos,Cneg,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, Cpos), cs(dneg,Cneg,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, Cneg), cs(dneg,Cpos,dpos,a,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, a), cs(dneg,Cpos,dpos,Cneg,b,Dn), method="pearson")
+partial.r(xxx, cs(ec, b), cs(dneg,Cpos,dpos,Cneg,a,Dn), method="pearson")
+partial.r(xxx, cs(ec, Dn), cs(dneg,Cpos,dpos,Cneg,a,b), method="pearson")
+```
+
+## Checking bivariate correlations between MPT parameters
+
+We will focus on the MPT parameters that are the most interesting for predicting the CS ratings: Cpos, Cneg, dpos, dneg.
+
+### Cpos
+
+The MPT parameter Cpos (recollection of paired US for positively paired CSs) is positively correlated with Dn, a, Cneg, dpos and dneg, and negatively correlated with b.
+The correlations with Cneg, dpos and dneg are quite strong, suggesting an underlying ability to store and retrieve information from the pairing procedure, and may lead to multicollinearity whenever Cpos and any of the other three MPT parameters are included as competing predictors in a regression model.
+
+```{r}
+
+cor.test(para_ratings$Cpos, para_ratings$Dn)
+cor.test(para_ratings$Cpos, para_ratings$a)
+cor.test(para_ratings$Cpos, para_ratings$b)
+cor.test(para_ratings$Cpos, para_ratings$Cneg)
+cor.test(para_ratings$Cpos, para_ratings$dpos)
+cor.test(para_ratings$Cpos, para_ratings$dneg)
+
+```
+
+### Cneg
+
+The MPT parameter Cneg (recollection of paired US for negatively paired CSs) is positively correlated with Dn, a, Cpos, dpos and dneg, and negatively correlated with b (same pattern as for Cpos).
+The positive correlations with Cpos, dpos and dneg again suggest an underlying ability to store and retrieve information from the pairing procedure.
+Among these three correlations, those between Cneg and Cpos as well as between Cneg and dneg are particularly strong and may therefore lead to multicollinearity whenever Cneg and any of the other two MPT parameters are included as competing predictors in a regression model.
+
+```{r}
+
+cor.test(para_ratings$Cneg, para_ratings$Dn)
+cor.test(para_ratings$Cneg, para_ratings$a)
+cor.test(para_ratings$Cneg, para_ratings$b)
+cor.test(para_ratings$Cneg, para_ratings$Cpos)
+cor.test(para_ratings$Cneg, para_ratings$dpos)
+cor.test(para_ratings$Cneg, para_ratings$dneg)
+
+```
+
+### dpos
+
+The MPT parameter dpos (recollection of paired US valence for positively paired CSs) is positively correlated with a, b, Cpos, Cneg and dneg, and negatively correlated with Dn.
+As before, the positive correlations with Cpos, Cneg and dneg suggest an underlying ability to store and retrieve information from the pairing procedure.
+The correlation between dpos and Cpos is particularly strong and may therefore lead to multicollinearity whenever the two MPT parameters are included as competing predictors in a regression model.
+
+```{r}
+
+cor.test(para_ratings$dpos, para_ratings$Dn)
+cor.test(para_ratings$dpos, para_ratings$a)
+cor.test(para_ratings$dpos, para_ratings$b)
+cor.test(para_ratings$dpos, para_ratings$Cpos)
+cor.test(para_ratings$dpos, para_ratings$Cneg)
+cor.test(para_ratings$dpos, para_ratings$dneg)
+
+```
+
+### dneg
+
+The MPT parameter dneg (recollection of paired US valence for negatively paired CSs) is positively correlated with Dn, a, Cpos, Cneg and dneg, and negatively correlated with b.
+As before, the positive correlations with Cpos, Cneg and dpos suggest an underlying ability to store and retrieve information from the pairing procedure.
+The correlations between dneg and Cpos as well as between dneg and Cneg are particularly strong and may therefore lead to multicollinearity whenever dneg and the other two MPT parameters are included as competing predictors in a regression model.
+
+```{r}
+
+cor.test(para_ratings$dneg, para_ratings$Dn)
+cor.test(para_ratings$dneg, para_ratings$a)
+cor.test(para_ratings$dneg, para_ratings$b)
+cor.test(para_ratings$dneg, para_ratings$Cpos)
+cor.test(para_ratings$dneg, para_ratings$Cneg)
+cor.test(para_ratings$dneg, para_ratings$dpos)
+
+```
+
+## Checking bivariate correlations between MPT parameters and ratings
+
+### Unpaired "new" CSs
+
+The correlations between the mean rating of "new" CSs (that were not presented during the pairing procedure) and Dn, a, b, Cneg, Cpos, dneg is descriptively positive, while the correlation between the mean rating of "new" CSs and dpos is descriptively negative.
+The correlations between the mean rating of "new" CSs and Cpos, Cneg, dpos and dneg are all rather small, suggesting that ratings of "new" CSs is not related to recollection of the US identity and/or US valence for previously paired "old" CSs.
+The positive correlation between the mean rating of "new" CSs and the b Parameter (guessing "old") indicates that participants with a stronger tendency toward guessing "old" might express this tendency in more positive ratings for "new" CSs.
+This seems sensible since (real or imagined) exposure is known to lead to more positive evaluations (mere exposure effect).
+
+```{r}
+
+cor.test(para_ratings$Dn,para_ratings$dist)
+cor.test(para_ratings$a,para_ratings$dist)
+cor.test(para_ratings$b,para_ratings$dist)
+cor.test(para_ratings$Cneg,para_ratings$dist)
+cor.test(para_ratings$Cpos,para_ratings$dist)
+cor.test(para_ratings$dpos,para_ratings$dist)
+cor.test(para_ratings$dneg,para_ratings$dist)
+
+```
+
+### Positively paired "old" CSs
+
+The correlations between the mean rating of positively paired CSs and all seven MPT parameters are descriptively positive.
+The correlations between the mean rating of positively paired CSs and Cpos, Cneg, dpos and dneg are noticeably larger (than those with Dn, a and b)  suggesting that ratings of positively paired CSs is mostly related to recollection of US and/or US valence for previously paired "old" CSs.
+The substantial correlations between the mean rating of positively paired CSs and the MPT parameters related to the opposite US valence (Cneg and dneg) may be explained by the positive correlations between Cneg and Cpos/dpos as well as between dneg and Cpos/dpos (see above).
+In regression analyses including Cneg, Cpos, dpos and dneg as competing predictors for the mean rating of positively paired CSs, multicollinearity seems therefore likely.
+
+```{r}
+
+cor.test(para_ratings$Dn,para_ratings$positive)
+cor.test(para_ratings$a,para_ratings$positive)
+cor.test(para_ratings$b,para_ratings$positive)
+cor.test(para_ratings$Cneg,para_ratings$positive)
+cor.test(para_ratings$Cpos,para_ratings$positive)
+cor.test(para_ratings$dpos,para_ratings$positive)
+cor.test(para_ratings$dneg,para_ratings$positive)
+
+```
+
+### Negatively paired "old" CSs
+
+The correlations between the mean rating of negatively paired CSs and all seven MPT parameters are descriptively positive.
+It seems odd that larger Cneg and dneg parameters predict more positive rather than more negative ratings for negatively paired CSs.
+However, these positive correlations may be induced by (uncontrolled) positive correlations between Cneg and other MPT parameters that are positively related to mean ratings for negatively paired CSs.
+Regression analyses controlling for other MPT parameters are therefore particularly interesting here.
+
+```{r}
+
+cor.test(para_ratings$Dn,para_ratings$negative)
+cor.test(para_ratings$a,para_ratings$negative)
+cor.test(para_ratings$b,para_ratings$negative)
+cor.test(para_ratings$Cneg,para_ratings$negative)
+cor.test(para_ratings$Cpos,para_ratings$negative)
+cor.test(para_ratings$dpos,para_ratings$negative)
+cor.test(para_ratings$dneg,para_ratings$negative)
+
+```
+
+## Regression analysis 1a: Predict CS ratings from US valence and MPT parameters
+
+Mean CS ratings will be predicted from US valence and the individual MPT parameters. Individual predictor values for D (discrimination old vs. new), b (guessing "old"), a (guessing "positive US") will be identical for both levels of US valence. Individual predictor values for C and d will be different for the two levels of US valence: for the "positive" condition, Cpos and dpos will function as predictor values, whereas in the "negative" condition, Cneg and dneg will be used.
+
+```{r}
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$C <- NA
+regression_data$d <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$d[i] <- para_ratings$dpos[tmp_id]
+  }
+    if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$d[i] <- para_ratings$dneg[tmp_id]
+  }
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ #(cntr(d)+cntr(C)) * us_valence + (1 | id)
+  (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  , data = data
+)
+
+
+
+
+```
+
+In line previous analysis, there is no EC effect overall (indicated by the non-significant main effect of US valence).
+None of the main effects of the MPT parameters and their interactions with US valence reaches significance.
+
+```{r}
+
+summary(model)
+
+```
+
+Our focus of interest are the interactions between US valence and C as well as between US valence and d.
+In line with expectations, there is positive weight for the interaction between US valence and d indicating that ratings for positively (negatively) paired CS increase (decrease) as a function of dpos (dneg).
+This is illustrated in the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ d * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+Surprisingly, there is a negative weight for the interaction between US valence and C suggesting that ratings for positively (negatively) paired CS decrease (increase) as a function of Cpos (Cneg).
+As illustrated by the following figure, this is not the case: ratings for both positively and negatively paired CSs increase as a function of their C parameter (Cpos and Cneg, respectively).
+This pattern is in line with the positive weight for the main effect of C (see above).
+The negative weight for the interaction between US valence and C therefore indicates that the positive relationship between Cpos and ratings of positively paired CSs is weaker than the positive relationship between Cneg and ratings of negatively paired CSs.
+This is also illustrated by the following figure.
+
+```{r}
+ggpredict(model, terms = ~ C * us_valence) |>
+  plot(rawdata = TRUE)
+```
+
+
+## Regression analysis 1b: Predict baseline-corrected CS ratings from US valence and MPT parameters
+
+Baseline-corrected mean CS ratings in the "positive" ("negative") condition will be calculated by subtracting the mean rating of "new" CSs from the mean rating of positively (negatively) paired CSs.
+The baseline-corrected mean CS ratings will then be predicted from US valence and the individual MPT parameters. Individual predictor values for D (discrimination old vs. new), b (guessing "old"), a (guessing "positive US") will be identical for both levels of US valence. Individual predictor values for C and d will be different for the two levels of US valence: for the "positive" condition, Cpos and dpos will function as predictor values, whereas in the "negative" condition, Cneg and dneg will be used.
+
+```{r}
+
+para_ratings$positive_bc <- para_ratings$positive - para_ratings$dist
+para_ratings$negative_bc <- para_ratings$negative - para_ratings$dist
+
+t.test(para_ratings$positive_bc,para_ratings$negative_bc, paired = TRUE)
+t.test(para_ratings$positive,para_ratings$negative, paired = TRUE)
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$C <- NA
+regression_data$d <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$d[i] <- para_ratings$dpos[tmp_id]
+  }
+    if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$d[i] <- para_ratings$dneg[tmp_id]
+  }
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ #(cntr(d) + cntr(C)) * us_valence + (1 | id)
+    (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  , data = data
+)
+
+```
+
+As indicated by the (marginally) significant main effect of US valence, there is an overall EC effect for baseline-corrected ratings of "old" CSs.
+None of the main effects of the MPT parameters and their interactions with US valence reaches significance.
+
+```{r}
+
+summary(model)
+vif(model)
+```
+
+Our focus of interest are again the interactions between US valence and C as well as between US valence and d.
+In line with expectations, there is positive weight for the interaction between US valence and d suggested that baseline-corrected ratings for positively (negatively) paired CS increase (decrease) as a function of dpos (dneg).
+As illustrated by the following, this suggested pattern is only partly accurate: while there is indeed a positive relationship between dpos and baseline-corrected ratings of positively paired CSs, there seems to be no connection between dneg and baseline-corrected ratings of negatively paired CSs.
+Considering the positive weight for the main effect of d, the positive weight for the interaction between US valence and d therefore serves to achieve a strongly positive relationship between dpos and ratings of positively paired CSs and a zero relationship between dneg and ratings of negatively paired CSs.
+
+```{r}
+
+ggpredict(model, terms = ~ d * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+As before, there is a (small) negative weight for the interaction between US valence and C suggesting that ratings for positively (negatively) paired CS decrease (increase) as a function of Cpos (Cneg).
+As illustrated by the following figure, this is not the case: ratings for both positively and negatively paired CSs increase as a function of their C parameter (Cpos and Cneg, respectively).
+This pattern is in line with the positive weight for the main effect of C (see above).
+The negative weight for the interaction between US valence and C therefore indicates that the positive relationship between Cpos and ratings of positively paired CSs is weaker than the positive relationship between Cneg and ratings of negatively paired CSs.
+This is also visible in the following figure.
+
+```{r}
+ggpredict(model, terms = ~ C * us_valence) |>
+  plot(rawdata = TRUE)
+```
+
+## Regression analysis 2a: Predict CS ratings from US valence and MPT parameters
+
+Mean CS ratings will be predicted from US valence and the individual MPT parameters. Individual predictor values for all parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]) will be identical for both levels of US valence.
+
+```{r}
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$Cpos <- NA
+regression_data$Cneg <- NA
+regression_data$dpos <- NA
+regression_data$dneg <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+  
+  if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+
+    
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ (cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+    #(cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+  , data = data
+)
+
+
+
+```
+
+As indicated by the marginally significant main effect of US valence, there is an overall EC effect for ratings of "old" CSs.
+Aside from a marginally significant main effect of b, none of the main effects of the MPT parameters and their interactions with US valence reaches significance.
+
+```{r}
+summary(model)
+```
+
+Our focus of interest are now the interactions between US valence and Cpos, between US valence and Cneg, between US valence and dpos and, finally, between US valence and dneg.
+In line with expectations, there is positive weight for the interaction between US valence and dpos suggesting that ratings for positively (negatively) paired CS increase (decrease) as a function of dpos.
+This is also illustrated by the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ dpos * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+For the interaction between US valence and dneg, the positive weight is close to zero suggesting that baseline-corrected ratings of both positively and negatively paired CSs are similarly related to dneg.
+As illustrated by the following figure, there may be weak negative relationship between dneg and ratings for negatively paired CSs, and a zero relationship between dneg and ratings for positively paired CSs.
+Considering the negative weight for the main effect of dneg, the (small) positive weight for the interaction between US valence and dneg therefore serves to achieve a (weak) negative relationship between dneg and ratings of negatively paired CSs and a zero relationship between dneg and ratings of positively paired CSs.
+
+```{r}
+
+ggpredict(model, terms = ~ dneg * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+The negative weight for the interaction between Cpos and US valence suggests a negative relationship between Cpos and ratings for positively paired CSs, and a positive relationship between Cpos and ratings for negatively paired CSs.
+This surprising pattern is also visible in the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ Cpos * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cneg and ratings for negatively paired CSs.
+As illustrated by following figure, this suggested pattern in only party accurate: for ratings of both positively and negatively paired CSs, there is a positive relationship with Cneg.
+This pattern is in line with the positive weight for the main effect of Cneg.
+The positive weight for the interaction between Cneg and US valence therefore serves to achieve a stronger positive relationship between CSneg and ratings of positively paired CSs than between CSneg and ratings of negatively paired CSs.
+
+```{r}
+
+ggpredict(model, terms = ~ Cneg * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+## Regression analysis 2b: Predict CS ratings from US valence and MPT parameters
+
+Baseline-corrected mean CS ratings in the "positive" ("negative") condition will be calculated by subtracting the mean rating of "new" CSs from the mean rating of positively (negatively) paired CSs.
+The baseline-corrected mean CS ratings will then be predicted from US valence and the individual MPT parameters. Individual predictor values for all parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]) will be identical for both levels of US valence.
+
+```{r}
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),7)
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$Cpos <- NA
+regression_data$Cneg <- NA
+regression_data$dpos <- NA
+regression_data$dneg <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+  
+  if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+
+    
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lmer(
+  formula = rating ~ (cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+    #(cntr(a) + cntr(b) + cntr(D) + cntr(Cpos) + cntr(Cneg) + cntr(dpos) + cntr(dneg)) * us_valence + (1 | id)
+  , data = data
+)
+
+
+
+```
+
+As indicated by the marginally significant main effect of US valence, there is an overall EC effect for baseline-corrected ratings of "old" CSs.
+Aside from a marginally significant main effect of a, none of the main effects of the MPT parameters and their interactions with US valence reaches significance.
+
+```{r}
+summary(model)
+```
+
+Our focus of interest are again the interactions between US valence and Cpos, between US valence and Cneg, between US valence and dpos and, finally, between US valence and dneg.
+In line with expectations, there is positive weight for the interaction between US valence and dpos suggesting that baseline-corrected ratings for positively (negatively) paired CSs increase (decrease) as a function of dpos (dneg).
+As illustrated by the following figure, this suggested pattern is only partly accurate: baseline-corrected ratings of both positively and negatively paired CSs increase as a function of dpos.
+This pattern is in line with the positive weight for the main effect of dpos.
+Taken together, the positive weight for the interaction between US valence and dpos therefore serves to achieve weaker positive relationship between dpos and ratings of negatively paired CSs (than between dpos and ratings of positively paired CSs).
+This is also illustrated by the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ dpos * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+The positive weight for the interaction between US valence and dneg is close to zero suggesting that baseline-corrected ratings for positively and negatively paired CSs are similarly related to dneg.
+As illustrated by the following figure, there may be a (weak) negative relationship between dneg and ratings of negatively paired CSs, and a zero relationship between dneg and ratings of positively paired CSs.
+Considering the negative weight for the main effect of dneg, the (small) positive weight for the interaction between US valence and dneg therefore serves to achieve a (weak) negative relationship between dneg and ratings of negatively paired CSs and a zero relationship between dneg and ratings of positively paired CSs.
+
+```{r}
+
+ggpredict(model, terms = ~ dneg * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+The negative weight for the interaction between Cpos and US valence suggests a negative relationship between Cpos and ratings for positively paired CSs, and a positive relationship between Cpos and ratings for negatively paired CSs.
+This surprising pattern is also visible in the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ Cpos * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+The positive weight for the interaction between Cneg and US valence suggests a positive relationship between Cneg and ratings for positively paired CSs, and a negative relationship between Cneg and ratings for negatively paired CSs.
+As illustrated by following figure, this suggested pattern in only party accurate: for ratings of both positively and negatively paired CSs, there is a positive relationship with Cneg.
+This pattern is in line with the positive weight for the main effect of Cneg.
+The positive weight for the interaction between Cneg and US valence therefore serves to achieve a stronger positive relationship between CSneg and ratings of positively paired CSs than between CSneg and ratings of negatively paired CSs.
+This pattern is also visible in the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ Cneg * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+## Regression analysis 3a: Predict EC effects from MPT parameters
+
+Individual EC effects will be calculated by subtracting the mean rating of negatively paired CSs from the mean rating of positively paired CSs.
+The individual EC effects will then be predicted from individual MPT parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]).
+
+```{r}
+
+para_ratings$ec <- para_ratings$positive-para_ratings$negative
+#para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
+#para_ratings <- subset(para_ratings, ec >= 0)
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+model <- lm(
+  formula = ec ~ (cntr(b) + cntr(Dn) + cntr(Cneg) + cntr(dneg) + cntr(dpos)
+
+
+                  
+                  
+                  
+                  )
+  , data = para_ratings
+)
+
+
+```
+
+As indicated by the marginally significant intercept, there is a tendency for an EC effect.
+None of the main effects of the MPT parameters or the interactions with US valence reach significance.
+
+```{r}
+summary(model)
+vif(model)
+```
+
+Our focus of interest are now the main effects of Cpos, Cneg, dpos and dneg.
+In line with expectations, there is a positive weight for the main effect of dpos.
+As illustrated by the following figure, this positive weight indicates that EC effects increase as a function of dpos.
+
+```{r}
+
+ggpredict(model, terms = ~ dpos) |>
+  plot(rawdata = TRUE)
+
+```
+
+Again in line with expectations, the regression weight for the main effect of dneg is also positive (though much smaller than the weight for the main effect of dpos).
+As illustrated by the following figure, this positive weight indicates that also EC effects increase as a function of dneg.
+However, the predictive relationship is very weak.
+
+```{r}
+
+ggpredict(model, terms = ~ dneg) |>
+  plot(rawdata = TRUE)
+
+```
+
+The regression weight for the main effect of Cpos is negative indicating that EC effects decrease as a function of Cpos.
+This suprising pattern is illustrated in the following figure.
+
+```{r}
+
+ggpredict(model, terms = ~ Cpos) |>
+  plot(rawdata = TRUE)
+
+```
+
+Finally, the regression weight for the main effect of Cneg is positive (though very small).
+As illustrated by the following figure, this indicates that EC effects increase as a function of Cneg.
+However, the predictive relationship is weak.
+
+```{r}
+
+ggpredict(model, terms = ~ Cneg) |>
+  plot(rawdata = TRUE)
+
+```
+
+#
+
+

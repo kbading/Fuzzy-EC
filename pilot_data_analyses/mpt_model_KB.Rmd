@@ -363,7 +363,6 @@ mod_mpt_KB_ppp
 
 # Correlations between MPT parameters and CS ratings
 
-
 ```{r}
 
 individual_parameters <- as.data.frame(getParam(mod_mpt_KB, parameter = "theta"))
@@ -384,6 +383,9 @@ para_ratings <- merge(agg_data_d, individual_parameters, by = "url.srid")
 # #para_ratings <- subset(para_ratings, url.srid %in% c("9860","9862","9864"))
 
 # regression 1
+
+cor.test(para_ratings$Cneg,para_ratings$Cpos)
+cor.test(para_ratings$dneg,para_ratings$dpos)
 
 para_ratings$ec <- para_ratings$positive-para_ratings$negative
 
@@ -448,6 +450,7 @@ regression_data$dneg <- NA
 
 for(i in 1:nrow(regression_data)){
   tmp_id <- regression_data$id[i]
+  if(regression_data$us_valence[i] == "positive"){
     regression_data$rating[i] <- para_ratings$positive[tmp_id]
     regression_data$a[i] <- para_ratings$a[tmp_id]
     regression_data$b[i] <- para_ratings$b[tmp_id]
@@ -456,6 +459,20 @@ for(i in 1:nrow(regression_data)){
     regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
     regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
     regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+  
+  if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$Cpos[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$Cneg[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$dpos[i] <- para_ratings$dpos[tmp_id]
+    regression_data$dneg[i] <- para_ratings$dneg[tmp_id]
+  }
+
+    
 }
 
 data <- regression_data
@@ -655,9 +672,6 @@ summary(linear_model_dist_negP)
 
 
 ```
-
-
-
 
 ```{r}
 extract_modelfit <- function(x) {

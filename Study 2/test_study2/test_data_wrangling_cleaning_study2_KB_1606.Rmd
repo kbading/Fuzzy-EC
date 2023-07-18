@@ -30,7 +30,7 @@ I used the data from the two studies on Jatos (wsw first run and wsw second run)
 
 ```{r read_data, message=FALSE, warning=FALSE}
 # Read the text file from JATOS (first batch)...
-read_file('test_data_2706.txt')%>%
+read_file('raw_study2.txt')%>%
 #... split it into lines ...
  str_split('\n') %>% first() %>%
 #... filter empty rows ...
@@ -71,6 +71,8 @@ dat = dat %>%
          , count_trial_ratings, cs_rating #rating phase 
          , order #counterbalancing order in the test phase
          ) 
+
+dat <- subset(dat, pay_attention == 1 & serious == 1)
 ```
 
 ## Make the final dataset
@@ -185,6 +187,15 @@ table(dat_reco$cs, dat_reco$url.srid)
 ```{r ratings}
 dat_ratings = dat %>% filter(sender=="rating_trial_version1") %>%
   select(url.srid, count_trial_ratings, cs, us, us_valence, cs_rating, serious, pay_attention, order)
+
+
+xxx <- subset(dat_ratings, us_valence != "dist")
+xxx$cs_rating <- as.numeric(xxx$cs_rating)
+aov_ez(xxx,
+       id = "url.srid"
+       , dv = "cs_rating"
+       , within = c("us_valence")
+       , between = c("order"))
 ```
 
 #### 48 unique CSs in the rating task?
@@ -222,5 +233,5 @@ dat_final = full_join(dat_mem, dat_ratings
 
 ```{r write_data}
 #write the final dataset we will use for analyses in another R script
-saveRDS(dat_final, "test_data_2706.RDS") #RDS can handle lists such as in the `uss` list
+saveRDS(dat_final, "study2.RDS") #RDS can handle lists such as in the `uss` list
 ```
