@@ -10,3 +10,17 @@ carData
 car
 dplyr
 MPTinR
+pacman
+tidyverse
+ggplot2
+tibble
+tidyr
+readr
+purrr
+stringr
+forcats
+psych
+effectsize
+reshape2
+kableExtra
+here

@@ -35,7 +35,6 @@ keywords          : "keywords"
 wordcount         : "X"
 
 bibliography      : ["r-references.bib", '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`']
-
 floatsintext      : yes
 linenumbers       : no
 draft             : no
@@ -99,7 +98,7 @@ knitr::opts_chunk$set(
 
 ```
 
-# Results
+# Results^[All analyses were conducted with R (R Core Team, 2021). We used the packages XXX (), XXX (), XXX (), XXX (), XXX (), XXX (), XXX ()...]
 ```{r child = "results.rmd", eval = TRUE}
 ```
 

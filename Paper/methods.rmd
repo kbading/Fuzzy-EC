@@ -8,26 +8,90 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r include = FALSE}
-library(papaja)
-library(TreeBUGS)
-library(afex)
-library(emmeans)
-library(ggeffects)
-library(lme4)
-library(car)
-library(dplyr)
-library(MPTinR)
 
+```{r set_m, include=FALSE}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
+set_sum_contrasts()
+
+
+#read the dataset we created in a previous R script
+dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+#dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+
+n_st = length(unique(dat$url.srid)) # N of participants before exclusion, 171
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+n_end = length(unique(dat$url.srid)) # N of participants after exclusion, 166; 5 participants excluded
+
+#sociodemographic information
+socio = read.csv("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/sociodemo.csv")
+
+socio = socio %>% filter(Status != "RETURNED")
 ```
 
-## Sample and design
+We report how we determined our sample size, all data exclusions, all manipulations, and all measures. The preregistration, experiment program, data, and analyses are publicly available on the Open Science Framework at: https://osf.io/rqkvy/.
 
-Please insert: sample and design of one of the greatest studies of all time
+The study project was approved by the ethics committee of *[Institution Redacted]* (*[ID Redacted]*).
 
-## Measures and procedure
+## Participants and design
 
-Please insert: measures and prodecure of one of the greatest studies of all time
+The experiment used a 2 (US valence: Positive vs. Negative vs. None) x 2 (Task order: Evaluation first vs. Memory first) mixed design, with US valence manipulated within participants and Task order manipulated between participants.
+
+We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`), our targeted sample size, online on Prolific. Participants were English speakers, had an approval rate of at least 90% and at least 100 previous submissions, and did not take part in previous evaluative conditioning studies we conducted on Prolific. Data were unavailable for one participant, and we excluded 5 participants declaring that they did not pay attention or did not take their responses seriously. This resulted in a final sample size of `r n_end` participants ($n =$ `r length(unique(dat$url.srid[dat$order=="eval_first"]))` in the Evaluation first condition and $n =$ `r length(unique(dat$url.srid[dat$order=="mem_first"]))` in the Memory first condition).
+
+To determine sample size, we set $\alpha$ to .05, and we aimed for a statistical power of at least $80\%$ to detect an Evaluative Conditioning effect as small as Cohen's $d = 0.2$ in a one-sided paired sample *t*-test (IV: US valence; DV: evaluative ratings). An analysis with the R package *pwr* (version 1.3-0; Champely, 2020) showed that we needed 156 participants. A sample size of *N* = 156 also provided $80%$ power to detect correlations $rs \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores). To avoid a final sample smaller than the targeted sample size after applying the exclusion criteria, we increased this estimate by 10%, resulting in 172 participants.
+
+## Materials and procedure 
+
+We programmed the experiment with lab.js (Henninger et al., 2022). We exported the study to an HTTPS-protected website with JATOS (Lange et al., 2015).
+
+### Stimuli
+
+As neutral stimuli, we used 54 5- to 7-letter nonwords (all made of a combination of vowels and consonants; e.g., ‘*botsy*’; ‘*ampfong*’) used in a previous study (Stahl & Bading, 2020). On a participant basis, 24 nonwords were used as CSs (paired with USs in the learning phase) and 24 were new (i.e., presented only in the test phase).
+
+The USs were 24 color images of animals (e.g., a cockroach), scenes (e.g., a rainbow), and objects (e.g., a knife) selected from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), twelve images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$). Positive USs were significantly more positive than negative USs, Welch’s $t(20.23) = 33.36, p < .001$. Positive and negative USs did not significantly differ in arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+
+### Learning phase
+
+After providing their informed consent, participants entered the learning phase. Participants were told that they would see pairs made of one nonword (the CSs; on the center-left of the screen) and one image (the USs on the center-right of the screen). Participants had to pay close attention to each pair. 
+
+Twenty-four CS-US pairs were presented three times each in a random order (block-wise) for 1000 milliseconds (separated by an inter-trial interval of 1000 ms), resulting in 72 trials. For each participant, the 24 CSs were randomly drawn from the pool of 54 nonwords. Each CS was paired with one specific US. The CSs were displayed in a sans-serif font (font-size: 40). The dimensions of the USs were 250 pixels (width) and 200 pixels (height). 
+
+### Test phase
+
+After the learning phase, participants entered the test phase. Participants performed two tasks: an evaluative rating task and a memory task. Participants were randomly assigned to one of the two Task order conditions. In the Evaluation first condition, participants performed the evaluative rating task and then the memory task. The order was reversed in the Memory first condition: participants performed the memory task and then the evaluative rating task. The exact wording of the tasks slightly differed as a function of Task order.
+
+#### Evaluative rating task
+
+In the evaluative classification task, the 24 CSs presented in the learning phase and 24 new nonwords (randomly drawn from the remaining pool of 30 nonwords) were displayed individually once in a random order without time limit. Participants rated how positive or negative they found the nonwords on a 8-point Likert scale ranging from 1 "very negative" to 8 "very positive." The 48 trials were separated by 500-ms inter-trial intervals.
+
+#### Memory task
+
+In the memory task, the 24 CSs presented in the learning phase and 24 new nonwords (identical to the ones displayed in the evaluative rating task) were displayed individually once in a random order without time limit. 
+
+Each of the trials began with a recognition memory task. Participants were asked whether the nonwords were part of the pairs presented in the learning phase (response options: "Yes (old)"; "No (new)"). 
+
+If participants responded "No (new)," the next recognition memory trial began after a 500-ms inter-trial interval. If participants responded "Yes (old)," a new screen including the same nonword appeared after a 500-ms blank screen, and participants had to select the specific image that the nonword was paired with. Participants were instructed to click on the specific image if they remembered it or to guess the correct image if they could not remember the exact image. Eight images (all from the learning phase) were displayed in two rows of four images. For nonwords that were correctly recognized (hits), the correct US was presented with 7 randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). All the USs were allocated to a random position. For nonwords that were incorrectly recognized (false alarms), 8 USs, half positive and half negative, were randomly selected and allocated to a random position. 
+
+#### Check measures
+
+After the test phase, we administered an attention check and a seriousness check. In the attention check, we asked participants whether they paid attention to the nonwords and images presented throughout the study (Yes/No response). Participants were told that their response would not affect their payment. 
+
+In the seriousness check based on Aust et al. (2013), participants read:
+
+*"It would be very helpful if you could tell us at this point whether you have taken the requested responses seriously, so that we can use your answers for our scientific analysis, or whether you were just clicking through to take a look at the survey? (again, this will not affect your payment)."*
+
+The response options were *"I have taken the requested responses seriously"* and *"I have just clicked through, please discard my data"*. We used the answers to the attention and seriousness checks as exclusion criteria (see the Participants and design section).
+
+Participants then had the chance to comment on the study. Finally, participants were thanked and debriefed.
 
 ## Data processing and analyses
 

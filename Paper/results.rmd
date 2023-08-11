@@ -8,22 +8,167 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r include = FALSE}
-library(papaja)
-library(TreeBUGS)
-library(afex)
-library(emmeans)
-library(ggeffects)
-library(lme4)
-library(car)
-library(dplyr)
-library(MPTinR)
+```{r set, include=FALSE}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
+set_sum_contrasts()
 
+
+#read the dataset we created in a previous R script
+dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+#dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
 ```
 
-## Evaluative ratings
+```{r eval_change}
+####
+#EVALUATIVE CONDITIONING
+####
 
-Amazing result 1
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+#check data distribution
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="positive"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="dist"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+
+#include order
+dat_ev_order = dat %>%
+  group_by(url.srid, us_valence, order) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+# knitr::kable(dat_ev_order, format = "html")
+
+dat_ev_order$us_valence = as.factor(dat_ev_order$us_valence)
+dat_ev_order$order = as.factor(dat_ev_order$order)
+```
+
+```{r eval_ratings}
+##calculate ec effects (ratings pos-ratings neg)
+dat_ec = dat_ev_order %>% filter(us_valence != "dist") 
+
+dat_o_wide = dat_ec %>% pivot_wider(names_from = us_valence
+                                          ,values_from = eval_rating)
+
+dat_o_wide$ec = dat_o_wide$positive-dat_o_wide$negative
+
+mod_ec = aov_ez(dat_o_wide
+              ,id = "url.srid"
+              ,dv = "ec"
+              ,between = "order"
+)
+
+mod_ec_print = apa_print(mod_ec, intercept = TRUE) #significant effect
+
+# anova(mod_ec, intercept=TRUE)
+# 
+# describe(dat_o_wide$ec)
+# describeBy(dat_o_wide$ec, dat_o_wide$order)
+
+dat_o_wide_mem = dat_o_wide %>% filter(order=="mem_first")
+t_ec_mem = apa_print(t.test(dat_o_wide_mem$ec, mu = 0))
+d_ec_mem = cohens_d(dat_o_wide_mem$ec, mu=0, ci = .9)
+
+dat_o_wide_ev = dat_o_wide %>% filter(order=="eval_first")
+t_ec_ev = apa_print(t.test(dat_o_wide_ev$ec, mu = 0))
+d_ec_ev = cohens_d(dat_o_wide_ev$ec, mu=0, ci = .9)
+
+####
+mod1 = aov_ez(dat_ev
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              ,within = "us_valence"
+              ,anova_table=list(correction = "none")
+)
+
+mod1_print = apa_print(mod1) #significant effect
+
+# apa_table(
+#   mod1_print$table
+#   ,caption = "Repeated-measures ANOVA: Ratings as a function of US"
+# )
+
+# Descriptive statistics: evaluative change scores as a function of US Valence
+# knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+#multiple comparisons
+em_model = emmeans(mod1,pairwise~us_valence, adjust="bonf")
+
+#with order
+mod1_order = aov_ez(dat_ev_order
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              ,within = "us_valence"
+              ,between="order"
+              ,anova_table=list(correction = "none")
+              ,include_aov = TRUE
+)
+
+# mod1_order
+mod1_print = apa_print(mod1_order, correction = "none") #significant effect
+
+# anova(mod1_order, intercept = TRUE)
+
+#no significant effect including order
+
+#multiple comparisons
+em_model_val = emmeans(mod1_order,pairwise~us_valence)
+# em_model_val
+
+d_pos_dist = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="positive"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="dist"], paired = TRUE, ci = .95)
+
+d_pos_neg = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="positive"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="negative"], paired = TRUE, ci = .95)
+
+d_neg_pos = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="negative"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="dist"], paired = TRUE, ci = .95)
+```
+
+## Preregistered analyses on evaluative ratings
+
+We report the analyses we conducted on evaluative ratings. We averaged evaluative ratings as a function of US valence (Positive, Negative, None) and Task order (Evaluation first, Memory first). For each participant, we calculated an Evaluative Conditioning (EC) score, which is their mean evaluative rating on CSs paired with positive USs minus their mean evaluative rating on CSs paired with negative USs (negative scores indicate higher evaluations on negatively paired vs. positively paired CSs; positive scores indicate higher evaluations on positively vs. negatively paired CSs).
+
+First, we conducted a between-participants ANOVA on EC scores with Task order as the only factor. We tested whether the grand mean was above 0 by calculating the F-test of the intercept. A grand mean above 0 would indicate that, overall, we replicated the EC effect. In line with the preregistration, we divided the *p*-value of this test by two to perform a one-tailed test, as the grand mean of EC scores was above 0 ($M =$ `r round(mean(dat_o_wide$ec), 2)`; $SD =$ `r round(sd(dat_o_wide$ec), 2)`). The *F*-test was significant, `r mod_ec_print$full_result$Intercept`, showing that we replicated the EC effect. The effect of Task order was not significant^[As preregistered, we divided the *p*-value by two to perform a one-tailed version of the test (similar to *t*-tests) because EC scores are descriptively larger in the Evaluation first ($M =$ `r round(mean(dat_o_wide_ev$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_ev$ec), 2)`) than Memory first ($M =$ `r round(mean(dat_o_wide_mem$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_mem$ec), 2)`) condition. EC scores were above 0 both in the Evaluation first condition, `r t_ec_ev$statistic`, $d =$ `r d_ec_ev$Cohens_d`, 90\% CI = [`r d_ec_ev$CI_low`, `r d_ec_ev$CI_high`] and in the Memory first condition, `r t_ec_mem$statistic`, $d =$ `r d_ec_mem$Cohens_d`, 90\% CI = [`r d_ec_mem$CI_low`, `r d_ec_mem$CI_high`].], `r mod_ec_print$full_result$order`, which means that performing the evaluative rating task before or after the memory task did not significantly change the EC effect.
+
+```{r plot_us_valence_order, fig.cap="Mean evaluative ratings (and 95% error bars) as a function of US valence and Task order."}
+dat_ev_order$`US Valence` = dat_ev_order$us_valence
+
+#reorder US valence
+dat_ev_order$`US Valence` = factor(dat_ev_order$`US Valence`, levels = c("negative", "dist", "positive"))
+
+#rename US valence and order levels
+dat_ev_order$`US Valence` = plyr::revalue(dat_ev_order$`US Valence`, c("negative"="Negative", "dist"="None", "positive"="Positive"))
+
+dat_ev_order$order = plyr::revalue(dat_ev_order$order, c("eval_first"="Evaluation first", "mem_first"="Memory first"))
+
+dat_ev_order$`Task order` = dat_ev_order$order 
+
+#visualize the data
+apa_beeplot(data=dat_ev_order, id="url.srid", dv="eval_rating", factors=c("US Valence", "Task order"), use = "all.obs", ylim=c(0,11),
+            xlab = "US"
+            ,ylab = "Mean evaluative ratings"
+            ,ylim=c(0,8))
+```
+
+Complementarily, we also conducted a 3 (US valence) x 2 (Task order) mixed ANOVA on evaluative ratings (see Figure \@ref(fig:plot_us_valence_order)). Different from the ANOVA above, evaluative ratings on unpaired nonwords can be compared with evaluations in other conditions. The main effect of US valence was significant, `r mod1_print$full_result$us_valence`. We followed-up on the ANOVA by conducting multiple comparisons (Bonferroni-corrected) based on the full model: evaluative ratings were higher for positively paired CSs compared with new non-words, $t(164) = -9.94, p < .001, d = 0.75, 95\%$ CI $= [0.58, 0.92]$, and compared with negatively-paired CSs, $t(164) = -9.61, p < .001, d = 0.74, 95\%$ CI $= [0.57, 0.91]$. Evaluative ratings were not significantly different for negatively-paired CSs and for nonwords, $t(164) = -0.39, p = .922, d = 0.02, 95\%$ CI $= [-0.13, 0.17]$. The main effect of Task order was not significant, `r mod1_print$full_result$order`, nor was the interaction between US valence and Task order, `r mod1_print$full_result$order_us_valence`.
+
+## Preregistered analyses on memory performance
+
+XXX 
+
+## Preregistered analyses on evaluations as a function of MPT parameter estimates
+
+XXX
 
 ## MPT model
 
