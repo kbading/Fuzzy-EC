@@ -1,0 +1,34 @@
+---
+title: "Methods"
+date: "`r Sys.Date()`"
+bibliography: '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
+output: papaja::apa6_pdf
+classoption: doc
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include = FALSE}
+library(papaja)
+library(TreeBUGS)
+library(afex)
+library(emmeans)
+library(ggeffects)
+library(lme4)
+library(car)
+library(dplyr)
+library(MPTinR)
+
+```
+
+## Sample and design
+
+Please insert: sample and design of one of the greatest studies of all time
+
+## Measures and procedure
+
+Please insert: measures and prodecure of one of the greatest studies of all time
+
+## Data processing and analyses
+
+BLABLABLA

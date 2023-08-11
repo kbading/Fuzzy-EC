@@ -1,0 +1,116 @@
+---
+title             : "Memory specificity in evaluation conditioning: a 'Who said what' approach"
+shorttitle        : "Memory specificity in EC"
+
+author: 
+  - name          : "Jéréline Benading"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : ""
+    email         : "karoline.bading@uni-jena.de"
+    # role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
+    #   - "Conceptualization"
+    #   - "Writing - Original Draft Preparation"
+    #   - "Writing - Review & Editing"
+  - name          : "Klaus Rothermund"
+    affiliation   : "2"
+    # role:
+    #   - "Writing - Review & Editing"
+    #   - "Supervision"
+      
+affiliation:
+  - id            : "1"
+    institution   : "Université Agnostique de Louvain-la-Jena"
+  - id            : "2"
+    institution   : "Friedrich Schiller University Jena"
+    
+
+
+abstract: |
+  BLABLABLABLABLA
+
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "keywords"
+wordcount         : "X"
+
+bibliography      : ["r-references.bib", '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`']
+
+floatsintext      : yes
+linenumbers       : no
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library(TreeBUGS)
+library(afex)
+library(emmeans)
+library(ggeffects)
+library(papaja)
+library(lme4)
+library(car)
+library(dplyr)
+library(MPTinR)
+
+r_refs("r-references.bib")
+
+project_root <- rprojroot::find_rstudio_root_file()
+study_folder_pilot <- file.path(
+  project_root
+  , "pilot_data_analyses"
+)
+
+study_folder_main <- file.path(
+  project_root
+  , "Study 2"
+)
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+
+
+knitr::opts_chunk$set(
+  echo = FALSE
+  , warning = FALSE
+  , message = FALSE
+  , cache = TRUE
+)
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+# set.seed(42)
+# knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+```{r child = "introduction.rmd", eval = TRUE}
+
+```
+
+# Methods
+```{r child = "methods.rmd", eval = TRUE}
+
+```
+
+# Results
+```{r child = "results.rmd", eval = TRUE}
+```
+
+# General discussion
+```{r child = "discussion.rmd", eval = TRUE}
+```
+
+# Appendix
+# (APPENDIX) Appendix {-} 
+```{r child = "appendix.rmd", eval = TRUE}
+```
+
+
+

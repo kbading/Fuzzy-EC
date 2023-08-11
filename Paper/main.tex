@@ -1,0 +1,257 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  man,floatsintext]{apa6}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{english}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+% Manuscript styling
+\usepackage{upgreek}
+\captionsetup{font=singlespacing,justification=justified}
+
+% Table formatting
+\usepackage{longtable}
+\usepackage{lscape}
+% \usepackage[counterclockwise]{rotating}   % Landscape page setup for large tables
+\usepackage{multirow}		% Table styling
+\usepackage{tabularx}		% Control Column width
+\usepackage[flushleft]{threeparttable}	% Allows for three part tables with a specified notes section
+\usepackage{threeparttablex}            % Lets threeparttable work with longtable
+
+% Create new environments so endfloat can handle them
+% \newenvironment{ltable}
+%   {\begin{landscape}\centering\begin{threeparttable}}
+%   {\end{threeparttable}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\centering\begin{ThreePartTable}}{\end{ThreePartTable}\end{landscape}}
+
+% Enables adjusting longtable caption width to table width
+% Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
+\makeatletter
+\newcommand\LastLTentrywidth{1em}
+\newlength\longtablewidth
+\setlength{\longtablewidth}{1in}
+\newcommand{\getlongtablewidth}{\begingroup \ifcsname LT@\roman{LT@tables}\endcsname \global\longtablewidth=0pt \renewcommand{\LT@entry}[2]{\global\advance\longtablewidth by ##2\relax\gdef\LastLTentrywidth{##2}}\@nameuse{LT@\roman{LT@tables}} \fi \endgroup}
+
+% \setlength{\parindent}{0.5in}
+% \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% Overwrite redefinition of paragraph and subparagraph by the default LaTeX template
+% See https://github.com/crsh/papaja/issues/292
+\makeatletter
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries\itshape\typesectitle}}
+
+\renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-\z@\relax}%
+  {\normalfont\normalsize\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+\makeatother
+
+% \usepackage{etoolbox}
+\makeatletter
+\patchcmd{\HyOrg@maketitle}
+  {\section{\normalfont\normalsize\abstractname}}
+  {\section*{\normalfont\normalsize\abstractname}}
+  {}{\typeout{Failed to patch abstract.}}
+\patchcmd{\HyOrg@maketitle}
+  {\section{\protect\normalfont{\@title}}}
+  {\section*{\protect\normalfont{\@title}}}
+  {}{\typeout{Failed to patch title.}}
+\makeatother
+
+\usepackage{xpatch}
+\makeatletter
+\xapptocmd\appendix
+  {\xapptocmd\section
+    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi\\: #1}}
+    {}{\InnerPatchFailed}%
+  }
+{}{\PatchFailed}
+\keywords{keywords\newline\indent Word count: X}
+\usepackage{csquotes}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Memory specificity in evaluation conditioning: a `Who said what' approach},
+  pdfauthor={Jéréline Benading1 \& Klaus Rothermund2},
+  pdflang={en-EN},
+  pdfkeywords={keywords},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Memory specificity in evaluation conditioning: a `Who said what' approach}
+\author{Jéréline Benading\textsuperscript{1} \& Klaus Rothermund\textsuperscript{2}}
+\date{}
+
+
+\shorttitle{Memory specificity in EC}
+
+\authornote{
+
+Correspondence concerning this article should be addressed to Jéréline Benading, . E-mail: \href{mailto:karoline.bading@uni-jena.de}{\nolinkurl{karoline.bading@uni-jena.de}}
+
+}
+
+\affiliation{\vspace{0.5cm}\textsuperscript{1} Université Agnostique de Louvain-la-Jena\\\textsuperscript{2} Friedrich Schiller University Jena}
+
+\abstract{%
+BLABLABLABLABLA
+}
+
+
+
+\begin{document}
+\maketitle
+
+Please insert: introduction leading up to one the greatest studies of all time.
+
+\hypertarget{amazing-paraphraph}{%
+\subsection{Amazing paraphraph}\label{amazing-paraphraph}}
+
+Please insert: a great paragraph
+
+\hypertarget{another-amazing-paraphraph}{%
+\subsection{Another amazing paraphraph}\label{another-amazing-paraphraph}}
+
+Please insert: a great paragraph
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+\hypertarget{sample-and-design}{%
+\subsection{Sample and design}\label{sample-and-design}}
+
+Please insert: sample and design of one of the greatest studies of all time
+
+\hypertarget{measures-and-procedure}{%
+\subsection{Measures and procedure}\label{measures-and-procedure}}
+
+Please insert: measures and prodecure of one of the greatest studies of all time
+
+\hypertarget{data-processing-and-analyses}{%
+\subsection{Data processing and analyses}\label{data-processing-and-analyses}}
+
+BLABLABLA
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{evaluative-ratings}{%
+\subsection{Evaluative ratings}\label{evaluative-ratings}}
+
+Amazing result 1
+
+\hypertarget{mpt-model}{%
+\subsection{MPT model}\label{mpt-model}}
+
+Amazing result 2
+
+\hypertarget{relationships-between-ratings-and-parameters}{%
+\subsection{Relationships between ratings and parameters}\label{relationships-between-ratings-and-parameters}}
+
+Amazing result 3
+
+\hypertarget{general-discussion}{%
+\section{General discussion}\label{general-discussion}}
+
+\hypertarget{amazing-paragraph}{%
+\subsection{Amazing paragraph}\label{amazing-paragraph}}
+
+smart conclusion 1
+
+\hypertarget{another-amazing-paragraph}{%
+\subsection{Another amazing paragraph}\label{another-amazing-paragraph}}
+
+smart conclusion 2
+
+\hypertarget{appendix}{%
+\section{Appendix}\label{appendix}}
+
+\hypertarget{appendix-appendix}{%
+\appendix}
+
+
+\hypertarget{amazing-paragraph-1}{%
+\subsection{Amazing paragraph}\label{amazing-paragraph-1}}
+
+additional information on something amazing
+
+\hypertarget{another-amazing-paragraph-1}{%
+\subsection{Another amazing paragraph}\label{another-amazing-paragraph-1}}
+
+more information on another amazing thing
+
+
+\end{document}

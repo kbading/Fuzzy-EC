@@ -1,0 +1,34 @@
+---
+title: "Results"
+date: "`r Sys.Date()`"
+bibliography: '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
+output: papaja::apa6_pdf
+classoption: doc
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include = FALSE}
+library(papaja)
+library(TreeBUGS)
+library(afex)
+library(emmeans)
+library(ggeffects)
+library(lme4)
+library(car)
+library(dplyr)
+library(MPTinR)
+
+```
+
+## Evaluative ratings
+
+Amazing result 1
+
+## MPT model
+
+Amazing result 2
+
+## Relationships between ratings and parameters
+
+Amazing result 3
