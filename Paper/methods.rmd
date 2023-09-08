@@ -17,7 +17,9 @@ set_sum_contrasts()
 
 
 #read the dataset we created in a previous R script
-dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+# dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+
+dat = readRDS("~/R/Fuzzy-EC/Paper/data/data_wsw2.RDS")
 
 #some factors are integer or character variables in the dataset; make them factors
 dat$url.srid = as.factor(dat$url.srid)
@@ -32,7 +34,7 @@ dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop l
 n_end = length(unique(dat$url.srid)) # N of participants after exclusion, 166; 5 participants excluded
 
 #sociodemographic information
-socio = read.csv("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/sociodemo.csv")
+socio = read.csv("~/R/Fuzzy-EC/Paper/data/sociodemo.csv")
 
 socio = socio %>% filter(Status != "RETURNED")
 ```

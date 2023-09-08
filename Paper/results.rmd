@@ -16,7 +16,9 @@ set_sum_contrasts()
 
 
 #read the dataset we created in a previous R script
-dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+# dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+
+dat = readRDS("~/R/Fuzzy-EC/Paper/data/data_wsw2.RDS")
 
 #exclude participants declaring they did not take their responses seriously
 ##or did not pay attention
