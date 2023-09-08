@@ -959,6 +959,8 @@ para_ratings_memfirst<- merge(mpt_data_subset, individual_parameters, by = "id")
 save(para_ratings_memfirst,file = "HQstudy2memfirst_x_ratings")
 ```
 
+## WAIC
+
 ```{r}
 study_folder <- file.path(
   rprojroot::find_rstudio_root_file()
