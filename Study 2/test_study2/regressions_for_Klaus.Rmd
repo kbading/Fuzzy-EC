@@ -351,11 +351,11 @@ mpt_data <- mpt_data_b[,2:12]
 #we'll use this model
 MPTinR::check.mpt("KW_wsw_model.eqn")
 
-if(file.exists("mod_mpt_KB_both.rds")) {
+if(file.exists("mod_mpt_KB_memfirst.rds")) {
   mod_mpt_KB_both <- readRDS("mod_mpt_KB_both.rds")
 } else {
 
-  mod_mpt_KB_both = traitMPT(
+  mod_mpt_KB_memfirst = traitMPT(
   eqnfile = "KW_wsw_model.eqn"
   , data = mpt_data
   , n.iter   = 4e4
@@ -372,7 +372,7 @@ if(file.exists("mod_mpt_KB_both.rds")) {
   , IVprec = "dgamma(.5,.5)"
   #, predType = c("f")
   )
-  saveRDS(mod_mpt_KB_both, file = "mod_mpt_KB_both.rds")
+  #saveRDS(mod_mpt_KB_both, file = "mod_mpt_KB_both.rds")
 }
 
 #Fit the model and estimate parameters
@@ -404,6 +404,7 @@ library(reshape2)
 agg_data_d <- dcast(agg_data, value.var = "eval_rating", url.srid + order ~ us_valence)
 agg_data_d$id <- rownames(agg_data_d)
 para_ratings <- merge(agg_data_d, individual_parameters, by = "id")
+save(para_ratings_memfirst,file = "MPTmemfirst_x_ratings")
 ```
 
 # Regression analyses
@@ -614,7 +615,7 @@ cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for cen
 
 model <- lmer(
   formula = rating ~ #(cntr(d)+cntr(C)) * us_valence + (1 | id)
-  (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id)
+  (cntr(b) + cntr(d) + cntr(C)) * us_valence + (1 | id)
   , data = data
 )
 
@@ -735,7 +736,7 @@ Considering the positive weight for the main effect of d, the positive weight fo
 
 ```{r}
 
-ggpredict(model, terms = ~ d * us_valence) |>
+ggpredict(model, terms = ~ cntr(d) * us_valence) |>
   plot(rawdata = TRUE)
 
 ```
@@ -747,7 +748,13 @@ The negative weight for the interaction between US valence and C therefore indic
 This is also visible in the following figure.
 
 ```{r}
-ggpredict(model, terms = ~ C * us_valence) |>
+ggpredict(model, terms = ~ cntr(C) * us_valence) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model, terms = ~ cntr(D) * us_valence) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model, terms = ~ cntr(a) * us_valence) |>
   plot(rawdata = TRUE)
 ```
 

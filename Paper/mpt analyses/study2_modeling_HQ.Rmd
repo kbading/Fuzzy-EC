@@ -309,6 +309,8 @@ mpt_data_c <- merge(mpt_data_b,agg_data_d, by = c("url.srid","order"))
 
 ```
 
+
+
 ## Both
 
 ```{r}
@@ -956,3 +958,34 @@ individual_parameters$id <- rownames(individual_parameters)
 para_ratings_memfirst<- merge(mpt_data_subset, individual_parameters, by = "id")
 save(para_ratings_memfirst,file = "HQstudy2memfirst_x_ratings")
 ```
+
+```{r}
+study_folder <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "Paper"
+  , "mpt analyses"
+)
+
+
+model_files <- list.files(path = file.path(study_folder), pattern = "^study2_both", full.names = TRUE)
+
+# waic <- vector(mode = "list", length = length(model_files))
+waic <- model_files |>
+  lapply(readRDS) |> 
+  lapply(
+    TreeBUGS::WAIC
+    , n.adapt = 5e3
+    , n.chains = parallel::detectCores()
+    , n.iter = 1e5
+    , n.thin = 1e1
+    , summarize = FALSE
+  )
+names(waic) <- basename(model_files) |>
+  gsub(pattern = "^study2_|\\.rds$", replacement = "") |>
+  gsub(pattern = "-", replacement = "_")
+
+saveRDS(waic, file = file.path(study_folder, "waic.rds"))
+
+
+```
+
