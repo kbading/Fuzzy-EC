@@ -78,24 +78,6 @@ dat = dat %>% mutate(val_us_accuracy = replace_na(val_us_accuracy, "no_resp")
                      ,id_us_accuracy = replace_na(id_us_accuracy, "no_resp"))
 ```
 
-```{r}
-dat$cs_rating <- as.numeric(dat$cs_rating)
-xxx.1 <- subset(dat,val_us_accuracy == "val_correct" & id_us_accuracy == "id_correct")
-
-xxx.2 <- subset(dat,val_us_accuracy == "val_correct" & id_us_accuracy == "id_incorrect")
-
-xxx.3 <- subset(dat,val_us_accuracy == "val_correct")
-
-xxx.4 <- subset(dat,val_us_accuracy %in% c("val_correct","val_incorrect"))
-
-aov_ez(xxx.4,dv = "cs_rating", id = "url.srid", within = c("us_valence","val_us_accuracy"))
-
-aov_ez(xxx.3,dv = "cs_rating", id = "url.srid", within = c("us_valence","id_us_accuracy"))
-
-aov_ez(xxx.1,dv = "cs_rating", id = "url.srid", within = c("us_valence"))
-aov_ez(xxx.2,dv = "cs_rating", id = "url.srid", within = c("us_valence"))
-```
-
 
 # Recognition memory
 
@@ -331,7 +313,7 @@ mpt_data_c <- merge(mpt_data_b,agg_data_d, by = c("url.srid","order"))
 
 ## Both
 
-```{r}
+```{r , eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -392,71 +374,6 @@ individual_parameters$id <- rownames(individual_parameters)
 para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
 save(para_ratings_both,file = "HQstudy2both_x_ratings.rdata")
 ```
-
-### Both: dneg = dpos = 0
-
-```{r}
-#we'll use this model
-
-mpt_data_subset <- mpt_data_c
-
-cov_data <- mpt_data_subset[,c("url.srid","order")]
-mpt_data <- mpt_data_subset[,3:13]
-
-MPTinR::check.mpt("KW_wsw_model.eqn")
-
-if(file.exists("study2_bothPNd_HQ.rds")) {
-  study2_bothPNd_HQ <- readRDS("study2_bothPNd_HQ.rds")
-} else {
-
-  study2_bothPNd_HQ = traitMPT(
-  eqnfile = "KW_wsw_model.eqn"
-  , data = mpt_data
-  , n.iter   = 4e5
-  , n.adapt  = 2e4
-  , n.burnin = 2e5
-  , n.thin   = 4e1
-  , n.chains = 4
-  , restrictions = list("Dn=Dpos=Dneg","G=0.25","dpos=dneg=0")
-  , ppp = 2000#5e3
-  , covData=cov_data
-  , predStructure=list("a; order","b; order","Dn; order","Cpos; order","Cneg; order"
-                       )
-  , IVprec = "dgamma(.5,.5)"
-  #, predType = c("f")
-  )
-  saveRDS(study2_bothPNd_HQ, file = "study2_bothPNd_HQ.rds")
-}
-
-#Fit the model and estimate parameters
-
-# summary(mod_mpt_KB_both)
-# 
-# TreeBUGS::plotFit(mod_mpt_KB_both)
-# TreeBUGS::plotFreq(mod_mpt_KB_both)
-# TreeBUGS::plotParam(mod_mpt_KB_both)
-
-# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
-# mod_mpt_KB_ppp
-
-#MPT on aggregated frequencies
-# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
-#         ,model.filename = "KW_wsw_model.eqn"
-#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
-#         )
-# mod_agg
-
-individual_parameters <- as.data.frame(getParam(study2_bothPNd_HQ, parameter = "theta"))
-parameter_names <- colnames(individual_parameters)
-individual_parameters$id <- rownames(individual_parameters)
-#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
-
-
-para_ratings_bothPNd<- merge(mpt_data_subset, individual_parameters, by = "id")
-save(para_ratings_bothPNd,file = "HQstudy2bothPNd_x_ratings.rdata")
-```
-
-
 
 ### Both: D = 0
 ```{r}
@@ -522,7 +439,7 @@ save(para_ratings_both,file = "HQstudy2bothD0_x_ratings.rdata")
 ```
 
 ### Both: Cpos = 0
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -585,7 +502,7 @@ save(para_ratings_both,file = "HQstudy2bothCpos0_x_ratings.rdata")
 ```
 
 ### Both: Cneg = 0
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -648,7 +565,7 @@ save(para_ratings_both,file = "HQstudy2bothCneg0_x_ratings.rdata")
 ```
 
 ### Both: dpos = 0
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -711,7 +628,7 @@ save(para_ratings_both,file = "HQstudy2bothdpos0_x_ratings.rdata")
 ```
 
 ### Both: dneg = 0
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -774,7 +691,7 @@ save(para_ratings_both,file = "HQstudy2bothdneg0_x_ratings.rdata")
 ```
 
 ### Both: a = .5
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -838,7 +755,7 @@ save(para_ratings_both,file = "HQstudy2botha5_x_ratings.rdata")
 ```
 
 ### Both: b = .5
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- mpt_data_c
@@ -916,7 +833,7 @@ save(para_ratings_both,file = "HQstudy2bothb5_x_ratings.rdata")
 
 ## Evalfirst
 
-```{r, eval = FALSE}
+```{r}
 #we'll use this model
 
 mpt_data_subset <- subset(mpt_data_c,order == "eval_first")
@@ -933,9 +850,9 @@ if(file.exists("study2_evalfirst_HQ.rds")) {
   study2_evalfirst_HQ = traitMPT(
   eqnfile = "KW_wsw_model.eqn"
   , data = mpt_data
-  , n.iter   = 4e5
-  , n.adapt  =  2e4
-  , n.burnin = 2e5
+  , n.iter   = 4e4#4e5
+  , n.adapt  =  2e3#2e4
+  , n.burnin = 2e4#2e5
   , n.thin   = 4e1
   , n.chains = 4
   , restrictions = list("Dn=Dpos=Dneg","G=0.25")
@@ -980,7 +897,7 @@ save(para_ratings_evalfirst,file = "HQstudy2evalfirst_x_ratings.rdata")
 
 ## Memfirst
 
-```{r, eval = FALSE}
+```{r}
 #we'll use this model
 
 mpt_data_subset <- subset(mpt_data_c,order == "mem_first")
@@ -997,9 +914,9 @@ if(file.exists("study2_memfirst_HQ.rds")) {
   study2_memfirst_HQ = traitMPT(
   eqnfile = "KW_wsw_model.eqn"
   , data = mpt_data
-  , n.iter   = 4e5
-  , n.adapt  =  2e4
-  , n.burnin = 2e5
+  , n.iter   = 4e4#4e5
+  , n.adapt  =  2e3#2e4
+  , n.burnin = 2e4#2e5
   , n.thin   = 4e1
   , n.chains = 4
   , restrictions = list("Dn=Dpos=Dneg","G=0.25")
@@ -1039,12 +956,12 @@ individual_parameters$id <- rownames(individual_parameters)
 
 
 para_ratings_memfirst<- merge(mpt_data_subset, individual_parameters, by = "id")
-save(para_ratings_memfirst,file = "HQstudy2memfirst_x_ratings")
+save(para_ratings_memfirst,file = "HQstudy2memfirst_x_ratings.rdata")
 ```
 
 ## WAIC
 
-```{r}
+```{r, eval = FALSE}
 study_folder <- file.path(
   rprojroot::find_rstudio_root_file()
   , "Paper"
@@ -1052,7 +969,7 @@ study_folder <- file.path(
 )
 
 
-model_files <- list.files(path = file.path(study_folder), pattern = "^study2_bothPNd", full.names = TRUE)
+model_files <- list.files(path = file.path(study_folder), pattern = "^study2_both", full.names = TRUE)
 
 # waic <- vector(mode = "list", length = length(model_files))
 waic <- model_files |>
@@ -1069,7 +986,7 @@ names(waic) <- basename(model_files) |>
   gsub(pattern = "^study2_|\\.rds$", replacement = "") |>
   gsub(pattern = "-", replacement = "_")
 
-saveRDS(waic, file = file.path(study_folder, "waicPNd.rds"))
+saveRDS(waic, file = file.path(study_folder, "waic.rds"))
 
 
 ```
