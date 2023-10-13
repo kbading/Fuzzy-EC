@@ -19,7 +19,8 @@ set_sum_contrasts()
 #read the dataset we created in a previous R script
 # dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
 
-dat = readRDS("~/R/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "Paper")
+dat <- readRDS(file.path(study_folder, "data", "data_wsw2.RDS"))
 
 #exclude participants declaring they did not take their responses seriously
 ##or did not pay attention
@@ -370,7 +371,6 @@ para_ratings$D.c <- cntr(para_ratings$Dn)
 
 model3a <- lm(
   formula = ec ~ (Cpn.c+dneg.c+dpos.c)*D.c
-  
   , data = para_ratings
 )
 
@@ -381,23 +381,27 @@ vif(model3a)
 ggpredict(model3a, terms = ~ D.c*Cpn.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3a
-               , pred = "D.c"
-               , modx = "Cpn.c"
-               , plot = TRUE)
+interactions::johnson_neyman(
+  model3a
+  , pred = "D.c"
+  , modx = "Cpn.c"
+  , plot = TRUE
+)
 
 ggpredict(model3a, terms = ~ Cpn.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3a
-               , pred = "Cpn.c"
-               , modx = "D.c"
-               , plot = TRUE)
+interactions::johnson_neyman(
+  model3a
+  , pred = "Cpn.c"
+  , modx = "D.c"
+  , plot = TRUE
+)
 
 ggpredict(model3a, terms = ~ dneg.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3a
+interactions::johnson_neyman(model = model3a
                , pred = "dneg.c"
                , modx = "D.c"
                , plot = TRUE)
@@ -405,7 +409,7 @@ johnson_neyman(model = model3a
 ggpredict(model3a, terms = ~ dpos.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3a
+interactions::johnson_neyman(model = model3a
                , pred = "dpos.c"
                , modx = "D.c"
                , plot = TRUE)
@@ -429,7 +433,7 @@ summary(model3b)
 ggpredict(model3b, terms = ~ a.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3b
+interactions::johnson_neyman(model = model3b
                , pred = "a.c"
                , modx = "D.c"
                , plot = TRUE)
@@ -446,7 +450,7 @@ summary(model3c)
 ggpredict(model3c, terms = ~ b.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3c
+interactions::johnson_neyman(model = model3c
                , pred = "b.c"
                , modx = "D.c"
                , plot = TRUE)
@@ -467,7 +471,7 @@ summary(model3d)
 ggpredict(model3d, terms = ~ a.c*D.c) |>
   plot(rawdata = TRUE)
 
-johnson_neyman(model = model3d
+interactions::johnson_neyman(model = model3d
                , pred = "a.c"
                , modx = "D.c"
                , plot = TRUE)
