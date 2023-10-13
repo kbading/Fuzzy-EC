@@ -21,12 +21,11 @@ library(MPTinR)
 
 ```
 
-Please insert: introduction leading up to one the greatest studies of all time.
+KB:
 
-## Amazing paraphraph
+- introduce EC, explain importance of memory: recognizing CS, recollecting US valence and/or US identity
+- introduce current methodological approaches and describe problems (measurement error, biases, ...) --> need for formal model
+- introduce who-said-what model as candidate for estimating recognition, US valence recollection, US identity recollection (without measurement error) and separating memory from response biases
+- describe advantages for experimental and correlative research
+- introduce present research: develop procedure, fit model, validate parameters via correlations
 
-Please insert: a great paragraph
-
-## Another amazing paraphraph
-
-Please insert: a great paragraph

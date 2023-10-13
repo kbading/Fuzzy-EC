@@ -11,6 +11,7 @@ editor_options:
 ```{r set, include=FALSE}
 #Load (or install and load) packages
 require(pacman)
+library(interactions)
 p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
 set_sum_contrasts()
 
@@ -173,9 +174,768 @@ XXX
 XXX
 
 ## MPT model
+```{r}
+library(TreeBUGS)
+library(papaja)
+library(afex)
+library(ggeffects)
 
-Amazing result 2
+source(file.path(rprojroot::find_rstudio_root_file(), "R", "apa_print_treebugs.R"))
+
+study_folder <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "Paper"
+  , "mpt analyses"
+)
+```
+
+```{r eval=FALSE}
+models <- list(
+  both_HQ    = readRDS(file.path(study_folder, "study2_both_HQ.rds"))
+  , botha5_HQ = readRDS(file.path(study_folder, "study2_botha5_HQ.rds"))
+  , bothb5_HQ = readRDS(file.path(study_folder, "study2_bothb5_HQ.rds"))
+  , bothCneg0_HQ = readRDS(file.path(study_folder, "study2_bothCneg0_HQ.rds"))
+  , bothCpos0_HQ = readRDS(file.path(study_folder, "study2_bothCpos0_HQ.rds"))
+  , bothD0_HQ = readRDS(file.path(study_folder, "study2_bothD0_HQ.rds"))
+  , bothdneg0_HQ = readRDS(file.path(study_folder, "study2_bothdneg0_HQ.rds"))
+  , bothdpos0_HQ = readRDS(file.path(study_folder, "study2_bothdpos0_HQ.rds"))
+)
+
+fit <- lapply(models, FUN = apa_fit)
+
+individual <- models |>
+  lapply(function(x) {
+    individual_fits <- x$summary$fitStatistics$individual
+    individual_fits$T1.obs <- colMeans(individual_fits$T1.obs)
+    individual_fits$T1.pred <- colMeans(individual_fits$T1.pred)
+    cross_table <- table(individual_fits$T1.p <= .05)
+    cross_table
+  })
+```
+
+```{r model-performance}
+# prepare_table <- function(x) {
+#   data.frame(as.list(x$summary$fitStatistics$overall))
+# }
+# 
+# fit_stats <- lapply(models, prepare_table) |> do.call(what = "rbind")
+# 
+# waics <- readRDS(file.path(study_folder, "waic.rds"))[names(models)]
+# 
+# waic_stats <- lapply(waics, FUN = function(x){
+#   data.frame(
+#     waic = sum(x$waic)
+#     , se_waic = sqrt(length(x$waic)) * sd(x$waic)
+#   )
+# }) |> do.call(what = "rbind")
+# table_data <- cbind(fit_stats, waic_stats)
+# table_data <- within(
+#   table_data
+#   , {
+#     p.T1 <- apa_p(p.T1)
+#     p.T2 <- apa_p(p.T2)
+#   }
+# )
+# table_data <- apa_num(table_data)
+# table_data <- t(table_data)
+# table_data <- data.frame(
+#   " " = c(
+#     "$T_1^{\\mathrm{observed}}$", "$T_1^{\\mathrm{expected}}$", "$p$"
+#     , "$T_2^{\\mathrm{observed}}$", "$T_2^{\\mathrm{expected}}$", "$p$"
+#     , "$\\mathrm{WAIC}$"
+#     , "$\\mathit{SE}$" # _{\\mathrm{WAIC}}$"
+#   )
+#   , table_data
+#   , check.names = F
+# )
+# rownames(table_data) <- NULL
+# colnames(table_data) <- gsub(colnames(table_data), pattern = "_", replacement = "")
+# 
+# save(table_data, file ="waid_table.rdata")
+
+#load("waid_table.rdata")
+load(file.path(study_folder, "waid_table.rdata"))
+
+apa_table(
+  table_data
+  , caption = "Experiment 1: Absolute fit and WAIC for the hierarchical extensions of unrestricted and restricted variants of the who-said-what model."
+  , escape = FALSE,
+  landscape = TRUE,
+  font_size = "scriptsize",
+  stub_indents = list(
+    "Goodness of fit: Means" = 1:3
+    , "Goodness of fit: Covariances" = 4:6
+    , "Relative predictive accuracy" = 7:8
+  )
+)
+```
+
+```{r}
+mpt_model <- readRDS(file.path(study_folder, "study2_both_HQ.rds"))
+apa_out <- apa_fit(mpt_model)
+
+mpt_model$summary$groupParameters$mean
+getGroupMeans(mpt_model,probit = FALSE)
+```
+
+```{r}
+
+mpt_model$summary$groupParameters$mu
+getGroupMeans(mpt_model,probit = TRUE)
+
+```
+
+```{r exp1-both}
+# MPT parameter estimates ----
+df <- apa_print(summary(mpt_model))
+# pars_list <- strsplit(df$term, split = " ", fixed = TRUE)
+# df$term[] <- vapply(pars_list, FUN = `[[`, i = 1L,  FUN.VALUE = character(1L))
+# df$relational_pair <- vapply(pars_list, FUN = `[[`, i = 2L, FUN.VALUE = character(1L))
+# df_wide <- tidyr::pivot_wider(df, values_from = c("estimate", "conf.int"), id_cols = "term", names_from = "relational_pair")
+# df_wide <- df_wide[, c("term", "estimate_asymmetrical", "conf.int_asymmetrical", "estimate_symmetrical", "conf.int_symmetrical")]
+# df_wide$term[] <- c(M1 = "$R_{\\mathrm{positive}}$", M3 = "$R_{\\mathrm{negative}}$", P1 = "$C$", G = "$B$")[df_wide$term]
+
+apa_table(
+  df#[c(2:4, 1), ]
+  , caption = "Model estimation with order as covariate: Overall parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model."
+  # , col_spanners = list("Asymmetrical" = 2:3, "Symmetrical" = 4:5)
+  , escape = FALSE
+)
+
+```
+
+```{r}
+mpt_model <- readRDS(file.path(study_folder, "study2_evalfirst_HQ.rds"))
+apa_out <- apa_fit(mpt_model)
+
+#getGroupMeans(mpt_model,probit = FALSE)
+```
+
+```{r exp1-eval}
+# MPT parameter estimates ----
+df <- apa_print(summary(mpt_model))
+# pars_list <- strsplit(df$term, split = " ", fixed = TRUE)
+# df$term[] <- vapply(pars_list, FUN = `[[`, i = 1L,  FUN.VALUE = character(1L))
+# df$relational_pair <- vapply(pars_list, FUN = `[[`, i = 2L, FUN.VALUE = character(1L))
+# df_wide <- tidyr::pivot_wider(df, values_from = c("estimate", "conf.int"), id_cols = "term", names_from = "relational_pair")
+# df_wide <- df_wide[, c("term", "estimate_asymmetrical", "conf.int_asymmetrical", "estimate_symmetrical", "conf.int_symmetrical")]
+# df_wide$term[] <- c(M1 = "$R_{\\mathrm{positive}}$", M3 = "$R_{\\mathrm{negative}}$", P1 = "$C$", G = "$B$")[df_wide$term]
+
+apa_table(
+  df#[c(2:4, 1), ]
+  , caption = "Model estimation for 'Evaluation first' group: Parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model."
+  # , col_spanners = list("Asymmetrical" = 2:3, "Symmetrical" = 4:5)
+  , escape = FALSE
+)
+
+```
+
+```{r}
+mpt_model <- readRDS(file.path(study_folder, "study2_memfirst_HQ.rds"))
+apa_out <- apa_fit(mpt_model)
+
+#getGroupMeans(mpt_model,probit = FALSE)
+```
+
+```{r exp1-mem}
+# MPT parameter estimates ----
+df <- apa_print(summary(mpt_model))
+# pars_list <- strsplit(df$term, split = " ", fixed = TRUE)
+# df$term[] <- vapply(pars_list, FUN = `[[`, i = 1L,  FUN.VALUE = character(1L))
+# df$relational_pair <- vapply(pars_list, FUN = `[[`, i = 2L, FUN.VALUE = character(1L))
+# df_wide <- tidyr::pivot_wider(df, values_from = c("estimate", "conf.int"), id_cols = "term", names_from = "relational_pair")
+# df_wide <- df_wide[, c("term", "estimate_asymmetrical", "conf.int_asymmetrical", "estimate_symmetrical", "conf.int_symmetrical")]
+# df_wide$term[] <- c(M1 = "$R_{\\mathrm{positive}}$", M3 = "$R_{\\mathrm{negative}}$", P1 = "$C$", G = "$B$")[df_wide$term]
+
+apa_table(
+  df#[c(2:4, 1), ]
+  , caption = "Model estimation for 'Memory first' group: Parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model."
+  # , col_spanners = list("Asymmetrical" = 2:3, "Symmetrical" = 4:5)
+  , escape = FALSE
+)
+
+```
 
 ## Relationships between ratings and parameters
 
-Amazing result 3
+```{r}
+load(file.path(study_folder, "HQstudy2evalfirst_x_ratings.rdata"))
+load(file.path(study_folder, "HQstudy2memfirst_x_ratings.rdata"))
+load(file.path(study_folder, "HQstudy2both_x_ratings.rdata"))
+load(file.path(study_folder, "HQstudy2bothPN_x_ratings.rdata"))
+
+para_ratings <- para_ratings_both
+para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
+
+dat$cs_rating <- as.numeric(dat$cs_rating)
+```
+
+```{r}
+rating.ec <- subset(dat,us_valence %in% c("positive","negative"))
+rating.ec <- rating.ec[,c("url.srid","order","us_valence","cs_rating")]
+rating.dist <- subset(dat,us_valence %in% c("dist"))
+rating.dist.agg <- aggregate(data = rating.dist, cs_rating ~ url.srid, FUN = mean)
+rating.dist.agg <- rename(rating.dist.agg, "dist_rating" = "cs_rating")
+
+rating.ec <- merge(rating.ec,rating.dist.agg, by = c("url.srid"))
+
+rating.ec$rating.bc <- rating.ec$cs_rating - rating.ec$dist_rating
+
+rating.ec$a <- NA
+rating.ec$b <- NA
+rating.ec$D <- NA
+rating.ec$Cpn <- NA
+rating.ec$C <- NA
+rating.ec$d <- NA
+
+for(i in 1:nrow(rating.ec)){
+  tmp.id <- rating.ec$url.srid[i]
+  tmp.dat <- subset(para_ratings,url.srid == tmp.id)
+  if(rating.ec$us_valence[i] == "positive"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cpos[1]
+    rating.ec$d[i] <- tmp.dat$dpos[1]
+  }
+   if(rating.ec$us_valence[i] == "negative"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cneg[1]
+    rating.ec$d[i] <- tmp.dat$dneg[1]
+  }
+}
+
+```
+
+
+```{r, eval = FALSE}
+
+rating.ec$us_valence <- droplevels(rating.ec$us_valence)
+contrasts(rating.ec$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+rating.ec$order <- factor(rating.ec$order)
+contrasts(rating.ec$order) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model.new <- lmer(
+  formula = rating.bc ~ cntr(d) + cntr(Cpn) + us_valence + order + us_valence:order + cntr(d):us_valence + cntr(Cpn):us_valence + cntr(d):us_valence:order + cntr(Cpn):us_valence:order + cntr(d):cntr(Cpn):us_valence + cntr(d):cntr(Cpn):us_valence:order
+  + (1 + us_valence| url.srid)
+  , data = rating.ec
+)
+summary(model.new)
+
+ggpredict(model.new, terms = ~ Cpn*us_valence*d) |>
+  plot(rawdata = FALSE)
+
+ggpredict(model.new, terms = ~ Cpn*us_valence*order) |>
+  plot(rawdata = FALSE)
+
+model.mem <- lmer(
+  formula = rating.bc ~ 
+  (cntr(d)+cntr(Cpn))*us_valence+ (1 + us_valence| url.srid)
+  , data = subset(rating.ec,order == "mem_first")
+)
+summary(model.mem)
+ggpredict(model.mem, terms = ~ d*us_valence) |>
+  plot(rawdata = FALSE)
+ggpredict(model.mem, terms = ~ Cpn*us_valence) |>
+  plot(rawdata = FALSE)
+
+model.eval <- lmer(
+  formula = rating.bc ~ 
+  (cntr(d)+cntr(Cpn))*us_valence+ (1 + us_valence| url.srid)
+  , data = subset(rating.ec,order == "eval_first")
+)
+summary(model.eval)
+ggpredict(model.eval, terms = ~ d*us_valence) |>
+  plot(rawdata = FALSE)
+ggpredict(model.eval, terms = ~ Cpn*us_valence) |>
+  plot(rawdata = FALSE)
+
+
+```
+
+
+### Regression analysis 1: Predict CS ratings from US valence and MPT parameters
+
+Mean CS ratings will be predicted from US valence and the individual MPT parameters. Individual predictor values for D (discrimination old vs. new), b (guessing "old"), a (guessing "positive US") will be identical for both levels of US valence. Individual predictor values for C and d will be different for the two levels of US valence: for the "positive" condition, Cpos and dpos will function as predictor values, whereas in the "negative" condition, Cneg and dneg will be used.
+
+```{r}
+
+para_ratings$positive_bc <- para_ratings$positive - para_ratings$dist
+para_ratings$negative_bc <- para_ratings$negative - para_ratings$dist
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),length(para_ratings$url.srid))
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$C <- NA
+regression_data$d <- NA
+
+for(i in 1:nrow(regression_data)){
+  
+  tmp_id <- regression_data$id[i]
+  regression_data$order[i] <- para_ratings$order[tmp_id]
+  
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive[tmp_id]
+    regression_data$rating.bc[i] <- para_ratings$positive_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$d[i] <- para_ratings$dpos[tmp_id]
+  }
+    if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative[tmp_id]
+    regression_data$rating.bc[i] <- para_ratings$negative_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$d[i] <- para_ratings$dneg[tmp_id]
+  }
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+data$order <- factor(data$order, levels = c("mem_first","eval_first"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+contrasts(data$order) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model1a <- lmer(
+  formula = rating ~ 
+  ((cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence + (1 | id))*order
+  , data = data
+)
+summary(model1a)
+
+model1b <- lmer(
+  formula = rating ~ (us_valence*cntr(C)*cntr(d)
+  + (1|id))#*order
+  , data = data
+)
+summary(model1b)
+
+pos <- subset(data,us_valence=="positive")
+pos$d.c <- cntr(pos$d)
+pos$C.c <- cntr(pos$C)
+pos$a.c <- cntr(pos$a)
+pos$b.c <- cntr(pos$b)
+pos$D.c <- cntr(pos$D)
+
+neg <- subset(data,us_valence=="negative")
+neg$d.c <- cntr(neg$d)
+neg$C.c <- cntr(neg$C)
+neg$a.c <- cntr(neg$a)
+neg$b.c <- cntr(neg$b)
+neg$D.c <- cntr(neg$D)
+
+# significant IA C and US valence
+ggpredict(model1b, terms = ~ cntr(C)*us_valence) |>
+  plot(rawdata = TRUE)
+
+# significant IA C, US valence and order
+ggpredict(model1b, terms = ~ cntr(C)*us_valence*order) |>
+  plot(rawdata = TRUE)
+
+# significant IA d, US valence and order
+ggpredict(model1b, terms = ~ cntr(d)*us_valence*order) |>
+  plot(rawdata = TRUE)
+
+model1bpos <- lm(
+  formula = rating ~ C.c*d.c
+  , data = pos
+)
+summary(model1bpos)
+
+model1bneg <- lm(
+  formula = rating ~ C.c*d.c
+  , data = neg
+)
+summary(model1bneg)
+
+johnson_neyman(model = model1bneg
+               , pred = "C.c"
+               , modx = "d.c"
+               , plot = TRUE)
+johnson_neyman(model = model1bneg
+               , pred = "d.c"
+               , modx = "C.c"
+               , plot = TRUE)
+
+model1bneg <- lm(
+  formula = rating ~ d.c*C.c
+  , data = neg
+)
+summary(model1bneg)
+ggpredict(model1bneg, terms = ~ C.c*d.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model1bneg
+               , pred = "C.c"
+               , modx = "d.c"
+               , plot = TRUE)
+
+ggpredict(model1bneg, terms = ~ d.c*C.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model1bneg
+               , pred = "d.c"
+               , modx = "C.c"
+               , plot = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ b) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model1b, terms = ~ C*d*us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ a * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ d * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ D * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model1a, terms = ~ C * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+### Regression analysis 2: Predict baseline-corrected CS ratings from US valence and MPT parameters
+
+Baseline-corrected mean CS ratings in the "positive" ("negative") condition will be calculated by subtracting the mean rating of "new" CSs from the mean rating of positively (negatively) paired CSs.
+The baseline-corrected mean CS ratings will then be predicted from US valence and the individual MPT parameters. Individual predictor values for D (discrimination old vs. new), b (guessing "old"), a (guessing "positive US") will be identical for both levels of US valence. Individual predictor values for C and d will be different for the two levels of US valence: for the "positive" condition, Cpos and dpos will function as predictor values, whereas in the "negative" condition, Cneg and dneg will be used.
+
+```{r}
+
+
+
+#t.test(para_ratings$positive_bc,para_ratings$negative_bc, paired = TRUE)
+#t.test(para_ratings$positive,para_ratings$negative, paired = TRUE)
+
+id <- rep(1:length(para_ratings$url.srid),each = 2)
+us_valence <- rep(c("positive","negative"),nrow(para_ratings))
+
+regression_data <- data.frame(id = id
+                              , us_valence = us_valence)
+
+regression_data$order <- NA
+
+regression_data$rating <- NA
+regression_data$a <- NA
+regression_data$b <- NA
+regression_data$D <- NA
+regression_data$C <- NA
+regression_data$d <- NA
+
+for(i in 1:nrow(regression_data)){
+  tmp_id <- regression_data$id[i]
+  regression_data$order[i] <- para_ratings$order[tmp_id]
+  if(regression_data$us_valence[i] == "positive"){
+    regression_data$rating[i] <- para_ratings$positive_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cpos[tmp_id]
+    regression_data$d[i] <- para_ratings$dpos[tmp_id]
+  }
+    if(regression_data$us_valence[i] == "negative"){
+    regression_data$rating[i] <- para_ratings$negative_bc[tmp_id]
+    regression_data$a[i] <- para_ratings$a[tmp_id]
+    regression_data$b[i] <- para_ratings$b[tmp_id]
+    regression_data$D[i] <- para_ratings$Dn[tmp_id]
+    regression_data$C[i] <- para_ratings$Cneg[tmp_id]
+    regression_data$d[i] <- para_ratings$dneg[tmp_id]
+  }
+}
+
+data <- regression_data
+data$us_valence <- factor(data$us_valence, levels = c("positive","negative"))
+
+data$order <- factor(data$order, levels = c("mem_first","eval_first"))
+
+contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+contrasts(data$order) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model2a <- lmer(
+  formula = rating ~ #(cntr(d) + cntr(C)) * us_valence + (1 | id)
+    (cntr(a) + cntr(b) + cntr(d) + cntr(D) + cntr(C)) * us_valence+ (1 | id)
+  , data = data
+)
+
+summary(model2a)
+
+model2b <- lmer(
+  formula = rating ~ d*C*us_valence + (1 | id)
+  , data = data
+)
+summary(model2b)
+
+
+
+pos <- subset(data,us_valence=="positive")
+pos$d.c <- cntr(pos$d)
+pos$C.c <- cntr(pos$C)
+
+neg <- subset(data,us_valence=="negative")
+neg$d.c <- cntr(neg$d)
+neg$C.c <- cntr(neg$C)
+
+model2bpos <- lm(
+  formula = rating ~ d.c*C.c
+  , data = pos
+)
+summary(model2bpos)
+ggpredict(model2bpos, terms = ~ C.c*d.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model2bpos
+               , pred = "C.c"
+               , modx = "d.c"
+               , plot = TRUE)
+
+
+ggpredict(model2bpos, terms = ~ d.c*C.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model2bpos
+               , pred = "d.c"
+               , modx = "C.c"
+               , plot = TRUE)
+
+model2bneg <- lm(
+  formula = rating ~ d.c*C.c
+  , data = neg
+)
+summary(model2bneg)
+ggpredict(model2bneg, terms = ~ C.c*d.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model2bneg
+               , pred = "C.c"
+               , modx = "d.c"
+               , plot = TRUE)
+
+ggpredict(model2bneg, terms = ~ d.c*C.c) |>
+  plot(rawdata = TRUE)
+johnson_neyman(model = model2bneg
+               , pred = "d.c"
+               , modx = "C.c"
+               , plot = TRUE)
+```
+
+```{r}
+
+ggpredict(model2a, terms = ~ a) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model2b, terms = ~ d*C*us_valence) |>
+  plot(rawdata = TRUE)
+
+ggpredict(model2b, terms = ~ C*d*us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model2a, terms = ~ D) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model2a, terms = ~ d * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model2a, terms = ~ D * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+```{r}
+
+ggpredict(model2a, terms = ~ C * us_valence) |>
+  plot(rawdata = TRUE)
+
+```
+
+### Regression analysis 3: Predict EC effects from MPT parameters
+
+Individual EC effects will be calculated by subtracting the mean rating of negatively paired CSs from the mean rating of positively paired CSs.
+The individual EC effects will then be predicted from individual MPT parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]).
+
+```{r}
+
+para_ratings$ec <- para_ratings$positive-para_ratings$negative
+#para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
+#para_ratings <- subset(para_ratings, ec >= 0)
+#contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+
+para_ratings$Cpn.c <- cntr(para_ratings$Cpn)
+
+#para_ratings$Cneg.c <- cntr(para_ratings$Cneg)
+
+para_ratings$dpos.c <- cntr(para_ratings$dpos)
+
+para_ratings$dneg.c <- cntr(para_ratings$dneg)
+para_ratings$b.c <- cntr(para_ratings$b)
+para_ratings$a.c <- cntr(para_ratings$a)
+para_ratings$D.c <- cntr(para_ratings$Dn)
+
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+model3a <- lm(
+  formula = ec ~ (Cpn.c+dneg.c+dpos.c)*D.c
+  
+  , data = para_ratings
+)
+
+summary(model3a)
+library(car)
+vif(model3a)
+
+ggpredict(model3a, terms = ~ D.c*Cpn.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3a
+               , pred = "D.c"
+               , modx = "Cpn.c"
+               , plot = TRUE)
+
+ggpredict(model3a, terms = ~ Cpn.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3a
+               , pred = "Cpn.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+ggpredict(model3a, terms = ~ dneg.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3a
+               , pred = "dneg.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+ggpredict(model3a, terms = ~ dpos.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3a
+               , pred = "dpos.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+
+
+
+xxx <- subset(para_ratings, order == "mem_first")
+cor.test(xxx$a.c,xxx$b.c)
+xxx <- subset(para_ratings, order == "eval_first")
+cor.test(xxx$a.c,xxx$b.c)
+
+model3b <- lm(
+  formula = ec ~ (a.c)*D.c
+  
+  , data = para_ratings
+)
+
+summary(model3b)
+
+ggpredict(model3b, terms = ~ a.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3b
+               , pred = "a.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+
+model3c <- lm(
+  formula = ec ~ b.c*D.c
+  
+  , data = para_ratings
+)
+
+summary(model3c)
+
+ggpredict(model3c, terms = ~ b.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3c
+               , pred = "b.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+
+```
+
+```{r}
+
+model3d <- lm(
+  formula = dist ~ (a.c*b.c*D.c)
+  
+  , data = para_ratings
+)
+
+summary(model3d)
+
+ggpredict(model3d, terms = ~ a.c*D.c) |>
+  plot(rawdata = TRUE)
+
+johnson_neyman(model = model3d
+               , pred = "a.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+```
+
+
