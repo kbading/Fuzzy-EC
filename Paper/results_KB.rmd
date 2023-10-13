@@ -269,42 +269,63 @@ apa_table(
 ```{r exp1-param}
 # MPT parameter estimates ----
 df <- apa_print(summary(models$both_HQ))
-# pars_list <- strsplit(df$term, split = " ", fixed = TRUE)
-# df$term[] <- vapply(pars_list, FUN = `[[`, i = 1L,  FUN.VALUE = character(1L))
-# df$relational_pair <- vapply(pars_list, FUN = `[[`, i = 2L, FUN.VALUE = character(1L))
-# df_wide <- tidyr::pivot_wider(df, values_from = c("estimate", "conf.int"), id_cols = "term", names_from = "relational_pair")
-# df_wide <- df_wide[, c("term", "estimate_asymmetrical", "conf.int_asymmetrical", "estimate_symmetrical", "conf.int_symmetrical")]
-# df_wide$term[] <- c(M1 = "$R_{\\mathrm{positive}}$", M3 = "$R_{\\mathrm{negative}}$", P1 = "$C$", G = "$B$")[df_wide$term]
 
-df <- df[c(5,4,3,7,6,2,1),]
-df$term[1] <- "$D$"
-df$term[2] <- "$C_{\\mathrm{positive}}$"
-df$term[3] <- "$C_{\\mathrm{negative}}$"
-df$term[4] <- "$d_{\\mathrm{positive}}$"
-df$term[5] <- "$d_{\\mathrm{negative}}$"
-df$term[6] <- "$b$"
-df$term[7] <- "$a$"
+# Create some beautiful parameter labels
+parameter_labels <- c(
+  A = "$a$"
+  , B = "$b$"
+  , a = "$a$"
+  , b = "$b$"
+  , Cpos = "$C_{\\mathrm{positive}}$"
+  , Cneg = "$C_{\\mathrm{negative}}$"
+  , Dpos = "$d_{\\mathrm{positive}}$"
+  , Dneg = "$d_{\\mathrm{negative}}$"
+  , dpos = "$d_{\\mathrm{positive}}$"
+  , dneg = "$d_{\\mathrm{negative}}$"
+  , Dn   = "$D$"
+)
+df$parameter <- parameter_labels[df$term]
+df <- subset(df, select = c("parameter", "estimate", "conf.int"))
 
-xxx <- getGroupMeans(models$both_HQ,probit = FALSE)
+group_means <- getGroupMeans(models$both_HQ, probit = FALSE)
 
-df$est.EF <- rep(df$estimate[1],7)
-df$ci.EF <- rep(df$conf.int[1],7)
-df$est.MF <- rep(df$estimate[1],7)
-df$ci.MF <- rep(df$conf.int[1],7)
-df$p.val <- rep("$.460$",7)
+apa_groups <- data.frame(
+  full_term = rownames(group_means)
+  , estimate = apa_num(group_means[, "Mean", drop = TRUE], gt1 = FALSE, digits = 3L)
+  , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = FALSE, digits = 3L) |> unlist()
+  , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
+  , row.names = NULL
+)
+apa_groups$term <- gsub(apa_groups$full_term, pattern = "_order.*$", replacement = "")
+apa_groups$parameter <- parameter_labels[apa_groups$term]
+apa_groups$group <- gsub(apa_groups$full_term, pattern = ".*order\\[|\\]$", replacement = "")
+groups_wide <- tidyr::pivot_wider(apa_groups, names_from = "group", values_from = c("estimate", "conf.int", "p.value"), id_cols = "parameter")
+groups_wide <- groups_wide[, c("parameter", "estimate_eval_first", "conf.int_eval_first", "estimate_mem_first", "conf.int_mem_first", "p.value_eval_first")]
+df <- merge(df, groups_wide, by = "parameter", sort = FALSE)
 
-variable_labels(df) <- list("term" = " ", "p.val" = "$p$ (one-sided)")
+variable_labels(df) <- list(
+  parameter = "Parameter"
+  , estimate = "$M$"
+  , conf.int = "95\\% CI"
+  , estimate_eval_first = "$M$"
+  , conf.int_eval_first = "95\\% CI"
+  , estimate_mem_first  = "$M$"
+  , conf.int_mem_first  = "95\\% CI"
+  , p.value_eval_first = "$p$"
+)
 
 apa_table(
-  df#[c(2:4, 1), ]
+  df[c(5, 4, 3, 7, 6, 2, 1), ]
   , caption = "Parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
-  , col_spanners = list("overall" = 2:3, "evaluation first" = 4:5,"memory first" = 6:7)
+  , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
   , escape = FALSE
+  , align = c("l", rep("c", ncol(df) - 2), "r")
+  , note = "One-sided $p$ values"
 )
 
 ```
 
-The who-said-what MPT model (with $D_{positive}=D_{negative}=D_{new}$ and $1/n=.25$) was fit to the whole sample.
+The who-said-what MPT model (with $D_{\mathrm{positive}}=D_{\mathrm{negative}}=D_{\mathrm{new}}$ and $1/n=.25$) was fit to the whole sample.
 Task order (memory first vs. evaluation first) was included as a categorical predictor of individual parameter estimates.
 The model fit the data well, `r fit$both_HQ$T1`, `r fit$both_HQ$T2`, and was therefore used as the baseline model to assess loss of model fit due to parameter restrictions.
 Measures of (absolute and relative) model fit for the baseline model (and restricted model variants) are reported in Table\ \@ref(tab:model-performance).
@@ -315,12 +336,12 @@ A restricted who-said-what model setting the $D$ parameter to zero produced inad
 The WAIC of the restricted model was more than 10 points higher than the WAIC of the baseline model ($\text{WAIC}_{baseline}=3,695.99$), indicating that the $D$ parameter cannot be set to zero without loss of model adequacy.
 
 The $C$ parameter for positively (negatively) paired CSs was $.666$ ($.864$) on average.
-A restricted who-said-what model setting $C_{positive}$ ($C_{negative}$) to zero produced inadequate fit and a WAIC of $5,094.10$ ($5,288.79$).
-The WAIC values were again more than 10 points higher than the WAIC of the baseline model, indicating that neither $C_{positive}$ nor $C_{negative}$ parameter can be set to zero without loss of model adequacy.
+A restricted who-said-what model setting $C_{\mathrm{positive}}$ ($C_{\mathrm{negative}}$) to zero produced inadequate fit and a WAIC of $5,094.10$ ($5,288.79$).
+The WAIC values were again more than 10 points higher than the WAIC of the baseline model, indicating that neither $C_{\mathrm{positive}}$ nor $C_{\mathrm{negative}}$ parameter can be set to zero without loss of model adequacy.
 
 The $d$ parameter for positively (negatively) paired CSs was $.049$ ($.118$) on average.
-A restricted who-said-what model setting $d_{positive}$ ($d_{negative}$) to zero produced adequate fit and a WAIC of $3,695.01$ ($3,695.48$).
-The WAIC values were almost identical to the WAIC of the baseline model, indicating that both $d_{positive}$ and $d_{negative}$ can be set to zero without loss of model adequacy.
+A restricted who-said-what model setting $d_{\mathrm{positive}}$ ($d_{\mathrm{negative}}$) to zero produced adequate fit and a WAIC of $3,695.01$ ($3,695.48$).
+The WAIC values were almost identical to the WAIC of the baseline model, indicating that both $d_{\mathrm{positive}}$ and $d_{\mathrm{negative}}$ can be set to zero without loss of model adequacy.
 
 The $b$ parameter (indicating a bias for responding "old" in the recognition task) was $.135$ on average.
 A restricted who-said-what model setting the $b$ parameter to $.5$ produced inadequate fit and a $WAIC$ of $5,632.61$.
