@@ -8,19 +8,28 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r setup2, include=FALSE}
 #Load (or install and load) packages
 require(pacman)
 library(interactions)
 p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
 set_sum_contrasts()
 
+project_root <- rprojroot::find_rstudio_root_file()
 
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
 #read the dataset we created in a previous R script
 # dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
 
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "Paper")
 dat <- readRDS(file.path(study_folder, "data", "data_wsw2.RDS"))
+
+study_folder2 <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "Paper"
+  , "mpt analyses"
+)
 
 #exclude participants declaring they did not take their responses seriously
 ##or did not pay attention
@@ -174,23 +183,19 @@ library(papaja)
 library(afex)
 library(ggeffects)
 
-source(file.path(rprojroot::find_rstudio_root_file(), "R", "apa_print_treebugs.R"))
 
-study_folder <- file.path(
-  rprojroot::find_rstudio_root_file()
-  , "Paper"
-  , "mpt analyses"
-)
+
+
 
 models <- list(
-  both_HQ    = readRDS(file.path(study_folder, "study2_both_HQ.rds"))
-  , botha5_HQ = readRDS(file.path(study_folder, "study2_botha5_HQ.rds"))
-  , bothb5_HQ = readRDS(file.path(study_folder, "study2_bothb5_HQ.rds"))
-  , bothCneg0_HQ = readRDS(file.path(study_folder, "study2_bothCneg0_HQ.rds"))
-  , bothCpos0_HQ = readRDS(file.path(study_folder, "study2_bothCpos0_HQ.rds"))
-  , bothD0_HQ = readRDS(file.path(study_folder, "study2_bothD0_HQ.rds"))
-  , bothdneg0_HQ = readRDS(file.path(study_folder, "study2_bothdneg0_HQ.rds"))
-  , bothdpos0_HQ = readRDS(file.path(study_folder, "study2_bothdpos0_HQ.rds"))
+  both_HQ    = readRDS(file.path(study_folder2, "study2_both_HQ.rds"))
+  , botha5_HQ = readRDS(file.path(study_folder2, "study2_botha5_HQ.rds"))
+  , bothb5_HQ = readRDS(file.path(study_folder2, "study2_bothb5_HQ.rds"))
+  , bothCneg0_HQ = readRDS(file.path(study_folder2, "study2_bothCneg0_HQ.rds"))
+  , bothCpos0_HQ = readRDS(file.path(study_folder2, "study2_bothCpos0_HQ.rds"))
+  , bothD0_HQ = readRDS(file.path(study_folder2, "study2_bothD0_HQ.rds"))
+  , bothdneg0_HQ = readRDS(file.path(study_folder2, "study2_bothdneg0_HQ.rds"))
+  , bothdpos0_HQ = readRDS(file.path(study_folder2, "study2_bothdpos0_HQ.rds"))
 )
 
 fit <- lapply(models, FUN = apa_fit)
@@ -249,7 +254,7 @@ individual <- models |>
 # save(table_data, file ="waid_table.rdata")
 
 #load("waid_table.rdata")
-load(file.path(study_folder, "waid_table.rdata"))
+load(file.path(study_folder2, "waid_table.rdata"))
 colnames(table_data)[2] <- "unrestricted"
 colnames(table_data) <- gsub(colnames(table_data), pattern = "^both|HQ$", replacement = "")
 variable_labels(table_data) <- list(
@@ -289,12 +294,12 @@ parameter_labels <- c(
   , B = "$b$"
   , a = "$a$"
   , b = "$b$"
-  , Cpos = "$C_{\\mathrm{positive}}$"
-  , Cneg = "$C_{\\mathrm{negative}}$"
-  , Dpos = "$d_{\\mathrm{positive}}$"
-  , Dneg = "$d_{\\mathrm{negative}}$"
-  , dpos = "$d_{\\mathrm{positive}}$"
-  , dneg = "$d_{\\mathrm{negative}}$"
+  , Cpos = "$C_{\\mathrm{pos}}$"
+  , Cneg = "$C_{\\mathrm{neg}}$"
+  , Dpos = "$d_{\\mathrm{pos}}$"
+  , Dneg = "$d_{\\mathrm{neg}}$"
+  , dpos = "$d_{\\mathrm{pos}}$"
+  , dneg = "$d_{\\mathrm{neg}}$"
   , Dn   = "$D$"
 )
 df$parameter <- parameter_labels[df$term]
@@ -366,19 +371,30 @@ The WAIC was almost identical to the WAIC of the baseline model, indicating that
 
 ### Effects of task order on parameter estimates
 
+MPT parameters (from the baseline model) as a function of task order are reported in Table\ \@ref(tab:exp1-param).
+For each MPT parameter, we calculated the posterior difference between group means and its associated Bayesian $p$\ values (see Table\ \@ref(tab:exp1-param)).
+For the $D$ parameter, the group mean in the "memory first" condition was substantially higher than the group mean in the "memory first" condition.
+For the $b$ parameter, the effect of task order was reversed: here, the group mean was substantially higher in the "evaluation first" condition than in the "memory first" condition.
+For the remaining parameters, the posterior difference between group mean was insubstantial.
+
 ## Preregistered analyses on evaluations as a function of MPT parameter estimates
 
 ```{r}
-load(file.path(study_folder, "HQstudy2evalfirst_x_ratings.rdata"))
-load(file.path(study_folder, "HQstudy2memfirst_x_ratings.rdata"))
-load(file.path(study_folder, "HQstudy2both_x_ratings.rdata"))
-load(file.path(study_folder, "HQstudy2bothPN_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2evalfirst_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2memfirst_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2both_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2bothPN_x_ratings.rdata"))
 
 para_ratings <- para_ratings_both
 para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
 
 ```
 
+```{r}
+#create table with bivariate correlations between MPT parameters (overall and split by task order)
+```
+
+### EC effects
 Individual EC effects will be calculated by subtracting the mean rating of negatively paired CSs from the mean rating of positively paired CSs.
 The individual EC effects will then be predicted from individual MPT parameters (D [discrimination old vs. new], b [guessing "old"], a [guessing "positive US"], Cpos [recollection of paired US for positively paired CSs], Cneg [recollection of paired US for negatively paired CSs], dpos [recollection of paired US valence for positively paired CSs], dneg [recollection of paired US valence for negatively paired CSs]).
 
@@ -402,48 +418,156 @@ para_ratings$b.c <- cntr(para_ratings$b)
 para_ratings$a.c <- cntr(para_ratings$a)
 para_ratings$D.c <- cntr(para_ratings$Dn)
 
-
-model3a <- lm(
-  formula = ec ~ (Cpn.c+dneg.c+dpos.c)*D.c
+model3 <- lm(
+  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c
   , data = para_ratings
 )
-
-summary(model3a)
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$term[7] <- "$a$"
+xxx$VIF <- NA
 library(car)
-vif(model3a)
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:7] <- yyy[1:6,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE)
+```
 
-ggpredict(model3a, terms = ~ D.c*Cpn.c) |>
-  plot(rawdata = TRUE)
+```{r}
+model4 <- lm(
+  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c
+  , data = para_ratings
+)
+m4 <- apa_print(model4)
+xxx <- data.frame(m4$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model4))
+yyy$vif.model4. <- round(yyy$vif.model4.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:6] <- yyy[1:5,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE)
 
-interactions::johnson_neyman(
-  model3a
+```
+
+```{r}
+
+model5 <- lm(
+  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c
+  , data = para_ratings
+)
+m5 <- apa_print(model5)
+xxx <- data.frame(m5$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model5))
+yyy$vif.model5. <- round(yyy$vif.model5.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:5] <- yyy[1:4,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE)
+
+```
+
+
+```{r}
+
+model6 <- lm(
+  formula = ec ~ Cpn.c + dpos.c + dneg.c
+  , data = para_ratings
+)
+m6 <- apa_print(model6)
+xxx <- data.frame(m6$table)
+xxx$term[2] <- "$C$"
+xxx$term[3] <- "$d_{\\mathrm{pos}}$"
+xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model6))
+yyy$vif.model6. <- round(yyy$vif.model6.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:4] <- yyy[1:3,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE)
+
+```
+
+
+```{r}
+
+model7 <- lm(
+  formula = ec ~ (Cpn.c+dpos.c+dneg.c)*D.c
+  , data = para_ratings
+)
+m7 <- apa_print(model7)
+xxx <- data.frame(m7$table)
+xxx$term[2] <- "$C$"
+xxx$term[3] <- "$d_{\\mathrm{pos}}$"
+xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+xxx$term[5] <- "$D$"
+xxx$term[6] <- "$D$ $\\times$ $C$"
+xxx$term[7] <- "$D$ $\\times$ $d_{\\mathrm{pos}}$"
+xxx$term[8] <- "$D$ $\\times$ $d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model7))
+yyy$vif.model7. <- round(yyy$vif.model7.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:8] <- yyy[1:7,]
+xxx <- xxx[c(1,5,2,3,4,6,7,8),]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE)
+
+```
+
+
+
+
+
+
+
+```{r}
+
+# ggpredict(model3a, terms = ~ D.c*Cpn.c) |>
+#   plot(rawdata = TRUE)
+
+JN.1 <- interactions::johnson_neyman(
+  model7
   , pred = "D.c"
   , modx = "Cpn.c"
   , plot = TRUE
 )
 
-ggpredict(model3a, terms = ~ Cpn.c*D.c) |>
-  plot(rawdata = TRUE)
+# ggpredict(model3a, terms = ~ Cpn.c*D.c) |>
+#   plot(rawdata = TRUE)
 
-interactions::johnson_neyman(
-  model3a
+JN.2 <- interactions::johnson_neyman(
+  model7
   , pred = "Cpn.c"
   , modx = "D.c"
   , plot = TRUE
 )
 
-ggpredict(model3a, terms = ~ dneg.c*D.c) |>
-  plot(rawdata = TRUE)
+# ggpredict(model3a, terms = ~ dneg.c*D.c) |>
+#   plot(rawdata = TRUE)
 
-interactions::johnson_neyman(model = model3a
+JN.3 <- interactions::johnson_neyman(model = model7
                , pred = "dneg.c"
                , modx = "D.c"
                , plot = TRUE)
 
-ggpredict(model3a, terms = ~ dpos.c*D.c) |>
-  plot(rawdata = TRUE)
+# ggpredict(model3a, terms = ~ dpos.c*D.c) |>
+#   plot(rawdata = TRUE)
 
-interactions::johnson_neyman(model = model3a
+JN.4 <- interactions::johnson_neyman(model = model7
                , pred = "dpos.c"
                , modx = "D.c"
                , plot = TRUE)
@@ -452,64 +576,67 @@ interactions::johnson_neyman(model = model3a
 
 
 xxx <- subset(para_ratings, order == "mem_first")
-cor.test(xxx$a.c,xxx$b.c)
+#cor.test(xxx$a.c,xxx$b.c)
 xxx <- subset(para_ratings, order == "eval_first")
-cor.test(xxx$a.c,xxx$b.c)
+#cor.test(xxx$a.c,xxx$b.c)
 
-model3b <- lm(
-  formula = ec ~ (a.c)*D.c
-  
-  , data = para_ratings
-)
-
-summary(model3b)
-
-ggpredict(model3b, terms = ~ a.c*D.c) |>
-  plot(rawdata = TRUE)
-
-interactions::johnson_neyman(model = model3b
-               , pred = "a.c"
-               , modx = "D.c"
-               , plot = TRUE)
-
-
-model3c <- lm(
-  formula = ec ~ b.c*D.c
-  
-  , data = para_ratings
-)
-
-summary(model3c)
-
-ggpredict(model3c, terms = ~ b.c*D.c) |>
-  plot(rawdata = TRUE)
-
-interactions::johnson_neyman(model = model3c
-               , pred = "b.c"
-               , modx = "D.c"
-               , plot = TRUE)
+# model3b <- lm(
+#   formula = ec ~ (a.c)*D.c
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3b)
+# 
+# ggpredict(model3b, terms = ~ a.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3b
+#                , pred = "a.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
+# 
+# 
+# model3c <- lm(
+#   formula = ec ~ b.c*D.c
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3c)
+# 
+# ggpredict(model3c, terms = ~ b.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3c
+#                , pred = "b.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
 
 
 ```
 
 ```{r}
 
-model3d <- lm(
-  formula = dist ~ (a.c*b.c*D.c)
-  
-  , data = para_ratings
-)
-
-summary(model3d)
-
-ggpredict(model3d, terms = ~ a.c*D.c) |>
-  plot(rawdata = TRUE)
-
-interactions::johnson_neyman(model = model3d
-               , pred = "a.c"
-               , modx = "D.c"
-               , plot = TRUE)
+# model3d <- lm(
+#   formula = dist ~ (a.c*b.c*D.c)
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3d)
+# 
+# ggpredict(model3d, terms = ~ a.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3d
+#                , pred = "a.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
 
 ```
 
+### Baseline-corrected CS evaluations
+
 ## Additional analyses
+
