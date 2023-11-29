@@ -421,16 +421,16 @@ contrasts(rating.ec$order) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model.new <- lmer(
-  formula = rating.bc ~ cntr(d) + cntr(Cpn) + us_valence + order + us_valence:order + cntr(d):us_valence + cntr(Cpn):us_valence + cntr(d):us_valence:order + cntr(Cpn):us_valence:order + cntr(d):cntr(Cpn):us_valence + cntr(d):cntr(Cpn):us_valence:order
+  formula = rating.bc ~ (cntr(a)+cntr(b)+cntr(D)+cntr(C)+cntr(d))*us_valence
   + (1 + us_valence| url.srid)
   , data = rating.ec
 )
 summary(model.new)
 
-ggpredict(model.new, terms = ~ Cpn*us_valence*d) |>
+ggpredict(model.new, terms = ~ D*us_valence) |>
   plot(rawdata = FALSE)
 
-ggpredict(model.new, terms = ~ Cpn*us_valence*order) |>
+ggpredict(model.new, terms = ~ d*us_valence) |>
   plot(rawdata = FALSE)
 
 model.mem <- lmer(

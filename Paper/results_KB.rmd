@@ -12,6 +12,7 @@ editor_options:
 #Load (or install and load) packages
 require(pacman)
 library(interactions)
+library(car)
 p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
 set_sum_contrasts()
 
@@ -390,6 +391,8 @@ para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
 
 Ccor <- apa_print(cor.test(para_ratings$Cneg,para_ratings$Cpos))
 
+
+
 ```
 
 ```{r}
@@ -437,7 +440,7 @@ xxx$term[5] <- "$d_{\\mathrm{neg}}$"
 xxx$term[6] <- "$b$"
 xxx$term[7] <- "$a$"
 xxx$VIF <- NA
-library(car)
+
 yyy <- data.frame(vif(model3))
 yyy$vif.model3. <- round(yyy$vif.model3.,2)
 xxx$VIF[1] <- "---"
@@ -470,7 +473,7 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE
 ```{r}
 
 model5 <- lm(
-  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c
+  formula = ec ~ D.c + Cpn.c #+ dpos.c + dneg.c
   , data = para_ratings
 )
 m5 <- apa_print(model5)
@@ -509,6 +512,19 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 
 ```
 
+```{r}
+library(AICcmodavg)
+
+#define list of models
+models <- list(model3, model4, model5, model6)
+
+#specify model names
+mod.names <- c('model3', 'model4', 'model5','model6')
+
+#calculate AIC of each model
+aictab(cand.set = models, modnames = mod.names)
+```
+
 
 ```{r}
 
@@ -535,6 +551,29 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 
 ```
 
+```{r}
+model.start<- lm(
+  formula = ec ~ a.c + b.c + D.c + Cpn.c + dpos.c + dneg.c  +order
+  , data = para_ratings
+)
+
+```
+
+```{r}
+step(model.start, scale = 0,
+     direction = c("forward"),
+     trace = 1, keep = NULL, steps = 1000, k = 2)
+```
+
+```{r}
+
+model.selected<- lm(
+  formula = ec ~ D.c+ Cpn.c + dneg.c
+  , data = para_ratings
+)
+model.s <- apa_print(model.selected)
+
+```
 
 
 
@@ -644,6 +683,85 @@ xxx <- subset(para_ratings, order == "eval_first")
 ```
 
 ### Baseline-corrected CS evaluations
+```{r}
+dat$cs_rating <- as.numeric(dat$cs_rating)
+
+rating.ec <- subset(dat,us_valence %in% c("positive","negative"))
+rating.ec <- rating.ec[,c("url.srid","order","us_valence","cs_rating")]
+rating.dist <- subset(dat,us_valence %in% c("dist"))
+rating.dist.agg <- aggregate(data = rating.dist, cs_rating ~ url.srid, FUN = mean)
+rating.dist.agg <- rename(rating.dist.agg, "dist_rating" = "cs_rating")
+
+rating.ec <- merge(rating.ec,rating.dist.agg, by = c("url.srid"))
+
+rating.ec$rating.bc <- rating.ec$cs_rating - rating.ec$dist_rating
+
+rating.ec$a <- NA
+rating.ec$b <- NA
+rating.ec$D <- NA
+rating.ec$Cpn <- NA
+rating.ec$C <- NA
+rating.ec$d <- NA
+
+for(i in 1:nrow(rating.ec)){
+  tmp.id <- rating.ec$url.srid[i]
+  tmp.dat <- subset(para_ratings,url.srid == tmp.id)
+  if(rating.ec$us_valence[i] == "positive"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cpos[1]
+    rating.ec$d[i] <- tmp.dat$dpos[1]
+  }
+   if(rating.ec$us_valence[i] == "negative"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cneg[1]
+    rating.ec$d[i] <- tmp.dat$dneg[1]
+  }
+}
+
+rating.ec$us_valence <- droplevels(rating.ec$us_valence)
+contrasts(rating.ec$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+rating.ec$order <- factor(rating.ec$order)
+contrasts(rating.ec$order) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+```
+
+```{r}
+model.new <- lmer(
+  formula = rating.bc ~ (cntr(a)+cntr(b)+cntr(D)+cntr(C)+cntr(d))*us_valence
+  + (1 + us_valence| url.srid)
+  , data = rating.ec
+)
+
+m8 <- apa_print(model.new)
+xxx <- data.frame(m8$table)
+xxx$term[2] <- "$a$"
+xxx$term[3] <- "$b$"
+xxx$term[4] <- "$D$"
+xxx$term[5] <- "$C$"
+xxx$term[6] <- "$d$"
+xxx$term[7] <- "$US valence$"
+xxx$term[8] <- "$US valence$ $\\times$ $a$"
+xxx$term[9] <- "$US valence$ $\\times$ $b$"
+xxx$term[10] <- "$US valence$ $\\times$ $D$"
+xxx$term[11] <- "$US valence$ $\\times$ $C$"
+xxx$term[12] <- "$US valence$ $\\times$ $d$"
+
+xxx$VIF <- NA
+yyy <- data.frame(vif(model.new))
+yyy$vif.model.new. <- round(yyy$vif.model.new.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:12] <- yyy[1:11,]
+#xxx <- xxx[c(1,5,2,3,4,6,7,8),]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model xxx: Linear model predicting individual CS ratings from $a$, $b$, $D$, $C$, $d$ and US valence (including two-way interactions between US valence and MPT parameters)")
+
+```
+
 
 ## Additional analyses
 
