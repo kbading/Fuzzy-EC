@@ -11,9 +11,9 @@ editor_options:
 ```{r setup2, include=FALSE}
 #Load (or install and load) packages
 require(pacman)
-library(interactions)
-library(car)
-p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
+
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects', 'AICcmodavg', 'interactions', 'car', install=TRUE)
+  
 set_sum_contrasts()
 
 project_root <- rprojroot::find_rstudio_root_file()
@@ -124,7 +124,7 @@ em_model = emmeans(mod1,pairwise~us_valence, adjust="bonf")
 mod1_order = aov_ez(dat_ev_order
               ,id = "url.srid"
               ,dv = "eval_rating"
-              ,within = "us_valence"
+              #,within = "us_valence"
               ,between="order"
               ,anova_table=list(correction = "none")
               ,include_aov = TRUE
@@ -179,15 +179,6 @@ Complementarily, we also conducted a 3 (US valence) x 2 (Task order) mixed ANOVA
 ## Preregistered analyses on memory performance
 
 ```{r}
-library(TreeBUGS)
-library(papaja)
-library(afex)
-library(ggeffects)
-
-
-
-
-
 models <- list(
   both_HQ    = readRDS(file.path(study_folder2, "study2_both_HQ.rds"))
   , botha5_HQ = readRDS(file.path(study_folder2, "study2_botha5_HQ.rds"))
@@ -344,8 +335,8 @@ apa_table(
 
 ```
 
-The who-said-what MPT model (with $D_{\mathrm{positive}}=D_{\mathrm{negative}}=D_{\mathrm{new}}$ and $1/n=.25$) was fit to the whole sample.
-Task order (memory first vs. evaluation first) was included as a categorical predictor of individual parameter estimates.
+The who-said-what MPT model (with $D_{\mathrm{positive}}=D_{\mathrm{negative}}=D_{\mathrm{new}}$ and $1/n=.25$) was fit to the whole sample. Task order (memory first vs. evaluation first) was included as a categorical predictor of individual parameter estimates.
+
 The model fit the data well, `r fit$both_HQ$T1`, `r fit$both_HQ$T2`, and was therefore used as the baseline model to assess loss of model fit due to parameter restrictions.
 Measures of (absolute and relative) model fit for the baseline model (and restricted model variants) are reported in Table\ \@ref(tab:model-performance).
 Parameter estimates based on the baseline model can be found in Table\ \@ref(tab:exp1-param).
@@ -391,19 +382,18 @@ para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
 
 Ccor <- apa_print(cor.test(para_ratings$Cneg,para_ratings$Cpos))
 
-
-
 ```
 
 ```{r}
 #create table with bivariate correlations between MPT parameters (overall and split by task order)
 ```
 
-### EC effects
-As pre-registered, we calculated several linear models including different sets of MPT parameters as predictors.
+### Evaluative Conditioning effects
+
+As preregistered, we calculated several linear models including different sets of MPT parameters as predictors.
 None of the reported models included $C_{pos}$ and $C_{neg}$ as separate predictors; instead, we used the individual mean of the two parameter estimates (denoted as $C$ hereafter).
-This departure from the pre-registration was made to reduce multicollinearity between predictors (since the bivariate correlation between $C_{pos}$ and $C_{neg}$ turned out to be extremely high, `r Ccor$full_result`).
-As pre-registered, we also calculated variance inflations factors (VIFs) for all predictors included in a given model.
+This departure from the preregistration was made to reduce multicollinearity between predictors (since the bivariate correlation between $C_{pos}$ and $C_{neg}$ turned out to be extremely high, `r Ccor$full_result`).
+As preregistered, we also calculated variance inflation factors (VIFs) for all predictors included in a given model.
 If the VIF of $D$, $b$ or $a$ exceeded 5, we calculated a follow-up model without the respective MPT parameter(s) as predictor(s) of individual EC effects.
 This analytical strategy was adopted to reduce multicollinearity with the MPT parameters that should be most directly related to EC ($C$, $d_{pos}$ and $d_{neg}$).
 
@@ -491,7 +481,6 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 
 ```
 
-
 ```{r}
 
 model6 <- lm(
@@ -513,8 +502,6 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 ```
 
 ```{r}
-library(AICcmodavg)
-
 #define list of models
 models <- list(model3, model4, model5, model6)
 
@@ -524,7 +511,6 @@ mod.names <- c('model3', 'model4', 'model5','model6')
 #calculate AIC of each model
 aictab(cand.set = models, modnames = mod.names)
 ```
-
 
 ```{r}
 
@@ -574,11 +560,6 @@ model.selected<- lm(
 model.s <- apa_print(model.selected)
 
 ```
-
-
-
-
-
 
 ```{r}
 
@@ -761,7 +742,6 @@ xxx$VIF[2:12] <- yyy[1:11,]
 apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model xxx: Linear model predicting individual CS ratings from $a$, $b$, $D$, $C$, $d$ and US valence (including two-way interactions between US valence and MPT parameters)")
 
 ```
-
 
 ## Additional analyses
 
