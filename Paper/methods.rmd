@@ -8,7 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r set_m, include=FALSE}
 #Load (or install and load) packages
 require(pacman)
@@ -58,9 +57,9 @@ We programmed the experiment with lab.js (Henninger et al., 2022). We exported t
 
 ### Stimuli
 
-As neutral stimuli, we used 54 5- to 7-letter nonwords (all made of a combination of vowels and consonants; e.g., ‘*botsy*’; ‘*ampfong*’) used in a previous study (Stahl & Bading, 2020). On a participant basis, 24 nonwords were used as CSs (paired with USs in the learning phase) and 24 were new (i.e., presented only in the test phase).
+As neutral stimuli, we used 54 5- to 7-letter nonwords (all made of a combination of vowels and consonants; e.g., ‘*botsy*’; ‘*ampfong*’) used in a previous study (Stahl & Bading, 2020). At the participant level, 24 nonwords were used as CSs (paired with USs in the learning phase) and 24 were new (i.e., presented only in the test phase).
 
-The USs were 24 color images of animals (e.g., a cockroach), scenes (e.g., a rainbow), and objects (e.g., a knife) selected from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), twelve images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$). Positive USs were significantly more positive than negative USs, Welch’s $t(20.23) = 33.36, p < .001$. Positive and negative USs did not significantly differ in arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+The USs were 24 color images of animals (e.g., a cockroach), scenes (e.g., a rainbow), and objects (e.g., a knife) selected from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), 12 images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$). Positive USs were significantly more positive than negative USs, Welch’s $t(20.23) = 33.36, p < .001$. Positive and negative USs did not significantly differ in arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
 ### Learning phase
 
@@ -74,7 +73,7 @@ After the learning phase, participants entered the test phase. Participants perf
 
 #### Evaluative rating task
 
-In the evaluative classification task, the 24 CSs presented in the learning phase and 24 new nonwords (randomly drawn from the remaining pool of 30 nonwords) were displayed individually once in a random order without time limit. Participants rated how positive or negative they found the nonwords on a 8-point Likert scale ranging from 1 "very negative" to 8 "very positive." The 48 trials were separated by 500-ms inter-trial intervals.
+In the evaluative rating task, the 24 CSs presented in the learning phase and 24 new nonwords (randomly drawn from the remaining pool of 30 nonwords) were displayed individually once in a random order without time limit. Participants rated how positive or negative they found the nonwords on a 8-point Likert scale ranging from 1 "very negative" to 8 "very positive." The 48 trials were separated by 500-ms inter-trial intervals.
 
 #### Memory task
 
@@ -98,4 +97,4 @@ Participants then had the chance to comment on the study. Finally, participants 
 
 ## Data processing and analyses
 
-BLABLABLA
+**[To be done]**

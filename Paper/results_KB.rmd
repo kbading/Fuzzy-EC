@@ -152,7 +152,7 @@ d_neg_pos = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="negative
 
 We report the analyses we conducted on evaluative ratings. We averaged evaluative ratings as a function of US valence (Positive, Negative, None) and Task order (Evaluation first, Memory first). For each participant, we calculated an Evaluative Conditioning (EC) score, which is their mean evaluative rating on CSs paired with positive USs minus their mean evaluative rating on CSs paired with negative USs (negative scores indicate higher evaluations on negatively paired vs. positively paired CSs; positive scores indicate higher evaluations on positively vs. negatively paired CSs).
 
-First, we conducted a between-participants ANOVA on EC scores with Task order as the only factor. We tested whether the grand mean was above 0 by calculating the F-test of the intercept. A grand mean above 0 would indicate that, overall, we replicated the EC effect. In line with the preregistration, we divided the *p*-value of this test by two to perform a one-tailed test, as the grand mean of EC scores was above 0 ($M =$ `r round(mean(dat_o_wide$ec), 2)`; $SD =$ `r round(sd(dat_o_wide$ec), 2)`). The *F*-test was significant, `r mod_ec_print$full_result$Intercept`, showing that we replicated the EC effect. The effect of Task order was not significant^[As preregistered, we divided the *p*-value by two to perform a one-tailed version of the test (similar to *t*-tests) because EC scores are descriptively larger in the Evaluation first ($M =$ `r round(mean(dat_o_wide_ev$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_ev$ec), 2)`) than Memory first ($M =$ `r round(mean(dat_o_wide_mem$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_mem$ec), 2)`) condition. EC scores were above 0 both in the Evaluation first condition, `r t_ec_ev$statistic`, $d =$ `r d_ec_ev$Cohens_d`, 90\% CI = [`r d_ec_ev$CI_low`, `r d_ec_ev$CI_high`] and in the Memory first condition, `r t_ec_mem$statistic`, $d =$ `r d_ec_mem$Cohens_d`, 90\% CI = [`r d_ec_mem$CI_low`, `r d_ec_mem$CI_high`].], `r mod_ec_print$full_result$order`, which means that performing the evaluative rating task before or after the memory task did not significantly change the EC effect.
+First, we conducted a between-participants ANOVA on EC scores with Task order as the only factor. We tested whether the grand mean was above 0 by calculating the F-test of the intercept. A grand mean above 0 would indicate that, overall, we replicated the EC effect. In line with the preregistration, we divided the *p*-value of this test by two to perform a one-tailed test, as the grand mean of EC scores was above 0 ($M =$ `r round(mean(dat_o_wide$ec), 2)`; $SD =$ `r round(sd(dat_o_wide$ec), 2)`). The *F*-test was significant, `r mod_ec_print$full_result$Intercept`, showing that we replicated the EC effect. The effect of Task order was not significant^[As preregistered, we divided the *p*-value by two to perform a one-tailed version of the test (similar to *t*-tests) because means of EC scores are descriptively larger in the Evaluation first ($M =$ `r round(mean(dat_o_wide_ev$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_ev$ec), 2)`) than Memory first ($M =$ `r round(mean(dat_o_wide_mem$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_mem$ec), 2)`) condition. EC scores were above 0 both in the Evaluation first condition, `r t_ec_ev$statistic`, $d =$ `r d_ec_ev$Cohens_d`, 90\% CI = [`r d_ec_ev$CI_low`, `r d_ec_ev$CI_high`] and in the Memory first condition, `r t_ec_mem$statistic`, $d =$ `r d_ec_mem$Cohens_d`, 90\% CI = [`r d_ec_mem$CI_low`, `r d_ec_mem$CI_high`].], `r mod_ec_print$full_result$order`, which means that performing the evaluative rating task before or after the memory task did not significantly change the EC effect.
 
 ```{r plot_us_valence_order, fig.cap="Mean evaluative ratings (and 95% error bars) as a function of US valence and Task order."}
 dat_ev_order$`US Valence` = dat_ev_order$us_valence
@@ -174,7 +174,7 @@ apa_beeplot(data=dat_ev_order, id="url.srid", dv="eval_rating", factors=c("US Va
             ,ylim=c(0,8))
 ```
 
-Complementarily, we also conducted a 3 (US valence) x 2 (Task order) mixed ANOVA on evaluative ratings (see Figure \@ref(fig:plot_us_valence_order)). Different from the ANOVA above, evaluative ratings on unpaired nonwords can be compared with evaluations in other conditions. The main effect of US valence was significant, `r mod1_print$full_result$us_valence`. We followed-up on the ANOVA by conducting multiple comparisons (Bonferroni-corrected) based on the full model: evaluative ratings were higher for positively paired CSs compared with new non-words, $t(164) = -9.94, p < .001, d = 0.75, 95\%$ CI $= [0.58, 0.92]$, and compared with negatively-paired CSs, $t(164) = -9.61, p < .001, d = 0.74, 95\%$ CI $= [0.57, 0.91]$. Evaluative ratings were not significantly different for negatively-paired CSs and for nonwords, $t(164) = -0.39, p = .922, d = 0.02, 95\%$ CI $= [-0.13, 0.17]$. The main effect of Task order was not significant, `r mod1_print$full_result$order`, nor was the interaction between US valence and Task order, `r mod1_print$full_result$order_us_valence`.
+Complementarily, we also conducted a 3 (US valence) x 2 (Task order) mixed ANOVA on evaluative ratings (see Figure\ \@ref(fig:plot_us_valence_order)). Different from the ANOVA above, evaluative ratings on unpaired nonwords can be compared with evaluations in other conditions. The main effect of US valence was significant, `r mod1_print$full_result$us_valence`. We followed-up on the ANOVA by conducting multiple comparisons (Bonferroni-corrected) based on the full model: evaluative ratings were higher for positively paired CSs compared with new nonwords, $t(164) = -9.94, p < .001, d = 0.75, 95\%$ CI $= [0.58, 0.92]$, and compared with negatively-paired CSs, $t(164) = -9.61, p < .001, d = 0.74, 95\%$ CI $= [0.57, 0.91]$. Evaluative ratings were not significantly different for negatively-paired CSs and for nonwords, $t(164) = -0.39, p = .922, d = 0.02, 95\%$ CI $= [-0.13, 0.17]$. The main effect of Task order was not significant, `r mod1_print$full_result$order`, nor was the interaction between US valence and Task order, `r mod1_print$full_result$order_us_valence`.
 
 ## Preregistered analyses on memory performance
 
@@ -343,30 +343,30 @@ Parameter estimates based on the baseline model can be found in Table\ \@ref(tab
 
 The discrimination parameter $D$ was $.454$ on average.
 A restricted who-said-what model setting the $D$ parameter to zero produced inadequate fit, `r fit$bothD0_HQ$T1`, `r fit$bothD0_HQ$T2`, and a WAIC of $11,200.27$.
-The WAIC of the restricted model was more than 10 points higher than the WAIC of the baseline model ($\text{WAIC}_{baseline}=3,695.99$), indicating that the $D$ parameter cannot be set to zero without loss of model adequacy.
+The WAIC of the restricted model was more than 10 points higher than the WAIC of the baseline model ($\text{WAIC}_{baseline}=3,695.99$), indicating that the $D$ parameter cannot be set to zero without loss of model fit.
 
 The $C$ parameter for positively (negatively) paired CSs was $.666$ ($.864$) on average.
 A restricted who-said-what model setting $C_{\mathrm{positive}}$ ($C_{\mathrm{negative}}$) to zero produced inadequate fit and a WAIC of $5,094.10$ ($5,288.79$).
-The WAIC values were again more than 10 points higher than the WAIC of the baseline model, indicating that neither $C_{\mathrm{positive}}$ nor $C_{\mathrm{negative}}$ parameter can be set to zero without loss of model adequacy.
+The WAIC values were again more than 10 points higher than the WAIC of the baseline model, indicating that neither $C_{\mathrm{positive}}$ nor $C_{\mathrm{negative}}$ parameter can be set to zero without loss of model fit.
 
 The $d$ parameter for positively (negatively) paired CSs was $.049$ ($.118$) on average.
 A restricted who-said-what model setting $d_{\mathrm{positive}}$ ($d_{\mathrm{negative}}$) to zero produced adequate fit and a WAIC of $3,695.01$ ($3,695.48$).
-The WAIC values were almost identical to the WAIC of the baseline model, indicating that both $d_{\mathrm{positive}}$ and $d_{\mathrm{negative}}$ can be set to zero without loss of model adequacy.
+The WAIC values were almost identical to the WAIC of the baseline model, indicating that both $d_{\mathrm{positive}}$ and $d_{\mathrm{negative}}$ can be set to zero without loss of model fit.
 
 The $b$ parameter (indicating a bias for responding "old" in the recognition task) was $.135$ on average.
 A restricted who-said-what model setting the $b$ parameter to $.5$ produced inadequate fit and a $WAIC$ of $5,632.61$.
-The WAIC difference between the models (restricted vs. baseline) was again larger than 10, indicating that the $b$ parameter cannot be set to $.5$ without loss of model adequacy.
+The WAIC difference between the models (restricted vs. baseline) was again larger than 10, indicating that the $b$ parameter cannot be set to $.5$ without loss of model fit.
 
 Finally, the $a$ parameter (indicating a bias for selecting a positive US in the recollection task) was $.482$ on average.
 A restricted who-said-what model setting the $a$ parameter to $.5$ produced adequate fit and a WAIC of $3,696.15$.
-The WAIC was almost identical to the WAIC of the baseline model, indicating that the $a$ parameter can be set to $.5$ without loss of model adequacy.
+The WAIC was almost identical to the WAIC of the baseline model, indicating that the $a$ parameter can be set to $.5$ without loss of model fit.
 
 ### Effects of task order on parameter estimates
 
 MPT parameters (from the baseline model) as a function of task order are reported in Table\ \@ref(tab:exp1-param).
 For each MPT parameter, we calculated the posterior difference between group means and its associated Bayesian $p$\ values (see Table\ \@ref(tab:exp1-param)).
-For the $D$ parameter, the group mean in the "memory first" condition was substantially higher than the group mean in the "memory first" condition.
-For the $b$ parameter, the effect of task order was reversed: here, the group mean was substantially higher in the "evaluation first" condition than in the "memory first" condition.
+For the $D$ parameter, the group mean in the Memory first condition was substantially higher than the group mean in the Evaluation first condition.
+For the $b$ parameter, the effect of task order was reversed: the group mean was substantially higher in the Evaluation first condition than in the Memory first condition.
 For the remaining parameters, the posterior difference between group mean was insubstantial.
 
 ## Preregistered analyses on evaluations as a function of MPT parameter estimates
@@ -392,7 +392,7 @@ Ccor <- apa_print(cor.test(para_ratings$Cneg,para_ratings$Cpos))
 
 As preregistered, we calculated several linear models including different sets of MPT parameters as predictors.
 None of the reported models included $C_{pos}$ and $C_{neg}$ as separate predictors; instead, we used the individual mean of the two parameter estimates (denoted as $C$ hereafter).
-This departure from the preregistration was made to reduce multicollinearity between predictors (since the bivariate correlation between $C_{pos}$ and $C_{neg}$ turned out to be extremely high, `r Ccor$full_result`).
+This departure from the preregistration aims at reducing multicollinearity between predictors (since the bivariate correlation between $C_{pos}$ and $C_{neg}$ turned out to be extremely high, `r Ccor$full_result`).
 As preregistered, we also calculated variance inflation factors (VIFs) for all predictors included in a given model.
 If the VIF of $D$, $b$ or $a$ exceeded 5, we calculated a follow-up model without the respective MPT parameter(s) as predictor(s) of individual EC effects.
 This analytical strategy was adopted to reduce multicollinearity with the MPT parameters that should be most directly related to EC ($C$, $d_{pos}$ and $d_{neg}$).
