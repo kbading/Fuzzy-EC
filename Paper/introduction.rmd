@@ -18,15 +18,24 @@ library(lme4)
 library(car)
 library(dplyr)
 library(MPTinR)
-
 ```
 
-Please insert: introduction leading up to one the greatest studies of all time.
+<!-- KB: -->
 
-## Amazing paraphraph
+<!-- - introduce EC, explain importance of memory: recognizing CS, recollecting US valence and/or US identity -->
+<!-- - introduce current methodological approaches and describe problems (measurement error, biases, ...) need for formal model -->
+<!-- - introduce who-said-what model as candidate for estimating recognition, US valence recollection, US identity recollection (without measurement error) and separating memory from response biases -->
+<!-- - describe advantages for experimental and correlative research -->
+<!-- - introduce present research: develop procedure, fit model, validate parameters via correlations -->
 
-Please insert: a great paragraph
+*General anticipated outline of the introduction*
 
-## Another amazing paraphraph
+1. Context, EC, contingency awareness; at encoding; at retrieval/response; theoretical/applied implications
 
-Please insert: a great paragraph
+2. Lack of evidence for EC in the absence of awareness (at encoding); at retrieval: memory for US Valence vs. for US identity; past research (Hütter; Pleyers; Stahl...); critical role of US valence memory in EC but not of US identity memory ("*when valence awareness is controlled for, identity awareness does not predict the EC outcome any longer*")
+
+3. Limitations of previous approaches to separate US identity memory and US valence memory, including: measurement error (multiple tasks or scores to estimate US valence and US identity memory), no distinction between memory processes and response biases; no distinction between recognition memory and item-item (associative memory)
+
+4. Current approach: US identity vs. US valence memory: a specificity question. Distinguish between more or less specific memory: who-said-what (wsw) paradigm and model -- estimate recognition memory, US identity memory, US valence memory, and response biases in a single (direct memory) task. General logic of wsw, previous results (Klauer & Wegener; Bell, Buchner...) and parameter validation (Klauer & Wegener). 
+
+5. Current research: use wsw in EC to test in a new way the contribution of specific (US identity) and less specific (US valence) memory to EC effect: (1) Check model fit, estimate parameters, estimate their contribution to responses in the memory task; (2) then regress CS evaluations/EC effect on the estimates.

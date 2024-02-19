@@ -370,12 +370,468 @@ individual_parameters$id <- rownames(individual_parameters)
 
 
 para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
-save(para_ratings_both,file = "HQstudy2both_x_ratings")
+save(para_ratings_both,file = "HQstudy2both_x_ratings.rdata")
 ```
+
+### Both: D = 0
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothD0_HQ.rds")) {
+  study2_bothD0_HQ <- readRDS("study2_bothD0_HQ.rds")
+} else {
+
+  study2_bothD0_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg=0","G=0.25")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list("a; order","b; order",#"Dn; order",
+                       "dneg; order","dpos; order","Cneg; order","Cpos; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothD0_HQ, file = "study2_bothD0_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothD0_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothD0_x_ratings.rdata")
+```
+
+### Both: Cpos = 0
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothCpos0_HQ.rds")) {
+  study2_bothCpos0_HQ <- readRDS("study2_bothCpos0_HQ.rds")
+} else {
+
+  study2_bothCpos0_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","Cpos=0")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list("a; order","b; order","Dn; order",
+                       "dneg; order","dpos; order","Cneg; order"#,"Cpos; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothCpos0_HQ, file = "study2_bothCpos0_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothCpos0_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothCpos0_x_ratings.rdata")
+```
+
+### Both: Cneg = 0
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothCneg0_HQ.rds")) {
+  study2_bothCneg0_HQ <- readRDS("study2_bothCneg0_HQ.rds")
+} else {
+
+  study2_bothCneg0_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","Cneg=0")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list("a; order","b; order","Dn; order",
+                       "dneg; order","dpos; order","Cpos; order"#,"Cneg; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothCneg0_HQ, file = "study2_bothCneg0_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothCneg0_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothCneg0_x_ratings.rdata")
+```
+
+### Both: dpos = 0
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothdpos0_HQ.rds")) {
+  study2_bothdpos0_HQ <- readRDS("study2_bothdpos0_HQ.rds")
+} else {
+
+  study2_bothdpos0_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","dpos=0")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list("a; order","b; order","Dn; order",
+                       "dneg; order","Cpos; order","Cneg; order"#,"dpos; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothdpos0_HQ, file = "study2_bothdpos0_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothdpos0_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothdpos0_x_ratings.rdata")
+```
+
+### Both: dneg = 0
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothdneg0_HQ.rds")) {
+  study2_bothdneg0_HQ <- readRDS("study2_bothdneg0_HQ.rds")
+} else {
+
+  study2_bothdneg0_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","dneg=0")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list("a; order","b; order","Dn; order",
+                       "dpos; order","Cpos; order","Cneg; order"#,"dneg; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothdneg0_HQ, file = "study2_bothdneg0_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothdneg0_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothdneg0_x_ratings.rdata")
+```
+
+### Both: a = .5
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_botha5_HQ.rds")) {
+  study2_botha5_HQ <- readRDS("study2_botha5_HQ.rds")
+} else {
+
+  study2_botha5_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","a=.5")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list(#"a; order",
+                       "b; order","Dn; order",
+                       "dneg; order","dpos; order","Cneg; order","Cpos; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_botha5_HQ, file = "study2_botha5_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_botha5_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2botha5_x_ratings.rdata")
+```
+
+### Both: b = .5
+```{r}
+#we'll use this model
+
+mpt_data_subset <- mpt_data_c
+
+cov_data <- mpt_data_subset[,c("url.srid","order")]
+mpt_data <- mpt_data_subset[,3:13]
+
+MPTinR::check.mpt("KW_wsw_model.eqn")
+
+if(file.exists("study2_bothb5_HQ.rds")) {
+  study2_bothb5_HQ <- readRDS("study2_bothb5_HQ.rds")
+} else {
+
+  study2_bothb5_HQ = traitMPT(
+  eqnfile = "KW_wsw_model.eqn"
+  , data = mpt_data
+  , n.iter   = 4e5
+  , n.adapt  =  2e4
+  , n.burnin = 2e5
+  , n.thin   = 4e1
+  , n.chains = 4
+  , restrictions = list("Dn=Dpos=Dneg","G=0.25","b=.5")
+  , ppp = 5e3
+  , covData=cov_data
+  , predStructure=list(#"b; order",
+                       "a; order","Dn; order",
+                       "dneg; order","dpos; order","Cneg; order","Cpos; order"
+                       )
+  , IVprec = "dgamma(.5,.5)"
+  #, predType = c("f")
+  )
+  saveRDS(study2_bothb5_HQ, file = "study2_bothb5_HQ.rds")
+}
+
+#Fit the model and estimate parameters
+
+# summary(mod_mpt_KB_both)
+# 
+# TreeBUGS::plotFit(mod_mpt_KB_both)
+# TreeBUGS::plotFreq(mod_mpt_KB_both)
+# TreeBUGS::plotParam(mod_mpt_KB_both)
+
+# mod_mpt_KB_ppp = PPP(mod_mpt_KB, M = 5e3)
+# mod_mpt_KB_ppp
+
+#MPT on aggregated frequencies
+# mod_agg = fit.mpt(data = dat_mpt_freq_agg$n
+#         ,model.filename = "KW_wsw_model.eqn"
+#         ,restrictions.filename = list("Dn=Dpos=Dneg","G=0.25")
+#         )
+# mod_agg
+
+individual_parameters <- as.data.frame(getParam(study2_bothb5_HQ, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+#saveRDS(individual_parameters, file = "individual-parameters-KB_both.rds")
+
+
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "HQstudy2bothb5_x_ratings.rdata")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Evalfirst
 
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- subset(mpt_data_c,order == "eval_first")
@@ -434,12 +890,12 @@ individual_parameters$id <- rownames(individual_parameters)
 
 
 para_ratings_evalfirst<- merge(mpt_data_subset, individual_parameters, by = "id")
-save(para_ratings_evalfirst,file = "HQstudy2evalfirst_x_ratings")
+save(para_ratings_evalfirst,file = "HQstudy2evalfirst_x_ratings.rdata")
 ```
 
 ## Memfirst
 
-```{r}
+```{r, eval = FALSE}
 #we'll use this model
 
 mpt_data_subset <- subset(mpt_data_c,order == "mem_first")

@@ -35,7 +35,6 @@ keywords          : "keywords"
 wordcount         : "X"
 
 bibliography      : ["r-references.bib", '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`']
-
 floatsintext      : yes
 linenumbers       : no
 draft             : no
@@ -72,15 +71,17 @@ study_folder_main <- file.path(
   project_root
   , "Study 2"
 )
+
+
+
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
-
 
 knitr::opts_chunk$set(
   echo = FALSE
   , warning = FALSE
   , message = FALSE
-  , cache = TRUE
+  , cache = FALSE
 )
 ```
 
@@ -99,8 +100,8 @@ knitr::opts_chunk$set(
 
 ```
 
-# Results
-```{r child = "results.rmd", eval = TRUE}
+# Results^[All analyses were conducted with R (R Core Team, 2021). We used the packages XXX (), XXX (), XXX (), XXX (), XXX (), XXX (), XXX ()...]
+```{r child = "results_KB.rmd", eval = TRUE}
 ```
 
 # General discussion

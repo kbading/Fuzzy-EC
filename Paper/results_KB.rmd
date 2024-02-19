@@ -1,0 +1,747 @@
+---
+title: "Results"
+date: "`r Sys.Date()`"
+bibliography: '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
+output: papaja::apa6_pdf
+classoption: doc
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup2, include=FALSE}
+#Load (or install and load) packages
+require(pacman)
+
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects', 'AICcmodavg', 'interactions', 'car', install=TRUE)
+  
+set_sum_contrasts()
+
+project_root <- rprojroot::find_rstudio_root_file()
+
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+#read the dataset we created in a previous R script
+# dat = readRDS("C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/exp2/write_manuscript/Fuzzy-EC/Paper/data/data_wsw2.RDS")
+
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "Paper")
+dat <- readRDS(file.path(study_folder, "data", "data_wsw2.RDS"))
+
+study_folder2 <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "Paper"
+  , "mpt analyses"
+)
+
+#exclude participants declaring they did not take their responses seriously
+##or did not pay attention
+dat = dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() #drop level to remove excluded ppts
+
+#some factors are integer or character variables in the dataset; make them factors
+dat$url.srid = as.factor(dat$url.srid)
+#dat$cs_category = as.factor(dat$cs_category)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+```
+
+```{r eval_change}
+####
+#EVALUATIVE CONDITIONING
+####
+
+#compute mean evaluative change scores for each participant as a function of US Valence 
+dat_ev = dat %>%
+  group_by(url.srid, us_valence) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+#check data distribution
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="positive"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="dist"]))
+# plot(density(dat_ev$eval_rating[dat_ev$us_valence=="negative"]))
+
+#include order
+dat_ev_order = dat %>%
+  group_by(url.srid, us_valence, order) %>%
+  summarize(eval_rating = mean(as.numeric(cs_rating)))
+
+# knitr::kable(dat_ev_order, format = "html")
+
+dat_ev_order$us_valence = as.factor(dat_ev_order$us_valence)
+dat_ev_order$order = as.factor(dat_ev_order$order)
+```
+
+```{r eval_ratings}
+##calculate ec effects (ratings pos-ratings neg)
+dat_ec = dat_ev_order %>% filter(us_valence != "dist") 
+
+dat_o_wide = dat_ec %>% pivot_wider(names_from = us_valence
+                                          ,values_from = eval_rating)
+
+dat_o_wide$ec = dat_o_wide$positive-dat_o_wide$negative
+
+mod_ec = aov_ez(dat_o_wide
+              ,id = "url.srid"
+              ,dv = "ec"
+              ,between = "order"
+)
+
+mod_ec_print = apa_print(mod_ec, intercept = TRUE) #significant effect
+
+# anova(mod_ec, intercept=TRUE)
+# 
+# describe(dat_o_wide$ec)
+# describeBy(dat_o_wide$ec, dat_o_wide$order)
+
+dat_o_wide_mem = dat_o_wide %>% filter(order=="mem_first")
+t_ec_mem = apa_print(t.test(dat_o_wide_mem$ec, mu = 0))
+d_ec_mem = cohens_d(dat_o_wide_mem$ec, mu=0, ci = .9)
+
+dat_o_wide_ev = dat_o_wide %>% filter(order=="eval_first")
+t_ec_ev = apa_print(t.test(dat_o_wide_ev$ec, mu = 0))
+d_ec_ev = cohens_d(dat_o_wide_ev$ec, mu=0, ci = .9)
+
+####
+mod1 = aov_ez(dat_ev
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              ,within = "us_valence"
+              ,anova_table=list(correction = "none")
+)
+
+mod1_print = apa_print(mod1) #significant effect
+
+# apa_table(
+#   mod1_print$table
+#   ,caption = "Repeated-measures ANOVA: Ratings as a function of US"
+# )
+
+# Descriptive statistics: evaluative change scores as a function of US Valence
+# knitr::kable(describeBy(dat_ev$eval_rating, dat_ev$us_valence, mat = TRUE), digits = 2)
+
+#multiple comparisons
+em_model = emmeans(mod1,pairwise~us_valence, adjust="bonf")
+
+#with order
+mod1_order = aov_ez(dat_ev_order
+              ,id = "url.srid"
+              ,dv = "eval_rating"
+              #,within = "us_valence"
+              ,between="order"
+              ,anova_table=list(correction = "none")
+              ,include_aov = TRUE
+)
+
+# mod1_order
+mod1_print = apa_print(mod1_order, correction = "none") #significant effect
+
+# anova(mod1_order, intercept = TRUE)
+
+#no significant effect including order
+
+#multiple comparisons
+em_model_val = emmeans(mod1_order,pairwise~us_valence)
+# em_model_val
+
+d_pos_dist = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="positive"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="dist"], paired = TRUE, ci = .95)
+
+d_pos_neg = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="positive"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="negative"], paired = TRUE, ci = .95)
+
+d_neg_pos = cohens_d(dat_ev_order$eval_rating[dat_ev_order$us_valence=="negative"], dat_ev_order$eval_rating[dat_ev_order$us_valence=="dist"], paired = TRUE, ci = .95)
+```
+
+## Preregistered analyses on evaluative ratings
+
+We report the analyses we conducted on evaluative ratings. We averaged evaluative ratings as a function of US valence (Positive, Negative, None) and Task order (Evaluation first, Memory first). For each participant, we calculated an Evaluative Conditioning (EC) score, which is their mean evaluative rating on CSs paired with positive USs minus their mean evaluative rating on CSs paired with negative USs (negative scores indicate higher evaluations on negatively paired vs. positively paired CSs; positive scores indicate higher evaluations on positively vs. negatively paired CSs).
+
+First, we conducted a between-participants ANOVA on EC scores with Task order as the only factor. We tested whether the grand mean was above 0 by calculating the F-test of the intercept. A grand mean above 0 would indicate that, overall, we replicated the EC effect. In line with the preregistration, we divided the *p*-value of this test by two to perform a one-tailed test, as the grand mean of EC scores was above 0 ($M =$ `r round(mean(dat_o_wide$ec), 2)`; $SD =$ `r round(sd(dat_o_wide$ec), 2)`). The *F*-test was significant, `r mod_ec_print$full_result$Intercept`, showing that we replicated the EC effect. The effect of Task order was not significant^[As preregistered, we divided the *p*-value by two to perform a one-tailed version of the test (similar to *t*-tests) because means of EC scores are descriptively larger in the Evaluation first ($M =$ `r round(mean(dat_o_wide_ev$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_ev$ec), 2)`) than Memory first ($M =$ `r round(mean(dat_o_wide_mem$ec), 2)`; $SD =$ `r round(sd(dat_o_wide_mem$ec), 2)`) condition. EC scores were above 0 both in the Evaluation first condition, `r t_ec_ev$statistic`, $d =$ `r d_ec_ev$Cohens_d`, 90\% CI = [`r d_ec_ev$CI_low`, `r d_ec_ev$CI_high`] and in the Memory first condition, `r t_ec_mem$statistic`, $d =$ `r d_ec_mem$Cohens_d`, 90\% CI = [`r d_ec_mem$CI_low`, `r d_ec_mem$CI_high`].], `r mod_ec_print$full_result$order`, which means that performing the evaluative rating task before or after the memory task did not significantly change the EC effect.
+
+```{r plot_us_valence_order, fig.cap="Mean evaluative ratings (and 95% error bars) as a function of US valence and Task order."}
+dat_ev_order$`US Valence` = dat_ev_order$us_valence
+
+#reorder US valence
+dat_ev_order$`US Valence` = factor(dat_ev_order$`US Valence`, levels = c("negative", "dist", "positive"))
+
+#rename US valence and order levels
+dat_ev_order$`US Valence` = plyr::revalue(dat_ev_order$`US Valence`, c("negative"="Negative", "dist"="None", "positive"="Positive"))
+
+dat_ev_order$order = plyr::revalue(dat_ev_order$order, c("eval_first"="Evaluation first", "mem_first"="Memory first"))
+
+dat_ev_order$`Task order` = dat_ev_order$order 
+
+#visualize the data
+apa_beeplot(data=dat_ev_order, id="url.srid", dv="eval_rating", factors=c("US Valence", "Task order"), use = "all.obs", ylim=c(0,11),
+            xlab = "US"
+            ,ylab = "Mean evaluative ratings"
+            ,ylim=c(0,8))
+```
+
+Complementarily, we also conducted a 3 (US valence) x 2 (Task order) mixed ANOVA on evaluative ratings (see Figure\ \@ref(fig:plot_us_valence_order)). Different from the ANOVA above, evaluative ratings on unpaired nonwords can be compared with evaluations in other conditions. The main effect of US valence was significant, `r mod1_print$full_result$us_valence`. We followed-up on the ANOVA by conducting multiple comparisons (Bonferroni-corrected) based on the full model: evaluative ratings were higher for positively paired CSs compared with new nonwords, $t(164) = -9.94, p < .001, d = 0.75, 95\%$ CI $= [0.58, 0.92]$, and compared with negatively-paired CSs, $t(164) = -9.61, p < .001, d = 0.74, 95\%$ CI $= [0.57, 0.91]$. Evaluative ratings were not significantly different for negatively-paired CSs and for nonwords, $t(164) = -0.39, p = .922, d = 0.02, 95\%$ CI $= [-0.13, 0.17]$. The main effect of Task order was not significant, `r mod1_print$full_result$order`, nor was the interaction between US valence and Task order, `r mod1_print$full_result$order_us_valence`.
+
+## Preregistered analyses on memory performance
+
+```{r}
+models <- list(
+  both_HQ    = readRDS(file.path(study_folder2, "study2_both_HQ.rds"))
+  , botha5_HQ = readRDS(file.path(study_folder2, "study2_botha5_HQ.rds"))
+  , bothb5_HQ = readRDS(file.path(study_folder2, "study2_bothb5_HQ.rds"))
+  , bothCneg0_HQ = readRDS(file.path(study_folder2, "study2_bothCneg0_HQ.rds"))
+  , bothCpos0_HQ = readRDS(file.path(study_folder2, "study2_bothCpos0_HQ.rds"))
+  , bothD0_HQ = readRDS(file.path(study_folder2, "study2_bothD0_HQ.rds"))
+  , bothdneg0_HQ = readRDS(file.path(study_folder2, "study2_bothdneg0_HQ.rds"))
+  , bothdpos0_HQ = readRDS(file.path(study_folder2, "study2_bothdpos0_HQ.rds"))
+)
+
+fit <- lapply(models, FUN = apa_fit)
+
+individual <- models |>
+  lapply(function(x) {
+    individual_fits <- x$summary$fitStatistics$individual
+    individual_fits$T1.obs <- colMeans(individual_fits$T1.obs)
+    individual_fits$T1.pred <- colMeans(individual_fits$T1.pred)
+    cross_table <- table(individual_fits$T1.p <= .05)
+    cross_table
+  })
+
+```
+
+### Model fit and parameter estimates
+
+```{r model-performance}
+# prepare_table <- function(x) {
+#   data.frame(as.list(x$summary$fitStatistics$overall))
+# }
+# 
+# fit_stats <- lapply(models, prepare_table) |> do.call(what = "rbind")
+# 
+# waics <- readRDS(file.path(study_folder, "waic.rds"))[names(models)]
+# 
+# waic_stats <- lapply(waics, FUN = function(x){
+#   data.frame(
+#     waic = sum(x$waic)
+#     , se_waic = sqrt(length(x$waic)) * sd(x$waic)
+#   )
+# }) |> do.call(what = "rbind")
+# table_data <- cbind(fit_stats, waic_stats)
+# table_data <- within(
+#   table_data
+#   , {
+#     p.T1 <- apa_p(p.T1)
+#     p.T2 <- apa_p(p.T2)
+#   }
+# )
+# table_data <- apa_num(table_data)
+# table_data <- t(table_data)
+# table_data <- data.frame(
+#   " " = c(
+#     "$T_1^{\\mathrm{observed}}$", "$T_1^{\\mathrm{expected}}$", "$p$"
+#     , "$T_2^{\\mathrm{observed}}$", "$T_2^{\\mathrm{expected}}$", "$p$"
+#     , "$\\mathrm{WAIC}$"
+#     , "$\\mathit{SE}$" # _{\\mathrm{WAIC}}$"
+#   )
+#   , table_data
+#   , check.names = F
+# )
+# rownames(table_data) <- NULL
+# colnames(table_data) <- gsub(colnames(table_data), pattern = "_", replacement = "")
+# 
+# save(table_data, file ="waid_table.rdata")
+
+#load("waid_table.rdata")
+load(file.path(study_folder2, "waid_table.rdata"))
+colnames(table_data)[2] <- "unrestricted"
+colnames(table_data) <- gsub(colnames(table_data), pattern = "^both|HQ$", replacement = "")
+variable_labels(table_data) <- list(
+  "unrestricted" = "Unrestricted"
+  , a5 = "$a = .5$"
+  , b5 = "$b = .5$"
+  , Cneg0 = "$C_{\\mathrm{neg}} = 0$"
+  , Cpos0 = "$C_{\\mathrm{pos}} = 0$"
+  , D0    = "$D = 0$"
+  , dpos0 = "$d_{\\mathrm{pos}} = 0$"
+  , dneg0 = "$d_{\\mathrm{neg}} = 0$"
+)
+table_data <- table_data[, c(" ", "unrestricted", "D0", "Cpos0", "Cneg0", "dpos0", "dneg0", "b5", "a5")]
+
+apa_table(
+  table_data
+  , caption = "Experiment 1: Absolute fit and WAIC for the hierarchical extensions of unrestricted and restricted variants of the who-said-what model."
+  , escape = FALSE
+  , landscape = FALSE
+  , font_size = "scriptsize"
+  , stub_indents = list(
+    "Goodness of fit: Means" = 1:3
+    , "Goodness of fit: Covariances" = 4:6
+    , "Relative predictive accuracy" = 7:8
+  )
+  , align = c("l", rep("r", ncol(table_data) - 1L))
+)
+```
+
+```{r exp1-param}
+# MPT parameter estimates ----
+df <- apa_print(summary(models$both_HQ))
+
+# Create some beautiful parameter labels
+parameter_labels <- c(
+  A = "$a$"
+  , B = "$b$"
+  , a = "$a$"
+  , b = "$b$"
+  , Cpos = "$C_{\\mathrm{pos}}$"
+  , Cneg = "$C_{\\mathrm{neg}}$"
+  , Dpos = "$d_{\\mathrm{pos}}$"
+  , Dneg = "$d_{\\mathrm{neg}}$"
+  , dpos = "$d_{\\mathrm{pos}}$"
+  , dneg = "$d_{\\mathrm{neg}}$"
+  , Dn   = "$D$"
+)
+df$parameter <- parameter_labels[df$term]
+df <- subset(df, select = c("parameter", "estimate", "conf.int"))
+
+group_means <- getGroupMeans(models$both_HQ, probit = FALSE)
+
+apa_groups <- data.frame(
+  full_term = rownames(group_means)
+  , estimate = apa_num(group_means[, "Mean", drop = TRUE], gt1 = FALSE, digits = 3L)
+  , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = FALSE, digits = 3L) |> unlist()
+  , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
+  , row.names = NULL
+)
+apa_groups$term <- gsub(apa_groups$full_term, pattern = "_order.*$", replacement = "")
+apa_groups$parameter <- parameter_labels[apa_groups$term]
+apa_groups$group <- gsub(apa_groups$full_term, pattern = ".*order\\[|\\]$", replacement = "")
+groups_wide <- tidyr::pivot_wider(apa_groups, names_from = "group", values_from = c("estimate", "conf.int", "p.value"), id_cols = "parameter")
+groups_wide <- groups_wide[, c("parameter", "estimate_eval_first", "conf.int_eval_first", "estimate_mem_first", "conf.int_mem_first", "p.value_eval_first")]
+df <- merge(df, groups_wide, by = "parameter", sort = FALSE)
+
+variable_labels(df) <- list(
+  parameter = "Parameter"
+  , estimate = "$M$"
+  , conf.int = "95\\% CI"
+  , estimate_eval_first = "$M$"
+  , conf.int_eval_first = "95\\% CI"
+  , estimate_mem_first  = "$M$"
+  , conf.int_mem_first  = "95\\% CI"
+  , p.value_eval_first = "$\\:p$"
+)
+
+apa_table(
+  df[c(5, 4, 3, 7, 6, 2, 1), ]
+  , caption = "Parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
+  , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
+  , escape = FALSE
+  , align = c("l", rep("c", ncol(df) - 2), "r")
+  , note = "One-sided $p$ values"
+)
+
+```
+
+The who-said-what MPT model (with $D_{\mathrm{positive}}=D_{\mathrm{negative}}=D_{\mathrm{new}}$ and $1/n=.25$) was fit to the whole sample. Task order (memory first vs. evaluation first) was included as a categorical predictor of individual parameter estimates.
+
+The model fit the data well, `r fit$both_HQ$T1`, `r fit$both_HQ$T2`, and was therefore used as the baseline model to assess loss of model fit due to parameter restrictions.
+Measures of (absolute and relative) model fit for the baseline model (and restricted model variants) are reported in Table\ \@ref(tab:model-performance).
+Parameter estimates based on the baseline model can be found in Table\ \@ref(tab:exp1-param).
+
+The discrimination parameter $D$ was $.454$ on average.
+A restricted who-said-what model setting the $D$ parameter to zero produced inadequate fit, `r fit$bothD0_HQ$T1`, `r fit$bothD0_HQ$T2`, and a WAIC of $11,200.27$.
+The WAIC of the restricted model was more than 10 points higher than the WAIC of the baseline model ($\text{WAIC}_{baseline}=3,695.99$), indicating that the $D$ parameter cannot be set to zero without loss of model fit.
+
+The $C$ parameter for positively (negatively) paired CSs was $.666$ ($.864$) on average.
+A restricted who-said-what model setting $C_{\mathrm{positive}}$ ($C_{\mathrm{negative}}$) to zero produced inadequate fit and a WAIC of $5,094.10$ ($5,288.79$).
+The WAIC values were again more than 10 points higher than the WAIC of the baseline model, indicating that neither $C_{\mathrm{positive}}$ nor $C_{\mathrm{negative}}$ parameter can be set to zero without loss of model fit.
+
+The $d$ parameter for positively (negatively) paired CSs was $.049$ ($.118$) on average.
+A restricted who-said-what model setting $d_{\mathrm{positive}}$ ($d_{\mathrm{negative}}$) to zero produced adequate fit and a WAIC of $3,695.01$ ($3,695.48$).
+The WAIC values were almost identical to the WAIC of the baseline model, indicating that both $d_{\mathrm{positive}}$ and $d_{\mathrm{negative}}$ can be set to zero without loss of model fit.
+
+The $b$ parameter (indicating a bias for responding "old" in the recognition task) was $.135$ on average.
+A restricted who-said-what model setting the $b$ parameter to $.5$ produced inadequate fit and a $WAIC$ of $5,632.61$.
+The WAIC difference between the models (restricted vs. baseline) was again larger than 10, indicating that the $b$ parameter cannot be set to $.5$ without loss of model fit.
+
+Finally, the $a$ parameter (indicating a bias for selecting a positive US in the recollection task) was $.482$ on average.
+A restricted who-said-what model setting the $a$ parameter to $.5$ produced adequate fit and a WAIC of $3,696.15$.
+The WAIC was almost identical to the WAIC of the baseline model, indicating that the $a$ parameter can be set to $.5$ without loss of model fit.
+
+### Effects of task order on parameter estimates
+
+MPT parameters (from the baseline model) as a function of task order are reported in Table\ \@ref(tab:exp1-param).
+For each MPT parameter, we calculated the posterior difference between group means and its associated Bayesian $p$\ values (see Table\ \@ref(tab:exp1-param)).
+For the $D$ parameter, the group mean in the Memory first condition was substantially higher than the group mean in the Evaluation first condition.
+For the $b$ parameter, the effect of task order was reversed: the group mean was substantially higher in the Evaluation first condition than in the Memory first condition.
+For the remaining parameters, the posterior difference between group mean was insubstantial.
+
+## Preregistered analyses on evaluations as a function of MPT parameter estimates
+
+```{r}
+load(file.path(study_folder2, "HQstudy2evalfirst_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2memfirst_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2both_x_ratings.rdata"))
+load(file.path(study_folder2, "HQstudy2bothPN_x_ratings.rdata"))
+
+para_ratings <- para_ratings_both
+para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
+
+Ccor <- apa_print(cor.test(para_ratings$Cneg,para_ratings$Cpos))
+
+```
+
+```{r}
+#create table with bivariate correlations between MPT parameters (overall and split by task order)
+```
+
+### Evaluative Conditioning effects
+
+As preregistered, we calculated several linear models including different sets of MPT parameters as predictors.
+None of the reported models included $C_{pos}$ and $C_{neg}$ as separate predictors; instead, we used the individual mean of the two parameter estimates (denoted as $C$ hereafter).
+This departure from the preregistration aims at reducing multicollinearity between predictors (since the bivariate correlation between $C_{pos}$ and $C_{neg}$ turned out to be extremely high, `r Ccor$full_result`).
+As preregistered, we also calculated variance inflation factors (VIFs) for all predictors included in a given model.
+If the VIF of $D$, $b$ or $a$ exceeded 5, we calculated a follow-up model without the respective MPT parameter(s) as predictor(s) of individual EC effects.
+This analytical strategy was adopted to reduce multicollinearity with the MPT parameters that should be most directly related to EC ($C$, $d_{pos}$ and $d_{neg}$).
+
+```{r}
+
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+para_ratings$ec <- para_ratings$positive-para_ratings$negative
+#para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
+#para_ratings <- subset(para_ratings, ec >= 0)
+#contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+
+para_ratings$Cpn.c <- cntr(para_ratings$Cpn)
+
+#para_ratings$Cneg.c <- cntr(para_ratings$Cneg)
+
+para_ratings$dpos.c <- cntr(para_ratings$dpos)
+
+para_ratings$dneg.c <- cntr(para_ratings$dneg)
+para_ratings$b.c <- cntr(para_ratings$b)
+para_ratings$a.c <- cntr(para_ratings$a)
+para_ratings$D.c <- cntr(para_ratings$Dn)
+
+model3 <- lm(
+  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c
+  , data = para_ratings
+)
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$term[7] <- "$a$"
+xxx$VIF <- NA
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:7] <- yyy[1:6,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$, $b$ and $a$.")
+```
+
+```{r}
+model4 <- lm(
+  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c
+  , data = para_ratings
+)
+m4 <- apa_print(model4)
+xxx <- data.frame(m4$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model4))
+yyy$vif.model4. <- round(yyy$vif.model4.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:6] <- yyy[1:5,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE
+          ,caption = "Model 1b (follow-up): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$ and $b$.")
+
+```
+
+```{r}
+
+model5 <- lm(
+  formula = ec ~ D.c + Cpn.c #+ dpos.c + dneg.c
+  , data = para_ratings
+)
+m5 <- apa_print(model5)
+xxx <- data.frame(m5$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model5))
+yyy$vif.model5. <- round(yyy$vif.model5.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:5] <- yyy[1:4,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1c (exploratory): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$ and $d_{neg}$.")
+
+```
+
+```{r}
+
+model6 <- lm(
+  formula = ec ~ Cpn.c + dpos.c + dneg.c
+  , data = para_ratings
+)
+m6 <- apa_print(model6)
+xxx <- data.frame(m6$table)
+xxx$term[2] <- "$C$"
+xxx$term[3] <- "$d_{\\mathrm{pos}}$"
+xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model6))
+yyy$vif.model6. <- round(yyy$vif.model6.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:4] <- yyy[1:3,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1d (exploratory): Linear model predicting individual EC effects from $C$, $d_{pos}$ and $d_{neg}$.")
+
+```
+
+```{r}
+#define list of models
+models <- list(model3, model4, model5, model6)
+
+#specify model names
+mod.names <- c('model3', 'model4', 'model5','model6')
+
+#calculate AIC of each model
+aictab(cand.set = models, modnames = mod.names)
+```
+
+```{r}
+
+model7 <- lm(
+  formula = ec ~ (Cpn.c+dpos.c+dneg.c)*D.c
+  , data = para_ratings
+)
+m7 <- apa_print(model7)
+xxx <- data.frame(m7$table)
+xxx$term[2] <- "$C$"
+xxx$term[3] <- "$d_{\\mathrm{pos}}$"
+xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+xxx$term[5] <- "$D$"
+xxx$term[6] <- "$D$ $\\times$ $C$"
+xxx$term[7] <- "$D$ $\\times$ $d_{\\mathrm{pos}}$"
+xxx$term[8] <- "$D$ $\\times$ $d_{\\mathrm{neg}}$"
+xxx$VIF <- NA
+yyy <- data.frame(vif(model7))
+yyy$vif.model7. <- round(yyy$vif.model7.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:8] <- yyy[1:7,]
+xxx <- xxx[c(1,5,2,3,4,6,7,8),]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 2: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$ and $d_{neg}$ (including two-way interactions between $D$ and $C$, $d_{pos}$ or $d_{neg}$)")
+
+```
+
+```{r}
+model.start<- lm(
+  formula = ec ~ a.c + b.c + D.c + Cpn.c + dpos.c + dneg.c  +order
+  , data = para_ratings
+)
+
+```
+
+```{r}
+step(model.start, scale = 0,
+     direction = c("forward"),
+     trace = 1, keep = NULL, steps = 1000, k = 2)
+```
+
+```{r}
+
+model.selected<- lm(
+  formula = ec ~ D.c+ Cpn.c + dneg.c
+  , data = para_ratings
+)
+model.s <- apa_print(model.selected)
+
+```
+
+```{r}
+
+# ggpredict(model3a, terms = ~ D.c*Cpn.c) |>
+#   plot(rawdata = TRUE)
+
+JN.1 <- interactions::johnson_neyman(
+  model7
+  , pred = "D.c"
+  , modx = "Cpn.c"
+  , plot = TRUE
+)
+
+# ggpredict(model3a, terms = ~ Cpn.c*D.c) |>
+#   plot(rawdata = TRUE)
+
+JN.2 <- interactions::johnson_neyman(
+  model7
+  , pred = "Cpn.c"
+  , modx = "D.c"
+  , plot = TRUE
+)
+
+# ggpredict(model3a, terms = ~ dneg.c*D.c) |>
+#   plot(rawdata = TRUE)
+
+JN.3 <- interactions::johnson_neyman(model = model7
+               , pred = "dneg.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+# ggpredict(model3a, terms = ~ dpos.c*D.c) |>
+#   plot(rawdata = TRUE)
+
+JN.4 <- interactions::johnson_neyman(model = model7
+               , pred = "dpos.c"
+               , modx = "D.c"
+               , plot = TRUE)
+
+
+
+
+xxx <- subset(para_ratings, order == "mem_first")
+#cor.test(xxx$a.c,xxx$b.c)
+xxx <- subset(para_ratings, order == "eval_first")
+#cor.test(xxx$a.c,xxx$b.c)
+
+# model3b <- lm(
+#   formula = ec ~ (a.c)*D.c
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3b)
+# 
+# ggpredict(model3b, terms = ~ a.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3b
+#                , pred = "a.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
+# 
+# 
+# model3c <- lm(
+#   formula = ec ~ b.c*D.c
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3c)
+# 
+# ggpredict(model3c, terms = ~ b.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3c
+#                , pred = "b.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
+
+
+```
+
+```{r}
+
+# model3d <- lm(
+#   formula = dist ~ (a.c*b.c*D.c)
+#   
+#   , data = para_ratings
+# )
+# 
+# summary(model3d)
+# 
+# ggpredict(model3d, terms = ~ a.c*D.c) |>
+#   plot(rawdata = TRUE)
+# 
+# interactions::johnson_neyman(model = model3d
+#                , pred = "a.c"
+#                , modx = "D.c"
+#                , plot = TRUE)
+
+```
+
+### Baseline-corrected CS evaluations
+```{r}
+dat$cs_rating <- as.numeric(dat$cs_rating)
+
+rating.ec <- subset(dat,us_valence %in% c("positive","negative"))
+rating.ec <- rating.ec[,c("url.srid","order","us_valence","cs_rating")]
+rating.dist <- subset(dat,us_valence %in% c("dist"))
+rating.dist.agg <- aggregate(data = rating.dist, cs_rating ~ url.srid, FUN = mean)
+rating.dist.agg <- rename(rating.dist.agg, "dist_rating" = "cs_rating")
+
+rating.ec <- merge(rating.ec,rating.dist.agg, by = c("url.srid"))
+
+rating.ec$rating.bc <- rating.ec$cs_rating - rating.ec$dist_rating
+
+rating.ec$a <- NA
+rating.ec$b <- NA
+rating.ec$D <- NA
+rating.ec$Cpn <- NA
+rating.ec$C <- NA
+rating.ec$d <- NA
+
+for(i in 1:nrow(rating.ec)){
+  tmp.id <- rating.ec$url.srid[i]
+  tmp.dat <- subset(para_ratings,url.srid == tmp.id)
+  if(rating.ec$us_valence[i] == "positive"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cpos[1]
+    rating.ec$d[i] <- tmp.dat$dpos[1]
+  }
+   if(rating.ec$us_valence[i] == "negative"){
+    rating.ec$a[i] <- tmp.dat$a[1]
+    rating.ec$b[i] <- tmp.dat$b[1]
+    rating.ec$D[i] <- tmp.dat$Dn[1]
+    rating.ec$Cpn[i] <- tmp.dat$Cpn[1]
+    rating.ec$C[i] <- tmp.dat$Cneg[1]
+    rating.ec$d[i] <- tmp.dat$dneg[1]
+  }
+}
+
+rating.ec$us_valence <- droplevels(rating.ec$us_valence)
+contrasts(rating.ec$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+rating.ec$order <- factor(rating.ec$order)
+contrasts(rating.ec$order) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+```
+
+```{r}
+model.new <- lmer(
+  formula = rating.bc ~ (cntr(a)+cntr(b)+cntr(D)+cntr(C)+cntr(d))*us_valence
+  + (1 + us_valence| url.srid)
+  , data = rating.ec
+)
+
+m8 <- apa_print(model.new)
+xxx <- data.frame(m8$table)
+xxx$term[2] <- "$a$"
+xxx$term[3] <- "$b$"
+xxx$term[4] <- "$D$"
+xxx$term[5] <- "$C$"
+xxx$term[6] <- "$d$"
+xxx$term[7] <- "$US valence$"
+xxx$term[8] <- "$US valence$ $\\times$ $a$"
+xxx$term[9] <- "$US valence$ $\\times$ $b$"
+xxx$term[10] <- "$US valence$ $\\times$ $D$"
+xxx$term[11] <- "$US valence$ $\\times$ $C$"
+xxx$term[12] <- "$US valence$ $\\times$ $d$"
+
+xxx$VIF <- NA
+yyy <- data.frame(vif(model.new))
+yyy$vif.model.new. <- round(yyy$vif.model.new.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:12] <- yyy[1:11,]
+#xxx <- xxx[c(1,5,2,3,4,6,7,8),]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model xxx: Linear model predicting individual CS ratings from $a$, $b$, $D$, $C$, $d$ and US valence (including two-way interactions between US valence and MPT parameters)")
+
+```
+
+## Additional analyses
+
