@@ -28,7 +28,6 @@ library(MPTinR)
 <!-- - describe advantages for experimental and correlative research -->
 <!-- - introduce present research: develop procedure, fit model, validate parameters via correlations -->
 
-<!-- test
 *General anticipated outline of the introduction*
 
 1. Context, EC, contingency awareness; at encoding; at retrieval/response; theoretical/applied implications
