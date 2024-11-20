@@ -3,18 +3,29 @@
 apa_print.summary.traitMPT <- function(
   x
   , parameters = "mean"
+  , estimate = c("Mean", "Median", "50%")
+  , estimate_label = NULL
   , ...) {
+  
+  estimate <- match.arg(estimate, several.ok = FALSE)
+  
+  if(estimate == "Median") estimate <- "50%"
+  
+  estimate_label <- list(
+    Mean = "$M$"
+    , "50%" = "$\\mathit{Md}$"
+  )[[estimate]]
 
   extract_treebugs <- function(x, ...) {
     x <- as.data.frame(x, stringsAsFactors = FALSE)
     x$Term <- gsub(rownames(x), pattern = "mean_", replacement = "", fixed = TRUE)
-    x$estimate <- x$Mean
+    x$estimate <- x[[estimate]]
     x$conf.int <- lapply(apply(X = x[, c("2.5%", "97.5%"), drop = FALSE], MARGIN = 1, list), unlist)
     x <- x[, c("Term", "estimate", "conf.int")]
     attr(x$conf.int, "conf.level") <- .95
     rownames(x) <- NULL
 
-    canonical_x <- papaja:::canonize(x, est_label = "$M$")
+    canonical_x <- papaja:::canonize(x, est_label = estimate_label)
     beautiful_x <- papaja:::beautify(canonical_x, ...)
     variable_labels(beautiful_x$term) <- "Parameter"
     beautiful_x
