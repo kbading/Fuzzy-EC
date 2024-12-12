@@ -124,7 +124,7 @@ em_model = emmeans(mod1,pairwise~us_valence, adjust="bonf")
 mod1_order = aov_ez(dat_ev_order
               ,id = "url.srid"
               ,dv = "eval_rating"
-              #,within = "us_valence"
+              ,within = "us_valence"
               ,between="order"
               ,anova_table=list(correction = "none")
               ,include_aov = TRUE
@@ -379,8 +379,10 @@ load(file.path(study_folder2, "HQstudy2bothPN_x_ratings.rdata"))
 
 para_ratings <- para_ratings_both
 para_ratings$Cpn <- (para_ratings$Cneg + para_ratings$Cpos)/2
+para_ratings$dpn <- (para_ratings$dneg + para_ratings$dpos)/2
 
 Ccor <- apa_print(cor.test(para_ratings$Cneg,para_ratings$Cpos))
+dcor <- apa_print(cor.test(para_ratings$dneg,para_ratings$dpos))
 
 ```
 
@@ -402,15 +404,21 @@ This analytical strategy was adopted to reduce multicollinearity with the MPT pa
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 para_ratings$ec <- para_ratings$positive-para_ratings$negative
+
+para_ratings$mean_eval <- (para_ratings$positive+para_ratings$negative)/2
 #para_ratings$ec.2 <- para_ratings$positive_bc-para_ratings$negative_bc
 #para_ratings <- subset(para_ratings, ec >= 0)
 #contrasts(data$us_valence) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
 
+para_ratings$Cpos.c <- cntr(para_ratings$Cpos)
+para_ratings$Cneg.c <- cntr(para_ratings$Cneg)
 para_ratings$Cpn.c <- cntr(para_ratings$Cpn)
-
+para_ratings$dpn.c <- cntr(para_ratings$dpn)
+#para_ratings$Cneg.c <- cntr(para_ratings$Cneg)
 #para_ratings$Cneg.c <- cntr(para_ratings$Cneg)
 
 para_ratings$dpos.c <- cntr(para_ratings$dpos)
+#para_ratings$dneg.c <- cntr(para_ratings$dneg)
 
 para_ratings$dneg.c <- cntr(para_ratings$dneg)
 para_ratings$b.c <- cntr(para_ratings$b)
@@ -418,9 +426,10 @@ para_ratings$a.c <- cntr(para_ratings$a)
 para_ratings$D.c <- cntr(para_ratings$Dn)
 
 model3 <- lm(
-  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c
+  formula = ec ~ (D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c)*order
   , data = para_ratings
 )
+
 m3 <- apa_print(model3)
 xxx <- data.frame(m3$table)
 xxx$term[2] <- "$D$"
@@ -439,77 +448,269 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 ```
 
 ```{r}
-model4 <- lm(
-  formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c + b.c
+
+model3 <- lm(
+  formula = mean_eval ~ (D.c + Cpos.c + Cneg.c + dpos.c + dneg.c + b.c + a.c)*order
   , data = para_ratings
 )
-m4 <- apa_print(model4)
-xxx <- data.frame(m4$table)
+
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
 xxx$term[2] <- "$D$"
 xxx$term[3] <- "$C$"
 xxx$term[4] <- "$d_{\\mathrm{pos}}$"
 xxx$term[5] <- "$d_{\\mathrm{neg}}$"
 xxx$term[6] <- "$b$"
+xxx$term[7] <- "$a$"
 xxx$VIF <- NA
-yyy <- data.frame(vif(model4))
-yyy$vif.model4. <- round(yyy$vif.model4.,2)
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
 xxx$VIF[1] <- "---"
-xxx$VIF[2:6] <- yyy[1:5,]
-apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE
-          ,caption = "Model 1b (follow-up): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$ and $b$.")
+xxx$VIF[2:7] <- yyy[1:6,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$, $b$ and $a$.")
+
 
 ```
 
 ```{r}
 
-model5 <- lm(
-  formula = ec ~ D.c + Cpn.c #+ dpos.c + dneg.c
-  , data = para_ratings
+model3 <- lm(
+  formula = ec ~ (D.c + Cpn.c + dpos.c + dneg.c + b.c)
+  , data = subset(para_ratings, order == "mem_first")
 )
-m5 <- apa_print(model5)
-xxx <- data.frame(m5$table)
+
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
 xxx$term[2] <- "$D$"
 xxx$term[3] <- "$C$"
 xxx$term[4] <- "$d_{\\mathrm{pos}}$"
 xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+#xxx$term[7] <- "$a$"
 xxx$VIF <- NA
-yyy <- data.frame(vif(model5))
-yyy$vif.model5. <- round(yyy$vif.model5.,2)
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
 xxx$VIF[1] <- "---"
-xxx$VIF[2:5] <- yyy[1:4,]
-apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1c (exploratory): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$ and $d_{neg}$.")
+xxx$VIF[2:6] <- yyy[1:5,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$, $b$ and $a$.")
 
 ```
 
 ```{r}
 
-model6 <- lm(
-  formula = ec ~ Cpn.c + dpos.c + dneg.c
+model3 <- lm(
+  formula = ec ~ (D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c)
+  , data = subset(para_ratings, order == "eval_first")
+)
+
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$term[7] <- "$a$"
+xxx$VIF <- NA
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:7] <- yyy[1:6,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$, $b$ and $a$.")
+
+```
+
+```{r}
+
+model3 <- lm(
+  formula = ec ~ (D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c)
+  , data = subset(para_ratings, order == "eval_first")
+)
+
+m3 <- apa_print(model3)
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+xxx$term[6] <- "$b$"
+xxx$term[7] <- "$a$"
+xxx$VIF <- NA
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:7] <- yyy[1:6,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1: Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$, $b$ and $a$.")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+model3 <- lm(
+  formula = ec ~ (D.c + Cpn.c + dpn.c + b.c + a.c)*order
   , data = para_ratings
 )
-m6 <- apa_print(model6)
-xxx <- data.frame(m6$table)
-xxx$term[2] <- "$C$"
-xxx$term[3] <- "$d_{\\mathrm{pos}}$"
-xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+m3 <- apa_print(model3)
+
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d$"
+xxx$term[5] <- "$b$"
+xxx$term[6] <- "$a$"
 xxx$VIF <- NA
-yyy <- data.frame(vif(model6))
-yyy$vif.model6. <- round(yyy$vif.model6.,2)
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
 xxx$VIF[1] <- "---"
-xxx$VIF[2:4] <- yyy[1:3,]
-apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1d (exploratory): Linear model predicting individual EC effects from $C$, $d_{pos}$ and $d_{neg}$.")
+xxx$VIF[2:12] <- yyy[1:11,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Linear model predicting individual EC effects from $D$, $C$, $d$, $b$ and $a$.")
+
+```
+
+```{r}
+
+model3 <- lm(
+  formula = ec ~ (D.c + Cpn.c + dpn.c + b.c)*order
+  , data = para_ratings
+)
+m3 <- apa_print(model3)
+
+xxx <- data.frame(m3$table)
+xxx$term[2] <- "$D$"
+xxx$term[3] <- "$C$"
+xxx$term[4] <- "$d$"
+xxx$term[5] <- "$b$"
+#xxx$term[6] <- "$a$"
+xxx$VIF <- NA
+
+yyy <- data.frame(vif(model3))
+yyy$vif.model3. <- round(yyy$vif.model3.,2)
+xxx$VIF[1] <- "---"
+xxx$VIF[2:10] <- yyy[1:9,]
+apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Linear model predicting individual EC effects from $D$, $C$, $d$ and $b$.")
+
+```
+
+
+```{r}
+
+# model3 <- lm(
+#   formula = ec ~ (Cpn.c + dpn.c)*D.c
+#   , data = para_ratings
+# )
+# m3 <- apa_print(model3)
+# 
+# xxx <- data.frame(m3$table)
+# xxx$term[2] <- "$D$"
+# xxx$term[3] <- "$C$"
+# xxx$term[4] <- "$d$"
+# xxx$term[5] <- "$b$"
+# #xxx$term[6] <- "$a$"
+# xxx$VIF <- NA
+# 
+# yyy <- data.frame(vif(model3))
+# yyy$vif.model3. <- round(yyy$vif.model3.,2)
+# xxx$VIF[1] <- "---"
+# xxx$VIF[2:10] <- yyy[1:9,]
+# apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Linear model predicting individual EC effects from $D$, $C$, $d$ and $b$.")
+
+```
+
+
+
+```{r}
+# model4 <- lm(
+#   formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c 
+#   + b.c
+#   , data = para_ratings
+# )
+# m4 <- apa_print(model4)
+# xxx <- data.frame(m4$table)
+# xxx$term[2] <- "$D$"
+# xxx$term[3] <- "$C$"
+# xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+# xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+# xxx$term[6] <- "$b$"
+# xxx$VIF <- NA
+# yyy <- data.frame(vif(model4))
+# yyy$vif.model4. <- round(yyy$vif.model4.,2)
+# xxx$VIF[1] <- "---"
+# xxx$VIF[2:6] <- yyy[1:5,]
+# apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE
+#           ,caption = "Model 1b (follow-up): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$, $d_{neg}$ and $b$.")
+
+```
+
+```{r}
+
+# model5 <- lm(
+#   formula = ec ~ D.c + Cpn.c + dpos.c + dneg.c
+#   , data = para_ratings
+# )
+# m5 <- apa_print(model5)
+# xxx <- data.frame(m5$table)
+# xxx$term[2] <- "$D$"
+# xxx$term[3] <- "$C$"
+# xxx$term[4] <- "$d_{\\mathrm{pos}}$"
+# xxx$term[5] <- "$d_{\\mathrm{neg}}$"
+# xxx$VIF <- NA
+# yyy <- data.frame(vif(model5))
+# yyy$vif.model5. <- round(yyy$vif.model5.,2)
+# xxx$VIF[1] <- "---"
+# xxx$VIF[2:5] <- yyy[1:4,]
+# apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1c (exploratory): Linear model predicting individual EC effects from $D$, $C$, $d_{pos}$ and $d_{neg}$.")
+
+```
+
+```{r}
+
+# model6 <- lm(
+#   formula = ec ~ Cpn.c + dpos.c + dneg.c
+#   , data = para_ratings
+# )
+# m6 <- apa_print(model6)
+# xxx <- data.frame(m6$table)
+# xxx$term[2] <- "$C$"
+# xxx$term[3] <- "$d_{\\mathrm{pos}}$"
+# xxx$term[4] <- "$d_{\\mathrm{neg}}$"
+# xxx$VIF <- NA
+# yyy <- data.frame(vif(model6))
+# yyy$vif.model6. <- round(yyy$vif.model6.,2)
+# xxx$VIF[1] <- "---"
+# xxx$VIF[2:4] <- yyy[1:3,]
+# apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "Model 1d (exploratory): Linear model predicting individual EC effects from $C$, $d_{pos}$ and $d_{neg}$.")
 
 ```
 
 ```{r}
 #define list of models
-models <- list(model3, model4, model5, model6)
-
-#specify model names
-mod.names <- c('model3', 'model4', 'model5','model6')
-
-#calculate AIC of each model
-aictab(cand.set = models, modnames = mod.names)
+# models <- list(model3, model4, model5, model6)
+# 
+# #specify model names
+# mod.names <- c('model3', 'model4', 'model5','model6')
+# 
+# #calculate AIC of each model
+# aictab(cand.set = models, modnames = mod.names)
 ```
 
 ```{r}
@@ -712,7 +913,7 @@ contrasts(rating.ec$order) <- "contr.sum"                   # = effects coding (
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 ```
 
-```{r}
+```{r eval = FALSE}
 model.new <- lmer(
   formula = rating.bc ~ (cntr(a)+cntr(b)+cntr(D)+cntr(C)+cntr(d))*us_valence
   + (1 + us_valence| url.srid)
