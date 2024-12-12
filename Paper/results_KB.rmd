@@ -278,7 +278,7 @@ apa_table(
 
 ```{r exp1-param}
 # MPT parameter estimates ----
-df <- apa_print(summary(models$both_HQ))
+df <- apa_print(summary(models$both_HQ), parameters = "mean", estimate = "Median")
 
 # Create some beautiful parameter labels
 parameter_labels <- c(
@@ -298,11 +298,10 @@ df$parameter <- parameter_labels[df$term]
 df <- subset(df, select = c("parameter", "estimate", "conf.int"))
 
 group_means <- getGroupMeans(models$both_HQ, probit = FALSE)
-
 apa_groups <- data.frame(
   full_term = rownames(group_means)
-  , estimate = apa_num(group_means[, "Mean", drop = TRUE], gt1 = FALSE, digits = 3L)
-  , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = FALSE, digits = 3L) |> unlist()
+  , estimate = apa_num(group_means[, "50%", drop = TRUE], gt1 = TRUE, digits = 3L)
+  , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = TRUE, digits = 3L) |> unlist()
   , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
   , row.names = NULL
 )
@@ -326,7 +325,7 @@ variable_labels(df) <- list(
 
 apa_table(
   df[c(5, 4, 3, 7, 6, 2, 1), ]
-  , caption = "Parameter estimates (with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
+  , caption = "Parameter estimates (posterior medians with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
   , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
   , escape = FALSE
   , align = c("l", rep("c", ncol(df) - 2), "r")

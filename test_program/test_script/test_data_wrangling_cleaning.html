@@ -491,7 +491,7 @@ program for offline data collection) – if we collect data this way, we
 will have one .csv file for each participant. So, first, we need to
 retrieve and merge all the .csv (for the example here, I did two
 runs).</p>
-<pre class="r"><code>dat = read_bulk(&quot;C:/Users/benaj/OneDrive - UCL/Postdoctorat/projects_Karoline/study/test_study/test_data/&quot;) #will need to change the directory
+<pre class="r"><code>dat = read_bulk(&quot;../test_data/&quot;) #will need to change the directory
 
 # # Read the text file from JATOS (first batch)...
 # read_file(&#39;jatos_results_20220630194157_firstbatch.txt&#39;)%&gt;%
@@ -594,7 +594,7 @@ count_pairings$cs_us = paste0(count_pairings$cs, count_pairings$us)
 count_pairings %&gt;%                           
  group_by(ppt) %&gt;%
   summarise(count = n_distinct(cs_us))</code></pre>
-<pre><code># A tibble: 2 x 2
+<pre><code># A tibble: 2 × 2
     ppt count
   &lt;int&gt; &lt;int&gt;
 1     1    24
