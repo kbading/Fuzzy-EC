@@ -1,0 +1,640 @@
+---
+title: "Pilot data"
+author: "Karoline Bading"
+date: $16^{th}$ of November 2024
+output:
+  html_document:
+    toc: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Set-up
+
+## Call packages
+
+```{r packages}
+#Data wrangling and cleaning
+
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'jsonlite', 'psych')
+library(papaja)
+
+project_root <- rprojroot::find_rstudio_root_file()
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+```
+
+```{r read_data, message=FALSE, warning=FALSE}
+# Read the text file from JATOS (first batch)...
+setwd("~/Fuzzy-EC/Study 3 - Pilot")
+read_file('pilot_data.txt')%>%
+#... split it into lines ...
+ str_split('\n') %>% first() %>%
+#... filter empty rows ...
+ discard(function(x) x == '') %>%
+#... parse JSON into a data.frame
+ map_dfr(fromJSON, flatten=T) -> dat
+
+```
+
+```{r data_cleaning}
+#repeat url.srid (participant number), pay attention, and serious on every line of each participant; then select only useful variables
+dat = dat %>%
+   fill(url.srid, .direction = "down") %>% 
+  group_by(url.srid) %>% 
+  fill(consent, comment_study,pay_attention, serious, age, sex, gender, .direction = "down") %>%
+  fill(consent, comment_study, pay_attention,serious, age, sex, gender,.direction = "up") %>% 
+  select(url.srid, sender, consent, duration, ended_on, pay_attention, serious, response, response_action, comment_study,response,response_action, trait, trait_valence, age_group, count_adjective_ratings, young_old, pos_neg, arousing
+         , count_face_ratings, face, age, sex, gender
+         , oy_right, pn_right,ar_right
+         , face
+         ) 
+
+```
+
+```{r}
+
+length(unique(dat$url.srid))
+table(dat$pay_attention) 
+table(dat$serious) 
+
+
+dat <- subset(dat, pay_attention == 1 & serious == 1)
+length(unique(dat$url.srid))
+
+```
+
+## Trait rating
+
+```{r}
+dat_trait = dat %>% filter(sender=="rating_trial_trait") %>%
+  select(url.srid, trait, trait_valence, age_group, young_old, pos_neg, arousing, oy_right, pn_right, ar_right)
+
+dat_trait$young_old <- as.numeric(dat_trait$young_old)
+dat_trait$pos_neg <- as.numeric(dat_trait$pos_neg)
+dat_trait$arousing <- as.numeric(dat_trait$arousing)
+
+dat_trait$young_old_rec <- NA
+dat_trait$pos_neg_rec <- NA
+dat_trait$arousing_rec <- NA
+
+for(i in 1:nrow(dat_trait)){
+  if(dat_trait$oy_right[i]=="older"){
+    dat_trait$young_old_rec[i] <- dat_trait$young_old[i]
+  }
+  if(dat_trait$oy_right[i]=="younger"){
+    dat_trait$young_old_rec[i] <- 5 - (dat_trait$young_old[i]-5)
+  }
+}
+
+for(i in 1:nrow(dat_trait)){
+  if(dat_trait$pn_right[i]=="positive"){
+    dat_trait$pos_neg_rec[i] <- dat_trait$pos_neg[i]
+  }
+  if(dat_trait$pn_right[i]=="negative"){
+    dat_trait$pos_neg_rec[i] <- 5 - (dat_trait$pos_neg[i]-5)
+  }
+}
+
+for(i in 1:nrow(dat_trait)){
+  if(dat_trait$ar_right[i]!="not emotionally intense at all"){
+    dat_trait$arousing_rec[i] <- dat_trait$arousing[i]
+  }
+  if(dat_trait$ar_right[i]=="not emotionally intense at all"){
+    dat_trait$arousing_rec[i] <- 5 - (dat_trait$arousing[i]-5)
+  }
+}
+
+```
+
+```{r}
+
+afex::aov_ez(data=dat_trait,id = "url.srid", dv = "young_old_rec",within = c("trait_valence","age_group"))
+
+afex::aov_ez(data=dat_trait,id = "url.srid", dv = "pos_neg_rec",within = c("trait_valence","age_group"))
+
+afex::aov_ez(data=dat_trait,id = "url.srid", dv = "arousing_rec",within = c("trait_valence","age_group"))
+
+apa_barplot(data = dat_trait, id = "url.srid", dv = "young_old_rec", factors = c("trait_valence","age_group"))
+apa_barplot(data = dat_trait, id = "url.srid", dv = "pos_neg_rec", factors = c("trait_valence","age_group"))
+apa_barplot(data = dat_trait, id = "url.srid", dv = "arousing_rec", factors = c("trait_valence","age_group"))
+
+```
+
+```{r}
+dat_trait$yo_diff <- dat_trait$young_old_rec - 5
+dat_trait$pn_diff <- dat_trait$pos_neg_rec - 5
+dat_trait$ar_diff <- dat_trait$arousing_rec - 5
+
+agg_yo <- aggregate(dat_trait, FUN = mean, yo_diff ~ trait + trait_valence + age_group)
+agg_pn <- aggregate(dat_trait, FUN = mean, pn_diff ~ trait + trait_valence + age_group)
+agg_ar <- aggregate(dat_trait, FUN = mean, ar_diff ~ trait + trait_valence + age_group)
+
+agg_all <- merge(agg_yo,agg_pn, by = c("trait","trait_valence","age_group"))
+agg_all <- merge(agg_all,agg_ar, by = c("trait","trait_valence","age_group"))
+```
+
+```{r}
+plot(agg_all$yo_diff,agg_all$pn_diff)
+
+young_pos <- subset(agg_all,trait_valence == "pos" & age_group == "younger")
+t.test(young_pos$yo_diff)
+t.test(young_pos$pn_diff)
+
+young_neg <- subset(agg_all,trait_valence == "neg" & age_group == "younger")
+t.test(young_neg$yo_diff)
+t.test(young_neg$pn_diff)
+
+old_pos <- subset(agg_all,trait_valence == "pos" & age_group == "older")
+t.test(old_pos$yo_diff)
+t.test(old_pos$pn_diff)
+
+old_neg <- subset(agg_all,trait_valence == "neg" & age_group == "older")
+t.test(old_neg$yo_diff)
+t.test(old_neg$pn_diff)
+```
+
+```{r}
+agg_all$yo_diff_abs <- ifelse(agg_all$age_group == "older", agg_all$yo_diff, abs(agg_all$yo_diff))
+
+library(afex)
+aov_ez(data = agg_all, id = "trait", dv = "yo_diff_abs", between = c("trait_valence","age_group"))
+
+apa_barplot(data = agg_all, id = "trait", dv = "yo_diff_abs", factors = c("trait_valence","age_group"))
+```
+
+
+```{r}
+agg_all$pn_diff_abs <- ifelse(agg_all$trait_valence == "pos", agg_all$pn_diff, abs(agg_all$pn_diff))
+
+library(afex)
+aov_ez(data = agg_all, id = "trait", dv = "pn_diff_abs", between = c("trait_valence","age_group"))
+
+apa_barplot(data = agg_all, id = "trait", dv = "pn_diff_abs", factors = c("trait_valence","age_group"))
+```
+
+```{r}
+
+library(afex)
+aov_ez(data = agg_all, id = "trait", dv = "ar_diff", between = c("trait_valence","age_group"))
+
+apa_barplot(data = agg_all, id = "trait", dv = "ar_diff", factors = c("trait_valence","age_group"))
+```
+
+```{r}
+dat_trait_excl <- agg_all
+dat_trait_excl <- subset(dat_trait_excl, trait != "considerate")
+dat_trait_excl <- subset(dat_trait_excl, trait != "experienced")
+dat_trait_excl <- subset(dat_trait_excl, trait != "reasonable")
+dat_trait_excl <- subset(dat_trait_excl, trait != "humble")
+dat_trait_excl <- subset(dat_trait_excl, trait != "selfless")
+
+dat_trait_excl <- subset(dat_trait_excl, trait != "easy-going")
+dat_trait_excl <- subset(dat_trait_excl, trait != "spontaneous")
+dat_trait_excl <- subset(dat_trait_excl, trait != "fast")
+dat_trait_excl <- subset(dat_trait_excl, trait != "ambitious")
+
+dat_trait_excl <- subset(dat_trait_excl, trait != "slow")
+dat_trait_excl <- subset(dat_trait_excl, trait != "confused")
+dat_trait_excl <- subset(dat_trait_excl, trait != "pessimistic")
+dat_trait_excl <- subset(dat_trait_excl, trait != "forgetful")
+
+dat_trait_excl <- subset(dat_trait_excl, trait != "inexperienced")
+dat_trait_excl <- subset(dat_trait_excl, trait != "self-absorbed")
+dat_trait_excl <- subset(dat_trait_excl, trait != "arrogant")
+dat_trait_excl <- subset(dat_trait_excl, trait != "inconsiderate")
+dat_trait_excl <- subset(dat_trait_excl, trait != "ignorant")
+
+table(dat_trait_excl$trait_valence,dat_trait_excl$age_group)
+```
+
+```{r}
+library(afex)
+aov_ez(data = dat_trait_excl, id = "trait", dv = "yo_diff_abs", between = c("trait_valence","age_group"))
+
+apa_barplot(data = dat_trait_excl, id = "trait", dv = "yo_diff_abs", factors = c("trait_valence","age_group"))
+
+```
+
+```{r}
+library(afex)
+aov_ez(data = dat_trait_excl, id = "trait", dv = "pn_diff_abs", between = c("trait_valence","age_group"))
+
+apa_barplot(data = dat_trait_excl, id = "trait", dv = "pn_diff_abs", factors = c("trait_valence","age_group"))
+
+```
+
+```{r}
+library(afex)
+aov_ez(data = dat_trait_excl, id = "trait", dv = "ar_diff", between = c("trait_valence","age_group"))
+
+apa_barplot(data = dat_trait_excl, id = "trait", dv = "ar_diff", factors = c("trait_valence","age_group"))
+
+```
+
+```{r}
+
+dat_trait_excl_2 <- subset(dat_trait, trait != "considerate")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "experienced")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "reasonable")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "humble")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "selfless")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "easy-going")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "spontaneous")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "fast")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "ambitious")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "slow")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "confused")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "pessimistic")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "forgetful")
+
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "inexperienced")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "self-absorbed")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "arrogant")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "inconsiderate")
+dat_trait_excl_2 <- subset(dat_trait_excl_2, trait != "ignorant")
+
+length(unique(dat_trait_excl_2$trait))
+table(dat_trait_excl_2$trait)
+unique(dat_trait_excl_2$trait)
+```
+
+### old-neg traits
+
+```{r}
+
+stubborn <- subset(dat_trait_excl_2,trait == "stubborn")
+t.test(stubborn$yo_diff)
+t.test(stubborn$pn_diff)
+t.test(stubborn$ar_diff)
+
+```
+
+```{r}
+
+feeble <- subset(dat_trait_excl_2,trait == "feeble")
+t.test(feeble$yo_diff)
+t.test(feeble$pn_diff)
+t.test(feeble$ar_diff)
+
+```
+
+```{r}
+weak <- subset(dat_trait_excl_2,trait == "weak")
+t.test(weak$yo_diff)
+t.test(weak$pn_diff)
+t.test(weak$ar_diff)
+```
+
+```{r}
+frail <- subset(dat_trait_excl_2,trait == "frail")
+t.test(frail$yo_diff)
+t.test(frail$pn_diff)
+t.test(frail$ar_diff)
+```
+
+```{r}
+demented <- subset(dat_trait_excl_2,trait == "demented")
+t.test(demented$yo_diff)
+t.test(demented$pn_diff)
+t.test(demented$ar_diff)
+```
+
+```{r}
+rigid <- subset(dat_trait_excl_2,trait == "rigid")
+t.test(rigid$yo_diff)
+t.test(rigid$pn_diff)
+t.test(rigid$ar_diff)
+```
+
+### old-pos traits
+
+```{r}
+
+realistic <- subset(dat_trait_excl_2,trait == "realistic")
+t.test(realistic$yo_diff)
+t.test(realistic$pn_diff)
+t.test(realistic$ar_diff)
+
+```
+
+```{r}
+
+dignified <- subset(dat_trait_excl_2,trait == "dignified")
+t.test(dignified$yo_diff)
+t.test(dignified$pn_diff)
+t.test(dignified$ar_diff)
+
+```
+
+```{r}
+patient <- subset(dat_trait_excl_2,trait == "patient")
+t.test(patient$yo_diff)
+t.test(patient$pn_diff)
+t.test(patient$ar_diff)
+```
+
+```{r}
+nurturing <- subset(dat_trait_excl_2,trait == "nurturing")
+t.test(nurturing$yo_diff)
+t.test(nurturing$pn_diff)
+t.test(nurturing$ar_diff)
+```
+
+```{r}
+calm <- subset(dat_trait_excl_2,trait == "calm")
+t.test(calm$yo_diff)
+t.test(calm$pn_diff)
+t.test(calm$ar_diff)
+```
+
+```{r}
+wise <- subset(dat_trait_excl_2,trait == "wise")
+t.test(wise$yo_diff)
+t.test(wise$pn_diff)
+t.test(wise$ar_diff)
+```
+
+### young-neg traits
+
+```{r}
+
+spoilt <- subset(dat_trait_excl_2,trait == "spoilt")
+t.test(spoilt$yo_diff)
+t.test(spoilt$pn_diff)
+t.test(spoilt$ar_diff)
+
+```
+
+```{r}
+
+careless <- subset(dat_trait_excl_2,trait == "careless")
+t.test(careless$yo_diff)
+t.test(careless$pn_diff)
+t.test(careless$ar_diff)
+
+```
+
+```{r}
+unrealistic <- subset(dat_trait_excl_2,trait == "unrealistic")
+t.test(unrealistic$yo_diff)
+t.test(unrealistic$pn_diff)
+t.test(unrealistic$ar_diff)
+```
+
+```{r}
+impulsive <- subset(dat_trait_excl_2,trait == "impulsive")
+t.test(impulsive$yo_diff)
+t.test(impulsive$pn_diff)
+t.test(impulsive$ar_diff)
+```
+
+```{r}
+naive <- subset(dat_trait_excl_2,trait == "naive")
+t.test(naive$yo_diff)
+t.test(naive$pn_diff)
+t.test(naive$ar_diff)
+```
+
+```{r}
+selfish <- subset(dat_trait_excl_2,trait == "selfish")
+t.test(selfish$yo_diff)
+t.test(selfish$pn_diff)
+t.test(selfish$ar_diff)
+```
+
+### young-pos traits
+
+```{r}
+
+optimistic <- subset(dat_trait_excl_2,trait == "optimistic")
+t.test(optimistic$yo_diff)
+t.test(optimistic$pn_diff)
+t.test(optimistic$ar_diff)
+
+```
+
+```{r}
+
+energetic <- subset(dat_trait_excl_2,trait == "energetic")
+t.test(energetic$yo_diff)
+t.test(energetic$pn_diff)
+t.test(energetic$ar_diff)
+
+```
+
+```{r}
+flexible <- subset(dat_trait_excl_2,trait == "flexible")
+t.test(flexible$yo_diff)
+t.test(flexible$pn_diff)
+t.test(flexible$ar_diff)
+```
+
+```{r}
+open_minded <- subset(dat_trait_excl_2,trait == "open-minded")
+t.test(open_minded$yo_diff)
+t.test(open_minded$pn_diff)
+t.test(open_minded$ar_diff)
+```
+
+```{r}
+lively <- subset(dat_trait_excl_2,trait == "lively")
+t.test(lively$yo_diff)
+t.test(lively$pn_diff)
+t.test(lively$ar_diff)
+```
+
+```{r}
+strong <- subset(dat_trait_excl_2,trait == "strong")
+t.test(strong$yo_diff)
+t.test(strong$pn_diff)
+t.test(strong$ar_diff)
+```
+
+## Face rating
+
+```{r}
+dat_face = dat %>% filter(sender=="rating_trial_face") %>%
+  select(url.srid, face, young_old, pos_neg, arousing, oy_right, pn_right, ar_right,sex,gender)
+
+dat_face$young_old <- as.numeric(dat_face$young_old)
+dat_face$pos_neg <- as.numeric(dat_face$pos_neg)
+dat_face$arousing <- as.numeric(dat_face$arousing)
+
+dat_face$young_old_rec <- NA
+dat_face$pos_neg_rec <- NA
+dat_face$arousing_rec <- NA
+
+for(i in 1:nrow(dat_face)){
+  if(dat_face$oy_right[i]=="old"){
+    dat_face$young_old_rec[i] <- dat_face$young_old[i]
+  }
+  if(dat_face$oy_right[i]=="young"){
+    dat_face$young_old_rec[i] <- 5 - (dat_face$young_old[i]-5)
+  }
+}
+
+for(i in 1:nrow(dat_face)){
+  if(dat_face$pn_right[i]=="likeable"){
+    dat_face$pos_neg_rec[i] <- dat_face$pos_neg[i]
+  }
+  if(dat_face$pn_right[i]=="unlikeable"){
+    dat_face$pos_neg_rec[i] <- 5 - (dat_face$pos_neg[i]-5)
+  }
+}
+
+for(i in 1:nrow(dat_face)){
+  if(dat_face$ar_right[i]!="not emotionally intense at all"){
+    dat_face$arousing_rec[i] <- dat_face$arousing[i]
+  }
+  if(dat_face$ar_right[i]=="not emotionally intense at all"){
+    dat_face$arousing_rec[i] <- 5 - (dat_face$arousing[i]-5)
+  }
+}
+
+dat_face$sex_group <- ifelse(dat_face$face %in% c("045_m_m_n_a","179_m_m_n_a","104_m_m_n_a","159_m_m_n_a","126_m_m_n_a","014_m_m_n_a","116_m_m_n_a","070_m_m_n_a","094_m_m_n_a","056_m_m_n_a","068_m_m_n_a","165_m_m_n_a","007_m_m_n_a","087_m_m_n_a", "092_m_m_n_a","155_m_m_n_a","136_m_m_n_a","142_m_m_n_a","082_m_m_n_a", "149_m_m_n_a","026_m_m_n_a","108_m_m_n_a","051_m_m_n_a","169_m_m_n_a","038_m_m_n_a","077_m_m_n_a","178_m_m_n_a","058_m_m_n_a","032_m_m_n_a"),"male","female")
+
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face,id = "url.srid", dv = "young_old_rec",within = c("sex_group"),between=c("sex"))
+
+apa_barplot(data = dat_face, id = "url.srid", dv = "young_old_rec", factors = c("sex_group","sex"))
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face,id = "url.srid", dv = "pos_neg_rec",within = c("sex_group"),between=c("sex"))
+apa_barplot(data = dat_face, id = "url.srid", dv = "pos_neg_rec", factors = c("sex_group"))
+
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face,id = "url.srid", dv = "arousing_rec",within = c("sex_group"))
+
+apa_barplot(data = dat_face, id = "url.srid", dv = "arousing_rec", factors = c("sex_group","sex"))
+```
+
+```{r}
+face_agg_yo <- aggregate(dat_face,FUN=mean,young_old_rec ~ face + sex_group)
+face_agg_pn <- aggregate(dat_face,FUN=mean,pos_neg_rec ~ face + sex_group)
+face_agg_ar <- aggregate(dat_face,FUN=mean,arousing_rec ~ face + sex_group)
+
+face_agg_all <- merge(face_agg_yo,face_agg_pn,by=c("face","sex_group"))
+face_agg_all <- merge(face_agg_all,face_agg_ar,by=c("face","sex_group"))
+```
+
+```{r}
+males <- subset(face_agg_all,sex_group == "male")
+females <- subset(face_agg_all,sex_group == "female")
+
+females_excl <- subset(females,pos_neg_rec > 4)
+males_excl <- subset(males,pos_neg_rec > 3.5)
+```
+
+```{r}
+dat_face_excl <- subset(dat_face, face %in% c(unique(females_excl$face),unique(males_excl$face)))
+
+length(unique(dat_face_excl$face))
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face_excl,id = "url.srid", dv = "young_old_rec",within = c("sex_group"))
+
+apa_barplot(data = dat_face_excl, id = "url.srid", dv = "young_old_rec", factors = c("sex_group"))
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face_excl,id = "url.srid", dv = "pos_neg_rec",within = c("sex_group"))
+apa_barplot(data = dat_face_excl, id = "url.srid", dv = "pos_neg_rec", factors = c("sex_group"))
+
+```
+
+```{r}
+
+afex::aov_ez(data=dat_face_excl,id = "url.srid", dv = "arousing_rec",within = c("sex_group"))
+
+apa_barplot(data = dat_face_excl, id = "url.srid", dv = "arousing_rec", factors = c("sex_group"))
+```
+
+```{r}
+dat_face_excl$yo_diff <- dat_face_excl$young_old_rec - 5
+dat_face_excl$pn_diff <- dat_face_excl$pos_neg_rec - 5
+dat_face_excl$ar_diff <- dat_face_excl$arousing_rec - 5
+
+dat_males_excl <- subset(dat_face_excl, sex_group == "male")
+dat_females_excl <- subset(dat_face_excl, sex_group == "female")
+```
+
+
+
+```{r}
+f_face_agg <- aggregate(dat_females_excl, FUN = mean, pn_diff ~ face)
+t.test(f_face_agg$pn_diff)
+mean(f_face_agg$pn_diff)
+sd(f_face_agg$pn_diff)
+
+m_face_agg <- aggregate(dat_males_excl, FUN = mean, pn_diff ~ face)
+t.test(m_face_agg$pn_diff)
+mean(m_face_agg$pn_diff)
+sd(m_face_agg$pn_diff)
+```
+
+# male faces
+
+```{r}
+
+male1 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[1])
+t.test(male1$yo_diff)
+t.test(male1$pn_diff)
+t.test(male1$ar_diff)
+
+```
+
+```{r}
+male2 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[2])
+t.test(male2$yo_diff)
+t.test(male2$pn_diff)
+t.test(male2$ar_diff)
+```
+
+```{r}
+male3 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[3])
+t.test(male3$yo_diff)
+t.test(male3$pn_diff)
+t.test(male3$ar_diff)
+```
+
+```{r}
+male4 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[4])
+t.test(male4$yo_diff)
+t.test(male4$pn_diff)
+t.test(male4$ar_diff)
+```
+
+```{r}
+male5 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[5])
+t.test(male5$yo_diff)
+t.test(male5$pn_diff)
+t.test(male5$ar_diff)
+```
+
+```{r}
+male6 <- subset(dat_males_excl,face == unique(dat_males_excl$face)[6])
+t.test(male6$yo_diff)
+t.test(male6$pn_diff)
+t.test(male6$ar_diff)
+```
+
+
+
+
