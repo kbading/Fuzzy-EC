@@ -664,5 +664,13 @@ require(jpeg)
 
 image_list = list.files("faces for new study/", pattern = "*.jpg", full.names = TRUE)
 
+#compress images 
+for(i in image_list){
+    face = readJPEG(i)
+    face_name = basename(i)
+    face_output = file.path("compressed_selected_faces/", face_name)
+    writeJPEG(face, face_output, quality = 0.7)
+    cat("Compressed:", face_name, "->", face_output, "\n")
+}
 ```
 
