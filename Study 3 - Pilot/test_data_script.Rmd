@@ -659,5 +659,10 @@ ifelse(faces_list[i] %in% paste0(keep_faces$face, ".jpg"),
   , print(paste0("face ", faces_list[i], " not copied"))
   )
 }
+
+require(jpeg)
+
+image_list = list.files("faces for new study/", pattern = "*.jpg", full.names = TRUE)
+
 ```
 
