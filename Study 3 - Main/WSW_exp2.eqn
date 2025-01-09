@@ -1,0 +1,25 @@
+48
+PosUS    PosUSposcor       D_x1*C_x1
+PosUS     PosUSposcor       D_x1*(1-C_x1)*d_x1*G_x1
+PosUS     PosUSposincor     D_x1*(1-C_x1)*d_x1*(1-G_x1)
+PosUS     PosUSposcor       D_x1*(1-C_x1)*(1-d_x1)*a_x1*G_x1
+PosUS     PosUSposincor     D_x1*(1-C_x1)*(1-d_x1)*a_x1*(1-G_x1)
+PosUS     PosUSnegincor     D_x1*(1-C_x1)*(1-d_x1)*(1-a_x1)
+PosUS     PosUSposcor       (1-D_x1)*b_x1*a_x1*G_x1
+PosUS     PosUSposincor     (1-D_x1)*b_x1*a_x1*(1-G_x1)
+PosUS     PosUSnegincor     (1-D_x1)*b_x1*(1-a_x1)
+PosUS     PosUSnew          (1-D_x1)*(1-b_x1)
+NegUS     NegUSnegcor       D_x1*C_x1
+NegUS     NegUSnegcor       D_x1*(1-C_x1)*d_x1*G_x1
+NegUS     NegUSnegincor     D_x1*(1-C_x1)*d_x1*(1-G_x1)
+NegUS     NegUSposincor     D_x1*(1-C_x1)*(1-d_x1)*a_x1
+NegUS     NegUSnegcor       D_x1*(1-C_x1)*(1-d_x1)*(1-a_x1)*G_x1
+NegUS     NegUSnegincor     D_x1*(1-C_x1)*(1-d_x1)*(1-a_x1)*(1-G_x1)
+NegUS     NegUSposincor     (1-D_x1)*b_x1*a_x1
+NegUS     NegUSnegcor       (1-D_x1)*b_x1*(1-a_x1)*G_x1
+NegUS     NegUSnegincor     (1-D_x1)*b_x1*(1-a_x1)*(1-G_x1)
+NegUS     NegUSnew          (1-D_x1)*(1-b_x1)
+New       Newnew            D_x1
+New       Newposincor       (1-D_x1)*b_x1*a_x1
+New       Newnegincor       (1-D_x1)*b_x1*(1-a_x1)
+New       Newnew            (1-D_x1)*(1-b_x1)

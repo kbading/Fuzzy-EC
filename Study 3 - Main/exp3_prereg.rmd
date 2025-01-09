@@ -1,0 +1,323 @@
+---
+title: "Pre-registration for Experiment 3"
+shorttitle        : "Pre-registration"
+date: "`r Sys.Date()`"
+bibliography: '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
+author: 
+  - name          : "Karoline Bading"
+    affiliation   : 1
+    corresponding : yes    # Define only one corresponding author
+    address       : "Schleichstraße 4, Tübingen"
+    email         : "karoline.bading@uni-tuebingen.de"
+  - name          : "Jérémy Béna"
+    affiliation   : 2
+  - name          : "Marius Barth"
+    affiliation   : 3
+  - name          : "Klaus Rothermund"
+    affiliation   : 4
+affiliation:
+  - id            : 1
+    institution   : "University of Tübingen"
+  - id            : 2
+    institution   : "Aix-Marseille University"
+  - id            : 3
+    institution   : "University of Cologne"
+  - id            : 4
+    institution   : "Friedrich Schiller University Jena"
+floatsintext: true
+output: papaja::apa6_pdf
+classoption: doc
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_m, include=FALSE}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
+set_sum_contrasts()
+
+```
+
+We pre-register an experiment testing the effect of processing focus (in the learning phase) on evaluative conditioning (EC).
+We will use similar procedures and materials as Gast and Rothermund (2011) in Experiment 2.
+In addition, we will include two memory measures to estimate a newly developed MPT model (and test the effects of processing focus on the model parameters).
+The MPT model is an adaptation of the "who said what" model [@klauer_who_1998] to the evaluative conditioning paradigm and estimates memory retrieval (of conditioned, and unconditioned stimuli) at different levels of specificity.
+
+<!-- The MPT model consists of five trees (one for each stimulus type included in the measurement task) and includes a total of six parameter types ($F$, $I$, $V$, $C$, $b$ and $a$) all of which may, in principle, take different numerical values in each of the five model trees (as indicated by tree-specific subscripts). -->
+<!-- The $F$ parameters estimate stimulus detection (as old vs. new) based on the specific features of a given stimulus (conditioned stimulus [CS], generalization stimulus [GS], distractor). -->
+<!-- The $C$ parameters estimate stimulus detection (as old vs. new) based on category cues that are shared by sets of stimuli (CSs, GSs). -->
+<!-- The $b$ parameters estimate the tendency towards guessing "old" for a given stimulus (CS, GS, distractor). -->
+<!-- The $I$ parameters estimate US identity recollection for a given CS (detected as old). -->
+<!-- The $V$ parameters estimate US valence recollection for a given CS or GS (detected as old). -->
+<!-- The $a$ parameters estimate the tendency towards guessing "positive" (US valence) for a given stimulus detected or guessed as "old" (CS, GS, distractor). -->
+
+```{r cspos-tree, fig.cap="MPT model tree for CSs paired with positive USs (CS+)."}
+
+#knitr::include_graphics(("CSpos_tree_neu.png"))
+
+
+```
+
+```{r csneg-tree, fig.cap="MPT model tree for CSs paired with negative USs (CS-)."}
+
+#knitr::include_graphics(("CSneg_tree_neu.png"))
+
+
+```
+
+```{r gsneg-tree, fig.cap="MPT model trees for GSs related to positive USs (GS+), GSs related to negative USs (GS-) and distractors (D)."}
+
+#knitr::include_graphics(("GSdist_tree_neu.png"))
+
+
+```
+
+## Predictions
+The present study is a conceptual replication and extension of Gast and Rothermund (2011). 
+<!-- @reichmann_variability_2023 proposed the "abstraction" account for the generalization of EC to novel stimuli (that are similar to the CSs presented in the learning phase). -->
+<!-- According to this account, high CS variability (in the learning phase) "may result in abstract representations of CSs that only contain the cues that are most predictive of US valence across CSs" [@reichmann_variability_2023, page 2] and should therefore result in stronger generalization of EC towards novel stimuli. -->
+<!-- @reichmann_variability_2023 conducted three experiments and found consistent support for this prediction. -->
+
+<!-- In the present study, we expect to replicate these findings (i.e., stronger generalization of EC towards novel stimuli when CS variability [during learning] is high rather than low)^[For details on the statistical test of this prediction, see sub-section "Evaluative ratings" in the "Data processing and statistical analyses" section of this pre-registration.]. -->
+<!-- Based on the abstraction account, we also predict reversed effects of CS variability (during learning) on the $F$ and $C$ parameters estimated by the MPT model: whereas $F$ should be relatively larger when CS variability is low (rather than high), $C$ should be larger when CS variability is high (rather than low)^[For details on the statistical test of these effects, see sub-section "Memory data" in the "Data processing and statistical analyses" section of this pre-registration.]. -->
+<!-- This dual prediction is based on the abstraction account's core idea that high CS variability (during learning) leads to more abstract and therefore less detailed CS representations in which only the most predictive CS features are retained. -->
+<!-- In the "high CS variability" condition, we therefore expect relatively less stimulus detection (as old vs. new) based on the specific features of a given stimulus (and thus a smaller $F$ parameter) and relatively more stimulus detection based on category cues that are shared by sets of stimuli (and thus a larger $C$ parameter). -->
+
+<!-- Although not directly predicted, similarly reversed effects of CS variability on the $I$ and $V$ parameters can also be accounted for by the abstraction account proposed by @reichmann_variability_2023. -->
+<!-- Specifically, abstract CS representation seem more likely to contain references to the paired US valence instead of to specific USs. -->
+<!-- As a consequence, we (tentatively) expect relatively larger (smaller) $V$ ($I$) parameters in the "high CS variability" condition (for which more abstract CS representations are predicted by the abstraction account). -->
+
+# Methods
+## Design, participants and sample size
+The experiment follows a 2 (US valence: positive vs. negative) x 2 (Processing focus: valence vs. age) mixed design.
+The first factor is varied within participants and the second factor is varied between participants.
+
+<!-- As participants, we will recruit students from different majors at our (German-speaking) university. -->
+<!-- The study will be conducted online. -->
+<!-- The students will be contacted through a university mailing list. -->
+<!-- As reimbursement, participants will be included in a voucher raffle (in which ten vouchers for a local bookstore will be given away [value per voucher: 20€]). -->
+<!-- Data collection will start on November 18th 2024 and end on November 25th 2024. -->
+<!-- In this time period, we will recruit as many participants as possible. -->
+<!-- Due to the recruitment strategy (and organizational issues), we do not commit to a fixed sample size (which we may not be able to reach in time). -->
+<!-- However, based on a series of power analyses for the central prediction of the abstraction account (stronger generalization of EC in the variable [CS variability] condition), we hope to collect data from at least $140$ non-excluded participants ($70$ per CS variability condition; exclusion criteria are listed below). -->
+<!-- In the power analyses, the central prediction was treated as a two-way interaction between stimulus type and CS variability on individual EC scores (for details, see section "Data processing and statistical analyses"). -->
+<!-- This approach was based on the fact that stronger generalization in the variable condition should result in relatively more comparable EC effects for CSs vs. GSs (in comparison to the invariable condition where a larger difference between EC effects for CSs vs. GSs is expected). -->
+<!-- In the power analyses, we assumed a null correlation among repeated measures (EC effects for CSs vs. GSs) and determined the required sample size for a range of effect sizes^[We chose to base our power analyses on a null correlation among repeated measures to attain conservative (yet realistic) estimates of the required sample size. We deemed negative correlations between EC effects for CSs vs. GSs as unrealistic and therefore focused on non-negative correlations ($r\geq0$). In this range of values, assuming a null correlation between repeated measures resulted in the largest (and thus most conservative) sample size estimates.]. -->
+<!-- Assuming Cohen's $f$ of $.1$/$.15$/$.2$/$.25$/$.3$, we found that a total sample size of $311$/$139$/$79$/$51$/$36$ was required to achieve $\beta=.80$ for a significant two-way interaction between stimulus type and CS variability ($\alpha=.1$)^[The higher-than-usual $\alpha$ level reflects the directional nature of our prediction for the two-way interaction between stimulus type and CS variability (which corresponds to a positive value for the following contrast: $\delta=[EC_{CS,\ invar}-EC_{GS,\ invar}]-[EC_{CS,\ var}-EC_{GS,\ var}]$). -->
+<!-- To mirror a one-sided test in a contrast analysis ($\alpha=.05$), we selected an $\alpha$ level of $.1$ for the two-way interaction in a mixed ANOVA. -->
+<!-- Note that $\alpha=.1$ will only be applied if the two-way interaction follows the predicted pattern (i.e., if $\delta=[EC_{CS,\ invar}-EC_{GS,\ invar}]-[EC_{CS,\ var}-EC_{GS,\ var}]$ is indeed positive). -->
+<!-- If the two-way interaction does not follow the predicted pattern, $\alpha=.05$ will be used.]. -->
+<!-- Collecting data from at least  $140$ non-excluded participants ($70$ per CS variability condition) would therefore ensure adequate power for detecting the predicted two-way interaction if it is at least small-to-medium in size (Cohen's $f\geq.15$). -->
+
+```{r}
+# library(pwrss)
+# x1 <- (.1^2)/(1+.1^2) # eta2 from f (with f=d/2)
+# xx1 <- pwrss.f.rmanova(eta2 = x1,  n.levels = 2, n.rm = 2,
+#                  power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+# 
+# x2 <- (.15^2)/(1+.15^2) # eta2 from f (with f=d/2)
+# xx2 <- pwrss.f.rmanova(eta2 = x2,  n.levels = 2, n.rm = 2,
+#                  power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+# 
+# x3 <- (.2^2)/(1+.2^2) # eta2 from f (with f=d/2)
+# xx3 <- pwrss.f.rmanova(eta2 = x3,  n.levels = 2, n.rm = 2,
+#                  power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+# 
+# x4 <- (.25^2)/(1+.25^2) # eta2 from f (with f=d/2)
+# xx4 <- pwrss.f.rmanova(eta2 = x4,  n.levels = 2, n.rm = 2,
+#                  power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+# 
+# x5 <- (.3^2)/(1+.3^2) # eta2 from f (with f=d/2)
+# xx5 <- pwrss.f.rmanova(eta2 = x5,  n.levels = 2, n.rm = 2,
+#                  power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+# 
+
+```
+
+## Materials and stimulus assignment
+The experiment is programmed with lab.js [@henninger_lab:_2021] and exported to an HTTPS-protected website with JATOS [@lange_just:_2015].
+
+The CS pool comprises 64 colored images (500 $\times$ 400 pixel) of fantasy creatures.
+The fantasy creatures share a basic body shape (oval torso, two arms, two legs, two round eyes, small mouth) and a neutral facial expression.
+Each creature belongs to one of eight categories (with eight creatures per category).
+All creatures from a given category have the same skin color but differ with regard to a specific feature (red category: beard color and shape; salmon category: color and shape of a short haircut; purple category: tail color and shape; olive category: color and shape of a long haircut; orange category: ear color and shape; yellow category: horn color and shape; blue category: double-arm color and shape; green category: double-leg color and shape).
+
+The US pool comprises 144 colored images (500 $\times$ 400 pixel; 48 positive images, 48 negative images and 48 neutral images) from the International Affective Picture System [@lang_international_1997] and from the OASIS database (Kurdi et al., 2017).
+
+## Stimulus assignment
+For each participant, the eight categories are randomly assigned to serve one of four roles (two categories per role): categories related to positive USs (hereafter, positive categories), categories related to negative USs (hereafter, negative categories), categories related to neutral USs (hereafter, neutral categories), categories unrelated to positive/negative/neutral USs (hereafter, unpaired categories).
+
+### Invariable condition
+For each positive/negative/neutral category, a single creature will be randomly selected to serve as a CS during the learning phase (six CSs in total).
+In the learning phase, each CS from a positive/negative/neutral category will be paired one-to-one with a different positive/negative/neutral image (selected randomly and without replacement from the US pool).
+For the test phase, a set of 30 fantasy creatures will be assembled (hereafter, test set).
+The test set will include the four CSs from the positive and negative categories, 4 GSs per positive/negative category (randomly selected from the remaining fantasy creatures that are not presented during the learning phase) and 10 distractors.
+The distractors will be randomly selected from the two unpaired categories (five creatures per category).
+Fantasy creatures from the neutral categories will not be included in the test set.
+
+### Variable condition
+For each positive/negative/neutral category, four creatures will be randomly selected to serve as CSs during the learning phase (24 CSs in total).
+In the learning phase, each CS from a positive/negative/neutral category will be paired one-to-one with a different positive/negative/neutral image (selected randomly and without replacement from the US pool).
+For the test phase, a test set of 30 fantasy creatures will be assembled.
+The test set will include four randomly selected CSs from the learning phase (1 per positive/negative category), 16 GSs (the remaining creatures from the positive/negative categories that are not shown during the learning procedure) and 10 distractors.
+The distractors will be randomly selected from the two unpaired categories (five creatures per category).
+Fantasy creatures from the neutral categories will not be included in the test set.
+
+## Procedure
+The study will be run in the lab at a German-speaking university.
+All verbal materials will therefore be presented in German.
+
+### Learning phase
+After providing informed consent, participants enter the learning phase (introduced as the "perception task").
+Participants are told that they will see fantasy creatures paired with positive, negative or neutral images and are instructed to pay close attention to each creature-image pair.
+
+The learning phase consists of four blocks separated by self-paced breaks.
+Each block comprises 24 trials (4 trials per positive category, 4 trials per negative category, 4 trials per neutral category).
+In the invariable condition, each block shows a total of 6 creature-image pairs (1 per positive/negative/neutral category) each of which will be presented four times.
+In the variable condition, each block shows a total of 24 creature-image pairs (4 per positive/negative/neutral category) each of which will be presented one time.
+For both levels of CS variability, the creature-image pairs are displayed in random order without direct category repetitions (i.e., a creature from a given category is always followed by a creature from a different category).
+Each creature-image pair is presented for 2,000 ms (separated by bank screens presented for 500 ms).
+On each trial, the two components of the creature-image pair are presented side by side at two central positions on the left vs. right side of the screen.
+The position of each component (left vs. right) is randomly determined for each trial anew.
+
+### Test phase
+After the learning phase, participants enter the test phase. The test phase consists of three tasks (performed in the following order): item memory task, source memory task and evaluation task.
+
+#### Item memory task
+In the item memory task, the 30 fantasy creatures from the test set are presented individually (in randomized order).
+For each creature, participants have to indicate whether (or not) it was presented during the learning phase.
+To indicate their response, participants are presented with two buttons labeled "Yes (old)" and "No (new)".
+The buttons are displayed side by side below the following question: "Was this fantasy creature presented during the perception task?".
+The fantasy creature is displayed in the upper half of the screen (above the question and the two buttons).
+After selecting one of the two buttons, participants proceed to the next trial by clicking on a third button (labeled "Continue") displayed below (at equidistance to the other two buttons).
+This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the "Yes (old)" and "No (new)" buttons).
+
+#### Source memory task
+After finishing the item memory task, participants are asked to perform an additional memory task on all creatures classified as old during the preceding task.
+Participants are told that each of these creatures will be presented together with four images.
+Participants are asked to indicate, for each fantasy creature, which of the four images it was paired with during the learning phase (referred to as "perception task").
+
+The fantasy creatures will be presented individually (in randomized order).
+Each fantasy creature is presented together with the four images that served as USs for the four CSs included in the test set (2 $\times$ positive, 2 $\times$ negative).
+The images are displayed as a row of four buttons (assignment of images to buttons is randomized for each trial anew).
+On each trial, the row of buttons is headed by the following prompt: "Which of the following images was paired with the above creature during the perception task? If you cannot remember, please try to guess the correct image".
+After selecting one of the four buttons, participants proceed to the next trial by clicking on a "Continue" button displayed beneath the buttons (in a central position).
+This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the four images).
+
+#### Evaluation task
+In the evaluation task, the 30 creatures from the test set are presented individually and in randomized order.
+Participants are instructed to express their personal evaluation of each creature.
+On each trial, participants are presented with a fantasy creature (displayed in the upper half of the screen), a centrally presented prompt ("How do you like this creature?") and an 8-point rating scale ranging from "very negative" (left) to "very positive" (right). 
+After selecting one of the eight scale points, participants proceed to the next trial by clicking on a "Continue" button displayed centrally below the rating scale.
+This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the eight scale points).
+
+### Check measures
+After the test phase, we will collect several check measures.
+Firstly, participants will be presented with a screen showing four long sentences.
+The first three sentences will refer to attitude research and through length and writing style are meant to discourage participants from reading the whole text. 
+In the very last sentence of the text, participants will be instructed to ignore the upcoming question about their exercise habits (in order to demonstrate that they have read the entire passage). 
+On the next screen, participants are presented with a list of seven physical activities and are asked to indicate which of these activities they performed regularly (by ticking a small box next to
+the respective activity). 
+After having ticked all relevant boxes (or none at all), participants proceed to the next screen by clicking on the “Continue” button displayed at the bottom of the screen.
+Secondly, participants will be asked to indicate whether they have participated conscientiously and with full attention. 
+The two response options ("Yes" vs. "No") will be presented as two buttons (one below the other).
+Thirdly, participants will be presented with the following prompt: “It would now be very helpful of you to tell us whether you took the tasks seriously (so that we can use your data for scientific analyses) or whether you just clicked through to take a look at the study. (Your answer will not affect your reimbursement.)”.
+The prompt will be accompanied by two response options: “I took the tasks seriously.” and “I was just clicking through. Please discard my data.”.
+Finally, participants will be presented with an empty text box to provide (optional) comments on the study.
+
+## Exclusion criteria
+Participants who failed at least one attention check (by selecting at least one physical activity, by not indicating to have participated conscientiously and with full attention or by not indicating to have taken the tasks seriously) will be excluded from all analyses.
+For individual analyses (on data from the evaluation, item and source memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
+
+## Data processing and statistical analyses
+### Evaluative ratings
+For each participant, we will calculate two EC scores (one for CSs and one for GSs) by subtracting the mean evaluative rating for creatures related to negative USs from the mean evaluative rating for creatures related to positive USs.
+The EC scores will be submitted to a 2 (stimulus type) x 2 (CS variability) mixed ANOVA.
+Our predictions are the following:
+
+- [P1] Intercept: We predict a significant intercept (indicating reliable EC effects across levels of stimulus type and CS variability).
+This prediction is based on the significant main effect of US valence (positive > negative) reported by [@reichmann_variability_2023, Experiments 1 to 3].
+
+- [P2] Main effect of stimulus type: We expect overall stronger EC effects for CSs than for GSs and therefore predict a significant main effect of stimulus type.
+This prediction is based on the significant two-interaction between US valence and stimulus type reported by [@reichmann_variability_2023, Experiments 1 to 3].
+
+<!-- - [P3] Main effect of CS variability: We expect overall stronger EC effects in the variable than in the invariable condition and therefore predict a significant main effect of CS variability. -->
+<!-- This prediction is based on the predicted pattern of the two-way interaction between stimulus type and CS variability (see below) and not theoretically motivated. -->
+- [P3] Interaction stimulus type $\times$ CS variability: Compared to the variable condition, we expect a relatively larger difference between EC effects for CSs vs. GSs ($EC_{CS}>EC_{GS}$) in the invariable condition. We therefore predict a significant two-way interaction between stimulus type and CS variability ($\alpha=.1$). This prediction (including the specific interaction pattern) is based on the abstraction account and the significant three-way interaction (between US valence, stimulus type and CS variability) reported by [@reichmann_variability_2023, Experiments 1 to 3].
+In line with our power analysis (see above), the predicted interaction pattern will also be tested in a one-tailed test (against zero) on the following contrast: $\delta=[EC_{CS,\ invar}-EC_{GS,\ invar}]-[EC_{CS,\ var}-EC_{GS,\ var}]$ (where $EC_{x,y}$ denotes the mean EC effect in the stimulus type [x] $\times$ CS variability [y] condition indicated by the subscripts).
+If $\delta$ is larger than zero (as expected), we will conduct a one-sided test ($\alpha=.05$).
+If $\delta$ is smaller than zero (against our expectation), we will conduct a two-sided test ($\alpha=.05$).
+
+### Memory data
+For each participant and creature, responses from the two memory tasks will be coded into a joint memory index according to the following scheme.
+
+#### CS creatures
+- If a CS from positive (negative) category is incorrectly classified as “new” in the item memory task, this response will be recoded as “CSposnew” (“CSnegnew”) on the joint memory index.
+
+- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and the correct positive (negative) US is selected in the source memory task, these responses will be recoded as "CSposposUScor" ("CSnegnegUScor") on the joint memory index.
+
+- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and an incorrect positive (negative) US is selected in the source memory task, these responses will be recoded as "CSposposUSincor" ("CSnegnegUSincor") on the joint memory index.
+
+- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and a negative (positive) US is selected in the source memory task, these responses will be recoded as 
+"CSposnegUSincor" ("CSnegposUSincor") on the joint memory index.
+
+#### GS creatures
+- If a GS from a positive (negative) category is correctly classified as “new” in the item memory task, this response will be recoded as “GSposnew” (“GSnegnew”) on the joint memory index.
+
+- If a GS from a positive (negative) category is incorrectly classified as "old" in the item memory task and a positive (negative) US is selected in the source memory task, these responses will be recoded as 
+"GSposposUSincor" ("GSnegnegUSincor") on the joint memory index.
+
+- If a GS from a positive (negative) category is incorrectly classified as "old" in the item memory task and a negative (positive) US is selected in the source memory task, these responses will be recoded as 
+"GSposnegUSincor" ("GSnegposUSincor") on the joint memory index.
+
+#### Distractor creatures
+- If a distractor from an unpaired category is correctly classified as “new” in the item memory task, this response will be recoded as “Distnew” on the joint memory index.
+
+- If a distractor from an unpaired category is incorrectly classified as "old" in the item memory task and a positive (negative) US is selected in the source memory task, these responses will be recoded as 
+"DistposUSincor" ("DistnegUSincor") on the joint memory index.
+
+Subsequently, the frequency distribution of the joint memory index (aggregated across participants) will be analyzed with the MPT model.
+We will first fit a baseline model (with $g=.5$) estimating the following parameters separately for the two CS variability conditions: $F$, $C$, $I$, $V$, $b$ and $a$.
+The baseline model thus includes the following invariance assumptions (within each CS variability condition): 
+
+- (A1) $F=F_{CS+}=F_{GS+}=F_{CS-}=F_{GS-}=F_{D}$
+
+- (A2) $C=C_{CS+}=C_{GS+}=C_{CS-}=C_{GS-}$
+
+- (A3) $I=I_{CS+}=I_{CS-}$
+
+- (A4) $V=V_{CS+}=V_{GS+}=V_{CS-}=V_{GS-}$
+
+- (A5) $b=b_{CS+}=b_{GS+}=b_{CS-}=b_{GS-}=b_{D}$
+
+- (A6) $a=a_{CS+}=a_{GS+}=a_{CS-}=a_{GS-}=a_{D}$
+
+If the baseline model achieves adequate fit ($p>.05$), we will fit several restricted versions of the MPT model.
+To test each parameter against its reference value ($0$ for $F$, $C$, $I$ and $V$; $.5$ for $a$ and $b$), we will fit separate models (each of which will include one of 12 restrictions: [1] $F_{variable}=0$, [2] $F_{invariable}=0$, [3] $C_{variable}=0$, [4] $C_{invariable}=0$, [5] $I_{variable}=0$, [6] $I_{invariable}=0$, [7] $V_{variable}=0$, [8] $V_{invariable}=0$, [9] $b_{variable}=0$, [10] $b_{invariable}=0$, [11] $a_{variable}=0$, [12] $a_{invariable}=0$) and test them against the unrestricted baseline model.
+To test for parameter differences between CS variability conditions, we will again fit separate models (each of which will include one of six restrictions: [13] $F_{variable}=F_{invariable}$, [14] $C_{variable}=C_{invariable}$, [15] $I_{variable}=I_{invariable}$, [16] $V_{variable}=V_{invariable}$, [17] $b_{variable}=b_{invariable}$, [18] $a_{variable}=a_{invariable}$) and test them against the unrestricted baseline model.
+Our predictions are the following (for details, see sub-section "Predictions" in the introductory sections of this pre-registration):
+
+- [P4] Main effect of CS variability on feature-based detection: We predict a smaller $F$ parameter in the variable than in the invariable condition.
+
+- [P5] Main effect of CS variability on cue-based detection: We predict a larger $C$ parameter in the variable than in the invariable condition. 
+
+- [P6] Main effect of CS variability on recollection of the paired US: We (tentatively) predict a smaller $I$ parameter in the variable than in the invariable condition.
+
+- [P7] Main effect of CS variability on recollection of the paired US valence: We (tentatively) predict a larger $V$ parameter in the variable than in the invariable condition. 
+
+If the baseline model does not achieve adequate fit ($p\leq.05$), we will try to identify a less restrictive (baseline) model that provides a more adequate account of the data.
+In the present MPT model, inadequate fit may be caused by any violation of the previously listed invariance assumptions.
+To identify an adequate baseline model, we will therefore fit a number of model variants estimating up to 12 parameters (within each CS variability condition).
+Model selection (of an alternative baseline model) will be based on the AIC. 
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
+
