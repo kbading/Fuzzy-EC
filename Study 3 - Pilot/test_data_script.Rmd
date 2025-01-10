@@ -31,7 +31,6 @@ source(file.path(project_root, "R", "mptinr_helper.R"))
 
 ```{r read_data, message=FALSE, warning=FALSE}
 # Read the text file from JATOS (first batch)...
-setwd("~/Fuzzy-EC/Study 3 - Pilot")
 read_file('pilot_data.txt')%>%
 #... split it into lines ...
  str_split('\n') %>% first() %>%
@@ -636,5 +635,42 @@ t.test(male6$ar_diff)
 ```
 
 
+#write final list of adjectives and faces
 
+```{r}
+write.csv(dat_trait_excl, "final_list_adjectives.csv")
+
+keep_faces = dat_face_excl %>% ungroup %>% select(face, sex_group) %>% unique()
+  
+write.csv(keep_faces, "final_list_faces.csv")
+```
+
+#keep only listed faces in the "faces for new study" folder
+
+```{r}
+unlink("faces for new study/*")
+faces_list = list.files("neutral_expression_faces/", pattern = "*.jpg")
+table(faces_list %in% paste0(keep_faces$face, ".jpg"))
+
+for(i in 1:length(faces_list)){
+ifelse(faces_list[i] %in% paste0(keep_faces$face, ".jpg"),
+  {file.copy(paste0("neutral_expression_faces/", faces_list[i]), "faces for new study/")
+  ; print(paste0("face ", faces_list[i], " successfully copied!"))}
+  , print(paste0("face ", faces_list[i], " not copied"))
+  )
+}
+
+require(jpeg)
+
+image_list = list.files("faces for new study/", pattern = "*.jpg", full.names = TRUE)
+
+#compress images 
+for(i in image_list){
+    face = readJPEG(i)
+    face_name = basename(i)
+    face_output = file.path("compressed_selected_faces/", face_name)
+    writeJPEG(face, face_output, quality = 0.7)
+    cat("Compressed:", face_name, "->", face_output, "\n")
+}
+```
 
