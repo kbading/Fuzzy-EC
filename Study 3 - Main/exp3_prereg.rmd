@@ -29,6 +29,9 @@ output: papaja::apa6_pdf
 classoption: doc
 editor_options:
   chunk_output_type: console
+header-includes:
+  - \usepackage{setspace}
+  - \captionsetup[figure]{font={stretch=1}}
 ---
 
 ```{r set_m, include=FALSE}
@@ -39,22 +42,25 @@ set_sum_contrasts()
 
 ```
 
-We pre-register an experiment testing the effect of processing focus (in the learning phase) on evaluative conditioning (EC).
-We will use similar procedures and materials as Gast and Rothermund (2011) in Experiment 2.
-In addition, we will include two memory measures to estimate a newly developed MPT model (and test the effects of processing focus on the model parameters).
-The MPT model is an adaptation of the "who said what" model [@klauer_who_1998] to the evaluative conditioning paradigm and estimates memory retrieval (of conditioned, and unconditioned stimuli) at different levels of specificity.
+We pre-register an experiment testing the effect of task focus (in the learning phase) on evaluative conditioning (EC).
+We will use similar materials and procedures as Gast and Rothermund (2011).
+We will include two additional memory measures to estimate a newly developed multinomial processing tree (MPT) model and test the effects of task focus on the model parameters.
+The MPT model is an adaptation of the "who said what" model [@klauer_who_1998] to the evaluative conditioning paradigm and estimates memory retrieval of conditioned and unconditioned stimuli at different levels of specificity.
 
-<!-- The MPT model consists of five trees (one for each stimulus type included in the measurement task) and includes a total of six parameter types ($F$, $I$, $V$, $C$, $b$ and $a$) all of which may, in principle, take different numerical values in each of the five model trees (as indicated by tree-specific subscripts). -->
-<!-- The $F$ parameters estimate stimulus detection (as old vs. new) based on the specific features of a given stimulus (conditioned stimulus [CS], generalization stimulus [GS], distractor). -->
-<!-- The $C$ parameters estimate stimulus detection (as old vs. new) based on category cues that are shared by sets of stimuli (CSs, GSs). -->
-<!-- The $b$ parameters estimate the tendency towards guessing "old" for a given stimulus (CS, GS, distractor). -->
-<!-- The $I$ parameters estimate US identity recollection for a given CS (detected as old). -->
-<!-- The $V$ parameters estimate US valence recollection for a given CS or GS (detected as old). -->
-<!-- The $a$ parameters estimate the tendency towards guessing "positive" (US valence) for a given stimulus detected or guessed as "old" (CS, GS, distractor). -->
+As illustrated in *Figure 1*, the MPT model consists of three trees (one for each stimulus type included in the measurement tasks) and estimates a total of six parameter types ($D$, $C$, $d$, $a$, $b$ and $g$) all of which may, in principle, take different numerical values across model trees (as indicated by tree-specific subscripts).
+*Dpos* (*Dneg*) estimates the probability of recognizing a CS presented with a positive (negative) US as coming from the learning phase.
+Similarly, *Dnew* estimates the probability of detecting a previously unseen ("new") stimulus as new.
+*Cpos* (*Cneg*) estimates the probability of retrieving the identity of the positive (negative) US that was paired with a given CS during the learning phase.
+Relatedly, *dpos* (*dneg*) estimates the probability of retrieving the valence of the positive (negative) US that was paired with a given CS during the learning phase.
+Moreover, *apos*/*aneg*/*anew* estimates the probability of guessing a positive US for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
+Furthermore, *bpos*/*bneg*/*bnew* estimates the probability of guessing "old" for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
+Finally, *gpos* (*gneg*) estimates the probability of guessing the identity of the positive (negative) US that was paired with a given CS during the learning phase.
 
-```{r cspos-tree, fig.cap="MPT model tree for CSs paired with positive USs (CS+)."}
+(ref:my-figure-caption) The 'who said what' multinomial processing tree model in the context of an evaluative conditioning procedure. The rectangles on the left-hand side represent the stimuli displayed in the memory task, and the rectangles on the right-hand side represent the responses.
 
-#knitr::include_graphics(("CSpos_tree_neu.png"))
+```{r cspos-tree, fig.cap="(ref:my-figure-caption)"}
+
+knitr::include_graphics(("mpt_wsw_model_exp3_KB2.jpg"))
 
 
 ```
@@ -73,25 +79,46 @@ The MPT model is an adaptation of the "who said what" model [@klauer_who_1998] t
 
 ```
 
-## Predictions
-The present study is a conceptual replication and extension of Gast and Rothermund (2011). 
-<!-- @reichmann_variability_2023 proposed the "abstraction" account for the generalization of EC to novel stimuli (that are similar to the CSs presented in the learning phase). -->
-<!-- According to this account, high CS variability (in the learning phase) "may result in abstract representations of CSs that only contain the cues that are most predictive of US valence across CSs" [@reichmann_variability_2023, page 2] and should therefore result in stronger generalization of EC towards novel stimuli. -->
-<!-- @reichmann_variability_2023 conducted three experiments and found consistent support for this prediction. -->
+## Prior research, hypotheses and predictions
+The present study is a conceptual replication and extension of Gast and Rothermund (2011).
+Gast and Rothermund (2011) showed that EC effects are moderated by the nature of an impression formation task that is performed during the learning procedure: across three experiments, EC effects were found to be stronger with impression formation tasks that focused on valence rather than on other, non-valent stimulus dimensions (e.g., age).
+In the present experiment, we expect to replicate this so-called valence focus effect on EC (prediction P1: $EC_{valence-focus}>EC_{age-focus}$).
 
-<!-- In the present study, we expect to replicate these findings (i.e., stronger generalization of EC towards novel stimuli when CS variability [during learning] is high rather than low)^[For details on the statistical test of this prediction, see sub-section "Evaluative ratings" in the "Data processing and statistical analyses" section of this pre-registration.]. -->
-<!-- Based on the abstraction account, we also predict reversed effects of CS variability (during learning) on the $F$ and $C$ parameters estimated by the MPT model: whereas $F$ should be relatively larger when CS variability is low (rather than high), $C$ should be larger when CS variability is high (rather than low)^[For details on the statistical test of these effects, see sub-section "Memory data" in the "Data processing and statistical analyses" section of this pre-registration.]. -->
-<!-- This dual prediction is based on the abstraction account's core idea that high CS variability (during learning) leads to more abstract and therefore less detailed CS representations in which only the most predictive CS features are retained. -->
-<!-- In the "high CS variability" condition, we therefore expect relatively less stimulus detection (as old vs. new) based on the specific features of a given stimulus (and thus a smaller $F$ parameter) and relatively more stimulus detection based on category cues that are shared by sets of stimuli (and thus a larger $C$ parameter). -->
+In addition to boosting EC effects, valence focus tasks were also found to improve associative memory for the identity of the paired US as well as for the valence of the paired US (Gast & Rothermund, 2011).
+Finally, Gast and Rothermund (2011) also reported that the valence focus effect on EC tended to be mediated by associative memory for the US valence but not by associative memory for the US identity.
+In the present experiment, we will test for similar effects of task focus on (associative) memory by comparing MPT parameter estimates between task focus conditions.
+This model-based approach to testing these effects will overcome certain drawbacks in the methods used by Gast and Rothermund (2011) and provide more fine-grained insights into the effects of task focus on associative memory (and, potentially, into the mediation of the valence focus effect on EC).
 
-<!-- Although not directly predicted, similarly reversed effects of CS variability on the $I$ and $V$ parameters can also be accounted for by the abstraction account proposed by @reichmann_variability_2023. -->
-<!-- Specifically, abstract CS representation seem more likely to contain references to the paired US valence instead of to specific USs. -->
-<!-- As a consequence, we (tentatively) expect relatively larger (smaller) $V$ ($I$) parameters in the "high CS variability" condition (for which more abstract CS representations are predicted by the abstraction account). -->
+To measure associative memory for the US identity and for the US valence, Gast and Rothermund (2011) used a measurement procedure similar to the source memory task that we will implement in the present experiment (i.e., selecting, for a given CS, the correct US from a list of positive and negative USs).
+Based on this similarity, the drawbacks in the methods used by Gast and Rothermund (2011) can be illustrated by *Figure 1*.
+To quantify associative memory for the US valence, Gast and Rothermund (2011) calculated a CS-valence memory score indicating the number of CSs for which a US with the correct US valence was selected.
+In the MPT model, this number corresponds to the sum of responses from branches $1.1$, $1.2$, $1.3$, $1.4$, $1.5$, $1.7$, $1.8$, $2.1$, $2.2$, $2.3$, $2.5$, $2.6$, $2.8$ and $2.9$ in *Figure 1*.
+From the perspective of the MPT model, differences in the CS-valence memory score (across task focus conditions) may therefore be driven by changes in any parameter contained in these 14 branches.
+Since most of these parameters do not capture associative memory for the US valence, the CS-valence memory score used by Gast and Rothermund (2011) may thus yield artifactual evidence for an effect of task focus on this type of associative memory (most importantly, when the task focus manipulation affects associative memory for the US identity [as measured by the $C$ parameters contained in branches $1.1$ and $2.1$] without affecting associative memory for the US valence [as measured by the $d$ parameters contained in branches $1.2$, $1.3$, $2.2$, and $2.3$]). 
+A similar criticism applies to the CS-US memory score which was used by Gast and Rothermund (2011) to measure associative memory for the US identity.
+The CS-US memory score was calculated as the number of CSs for which the correct US was selected, therefore corresponding to the sum of responses from branches $1.1$, $1.2$, $1.4$, $1.7$, $2.1$, $2.2$, $2.5$, and $2.8$ in *Figure 1*.
+As before, most parameters contained in these branches are unrelated to the to-be-measured type of associative memory, implying that the CS-US memory score may also yield artifactual evidence for a task focus effect on associative memory for the US identity (most importantly, when the task focus manipulation affects associative memory for the US valence [as measured by the $d$ parameters contained in branches $1.2$ and $2.2$] without affecting associative memory for the US identity [as measured by the $C$ parameters contained in branches $1.1$ and $2.1$]).
+
+
 
 # Methods
 ## Design, participants and sample size
-The experiment follows a 2 (US valence: positive vs. negative) x 2 (Processing focus: valence vs. age) mixed design.
-The first factor is varied within participants and the second factor is varied between participants.
+The experiment follows a 2 (US valence: positive vs. negative) x 2 (US age: young vs. old) x 2 (task focus: valence focus vs. age focus) mixed design.
+The first two factors are varied within participants and the third factor is varied between participants.
+Assignment to task focus conditions will be random (executed by the experimental software).
+
+```{r}
+# f = sqr( eta^2 / ( 1 - eta^2 ) ). 
+f <- sqrt( .07 / ( 1 - .07 ))
+
+# library(pwrss)
+x1 <- (.1^2)/(1+.1^2) # eta2 from f (with f=d/2)
+
+# xx1 <- pwrss.f.rmanova(eta2 = x1,  n.levels = 2, n.rm = 2,
+#                   power = 0.80, alpha = 0.1,
+#                 corr.rm = 0, type = "interaction")
+```
+
 
 <!-- As participants, we will recruit students from different majors at our (German-speaking) university. -->
 <!-- The study will be conducted online. -->
@@ -140,181 +167,138 @@ The first factor is varied within participants and the second factor is varied b
 
 ```
 
-## Materials and stimulus assignment
+## Materials
 The experiment is programmed with lab.js [@henninger_lab:_2021] and exported to an HTTPS-protected website with JATOS [@lange_just:_2015].
 
-The CS pool comprises 64 colored images (500 $\times$ 400 pixel) of fantasy creatures.
-The fantasy creatures share a basic body shape (oval torso, two arms, two legs, two round eyes, small mouth) and a neutral facial expression.
-Each creature belongs to one of eight categories (with eight creatures per category).
-All creatures from a given category have the same skin color but differ with regard to a specific feature (red category: beard color and shape; salmon category: color and shape of a short haircut; purple category: tail color and shape; olive category: color and shape of a long haircut; orange category: ear color and shape; yellow category: horn color and shape; blue category: double-arm color and shape; green category: double-leg color and shape).
+The CS pool comprises 48 colored images (500 $\times$ 624 pixel) of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
+The images were taken from the FACES database (Ebner, Riediger & Lindenberger, 2010).
 
-The US pool comprises 144 colored images (500 $\times$ 400 pixel; 48 positive images, 48 negative images and 48 neutral images) from the International Affective Picture System [@lang_international_1997] and from the OASIS database (Kurdi et al., 2017).
+The US pool comprises 24 adjectives describing human traits.
+Based on a pilot study, we selected six adjectives describing traits that are positive and more typical for younger (than for older) people (*energetic*, *flexible*, *lively*, *open-minded*, *optimistic*, *strong*), six adjectives describing traits that are positive and more typical for older (than for younger) people (*calm*, *dignified*, *nurturing*, *patient*, *realistic*, *wise*), six adjectives describing traits that are negative and more typical for younger (than for older) people (*careless*, *impulsive*, *naive*, *selfish*, *spoilt*, *unrealistic*), and six adjectives describing traits that are negative and more typical for older (than for younger) people (*demented*, *feeble*, *frail*, *rigid*, *stubborn*, *weak*).
 
 ## Stimulus assignment
-For each participant, the eight categories are randomly assigned to serve one of four roles (two categories per role): categories related to positive USs (hereafter, positive categories), categories related to negative USs (hereafter, negative categories), categories related to neutral USs (hereafter, neutral categories), categories unrelated to positive/negative/neutral USs (hereafter, unpaired categories).
+For each participant, 12 randomly selected images will serve as positively paired CSs (i.e., they will be paired with a positive US during the learning phase), 12 randomly selected images will serve as negatively paired CSs (i.e., they will be paired with a negative US during the learning phase), and the remaining 24 images will serve as "new" stimuli (i.e., they will not be presented in the learning phase and appear only in the test phase).
 
-### Invariable condition
-For each positive/negative/neutral category, a single creature will be randomly selected to serve as a CS during the learning phase (six CSs in total).
-In the learning phase, each CS from a positive/negative/neutral category will be paired one-to-one with a different positive/negative/neutral image (selected randomly and without replacement from the US pool).
-For the test phase, a set of 30 fantasy creatures will be assembled (hereafter, test set).
-The test set will include the four CSs from the positive and negative categories, 4 GSs per positive/negative category (randomly selected from the remaining fantasy creatures that are not presented during the learning phase) and 10 distractors.
-The distractors will be randomly selected from the two unpaired categories (five creatures per category).
-Fantasy creatures from the neutral categories will not be included in the test set.
-
-### Variable condition
-For each positive/negative/neutral category, four creatures will be randomly selected to serve as CSs during the learning phase (24 CSs in total).
-In the learning phase, each CS from a positive/negative/neutral category will be paired one-to-one with a different positive/negative/neutral image (selected randomly and without replacement from the US pool).
-For the test phase, a test set of 30 fantasy creatures will be assembled.
-The test set will include four randomly selected CSs from the learning phase (1 per positive/negative category), 16 GSs (the remaining creatures from the positive/negative categories that are not shown during the learning procedure) and 10 distractors.
-The distractors will be randomly selected from the two unpaired categories (five creatures per category).
-Fantasy creatures from the neutral categories will not be included in the test set.
+For each participant, all 24 adjectives will serve as USs during the learning phase.
+Each adjective will be randomly assigned to one of the 24 (randomly selected) CSs.
 
 ## Procedure
-The study will be run in the lab at a German-speaking university.
-All verbal materials will therefore be presented in German.
+The study will be run online.
+All verbal materials will be presented in English.
 
 ### Learning phase
-After providing informed consent, participants enter the learning phase (introduced as the "perception task").
-Participants are told that they will see fantasy creatures paired with positive, negative or neutral images and are instructed to pay close attention to each creature-image pair.
+In the valence focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather positive or rather negative. If your impression of the face-trait pair is rather positive, press the [X/M] key. If your impression of the face-trait pair is rather negative, press the [M/X] key. Press the spacebar to continue with the instructions.” (valence-to-key assigment will be randomly determined for each participant anew).
+In the age focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather typically old or typically young. If your impression of the face-trait pair is rather typically old, press the [X/M] key. If your impression of the face-trait pair is rather typically young, press the [M/X] key. Press the spacebar to continue with the instructions.” (age-to-key assigment will be randomly determined for each participant anew).
+For both task focus conditions, the second instruction slide will show the following text: “Next, you will be presented with the face-trait pairs. Please pay close attention to each pair. This part of the experiment will take about 8 minutes. Press the spacebar to start the task.”
 
-The learning phase consists of four blocks separated by self-paced breaks.
-Each block comprises 24 trials (4 trials per positive category, 4 trials per negative category, 4 trials per neutral category).
-In the invariable condition, each block shows a total of 6 creature-image pairs (1 per positive/negative/neutral category) each of which will be presented four times.
-In the variable condition, each block shows a total of 24 creature-image pairs (4 per positive/negative/neutral category) each of which will be presented one time.
-For both levels of CS variability, the creature-image pairs are displayed in random order without direct category repetitions (i.e., a creature from a given category is always followed by a creature from a different category).
-Each creature-image pair is presented for 2,000 ms (separated by bank screens presented for 500 ms).
-On each trial, the two components of the creature-image pair are presented side by side at two central positions on the left vs. right side of the screen.
-The position of each component (left vs. right) is randomly determined for each trial anew.
+Subsequently, participants will work through a learning procedure consisting of 72 trials.
+Each trial will start with a CS presented in the middle of the screen.
+After 500 ms, the US will be appear in green letters, covering the lower half of the CS.
+The CS-US pair will remain on screen for a total of 3,200 ms.
+Participants will have to indicate their impression of the CS-US pair within 2,200 ms after the onset of the US (by pressing the "M" or "X" key).
+If participants respond in time, two small lines will be presented below the CS-US pair (to indicate that the response is recorded).
+If participants do not respond in time, the message "no response" will be displayed in the same position.
+In both cases, the screen will be cleared of all stimuli (CS-US pair, two lines/"no response" message) once the CS-US pair has been presented for 3,200 ms in total.
+The trials will be separated by presenting an empty screen for 4,000 ms.
+For each participant, trial order will be randomized in sets of 24 trials.
+In each set (three in total), the 24 CS-US pairs will be presented once.
+The end of the learning procedure will be announced by a slide displaying the following text: “The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. Press the spacebar to continue.”
 
 ### Test phase
-After the learning phase, participants enter the test phase. The test phase consists of three tasks (performed in the following order): item memory task, source memory task and evaluation task.
+After the learning phase, participants enter the test phase. The test phase consists of two tasks (performed in the following order): memory task and evaluation task.
 
-#### Item memory task
-In the item memory task, the 30 fantasy creatures from the test set are presented individually (in randomized order).
-For each creature, participants have to indicate whether (or not) it was presented during the learning phase.
-To indicate their response, participants are presented with two buttons labeled "Yes (old)" and "No (new)".
-The buttons are displayed side by side below the following question: "Was this fantasy creature presented during the perception task?".
-The fantasy creature is displayed in the upper half of the screen (above the question and the two buttons).
-After selecting one of the two buttons, participants proceed to the next trial by clicking on a third button (labeled "Continue") displayed below (at equidistance to the other two buttons).
-This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the "Yes (old)" and "No (new)" buttons).
+#### Memory task
+In both task focus conditions, the slide announcing the end of the learning procedure will be followed by a slide displaying the following text: “In the second part of the experiment you will be presented with individual faces. Some of these faces were part of the previously presented pairs. Other faces will be new: they were not part of the face-trait pairs you saw in the previous task. For each face, please indicate whether it is 'old' (i.e., part of the previously presented face-trait pairs) or 'new' (i.e., not part of the previously presented face-trait pairs). Press the spacebar to continue with the instructions.”.
+On the next instruction slide, the following text will be shown: “Whenever you classify a face as 'old', you will be asked to perform a second task. In this second task, you will be presented with 16 traits. Your task will be to select the trait with which the face was previously paired with. If you can remember the paired trait, click on it. If you cannot remember the previously paired trait, try to guess the correct one and click on the trait corresponding to your guess. Ready? Then press the spacebar to continue.”
 
-#### Source memory task
-After finishing the item memory task, participants are asked to perform an additional memory task on all creatures classified as old during the preceding task.
-Participants are told that each of these creatures will be presented together with four images.
-Participants are asked to indicate, for each fantasy creature, which of the four images it was paired with during the learning phase (referred to as "perception task").
-
-The fantasy creatures will be presented individually (in randomized order).
-Each fantasy creature is presented together with the four images that served as USs for the four CSs included in the test set (2 $\times$ positive, 2 $\times$ negative).
-The images are displayed as a row of four buttons (assignment of images to buttons is randomized for each trial anew).
-On each trial, the row of buttons is headed by the following prompt: "Which of the following images was paired with the above creature during the perception task? If you cannot remember, please try to guess the correct image".
-After selecting one of the four buttons, participants proceed to the next trial by clicking on a "Continue" button displayed beneath the buttons (in a central position).
-This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the four images).
+Subsequently, participants will work through a memory task consisting of 48 randomly ordered trials. 
+On each trial, an image (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. 
+In the lower half, the recognition task question (“Was this face part of the previously presented face-trait pairs?”) together with the two response options “Yes (old)” and “No (new)” will be displayed.
+If participants respond “No (new)”, they will see a blank screen (500 ms) and then proceed to the next trial (i.e., they will be presented with a screen showing another face, the recognition task question, and the two response options).
+If participants respond with “Yes (old)”, they will see a blank screen (500 ms) and then proceed to the source memory task.
+For this task, the face will again be presented in the upper half of the screen.
+In the lower half, the source memory task question (“Which of the following traits was previously paired with the face presented above?”) together with 16 USs will be shown.
+The 16 USs will be displayed in four rows of four buttons.
+For truly “old” faces, the correct US will be presented on a randomly selected button, while the remaining buttons will be filled with 15 randomly selected USs that have been paired with other CSs.
+Three of these USs will have the same US valence and US age as the correct US, four USs will have the same US valence but the opposite US age as the correct US, four USs will have the same US age but the opposite US valence as the correct US, and four USs will have the opposite US age and the opposite US valence as the correct US.
+Other than that, the USs will be randomly selected for each trial and participant anew.
+For new faces (erroneously classified as “old”), the buttons will be filled with 16 randomly selected USs (four USs per US valence $\times$ US age condition). After clicking on one of the 16 USs, participants will be presented with a blank screen (500 ms) followed by the next trial (i.e., they will be presented with a screen showing another face, the recognition task question, and the two response options).
+The end of the memory task will be announced by a slide displaying the following text: “The second part of the experiment is now finished. Press the spacebar to continue with the third part.”.
 
 #### Evaluation task
-In the evaluation task, the 30 creatures from the test set are presented individually and in randomized order.
-Participants are instructed to express their personal evaluation of each creature.
-On each trial, participants are presented with a fantasy creature (displayed in the upper half of the screen), a centrally presented prompt ("How do you like this creature?") and an 8-point rating scale ranging from "very negative" (left) to "very positive" (right). 
-After selecting one of the eight scale points, participants proceed to the next trial by clicking on a "Continue" button displayed centrally below the rating scale.
-This requirement is included to achieve a neutral position of the mouse cursor at the beginning of each trial (neutral with regard to the positions of the eight scale points).
+On the next instruction slide, the following text will be shown: “In the third part of the experiment, you will again be presented with the faces. This time you will be asked to express your personal evaluation of a given face. To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your evaluation of a given face. Ready? Then press the spacebar to continue.”.
+
+Subsequently, participants will work through an evaluation task consisting of 48 randomly ordered trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question (“How positive or negative is your personal evaluation of the face presented above?”) together with a rating scale ranging from 1 (“very negative”) to 8 (“very positive”) will be displayed.
+Trials will be separated by a blank screen presented for 500 ms.
+The end of the evaluation task will be announced by a slide showing the following text: “The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue.”
 
 ### Check measures
-After the test phase, we will collect several check measures.
+After the test phase, we will collect several check measures (which we will use as exclusion criteria).
 Firstly, participants will be presented with a screen showing four long sentences.
 The first three sentences will refer to attitude research and through length and writing style are meant to discourage participants from reading the whole text. 
 In the very last sentence of the text, participants will be instructed to ignore the upcoming question about their exercise habits (in order to demonstrate that they have read the entire passage). 
-On the next screen, participants are presented with a list of seven physical activities and are asked to indicate which of these activities they performed regularly (by ticking a small box next to
-the respective activity). 
+On the next screen, participants are presented with a list of seven physical activities and are asked to indicate which of these activities they performed regularly (by ticking a small box next to the respective activity). 
 After having ticked all relevant boxes (or none at all), participants proceed to the next screen by clicking on the “Continue” button displayed at the bottom of the screen.
-Secondly, participants will be asked to indicate whether they have participated conscientiously and with full attention. 
-The two response options ("Yes" vs. "No") will be presented as two buttons (one below the other).
-Thirdly, participants will be presented with the following prompt: “It would now be very helpful of you to tell us whether you took the tasks seriously (so that we can use your data for scientific analyses) or whether you just clicked through to take a look at the study. (Your answer will not affect your reimbursement.)”.
-The prompt will be accompanied by two response options: “I took the tasks seriously.” and “I was just clicking through. Please discard my data.”.
-Finally, participants will be presented with an empty text box to provide (optional) comments on the study.
+Subsequently, participants will answer (“Yes” or “No”) the following attention check item: “Did you pay attention to the faces and traits presented throughout the entire task? (the response to this question will not affect your payment)”.
+Next, participants will answer the following seriousness check (based on Aust et al., 2013): “It would be very helpful if you could tell us at this point whether you have taken the requested responses seriously, so that we can use your answers for our scientific analysis, or whether you were just clicking through to take a look at the survey? (again, this will not affect your payment).”.
+The response options will be “I have taken the requested responses seriously” and “I have just clicked through, please discard my data”.
 
-## Exclusion criteria
-Participants who failed at least one attention check (by selecting at least one physical activity, by not indicating to have participated conscientiously and with full attention or by not indicating to have taken the tasks seriously) will be excluded from all analyses.
+## Inclusion and Exclusion criteria
+On Prolific Academic, sex will be balanced to have approximately the same proportions of male and female participants in our sample.
+Moreover, we will only recruit participants (1) whose first language is English, (2) with an approval rate of at least 90%, (3) with at least 100 previous submissions, (4) who did not take part in previous pretests and experiments from members of the current team of authors conducted using the same materials.
+
+Participants who fail at least one check measure (by selecting at least one physical activity, by responding with "No" to the attention check or by responding with “I have just clicked through, please discard my data” to the seriousness check) will be excluded from all analyses.
 For individual analyses (on data from the evaluation, item and source memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
 
 ## Data processing and statistical analyses
 ### Evaluative ratings
-For each participant, we will calculate two EC scores (one for CSs and one for GSs) by subtracting the mean evaluative rating for creatures related to negative USs from the mean evaluative rating for creatures related to positive USs.
-The EC scores will be submitted to a 2 (stimulus type) x 2 (CS variability) mixed ANOVA.
-Our predictions are the following:
-
-- [P1] Intercept: We predict a significant intercept (indicating reliable EC effects across levels of stimulus type and CS variability).
-This prediction is based on the significant main effect of US valence (positive > negative) reported by [@reichmann_variability_2023, Experiments 1 to 3].
-
-- [P2] Main effect of stimulus type: We expect overall stronger EC effects for CSs than for GSs and therefore predict a significant main effect of stimulus type.
-This prediction is based on the significant two-interaction between US valence and stimulus type reported by [@reichmann_variability_2023, Experiments 1 to 3].
-
-<!-- - [P3] Main effect of CS variability: We expect overall stronger EC effects in the variable than in the invariable condition and therefore predict a significant main effect of CS variability. -->
-<!-- This prediction is based on the predicted pattern of the two-way interaction between stimulus type and CS variability (see below) and not theoretically motivated. -->
-- [P3] Interaction stimulus type $\times$ CS variability: Compared to the variable condition, we expect a relatively larger difference between EC effects for CSs vs. GSs ($EC_{CS}>EC_{GS}$) in the invariable condition. We therefore predict a significant two-way interaction between stimulus type and CS variability ($\alpha=.1$). This prediction (including the specific interaction pattern) is based on the abstraction account and the significant three-way interaction (between US valence, stimulus type and CS variability) reported by [@reichmann_variability_2023, Experiments 1 to 3].
-In line with our power analysis (see above), the predicted interaction pattern will also be tested in a one-tailed test (against zero) on the following contrast: $\delta=[EC_{CS,\ invar}-EC_{GS,\ invar}]-[EC_{CS,\ var}-EC_{GS,\ var}]$ (where $EC_{x,y}$ denotes the mean EC effect in the stimulus type [x] $\times$ CS variability [y] condition indicated by the subscripts).
-If $\delta$ is larger than zero (as expected), we will conduct a one-sided test ($\alpha=.05$).
-If $\delta$ is smaller than zero (against our expectation), we will conduct a two-sided test ($\alpha=.05$).
+For each participant, we will calculate an EC scores by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
+Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t* tests).
+If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
+If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
+We will also compare EC effects between valence vs. age focus conditions (using a two-sample *t* test).
+If the mean EC score in valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
+If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
 
 ### Memory data
-For each participant and creature, responses from the two memory tasks will be coded into a joint memory index according to the following scheme.
+For each participant and CS, responses from the two memory tasks will be recoded into a joint memory index according to the following scheme.
 
-#### CS creatures
-- If a CS from positive (negative) category is incorrectly classified as “new” in the item memory task, this response will be recoded as “CSposnew” (“CSnegnew”) on the joint memory index.
+#### CSs
+- If a positively (negatively) paired CS is incorrectly classified as “new” in the recognition task, this response will be recoded as “PosUSnew” (“NegUSnew”) on the joint memory index. 
 
-- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and the correct positive (negative) US is selected in the source memory task, these responses will be recoded as "CSposposUScor" ("CSnegnegUScor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as “old” in the recognition task and the correct positive (negative) trait is chosen in the source memory task, these responses will be recoded as "PosUSposcor" ("NegUSnegcor") on the joint memory index.
 
-- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and an incorrect positive (negative) US is selected in the source memory task, these responses will be recoded as "CSposposUSincor" ("CSnegnegUSincor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as “old” in the recognition task and an incorrect positive (negative) trait is chosen in the source memory task, these responses will be recoded as "PosUSposincor" ("NegUSnegincor") on the joint memory index.
 
-- If a CS from a positive (negative) category is correctly classified as "old" in the item memory task and a negative (positive) US is selected in the source memory task, these responses will be recoded as 
-"CSposnegUSincor" ("CSnegposUSincor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as “old” in the recognition task and a negative (positive) trait is chosen in the source memory task, these responses will be recoded as "PosUSnegincor" ("NegUSposincor") on the joint memory index.
 
-#### GS creatures
-- If a GS from a positive (negative) category is correctly classified as “new” in the item memory task, this response will be recoded as “GSposnew” (“GSnegnew”) on the joint memory index.
+#### New stimuli
+- If an (unpaired) new stimulus is correctly classified as “new” in the recognition task, the response will be recoded as “Newnew” on the joint memory index. 
 
-- If a GS from a positive (negative) category is incorrectly classified as "old" in the item memory task and a positive (negative) US is selected in the source memory task, these responses will be recoded as 
-"GSposposUSincor" ("GSnegnegUSincor") on the joint memory index.
-
-- If a GS from a positive (negative) category is incorrectly classified as "old" in the item memory task and a negative (positive) US is selected in the source memory task, these responses will be recoded as 
-"GSposnegUSincor" ("GSnegposUSincor") on the joint memory index.
-
-#### Distractor creatures
-- If a distractor from an unpaired category is correctly classified as “new” in the item memory task, this response will be recoded as “Distnew” on the joint memory index.
-
-- If a distractor from an unpaired category is incorrectly classified as "old" in the item memory task and a positive (negative) US is selected in the source memory task, these responses will be recoded as 
-"DistposUSincor" ("DistnegUSincor") on the joint memory index.
+- If an (unpaired) new stimulus is incorrectly classified as “old” in the recognition task and a positive (negative) trait is chosen in the source memory task, these responses will be recoded as “Newposincor” (“Newnegincor”) on the joint memory index.
 
 Subsequently, the frequency distribution of the joint memory index (aggregated across participants) will be analyzed with the MPT model.
-We will first fit a baseline model (with $g=.5$) estimating the following parameters separately for the two CS variability conditions: $F$, $C$, $I$, $V$, $b$ and $a$.
-The baseline model thus includes the following invariance assumptions (within each CS variability condition): 
+We will first fit a baseline model estimating the following parameters separately for the two task focus conditions: $D$, $C$, $d$, $a$, $b$ and $g$.
+The baseline model thus includes the following invariance assumptions (within each task focus condition): 
 
-- (A1) $F=F_{CS+}=F_{GS+}=F_{CS-}=F_{GS-}=F_{D}$
+- (A1) $D=D_{pos}=D_{neg}=D_{new}$
 
-- (A2) $C=C_{CS+}=C_{GS+}=C_{CS-}=C_{GS-}$
+- (A2) $C=C_{pos}=C_{neg}$
 
-- (A3) $I=I_{CS+}=I_{CS-}$
+- (A3) $d=d_{pos}=d_{neg}$
 
-- (A4) $V=V_{CS+}=V_{GS+}=V_{CS-}=V_{GS-}$
+- (A4) $b=b_{pos}=b_{neg}=b_{new}$
 
-- (A5) $b=b_{CS+}=b_{GS+}=b_{CS-}=b_{GS-}=b_{D}$
+- (A5) $a=a_{pos}=a_{neg}=a_{new}$
 
-- (A6) $a=a_{CS+}=a_{GS+}=a_{CS-}=a_{GS-}=a_{D}$
+- (A6) $g=g_{pos}=g_{neg}$
 
 If the baseline model achieves adequate fit ($p>.05$), we will fit several restricted versions of the MPT model.
-To test each parameter against its reference value ($0$ for $F$, $C$, $I$ and $V$; $.5$ for $a$ and $b$), we will fit separate models (each of which will include one of 12 restrictions: [1] $F_{variable}=0$, [2] $F_{invariable}=0$, [3] $C_{variable}=0$, [4] $C_{invariable}=0$, [5] $I_{variable}=0$, [6] $I_{invariable}=0$, [7] $V_{variable}=0$, [8] $V_{invariable}=0$, [9] $b_{variable}=0$, [10] $b_{invariable}=0$, [11] $a_{variable}=0$, [12] $a_{invariable}=0$) and test them against the unrestricted baseline model.
-To test for parameter differences between CS variability conditions, we will again fit separate models (each of which will include one of six restrictions: [13] $F_{variable}=F_{invariable}$, [14] $C_{variable}=C_{invariable}$, [15] $I_{variable}=I_{invariable}$, [16] $V_{variable}=V_{invariable}$, [17] $b_{variable}=b_{invariable}$, [18] $a_{variable}=a_{invariable}$) and test them against the unrestricted baseline model.
-Our predictions are the following (for details, see sub-section "Predictions" in the introductory sections of this pre-registration):
-
-- [P4] Main effect of CS variability on feature-based detection: We predict a smaller $F$ parameter in the variable than in the invariable condition.
-
-- [P5] Main effect of CS variability on cue-based detection: We predict a larger $C$ parameter in the variable than in the invariable condition. 
-
-- [P6] Main effect of CS variability on recollection of the paired US: We (tentatively) predict a smaller $I$ parameter in the variable than in the invariable condition.
-
-- [P7] Main effect of CS variability on recollection of the paired US valence: We (tentatively) predict a larger $V$ parameter in the variable than in the invariable condition. 
+To test each parameter against its reference value ($0$ for $D$, $C$ and $d$; $.5$ for $a$ and $b$; $.125$ for $g$), we will fit separate models (each of which will include one of 12 restrictions: [1] $D_{valence-focus}=0$, [2] $D_{age-focus}=0$, [3] $C_{valence-focus}=0$, [4] $C_{age-focus}=0$, [5] $d_{valence-focus}=0$, [6] $d_{age-focus}=0$, [7] $b_{valence-focus}=.5$, [8] $b_{age-focus}=.5$, [9] $a_{valence-focus}=.5$, [10] $a_{age-focus}=.5$, [11] $g_{valence-focus}=.125$, [12] $g_{age-focus}=.125$) and test them against the unrestricted baseline model.
+To test for parameter differences between task focus conditions, we will again fit separate models (each of which will include one of six restrictions: [13] $D_{valence-focus}=D_{age-focus}$, [14] $C_{valence-focus}=C_{age-focus}$, [15] $d_{valence-focus}=d_{age-focus}$, [16] $b_{valence-focus}=b_{age-focus}$, [17] $a_{valence-focus}=a_{age-focus}$, [18] $g_{valence-focus}=g_{age-focus}$) and test them against the unrestricted baseline model.
 
 If the baseline model does not achieve adequate fit ($p\leq.05$), we will try to identify a less restrictive (baseline) model that provides a more adequate account of the data.
-In the present MPT model, inadequate fit may be caused by any violation of the previously listed invariance assumptions.
-To identify an adequate baseline model, we will therefore fit a number of model variants estimating up to 12 parameters (within each CS variability condition).
-Model selection (of an alternative baseline model) will be based on the AIC. 
+Model selection (of an alternative baseline model) will be based on the AIC (complimented by substantive and pragmatic considerations). 
 
 # References
 
