@@ -1,0 +1,873 @@
+---
+title: "Power for 3rd WSW experiment"
+author: "Karoline Bading"
+date: "2025-01-01"
+output: html_document
+---
+
+```{r}
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'reshape2', 'afex', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS', 'emmeans', 'lme4', 'ggeffects') 
+set_sum_contrasts()
+
+project_root <- rprojroot::find_rstudio_root_file()
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+```
+
+
+# effect on D
+
+```{r}
+Dvf.par <- seq(.3,.7,.2)
+Dnvf.par <- seq(.3,.7,.2)
+C.par <- seq(.3,.7,.2)
+d.par <- seq(.3,.7,.2)
+a.par <- seq(.5,.5,.2)
+b.par <- seq(.3,.7,.2)
+g.par <- seq(.25,.25,.1)
+
+# #c <- outer(a,b,FUN = paste0)
+d <- expand.grid(Dvf.par = Dvf.par
+                 , Dnvf.par = Dnvf.par
+                 , C.par = C.par
+                 , d.par = d.par
+                 , a.par = a.par
+                 , b.par = b.par
+                 , g.par = g.par)
+
+d <- subset(d,Dnvf.par != Dvf.par)
+
+power.combinations <- d[,c("Dvf.par","Dnvf.par","C.par","d.par","a.par","b.par","g.par")]
+
+power.combinations <- subset(power.combinations,Dnvf.par < Dvf.par)
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80 <- NA
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[1] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[2] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[3] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[4] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[5] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[6] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[7] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[8] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[9] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[10] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[11] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[12] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[13] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[14] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[15] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[16] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[17] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[18] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[19] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[20] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[21] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[22] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[23] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[24] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[25] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[26] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[27] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[28] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[29] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[30] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[31] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[32] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[33] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[34] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[35] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[36] <- 62.25058
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[37] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[38] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[39] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[40] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[41] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[42] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[43] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[44] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[45] <- 62.25058
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[46] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[47] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[48] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[49] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[50] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[51] <- 62.25058
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[52] <- 82.12288
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[53] <- 17.99716
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[54] <- 62.25058
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[55] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[56] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[57] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[58] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[59] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[60] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[61] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[62] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[63] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[64] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[65] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[66] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[67] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[68] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[69] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[70] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[71] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[72] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[73] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[74] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[75] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[76] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[77] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[78] <- 59.79162
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[79] <- 76.49516
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[80] <- 17.06032
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80[81] <- 59.79162
+
+power.combinations$Dvf_equal_Dnvf.obsCSpos.80.round <- round(power.combinations$Dvf_equal_Dnvf.obsCSpos.80,0)
+
+power.combinations$Dvf_equal_Dnvf.nX1.80 <- power.combinations$Dvf_equal_Dnvf.obsCSpos.80/12
+
+power.combinations$Dvf_equal_Dnvf.nX1.80.round <- round(power.combinations$Dvf_equal_Dnvf.obsCSpos.80.round/12)
+
+power.Dvf_equal_Dnvf <- power.combinations
+
+```
+
+# effect on C
+
+```{r}
+D.par <- seq(.3,.7,.2)
+Cvf.par <- seq(.3,.7,.2)
+Cnvf.par <- seq(.3,.7,.2)
+d.par <- seq(.3,.7,.2)
+a.par <- seq(.3,.7,.2)
+b.par <- seq(.3,.7,.2)
+g.par <- seq(.25,.25,.1)
+
+# #c <- outer(a,b,FUN = paste0)
+d <- expand.grid(D.par = D.par
+                 , Cvf.par = Cvf.par
+                 , Cnvf.par = Cnvf.par
+                 , d.par = d.par
+                 , a.par = a.par
+                 , b.par = b.par
+                 , g.par = g.par)
+
+d <- subset(d,Cnvf.par < Cvf.par)
+
+power.combinations <- d[,c("D.par","Cvf.par","Cnvf.par","d.par","a.par","b.par","g.par")]
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80 <- NA
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[1] <- 426.79829
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[2] <- 194.21255
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[3] <- 118.83277
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[4] <- 122.06801
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[5] <- 51.77555
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[6] <- 30.11628
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[7] <- 547.03651
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[8] <- 218.33942
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[9] <- 120.19444
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[10] <- 441.64164
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[11] <- 202.78905
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[12] <- 124.83603
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[13] <- 125.21462
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[14] <- 53.54236
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[15] <- 31.33251
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[16] <- 556.73840
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[17] <- 223.92690
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[18] <- 124.09530
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[19] <- 456.20681
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[20] <- 211.19680
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[21] <- 130.71822
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[22] <- 128.30780
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[23] <- 55.27994
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[24] <- 32.52764
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[25] <- 566.32514
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[26] <- 229.44184
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[27] <- 127.94139
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[28] <- 433.68457
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[29] <- 196.28052
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[30] <- 119.78093
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[31] <- 123.54960
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[32] <- 52.20191
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[33] <- 30.30282
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[34] <- 552.05703
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[35] <- 219.70681
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[36] <- 120.76101
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[37] <- 446.90564
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[38] <- 204.15785
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[39] <- 125.38594
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[40] <- 126.37636
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[41] <- 53.83637
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[42] <- 31.44502
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[43] <- 560.85196
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[44] <- 224.91050
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[45] <- 124.44916
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[46] <- 460.12087
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[47] <- 212.03346
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[48] <- 130.98983
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[49] <- 129.20018
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[50] <- 55.47063
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[51] <- 32.58706
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[52] <- 569.64595
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[53] <- 230.11543
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[54] <- 128.13800
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[55] <- 426.79829
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[56] <- 194.21255
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[57] <- 118.83277
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[58] <- 122.06801
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[59] <- 51.77555
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[60] <- 30.11628
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[61] <- 547.03651
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[62] <- 218.33942
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[63] <- 120.19444
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[64] <- 441.64164
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[65] <- 202.78905
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[66] <- 124.83603
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[67] <- 125.21462
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[68] <- 53.54236
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[69] <- 31.33251
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[70] <- 556.73840
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[71] <- 223.92690
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[72] <- 124.09530
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[73] <- 456.20681
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[74] <- 211.19680
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[75] <- 130.71822
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[76] <- 128.30780
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[77] <- 55.27994
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[78] <- 32.52764
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[79] <- 566.32514
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[80] <- 229.44184
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[81] <- 127.94139
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[82] <- 516.04302
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[83] <- 221.40720
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[84] <- 128.42335
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[85] <- 150.63159
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[86] <- 60.79096
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[87] <- 33.37644
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[88] <- 690.79976
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[89] <- 264.69991
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[90] <- 137.24025
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[91] <- 531.37900
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[92] <- 230.15771
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[93] <- 134.49001
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[94] <- 153.95503
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[95] <- 62.62553
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[96] <- 34.61670
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[97] <- 700.83987
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[98] <- 270.41704
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[99] <- 141.18917
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[100] <- 546.44293
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[101] <- 238.74010
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[102] <- 140.43579
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[103] <- 157.22081
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[104] <- 64.42902
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[105] <- 35.83607
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[106] <- 710.76927
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[107] <- 276.06328
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[108] <- 145.08495
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[109] <- 527.71516
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[110] <- 224.45524
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[111] <- 129.62740
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[112] <- 153.22709
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[113] <- 61.43982
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[114] <- 33.62061
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[115] <- 699.77491
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[116] <- 266.84564
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[117] <- 138.00493
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[118] <- 540.99828
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[119] <- 232.36196
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[120] <- 135.24337
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[121] <- 156.13023
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[122] <- 63.11096
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[123] <- 34.77617
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[124] <- 708.65621
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[125] <- 272.09346
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[126] <- 141.70871
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[127] <- 554.27311
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[128] <- 240.26574
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[129] <- 140.85822
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[130] <- 159.02789
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[131] <- 64.78056
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[132] <- 35.93161
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[133] <- 717.53431
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[134] <- 277.34111
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[135] <- 145.41335
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[136] <- 516.04302
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[137] <- 221.40720
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[138] <- 128.42335
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[139] <- 150.63159
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[140] <- 60.79096
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[141] <- 33.37644
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[142] <- 690.79976
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[143] <- 264.69991
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[144] <- 137.24025
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[145] <- 531.37900
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[146] <- 230.15771
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[147] <- 134.49001
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[148] <- 153.95503
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[149] <- 62.62553
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[150] <- 34.61670
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[151] <- 700.83987
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[152] <- 270.41704
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[153] <- 141.18917
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[154] <- 546.44293
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[155] <- 238.74010
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[156] <- 140.43579
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[157] <- 157.22081
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[158] <- 64.42902
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[159] <- 35.83607
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[160] <- 710.76927
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[161] <- 276.06328
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[162] <- 145.08495
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[163] <- 576.93589
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[164] <- 243.42875
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[165] <- 137.07188
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[166] <- 167.63119
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[167] <- 67.68990
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[168] <- 36.25299
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[169] <- 771.43632
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[170] <- 299.43316
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[171] <- 152.14549
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[172] <- 592.64391
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[173] <- 252.32784
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[174] <- 143.19734
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[175] <- 171.06734
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[176] <- 69.57831
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[177] <- 37.51605
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[178] <- 781.72068
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[179] <- 305.25580
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[180] <- 156.13936
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[181] <- 608.08967
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[182] <- 261.06013
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[183] <- 149.20209
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[184] <- 174.44538
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[185] <- 71.43425
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[186] <- 38.75790
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[187] <- 791.89929
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[188] <- 311.00901
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[189] <- 160.08099
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[190] <- 593.99701
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[191] <- 247.56393
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[192] <- 138.54944
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[193] <- 171.50381
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[194] <- 68.58946
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[195] <- 36.55905
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[196] <- 784.98887
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[197] <- 302.45896
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[198] <- 153.12450
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[199] <- 607.30068
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[200] <- 255.49070
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[201] <- 144.17545
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[202] <- 174.43836
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[203] <- 70.28609
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[204] <- 37.72729
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[205] <- 793.90615
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[206] <- 307.73729
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[207] <- 156.84379
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[208] <- 620.59555
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[209] <- 263.41358
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[210] <- 149.80007
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[211] <- 177.36656
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[212] <- 71.98020
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[213] <- 38.89511
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[214] <- 802.81945
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[215] <- 313.01444
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[216] <- 160.56360
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[217] <- 576.93589
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[218] <- 243.42875
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[219] <- 137.07188
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[220] <- 167.63119
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[221] <- 67.68990
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[222] <- 36.25299
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[223] <- 771.43632
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[224] <- 299.43316
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[225] <- 152.14549
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[226] <- 592.64391
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[227] <- 252.32784
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[228] <- 143.19734
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[229] <- 171.06734
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[230] <- 69.57831
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[231] <- 37.51605
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[232] <- 781.72068
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[233] <- 305.25580
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[234] <- 156.13936
+  
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[235] <- 608.08967
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[236] <- 261.06013
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[237] <- 149.20209
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[238] <- 174.44538
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[239] <- 71.43425
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[240] <- 38.75790
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[241] <- 791.89929
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[242] <- 311.00901
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80[243] <- 160.08099
+
+power.combinations$Cvf_equal_Cnvf.obsCSpos.80.round <- round(power.combinations$Cvf_equal_Cnvf.obsCSpos.80,0)
+
+power.combinations$Cvf_equal_Cnvf.nX1.80 <- power.combinations$Cvf_equal_Cnvf.obsCSpos.80/12
+
+power.combinations$Cvf_equal_Cnvf.nX1.80.round <- round(power.combinations$Cvf_equal_Cnvf.obsCSpos.80.round/12)
+# 
+power.Cvf_equal_Cnvf <- power.combinations
+
+```
+
+# effect of d
+
+```{r}
+D.par <- seq(.3,.7,.2)
+C.par <- seq(.3,.7,.2)
+dvf.par <- seq(.3,.7,.2)
+dnvf.par <- seq(.3,.7,.2)
+a.par <- seq(.3,.7,.2)
+b.par <- seq(.3,.7,.2)
+g.par <- seq(.25,.25,.1)
+
+# #c <- outer(a,b,FUN = paste0)
+d <- expand.grid(D.par = D.par
+                 , C.par = C.par
+                 , dvf.par = dvf.par
+                 , dnvf.par = dnvf.par
+                 , a.par = a.par
+                 , b.par = b.par
+                 , g.par = g.par)
+
+d <- subset(d,dnvf.par < dvf.par)
+
+power.combinations <- d[,c("D.par","C.par","dvf.par","dnvf.par","a.par","b.par","g.par")]
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80 <- NA
+power.combinations$dvf_equal_dnvf.obsCSpos.80[1] <- 1853.40013
+power.combinations$dvf_equal_dnvf.obsCSpos.80[2] <- 760.20203
+power.combinations$dvf_equal_dnvf.obsCSpos.80[3] <- 432.04432
+power.combinations$dvf_equal_dnvf.obsCSpos.80[4] <- 3177.92500
+power.combinations$dvf_equal_dnvf.obsCSpos.80[5] <- 1218.97635
+power.combinations$dvf_equal_dnvf.obsCSpos.80[6] <- 653.66302
+power.combinations$dvf_equal_dnvf.obsCSpos.80[7] <- 7547.30230
+power.combinations$dvf_equal_dnvf.obsCSpos.80[8] <- 2627.17946
+power.combinations$dvf_equal_dnvf.obsCSpos.80[9] <- 1277.14441
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80[10] <- 474.90809
+power.combinations$dvf_equal_dnvf.obsCSpos.80[11] <- 185.71550
+power.combinations$dvf_equal_dnvf.obsCSpos.80[12] <- 100.94823
+power.combinations$dvf_equal_dnvf.obsCSpos.80[13] <- 830.10234
+power.combinations$dvf_equal_dnvf.obsCSpos.80[14] <- 304.26838
+power.combinations$dvf_equal_dnvf.obsCSpos.80[15] <- 155.45421
+power.combinations$dvf_equal_dnvf.obsCSpos.80[16] <- 2021.07025
+power.combinations$dvf_equal_dnvf.obsCSpos.80[17] <- 677.36161
+power.combinations$dvf_equal_dnvf.obsCSpos.80[18] <- 313.33041
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[19] <- 1960.38980
+power.combinations$dvf_equal_dnvf.obsCSpos.80[20] <- 728.93568
+power.combinations$dvf_equal_dnvf.obsCSpos.80[21] <- 376.79323
+power.combinations$dvf_equal_dnvf.obsCSpos.80[22] <- 3490.95191
+power.combinations$dvf_equal_dnvf.obsCSpos.80[23] <- 1222.04950
+power.combinations$dvf_equal_dnvf.obsCSpos.80[24] <- 592.13342
+power.combinations$dvf_equal_dnvf.obsCSpos.80[25] <- 8693.37856
+power.combinations$dvf_equal_dnvf.obsCSpos.80[26] <- 2811.18806
+power.combinations$dvf_equal_dnvf.obsCSpos.80[27] <- 1235.26271
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80[28] <- 2089.41945
+power.combinations$dvf_equal_dnvf.obsCSpos.80[29] <- 837.05479
+power.combinations$dvf_equal_dnvf.obsCSpos.80[30] <- 468.37203
+power.combinations$dvf_equal_dnvf.obsCSpos.80[31] <- 3613.10989
+power.combinations$dvf_equal_dnvf.obsCSpos.80[32] <- 1351.43567
+power.combinations$dvf_equal_dnvf.obsCSpos.80[33] <- 711.52934
+power.combinations$dvf_equal_dnvf.obsCSpos.80[34] <- 8697.20556
+power.combinations$dvf_equal_dnvf.obsCSpos.80[35] <- 2950.56085
+power.combinations$dvf_equal_dnvf.obsCSpos.80[36] <- 1402.82484
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80[37] <- 525.31669
+power.combinations$dvf_equal_dnvf.obsCSpos.80[38] <- 200.87010
+power.combinations$dvf_equal_dnvf.obsCSpos.80[39] <- 107.58202
+power.combinations$dvf_equal_dnvf.obsCSpos.80[40] <- 925.12918
+power.combinations$dvf_equal_dnvf.obsCSpos.80[41] <- 331.12361
+power.combinations$dvf_equal_dnvf.obsCSpos.80[42] <- 166.27708
+power.combinations$dvf_equal_dnvf.obsCSpos.80[43] <- 2279.68672
+power.combinations$dvf_equal_dnvf.obsCSpos.80[44] <- 745.82368
+power.combinations$dvf_equal_dnvf.obsCSpos.80[45] <- 337.91637
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[46] <- 2129.42959
+power.combinations$dvf_equal_dnvf.obsCSpos.80[47] <- 775.29770
+power.combinations$dvf_equal_dnvf.obsCSpos.80[48] <- 395.50112
+power.combinations$dvf_equal_dnvf.obsCSpos.80[49] <- 3818.67439
+power.combinations$dvf_equal_dnvf.obsCSpos.80[50] <- 1306.80882
+power.combinations$dvf_equal_dnvf.obsCSpos.80[51] <- 623.37716
+power.combinations$dvf_equal_dnvf.obsCSpos.80[52] <- 9621.10628
+power.combinations$dvf_equal_dnvf.obsCSpos.80[53] <- 3038.68996
+power.combinations$dvf_equal_dnvf.obsCSpos.80[54] <- 1309.74383
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[55] <- 1853.40013
+power.combinations$dvf_equal_dnvf.obsCSpos.80[56] <- 760.20203
+power.combinations$dvf_equal_dnvf.obsCSpos.80[57] <- 432.04432
+power.combinations$dvf_equal_dnvf.obsCSpos.80[58] <- 3177.92500
+power.combinations$dvf_equal_dnvf.obsCSpos.80[59] <- 1218.97635
+power.combinations$dvf_equal_dnvf.obsCSpos.80[60] <- 653.66302
+power.combinations$dvf_equal_dnvf.obsCSpos.80[61] <- 7547.30230
+power.combinations$dvf_equal_dnvf.obsCSpos.80[62] <- 2627.17946
+power.combinations$dvf_equal_dnvf.obsCSpos.80[63] <- 1277.14441
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[64] <- 474.90809
+power.combinations$dvf_equal_dnvf.obsCSpos.80[65] <- 185.71550
+power.combinations$dvf_equal_dnvf.obsCSpos.80[66] <- 100.94823
+power.combinations$dvf_equal_dnvf.obsCSpos.80[67] <- 830.10234
+power.combinations$dvf_equal_dnvf.obsCSpos.80[68] <- 304.26838
+power.combinations$dvf_equal_dnvf.obsCSpos.80[69] <- 155.45421
+power.combinations$dvf_equal_dnvf.obsCSpos.80[70] <- 2021.07025
+power.combinations$dvf_equal_dnvf.obsCSpos.80[71] <- 677.36161
+power.combinations$dvf_equal_dnvf.obsCSpos.80[72] <- 313.33041
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[73] <- 1960.38980
+power.combinations$dvf_equal_dnvf.obsCSpos.80[74] <- 728.93568
+power.combinations$dvf_equal_dnvf.obsCSpos.80[75] <- 376.79323
+power.combinations$dvf_equal_dnvf.obsCSpos.80[76] <- 3490.95191
+power.combinations$dvf_equal_dnvf.obsCSpos.80[77] <- 1222.04950
+power.combinations$dvf_equal_dnvf.obsCSpos.80[78] <- 592.13342
+power.combinations$dvf_equal_dnvf.obsCSpos.80[79] <- 8693.37856
+power.combinations$dvf_equal_dnvf.obsCSpos.80[80] <- 2811.18806
+power.combinations$dvf_equal_dnvf.obsCSpos.80[81] <- 1235.26271
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[82] <- 2469.23355
+power.combinations$dvf_equal_dnvf.obsCSpos.80[83] <- 929.24703
+power.combinations$dvf_equal_dnvf.obsCSpos.80[84] <- 486.95473
+power.combinations$dvf_equal_dnvf.obsCSpos.80[85] <- 4382.51476
+power.combinations$dvf_equal_dnvf.obsCSpos.80[86] <- 1549.28506
+power.combinations$dvf_equal_dnvf.obsCSpos.80[87] <- 761.10567
+power.combinations$dvf_equal_dnvf.obsCSpos.80[88] <- 10883.14821
+power.combinations$dvf_equal_dnvf.obsCSpos.80[89] <- 3539.23998
+power.combinations$dvf_equal_dnvf.obsCSpos.80[90] <- 1573.90585
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[91] <- 640.44769
+power.combinations$dvf_equal_dnvf.obsCSpos.80[92] <- 232.53180
+power.combinations$dvf_equal_dnvf.obsCSpos.80[93] <- 116.58660
+power.combinations$dvf_equal_dnvf.obsCSpos.80[94] <- 1153.57110
+power.combinations$dvf_equal_dnvf.obsCSpos.80[95] <- 395.55623
+power.combinations$dvf_equal_dnvf.obsCSpos.80[96] <- 185.96747
+power.combinations$dvf_equal_dnvf.obsCSpos.80[97] <- 2915.95473
+power.combinations$dvf_equal_dnvf.obsCSpos.80[98] <- 928.92307
+power.combinations$dvf_equal_dnvf.obsCSpos.80[99] <- 397.33021
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80[100] <- 2678.49449
+power.combinations$dvf_equal_dnvf.obsCSpos.80[101] <- 936.73603
+power.combinations$dvf_equal_dnvf.obsCSpos.80[102] <- 447.41117
+power.combinations$dvf_equal_dnvf.obsCSpos.80[103] <- 4892.86934
+power.combinations$dvf_equal_dnvf.obsCSpos.80[104] <- 1627.03855
+power.combinations$dvf_equal_dnvf.obsCSpos.80[105] <- 729.96459
+power.combinations$dvf_equal_dnvf.obsCSpos.80[106] <- 12566.71966
+power.combinations$dvf_equal_dnvf.obsCSpos.80[107] <- 3925.42384
+power.combinations$dvf_equal_dnvf.obsCSpos.80[108] <- 1614.55736
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[109] <- 2837.89324
+power.combinations$dvf_equal_dnvf.obsCSpos.80[110] <- 1037.89834
+power.combinations$dvf_equal_dnvf.obsCSpos.80[111] <- 532.44247
+power.combinations$dvf_equal_dnvf.obsCSpos.80[112] <- 5079.93668
+power.combinations$dvf_equal_dnvf.obsCSpos.80[113] <- 1744.97891
+power.combinations$dvf_equal_dnvf.obsCSpos.80[114] <- 837.05479
+power.combinations$dvf_equal_dnvf.obsCSpos.80[115] <- 12771.30394
+power.combinations$dvf_equal_dnvf.obsCSpos.80[116] <- 4043.49395
+power.combinations$dvf_equal_dnvf.obsCSpos.80[117] <- 1751.34155
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[118] <- 722.44476
+power.combinations$dvf_equal_dnvf.obsCSpos.80[119] <- 255.03769
+power.combinations$dvf_equal_dnvf.obsCSpos.80[120] <- 125.27104
+power.combinations$dvf_equal_dnvf.obsCSpos.80[121] <- 1311.29871
+power.combinations$dvf_equal_dnvf.obsCSpos.80[122] <- 437.14700
+power.combinations$dvf_equal_dnvf.obsCSpos.80[123] <- 200.87010
+power.combinations$dvf_equal_dnvf.obsCSpos.80[124] <- 3352.00009
+power.combinations$dvf_equal_dnvf.obsCSpos.80[125] <- 1040.04034
+power.combinations$dvf_equal_dnvf.obsCSpos.80[126] <- 433.78291
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[127] <- 2967.13206
+power.combinations$dvf_equal_dnvf.obsCSpos.80[128] <- 1009.57210
+power.combinations$dvf_equal_dnvf.obsCSpos.80[129] <- 473.06879
+power.combinations$dvf_equal_dnvf.obsCSpos.80[130] <- 5460.34462
+power.combinations$dvf_equal_dnvf.obsCSpos.80[131] <- 1765.77483
+power.combinations$dvf_equal_dnvf.obsCSpos.80[132] <- 775.29770
+power.combinations$dvf_equal_dnvf.obsCSpos.80[133] <- 14181.03509
+power.combinations$dvf_equal_dnvf.obsCSpos.80[134] <- 4313.15000
+power.combinations$dvf_equal_dnvf.obsCSpos.80[135] <- 1731.39339
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[136] <- 2469.23355
+power.combinations$dvf_equal_dnvf.obsCSpos.80[137] <- 929.24703
+power.combinations$dvf_equal_dnvf.obsCSpos.80[138] <- 486.95473
+power.combinations$dvf_equal_dnvf.obsCSpos.80[139] <- 4382.51476
+power.combinations$dvf_equal_dnvf.obsCSpos.80[140] <- 1549.28506
+power.combinations$dvf_equal_dnvf.obsCSpos.80[141] <- 761.10567
+power.combinations$dvf_equal_dnvf.obsCSpos.80[142] <- 10883.14821
+power.combinations$dvf_equal_dnvf.obsCSpos.80[143] <- 3539.23998
+power.combinations$dvf_equal_dnvf.obsCSpos.80[144] <- 1573.90585
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[145] <- 640.44769
+power.combinations$dvf_equal_dnvf.obsCSpos.80[146] <- 232.53180
+power.combinations$dvf_equal_dnvf.obsCSpos.80[147] <- 116.58660
+power.combinations$dvf_equal_dnvf.obsCSpos.80[148] <- 1153.57110
+power.combinations$dvf_equal_dnvf.obsCSpos.80[149] <- 395.55623
+power.combinations$dvf_equal_dnvf.obsCSpos.80[150] <- 185.96747
+power.combinations$dvf_equal_dnvf.obsCSpos.80[151] <- 2915.95473
+power.combinations$dvf_equal_dnvf.obsCSpos.80[152] <- 928.92307
+power.combinations$dvf_equal_dnvf.obsCSpos.80[153] <- 397.33021
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[154] <- 2678.49449
+power.combinations$dvf_equal_dnvf.obsCSpos.80[155] <- 936.73603
+power.combinations$dvf_equal_dnvf.obsCSpos.80[156] <- 447.41117
+power.combinations$dvf_equal_dnvf.obsCSpos.80[157] <- 4892.86934
+power.combinations$dvf_equal_dnvf.obsCSpos.80[158] <- 1627.03855
+power.combinations$dvf_equal_dnvf.obsCSpos.80[159] <- 729.96459
+power.combinations$dvf_equal_dnvf.obsCSpos.80[160] <- 12566.71966
+power.combinations$dvf_equal_dnvf.obsCSpos.80[161] <- 3925.42384
+power.combinations$dvf_equal_dnvf.obsCSpos.80[162] <- 1614.55736
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[163] <- 3025.05549
+power.combinations$dvf_equal_dnvf.obsCSpos.80[164] <- 1086.77559
+power.combinations$dvf_equal_dnvf.obsCSpos.80[165] <- 539.70121
+power.combinations$dvf_equal_dnvf.obsCSpos.80[166] <- 5470.55201
+power.combinations$dvf_equal_dnvf.obsCSpos.80[167] <- 1857.08693
+power.combinations$dvf_equal_dnvf.obsCSpos.80[168] <- 864.20758
+power.combinations$dvf_equal_dnvf.obsCSpos.80[169] <- 13900.05430
+power.combinations$dvf_equal_dnvf.obsCSpos.80[170] <- 4389.87703
+power.combinations$dvf_equal_dnvf.obsCSpos.80[171] <- 1858.44202
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80[172] <- 782.12478
+power.combinations$dvf_equal_dnvf.obsCSpos.80[173] <- 274.73614
+power.combinations$dvf_equal_dnvf.obsCSpos.80[174] <- 131.33181
+power.combinations$dvf_equal_dnvf.obsCSpos.80[175] <- 1430.50591
+power.combinations$dvf_equal_dnvf.obsCSpos.80[176] <- 477.84525
+power.combinations$dvf_equal_dnvf.obsCSpos.80[177] <- 214.70672
+power.combinations$dvf_equal_dnvf.obsCSpos.80[178] <- 3682.64010
+power.combinations$dvf_equal_dnvf.obsCSpos.80[179] <- 1155.85085
+power.combinations$dvf_equal_dnvf.obsCSpos.80[180] <- 476.40179
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[181] <- 3262.97877
+power.combinations$dvf_equal_dnvf.obsCSpos.80[182] <- 1118.97804
+power.combinations$dvf_equal_dnvf.obsCSpos.80[183] <- 513.16298
+power.combinations$dvf_equal_dnvf.obsCSpos.80[184] <- 6035.07964
+power.combinations$dvf_equal_dnvf.obsCSpos.80[185] <- 1982.16340
+power.combinations$dvf_equal_dnvf.obsCSpos.80[186] <- 858.13897
+power.combinations$dvf_equal_dnvf.obsCSpos.80[187] <- 15728.02209
+power.combinations$dvf_equal_dnvf.obsCSpos.80[188] <- 4903.35272
+power.combinations$dvf_equal_dnvf.obsCSpos.80[189] <- 1966.89679
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[190] <- 3530.08576
+power.combinations$dvf_equal_dnvf.obsCSpos.80[191] <- 1228.35679
+power.combinations$dvf_equal_dnvf.obsCSpos.80[192] <- 594.58804
+power.combinations$dvf_equal_dnvf.obsCSpos.80[193] <- 6436.40420
+power.combinations$dvf_equal_dnvf.obsCSpos.80[194] <- 2118.18092
+power.combinations$dvf_equal_dnvf.obsCSpos.80[195] <- 958.81069
+power.combinations$dvf_equal_dnvf.obsCSpos.80[196] <- 16538.59660
+power.combinations$dvf_equal_dnvf.obsCSpos.80[197] <- 5079.93668
+power.combinations$dvf_equal_dnvf.obsCSpos.80[198] <- 2089.41945
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[199] <- 896.97589
+power.combinations$dvf_equal_dnvf.obsCSpos.80[200] <- 304.97183
+power.combinations$dvf_equal_dnvf.obsCSpos.80[201] <- 142.15132
+power.combinations$dvf_equal_dnvf.obsCSpos.80[202] <- 1653.10658
+power.combinations$dvf_equal_dnvf.obsCSpos.80[203] <- 534.89424
+power.combinations$dvf_equal_dnvf.obsCSpos.80[204] <- 233.88502
+power.combinations$dvf_equal_dnvf.obsCSpos.80[205] <- 4300.73893
+power.combinations$dvf_equal_dnvf.obsCSpos.80[206] <- 1311.29871
+power.combinations$dvf_equal_dnvf.obsCSpos.80[207] <- 525.31669
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[208] <- 3678.08408
+power.combinations$dvf_equal_dnvf.obsCSpos.80[209] <- 1220.41523
+power.combinations$dvf_equal_dnvf.obsCSpos.80[210] <- 546.27797
+power.combinations$dvf_equal_dnvf.obsCSpos.80[211] <- 6853.54767
+power.combinations$dvf_equal_dnvf.obsCSpos.80[212] <- 2178.86896
+power.combinations$dvf_equal_dnvf.obsCSpos.80[213] <- 918.68549
+power.combinations$dvf_equal_dnvf.obsCSpos.80[214] <- 18050.50081
+power.combinations$dvf_equal_dnvf.obsCSpos.80[215] <- 5460.34462
+power.combinations$dvf_equal_dnvf.obsCSpos.80[216] <- 2129.42959
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[217] <- 3025.05549
+power.combinations$dvf_equal_dnvf.obsCSpos.80[218] <- 1086.77559
+power.combinations$dvf_equal_dnvf.obsCSpos.80[219] <- 539.70121
+power.combinations$dvf_equal_dnvf.obsCSpos.80[220] <- 5470.55201
+power.combinations$dvf_equal_dnvf.obsCSpos.80[221] <- 1857.08693
+power.combinations$dvf_equal_dnvf.obsCSpos.80[222] <- 864.20758
+power.combinations$dvf_equal_dnvf.obsCSpos.80[223] <- 13900.05430
+power.combinations$dvf_equal_dnvf.obsCSpos.80[224] <- 4389.87703
+power.combinations$dvf_equal_dnvf.obsCSpos.80[225] <- 1858.44202
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[226] <- 782.12478
+power.combinations$dvf_equal_dnvf.obsCSpos.80[227] <- 274.73614
+power.combinations$dvf_equal_dnvf.obsCSpos.80[228] <- 131.33181
+power.combinations$dvf_equal_dnvf.obsCSpos.80[229] <- 1430.50591
+power.combinations$dvf_equal_dnvf.obsCSpos.80[230] <- 477.84525
+power.combinations$dvf_equal_dnvf.obsCSpos.80[231] <- 214.70672
+power.combinations$dvf_equal_dnvf.obsCSpos.80[232] <- 3682.64010
+power.combinations$dvf_equal_dnvf.obsCSpos.80[233] <- 1155.85085
+power.combinations$dvf_equal_dnvf.obsCSpos.80[234] <- 476.40179
+  
+power.combinations$dvf_equal_dnvf.obsCSpos.80[235] <- 3262.97877
+power.combinations$dvf_equal_dnvf.obsCSpos.80[236] <- 1118.97804
+power.combinations$dvf_equal_dnvf.obsCSpos.80[237] <- 513.16298
+power.combinations$dvf_equal_dnvf.obsCSpos.80[238] <- 6035.07964
+power.combinations$dvf_equal_dnvf.obsCSpos.80[239] <- 1982.16340
+power.combinations$dvf_equal_dnvf.obsCSpos.80[240] <- 858.13897
+power.combinations$dvf_equal_dnvf.obsCSpos.80[241] <- 15728.02209
+power.combinations$dvf_equal_dnvf.obsCSpos.80[242] <- 4903.35272
+power.combinations$dvf_equal_dnvf.obsCSpos.80[243] <- 1966.89679
+
+power.combinations$dvf_equal_dnvf.obsCSpos.80.round <- round(power.combinations$dvf_equal_dnvf.obsCSpos.80,0)
+
+power.combinations$dvf_equal_dnvf.nX1.80 <- power.combinations$dvf_equal_dnvf.obsCSpos.80/12
+
+power.combinations$dvf_equal_dnvf.nX1.80.round <- round(power.combinations$dvf_equal_dnvf.obsCSpos.80.round/12)
+# 
+power.dvf_equal_dnvf <- power.combinations
+  
+```
+
+```{r}
+quantile(power.dvf_equal_dnvf$dvf_equal_dnvf.nX1.80)
+```
+
+```{r}
+quantile(power.Cvf_equal_Cnvf$Cvf_equal_Cnvf.nX1.80)
+```
+
+```{r}
+quantile(power.Dvf_equal_Dnvf$Dvf_equal_Dnvf.nX1.80)
+```
+
+```{r}
+power.dvf_equal_dnvf$id <- 1
+power.dvf_equal_dnvf$d_diff <- paste0(power.dvf_equal_dnvf$dvf.par,"_" ,power.dvf_equal_dnvf$dnvf.par)
+apa_beeplot(data = power.dvf_equal_dnvf
+            , id = "id"
+            , dv = "dvf_equal_dnvf.nX1.80"
+            , factors = c("D.par"))
+
+apa_beeplot(data = power.dvf_equal_dnvf
+            , id = "id"
+            , dv = "dvf_equal_dnvf.nX1.80"
+            , factors = c("C.par"))
+
+apa_beeplot(data = power.dvf_equal_dnvf
+            , id = "id"
+            , dv = "dvf_equal_dnvf.nX1.80"
+            , factors = c("d_diff"))
+
+apa_beeplot(data = power.dvf_equal_dnvf
+            , id = "id"
+            , dv = "dvf_equal_dnvf.nX1.80"
+            , factors = c("a.par"))
+
+apa_beeplot(data = power.dvf_equal_dnvf
+            , id = "id"
+            , dv = "dvf_equal_dnvf.nX1.80"
+            , factors = c("b.par"))
+
+
+```
+
+```{r}
+load("dat_mpt_exp3.rdata")
+
+memfirst <- subset(dat_mpt_exp3,order == "mem_first") #96 participants
+level_order <- check.mpt("WSW_exp2.eqn")$eqn.order.categories
+
+memfirst$resp <- factor(memfirst$resp_mpt
+                       , levels = level_order)
+
+xxx <- table(memfirst$resp)
+xxx2 <- data.frame(xxx)
+
+mpt_dat <- data.frame(var1 = NA,
+                      var2 = NA,
+                      var3 = NA,
+                      var4 = NA,
+                      var5 = NA,
+                      var6 = NA,
+                      var7 = NA,
+                      var8 = NA,
+                      var9 = NA,
+                      var10 = NA,
+                      var11 = NA
+                      )
+
+names(mpt_dat) <- level_order
+mpt_dat[1,] <- xxx2$Freq
+
+mod_agg_exp2 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.5")
+)
+
+mod_agg_exp2
+
+mod_agg_exp2_D0 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.25","D_x1=0")
+)
+
+mod_agg_exp2_C0 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.25","C_x1=0")
+)
+
+mod_agg_exp2_d0 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.25","d_x1=0")
+)
+
+mod_agg_exp2_a05 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.25","a_x1=.5")
+)
+
+mod_agg_exp2_b05 = fit.mpt(data = mpt_dat
+                  ,model.filename = "WSW_exp2.eqn"
+                  ,restrictions.filename = list("G_x1=.25","b_x1=.5")
+)
+
+model_comparisons <- anova(
+  mod_agg_exp2
+  , mod_D0     = mod_agg_exp2_D0
+  , mod_C0     = mod_agg_exp2_C0
+  , mod_d0     = mod_agg_exp2_d0
+  , mod_a05     = mod_agg_exp2_a05
+  , mod_b05     = mod_agg_exp2_b05
+)
+
+dG2 <- apa_print(model_comparisons)
+```
+
+```{r}
+d.sub <- subset(power.dvf_equal_dnvf, b.par == .3 & a.par == .5 & D.par == .5)
+```
