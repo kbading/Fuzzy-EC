@@ -826,7 +826,7 @@ mpt_dat[1,] <- xxx2$Freq
 
 mod_agg_exp2 = fit.mpt(data = mpt_dat
                   ,model.filename = "WSW_exp2.eqn"
-                  ,restrictions.filename = list("G_x1=.25")
+                  ,restrictions.filename = list("G_x1=.5")
 )
 
 mod_agg_exp2
