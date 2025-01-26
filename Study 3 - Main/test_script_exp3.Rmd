@@ -1,0 +1,128 @@
+---
+title: "Test Script for who-said-what experiment 3"
+author: "Karoline Bading"
+output:
+  html_document:
+    toc: yes
+    code_folding: show
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+# Load packages and read the data
+
+```{r set}
+#Load (or install and load) packages
+require(pacman)
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS','jsonlite') 
+set_sum_contrasts()
+
+project_root <- rprojroot::find_rstudio_root_file()
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+
+setwd("~/Fuzzy-EC/Study 3 - Main")
+read_file('testdata_exp3_neu.txt')%>%
+#... split it into lines ...
+ str_split('\n') %>% first() %>%
+#... filter empty rows ...
+ discard(function(x) x == '') %>%
+#... parse JSON into a data.frame
+ map_dfr(fromJSON, flatten=T) -> dat
+
+dat$url.srid = as.factor(dat$url.srid)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+```
+
+```{r}
+dat = dat %>%
+   fill(url.srid, .direction = "down") %>% 
+  group_by(url.srid) %>% 
+  fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6','-7', .direction = "down") %>%
+  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6','-7', .direction = "up") %>% 
+  select(url.srid, sender, consent, duration, ended_on, pay_attention, serious, response, response_action #general information
+         , '-0','-1','-2','-3','-4','-5','-6','-7',comment_study,count_trial_learning, cs, us, us_valence, us_age, uss, resp_pos_learning #learning phase
+         , count_trial_memory, idtarg, reco_resp, source_mem  #memory phase
+         , count_trial_ratings, cs_rating #rating phase 
+         , instructions_conditioning #counterbalancing order in the test phase
+         ) 
+
+dat$sports <- ifelse(dat$'-1'==TRUE|
+                       dat$'-2'==TRUE|
+                       dat$'-3'==TRUE|
+                       dat$'-4'==TRUE|
+                       dat$'-5'==TRUE|
+                       dat$'-0'==TRUE|
+                       dat$'-6'==TRUE|
+                       dat$'-7'==TRUE,0,1)
+```
+
+```{r exclude}
+table(dat$sports)
+table(dat$pay_attention)
+table(dat$serious)
+table(dat$comment_study)
+table(dat$sender)
+```
+
+```{r}
+ratings <- subset(dat,sender == "rating_trial")
+table(ratings$cs_rating)
+table(ratings$us_valence)
+table(ratings$us_valence,ratings$us_age,ratings$instructions_conditioning)
+```
+
+
+```{r}
+reco <- subset(dat,sender == "recognition_trial")
+table(reco$reco_resp)
+table(reco$us_valence)
+table(reco$us_valence,reco$us_age,reco$instructions_conditioning)
+```
+
+
+```{r}
+source <- subset(dat,sender == "source_trial")
+source <- merge(source,reco, by = c("url.srid","cs","us","us_valence","us_age","uss","idtarg","instructions_conditioning","sports"))
+source <- source[,c("url.srid","cs","us","us_valence","us_age","uss","idtarg","reco_resp.y","source_mem.x","instructions_conditioning","sports")]
+source_sub <- subset(source,reco_resp.y == "old")
+table(source_sub$source_mem.x)
+table(source_sub$us_valence)
+table(source_sub$us_valence,source_sub$us_age,source_sub$instructions_conditioning)
+```
+
+```{r}
+learning <- subset(dat,sender == "learning_trial_cs_us_response")
+table(learning$us_valence)
+table(learning$us_valence,learning$us_age)
+
+learning$cs_sex <- ifelse(learning$cs %in% c("045_m_m_n_a","179_m_m_n_a","104_m_m_n_a","159_m_m_n_a","126_m_m_n_a","014_m_m_n_a","070_m_m_n_a","068_m_m_n_a","165_m_m_n_a","007_m_m_n_a","087_m_m_n_a","155_m_m_n_a","136_m_m_n_a","142_m_m_n_a","082_m_m_n_a","149_m_m_n_a","026_m_m_n_a","108_m_m_n_a","051_m_m_n_a","169_m_m_n_a","038_m_m_n_a","178_m_m_n_a","058_m_m_n_a","032_m_m_n_a"),"male","female")
+
+x1 <- subset(learning,url.srid == 16865)
+length(unique(x1$cs))
+length(unique(x1$us))
+table(x1$cs_sex)
+table(x1$cs_sex,x1$us_valence)
+table(x1$cs_sex,x1$us_age,x1$us_valence)
+min(table(x1$cs,x1$us))
+max(table(x1$cs,x1$us))
+
+x2 <- subset(learning,url.srid != 16865)
+length(unique(x2$cs))
+length(unique(x2$us))
+table(x2$cs_sex)
+table(x2$cs_sex,x2$us_valence)
+table(x2$cs_sex,x2$us_age,x2$us_valence)
+min(table(x2$cs,x2$us))
+max(table(x2$cs,x2$us))
+```
+
+```{r}
+
+```
+
