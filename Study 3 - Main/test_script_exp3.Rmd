@@ -25,8 +25,8 @@ project_root <- rprojroot::find_rstudio_root_file()
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
-setwd("~/Fuzzy-EC/Study 3 - Main")
-read_file('testdata_exp3_neu.txt')%>%
+#setwd("~/Fuzzy-EC/Study 3 - Main")
+read_file('testdata_exp3_0127.txt')%>%
 #... split it into lines ...
  str_split('\n') %>% first() %>%
 #... filter empty rows ...
@@ -34,7 +34,7 @@ read_file('testdata_exp3_neu.txt')%>%
 #... parse JSON into a data.frame
  map_dfr(fromJSON, flatten=T) -> dat
 
-dat$url.srid = as.factor(dat$url.srid)
+dat$url.srid = as.factor(dat$url.srid);length(unique(dat$url.srid))
 dat$us_valence = as.factor(dat$us_valence)
 dat$reco_resp = as.factor(dat$reco_resp)
 ```
@@ -101,7 +101,9 @@ learning <- subset(dat,sender == "learning_trial_cs_us_response")
 table(learning$us_valence)
 table(learning$us_valence,learning$us_age)
 
-learning$cs_sex <- ifelse(learning$cs %in% c("045_m_m_n_a","179_m_m_n_a","104_m_m_n_a","159_m_m_n_a","126_m_m_n_a","014_m_m_n_a","070_m_m_n_a","068_m_m_n_a","165_m_m_n_a","007_m_m_n_a","087_m_m_n_a","155_m_m_n_a","136_m_m_n_a","142_m_m_n_a","082_m_m_n_a","149_m_m_n_a","026_m_m_n_a","108_m_m_n_a","051_m_m_n_a","169_m_m_n_a","038_m_m_n_a","178_m_m_n_a","058_m_m_n_a","032_m_m_n_a"),"male","female")
+learning = learning %>% mutate(cs_sex = ifelse(grepl("m_m", cs), "male", "female")) 
+  
+# ifelse(learning$cs %in% c("045_m_m_n_a","179_m_m_n_a","104_m_m_n_a","159_m_m_n_a","126_m_m_n_a","014_m_m_n_a","070_m_m_n_a","068_m_m_n_a","165_m_m_n_a","007_m_m_n_a","087_m_m_n_a","155_m_m_n_a","136_m_m_n_a","142_m_m_n_a","082_m_m_n_a","149_m_m_n_a","026_m_m_n_a","108_m_m_n_a","051_m_m_n_a","169_m_m_n_a","038_m_m_n_a","178_m_m_n_a","058_m_m_n_a","032_m_m_n_a"),"male","female")
 
 x1 <- subset(learning,url.srid == 16865)
 length(unique(x1$cs))
@@ -112,7 +114,7 @@ table(x1$cs_sex,x1$us_age,x1$us_valence)
 min(table(x1$cs,x1$us))
 max(table(x1$cs,x1$us))
 
-x2 <- subset(learning,url.srid != 16865)
+x2 <- subset(learning,url.srid == 16864)
 length(unique(x2$cs))
 length(unique(x2$us))
 table(x2$cs_sex)
@@ -120,9 +122,17 @@ table(x2$cs_sex,x2$us_valence)
 table(x2$cs_sex,x2$us_age,x2$us_valence)
 min(table(x2$cs,x2$us))
 max(table(x2$cs,x2$us))
+
+x3 <- subset(learning,url.srid == 16866)
+length(unique(x3$cs))
+length(unique(x3$us))
+table(x3$cs_sex)
+table(x3$cs_sex,x3$us_valence)
+table(x3$cs_sex,x3$us_age,x3$us_valence)
+min(table(x3$cs,x3$us))
+max(table(x3$cs,x3$us))
 ```
 
 ```{r}
-
 ```
 
