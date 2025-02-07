@@ -194,7 +194,7 @@ memory$correct_us_source <- NA
 memory$source_mem_resp <- NA
 for(i in 1:length(memory$url.srid)){
   memory$correct_us_source[i] <- memory$us[i]
-  memory$source_mem_resp[i] <- memory$uss[[i]][as.numeric(substr(memory$source_mem, 3, 3))[i]]
+  memory$source_mem_resp[i] <- memory$uss[[i]][as.numeric(gsub(memory$source_mem, pattern = "^us", replacement = ""))[i]]
 }
 
 memory$tree <- ifelse(memory$us_valence == "positive", "PosUS",ifelse(memory$us_valence == "negative","NegUS","New"))
