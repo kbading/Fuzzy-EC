@@ -18,14 +18,14 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
 ```{r set}
 #Load (or install and load) packages
 require(pacman)
-p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS','jsonlite') 
+p_load('tidyverse', 'psych', 'effectsize', 'afex', 'bfrr', 'papaja', 'kableExtra', 'MPTinR', 'TreeBUGS','jsonlite','emmeans') 
 set_sum_contrasts()
 
 project_root <- rprojroot::find_rstudio_root_file()
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
-setwd("~/Fuzzy-EC/Study 3 - Main/pretest 2 data and analyses")
+#setwd("~/Fuzzy-EC/Study 3 - Main/pretest 2 data and analyses")
 read_file('pilot2_val.txt')%>%
 #... split it into lines ...
  str_split('\n') %>% first() %>%
@@ -42,7 +42,7 @@ read_file('pilot2_age.txt')%>%
 #... parse JSON into a data.frame
  map_dfr(fromJSON, flatten=T) -> dat2
 
-dat <- rbind(dat,dat2)
+dat <- dplyr::bind_rows(dat,dat2)
 
 dat$url.srid = as.factor(dat$url.srid)
 dat$us_valence = as.factor(dat$us_valence)
@@ -54,13 +54,15 @@ dat = dat %>%
    fill(url.srid, .direction = "down") %>% 
   group_by(url.srid) %>% 
   fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "down") %>%
-  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6', .direction = "up") %>% 
-  select(url.srid, sender, consent, duration, ended_on, pay_attention, serious, response, response_action #general information
-         , '-0','-1','-2','-3','-4','-5','-6',comment_study,count_trial_learning, cs, us, us_valence, us_age, uss, resp_pos_learning #learning phase
-         , count_trial_memory, idtarg, reco_resp, source_mem  #memory phase
-         , count_trial_ratings, cs_rating #rating phase 
-         , instructions_conditioning #counterbalancing order in the test phase
-         ) 
+  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6', .direction = "up") #%>%
+  # select(url.srid, sender, consent, duration, ended_on, pay_attention, serious, response, response_action #general information
+  #        , '-0','-1','-2','-3','-4','-5','-6',comment_study,count_trial_learning, cs, us, us_valence, us_age, uss, resp_pos_learning #learning phase
+  #        , count_trial_memory, idtarg, reco_resp, source_mem  #memory phase
+  #        , count_trial_ratings, cs_rating #rating phase 
+  #        , instructions_conditioning #counterbalancing order in the test phase
+  #        ) 
+
+dat <- dat[, c("url.srid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","-0","-1","-2","-3","-4","-5","-6","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","cs_rating","instructions_conditioning")]
 
 dat$sports <- ifelse(dat$'-1'==TRUE|
                        dat$'-2'==TRUE|
@@ -79,9 +81,18 @@ table(dat$serious)
 table(dat$comment_study)
 table(dat$sender)
 
-#dat <- subset(dat,sports == 1)
+dat <- subset(dat,sports == 1 & pay_attention == 1 & serious == 1)
 length(unique(dat$url.srid))
 table(dat$instructions_conditioning)/848
+
+table(dat$comment_study)
+dat <- subset(dat, url.srid != 16980)
+dat <- subset(dat, url.srid != 16978)
+dat <- subset(dat, url.srid != 16979)
+dat <- subset(dat, url.srid != 16977)
+dat <- subset(dat, url.srid != 16986)
+table(dat$instructions_conditioning)/848
+table(dat$comment_study)
 ```
 
 ```{r}
@@ -96,7 +107,23 @@ ratings_cs <- subset(ratings,us_valence != "dist")
 ratings_cs$cs_rating <- as.numeric(ratings_cs$cs_rating)
 ratings_cs$cs_sex <- ifelse(ratings_cs$cs %in% c("045_m_m_n_a","179_m_m_n_a","104_m_m_n_a","159_m_m_n_a","126_m_m_n_a","014_m_m_n_a","070_m_m_n_a","068_m_m_n_a","165_m_m_n_a","007_m_m_n_a","087_m_m_n_a","155_m_m_n_a","136_m_m_n_a","142_m_m_n_a","082_m_m_n_a","149_m_m_n_a","026_m_m_n_a","108_m_m_n_a","051_m_m_n_a","169_m_m_n_a","038_m_m_n_a","178_m_m_n_a","058_m_m_n_a","032_m_m_n_a"),"male","female")
 
+
+
 aov_ez(data=ratings_cs,id="url.srid",dv="cs_rating",within = c("us_valence"),between=c("instructions_conditioning"))
+
+ratings_cs_2 <- aggregate(ratings_cs, FUN = mean, cs_rating ~ us_valence * url.srid + instructions_conditioning)
+library(reshape2)
+
+ratings_cs_3 <- dcast(ratings_cs_2,value.var = "cs_rating", url.srid + instructions_conditioning ~ us_valence)
+ratings_cs_3$ec <- ratings_cs_3$positive - ratings_cs_3$negative
+
+ratings_val <- subset(ratings_cs_3, instructions_conditioning == "val_task")
+val.t <- t.test(ratings_val$ec)
+effectsize(val.t)
+
+ratings_age <- subset(ratings_cs_3, instructions_conditioning == "age_task")
+age.t <- t.test(ratings_age$ec)
+effectsize(age.t)
 ```
 
 ```{r}
@@ -109,6 +136,19 @@ aov_ez(data=val,id="url.srid",dv="cs_rating",within = c("us_valence"))
 
 age <- subset(ratings_cs,instructions_conditioning == "age_task")
 aov_ez(data=age,id="url.srid",dv="cs_rating",within = c("us_valence"))
+
+
+
+```
+```{r}
+
+aov_ez(data=val,id="url.srid",dv="cs_rating",within = c("us_valence","us_age","cs_sex"))
+
+apa_barplot(data=val,id="url.srid",dv="cs_rating",factor = c("cs_sex","us_valence"))
+
+aov_ez(data=age,id="url.srid",dv="cs_rating",within = c("us_valence","us_age","cs_sex"))
+
+apa_barplot(data=age,id="url.srid",dv="cs_rating",factor = c("cs_sex","us_valence"))
 
 ```
 
