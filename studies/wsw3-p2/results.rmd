@@ -1,0 +1,335 @@
+---
+title: "Test Script for who-said-what experiment 3"
+author: "Karoline Bading & Marius Barth"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyr)
+
+library(afex)
+library(emmeans)
+library(papaja)
+
+set_sum_contrasts()
+
+knitr::opts_chunk$set(
+  echo = TRUE
+  , message = FALSE
+  , comment = NA
+)
+
+source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
+```
+
+
+```{r}
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
+mpt_data <- readRDS(file.path(study_folder, "data", "mpt_data.rds"))
+mpt_aggregated <- colSums(mpt_data)
+
+rating <- readRDS(file.path(study_folder, "data", "rating.rds"))
+```
+
+
+## Evaluative rating
+
+```{r}
+apa_beeplot(
+  data = subset(rating, !is.na(us_valence))
+  , id = "sid"
+  , dv = "evaluative_rating"
+  , factors = c("task_focus", "us_valence")
+  , ylim = c(1, 8)
+  , args_legend = list(x = "topleft")
+)
+
+anova_rating_model <- aov_4(
+  formula = evaluative_rating ~ task_focus * (us_valence | sid)
+  , data = subset(rating, !is.na(us_valence))
+  , fun_aggregate = mean
+)
+
+marginal_means <- emmeans(
+  anova_rating_model
+  , specs = ~ us_valence + task_focus
+) |>
+  contrast(
+    list(
+      "EC effect, age-focus condition"       = c(1, -1, 0, 0)
+      , "EC effect, valence-focus condition" = c(0, 0, 1, -1)
+    )
+    , side = ">"
+  )
+
+anova_rating <- apa_print(anova_rating_model)
+
+rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_focus + sid, data = rating, FUN = mean)
+rating_wide <- pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
+  within({
+    ec_effect <- positive - negative
+  })
+```
+
+main effect *task focus*,
+`r anova_rating$full_result$task_focus`,
+main effect *US valence*,
+`r anova_rating$full_result$us_valence`,
+two-way interaction *task focus* with *US valence*,
+`r anova_rating$full_result$task_focus_us_valence`.
+
+```{r eval = FALSE}
+lme_model <- lmer(
+  formula = evaluative_rating ~ us_valence * task_focus + (us_valence | sid) + (1 | cs)
+  , data = subset(rating, !is.na(us_valence)) 
+)
+summary(lme_model)
+ggeffects::ggpredict(lme_model, terms = ~ task_focus + us_valence) |>
+  plot()
+```
+
+
+
+## MPT model
+
+```{r}
+restrictions_list <- list(
+  x  = list("G_x1=.125","G_x2=.125")
+  , Dageval = list("G_x1=.125","G_x2=.125", "D_x1=D_x2")
+  , Cageval = list("G_x1=.125","G_x2=.125", "C_x1=C_x2")
+  , dageval = list("G_x1=.125","G_x2=.125", "d_x1=d_x2")
+  , aageval = list("G_x1=.125","G_x2=.125", "a_x1=a_x2")
+  , bageval = list("G_x1=.125","G_x2=.125", "b_x1=b_x2")
+  , Dage0   = list("G_x1=.125","G_x2=.125", "D_x1=0")
+  , Dval0   = list("G_x1=.125","G_x2=.125", "D_x2=0")
+  , Cage0   = list("G_x1=.125","G_x2=.125", "C_x1=0")
+  , Cval0   = list("G_x1=.125","G_x2=.125", "C_x2=0")
+  , dage0   = list("G_x1=.125","G_x2=.125", "d_x1=0")
+  , dval0   = list("G_x1=.125","G_x2=.125", "d_x2=0")
+  , bage5   = list("G_x1=.125","G_x2=.125", "b_x1=0.5")
+  , bval5   = list("G_x1=.125","G_x2=.125", "b_x2=0.5")
+  , aage5   = list("G_x1=.125","G_x2=.125", "a_x1=0.5")
+  , aval5   = list("G_x1=.125","G_x2=.125", "a_x2=0.5")
+)
+
+models <- lapply(
+  restrictions_list
+  , FUN = function(x) {
+    fit.mpt(
+      data = mpt_aggregated
+      , model.filename = file.path(study_folder, "WSW_exp3.eqn")
+      , restrictions.filename = x
+    )
+  }
+)
+lapply(models, class)
+```
+
+```{r}
+model_comparisons <- do.call("anova", models)
+
+dG2 <- apa_print(model_comparisons)
+dG2
+```
+
+
+
+## Hierarchical MPT model
+
+```{r}
+mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "mpt_data_hierarchical.rds")) |>
+  merge(rating_wide, sort = FALSE) |>
+  within({
+    ec_valence_focus <- (task_focus == "valence") * ec_effect
+    ec_age_focus <- (task_focus == "age") * ec_effect
+  })
+nrow(mpt_data_hierarchical)
+```
+
+
+```{r}
+trait_mpt <- function(file, ...) {
+  if( file.exists(file) ) {
+    model <- qs::qread(file)
+  } else {
+    model <- TreeBUGS::traitMPT(...)
+    qs::qsave(model, file = file)
+  }
+  model
+}
+
+# Estimate parameters
+exp3pilot = trait_mpt(
+  file = file.path(study_folder, "model-objects", "trait_mpt.qs")
+  , eqnfile = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
+  , data = mpt_data_hierarchical
+  , n.adapt  = 2e3
+  , n.burnin = 2e4
+  , n.thin   = 2e1
+  , n.iter   = 4e4
+  , n.chains = 4
+  , restrictions = list("G=0.125")
+  , ppp = 5e3
+  , covData = mpt_data_hierarchical[, "task_focus", drop = FALSE]
+  , predStructure = list("a b D d C; task_focus")
+  , IVprec = "dgamma(.5,.5)"
+  , predType = rep("f", 1L)
+)
+```
+
+```{r}
+TreeBUGS::plotFit(exp3pilot)
+TreeBUGS::plotFreq(exp3pilot)
+TreeBUGS::plotParam(exp3pilot)
+```
+
+```{r}
+summary(exp3pilot)
+```
+
+
+## Hierarchical MPT model w/ EC effect as predictor
+
+```{r}
+# Estimate parameters
+mpt_model_ec_predictor <-  trait_mpt(
+  file = file.path(study_folder, "model-objects", "trait_mpt_ec_as_predictor.qs")
+  , eqnfile = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
+  , data = mpt_data_hierarchical
+  , n.adapt  = 2e3
+  , n.burnin = 2e4
+  , n.thin   = 2e1
+  , n.iter   = 4e4
+  , n.chains = 4
+  , restrictions = list("G=0.125")
+  , ppp = 5e3
+  , covData = mpt_data_hierarchical[, c("task_focus", "ec_age_focus", "ec_valence_focus"), drop = FALSE]
+  , predStructure = list("a b D d C; task_focus", "a b D d C; ec_age_focus", "a b D d C; ec_valence_focus")
+  , IVprec = "dgamma(.5,.5)"
+  , predType = c("f", "c", "c")
+)
+```
+
+```{r}
+summary(mpt_model_ec_predictor)
+```
+
+
+
+
+
+
+
+```{r eval = FALSE}
+individual_parameters <- as.data.frame(getParam(exp3pilot, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+individual_parameters$id <- rownames(individual_parameters)
+para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
+save(para_ratings_both,file = "exp3pilot_x_ratings_val.rdata")
+data <- para_ratings_both
+data$ec <- data$positive - data$negative
+t.test(data$ec)
+data$instructions_conditioning <- factor(data$instructions_conditioning, levels = c("age_task","val_task"))
+
+library(lme4)
+library(ggeffects)
+
+contrasts(data$instructions_conditioning) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lm(
+  formula = ec ~ (cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b))*instructions_conditioning
+  , data = data
+)
+#car::scatterplotMatrix(data[, c("D", "C", "d")])
+
+summary(model)
+plot(model)
+#ggpredict(model, terms = ~ D + instructions_conditioning) |>
+  #plot(show_data = TRUE)
+
+library(emmeans)
+
+emmeans(model, specs = ~ instructions_conditioning) |> 
+  summary(infer = TRUE, side = ">")
+```
+
+```{r eval = FALSE}
+
+emtrends(model, specs = ~ 1, var = "D")
+
+ggeffect(model, terms = ~ D) |>
+  plot(rawdata = TRUE)
+```
+
+```{r eval = FALSE}
+ggeffect(model, terms = ~ instructions_conditioning) |>
+  plot(rawdata = TRUE)
+```
+
+```{r eval = FALSE}
+ggeffect(model, terms = ~ cntr(D) * instructions_conditioning) |>
+  plot(rawdata = TRUE)
+```
+
+```{r eval = FALSE}
+ggeffect(model, terms = ~ cntr(C) * instructions_conditioning) |>
+  plot(rawdata = TRUE)
+```
+
+```{r eval = FALSE}
+ggeffect(model, terms = ~ cntr(d) * instructions_conditioning) |>
+  plot(rawdata = TRUE)
+```
+
+```{r eval = FALSE}
+ggeffect(model, terms = ~ cntr(d)) |>
+  plot(rawdata = TRUE)
+```
+
+## Mediation
+
+```{r eval = FALSE}
+library(mediation)
+mediation_results <- mediate(
+  model.m = lm(d ~ instructions_conditioning, data = data)
+  , model.y = lm(ec ~ d * instructions_conditioning, data = data)
+  , mediator = "d"
+  , treat = "instructions_conditioning"
+  , treat.value = "val_task"
+  , control.value = "age_task"
+)
+summary(mediation_results)
+```
+
+```{r eval = FALSE}
+library(lavaan)
+mediation_syntax <-"
+    # Regressions
+    D ~ a_D*instructions_conditioning 
+    C ~ a_C*instructions_conditioning
+    d ~ a_d*instructions_conditioning
+    b ~ a_b*instructions_conditioning
+    a ~ a_a*instructions_conditioning
+    ec ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + ade*instructions_conditioning
+    
+    #Define New Parameters
+    ab_D := a_D*b_D                                   #the product term is computed as a*b
+    ab_C := a_C*b_C
+    ab_d := a_d*b_d
+    ab_b := a_b*b_b
+    ab_a := a_a*b_a
+    c := ade + ab_D + ab_C + ab_d + ab_b + ab_a  #having defined ab, we can use this here.
+"
+
+sem(mediation_syntax, data = data) |>
+  summary()
+```
+
+

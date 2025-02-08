@@ -1,0 +1,124 @@
+
+library(dplyr)
+library(tidyr)
+library(tinylabels)
+
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
+
+data <- file.path(study_folder, "data-raw", c("valence-focus.txt", "age-focus.txt")) |>
+  lapply(function(x) {
+    readLines(x) |>
+    lapply(FUN = `[[`, i = 1L) |>
+    lapply(FUN = Filter, f = function(x) x != "") |>
+    lapply(jsonlite::fromJSON, flatten = TRUE) |>
+    # lapply(function(x) {x$uss <- NULL; x}) |>
+    dplyr::bind_rows() # unequal number of columns!
+    # do.call(what = "rbind")
+  }) |>
+  dplyr::bind_rows()
+
+
+data <- data |>
+  fill(url.srid, .direction = "down") |>
+  group_by(url.srid) |>
+  fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "down") |>
+  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6', .direction = "up")
+
+data$sports <- ifelse(
+  data$'-1'==TRUE | data$'-2'==TRUE | data$'-3'==TRUE | data$'-4'==TRUE | data$'-5'==TRUE | data$'-0'==TRUE | data$'-6'==TRUE
+  , 0
+  , 1
+)
+
+data <- within(data, {
+  cs_rating  <- as.numeric(cs_rating)
+  url.srid   <- factor(url.srid)
+  us_valence <- factor(us_valence, levels = c("positive", "negative"))
+  reco_resp  <- factor(reco_resp)
+  evaluative_rating <- as.numeric(cs_rating)
+  sid <- as.integer(url.srid)
+  task_focus <- factor(instructions_conditioning, levels = c("age_task", "val_task"), labels = c("age", "valence"))
+})
+
+test_runs <- as.character(c(16977:16980, 16986))
+
+
+data <- subset(
+  data
+  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
+  , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating","task_focus")
+) |>
+  label_variables(
+    evaluative_rating = "Evaluative rating"
+    , us_valence = "US valence"
+    , task_focus = "Task focus"
+  )
+
+data_list <- split(data, f = data$sender)
+
+cols_all <- c("sid", "task_focus", "cs", "us", "us_valence", "us_age")
+
+recognition <- subset(data_list$recognition_trial, select = c(cols_all, "reco_resp"))
+source      <- subset(data_list$source_trial     , select = c(cols_all, "uss", "idtarg", "source_mem"))
+memory      <- merge(recognition, source, by = cols_all)
+
+memory$source_mem_resp <- NA
+
+memory$correct_us_source <- memory$us
+memory$idx_us <- as.integer(gsub(memory$source_mem, pattern = "^us", replacement = ""))
+
+for(i in seq_len(nrow(memory))){
+  memory$source_mem_resp[i]   <- memory$uss[[i]][memory$idx_us[i]]
+}
+
+table(memory$us_valence, useNA = "ifany")
+
+USs <- list(
+  positive = c("patient", "realistic", "optimistic", "strong", "dignified", "open-minded", "flexible", "wise", "lively", "calm", "nurturing", "energetic")
+)
+
+memory$mpt_response <- with(memory, {
+  tree <- rep("New", length(us_valence))
+  us_valence <- as.character(us_valence)
+  us_valence[is.na(us_valence)] <- "dist"
+  tree[us_valence == "positive"] <- "PosUS"
+  tree[us_valence == "negative"] <- "NegUS"
+  
+  chosen_valence <- rep("neg", length(source_mem_resp))
+  chosen_valence[source_mem_resp %in% USs$positive] <- "pos"
+  
+  correct_US <- ifelse(source_mem_resp==correct_us_source, "cor", "incor")
+  condition  <- 
+  
+  mpt_response <- paste0(tree, "new")
+  idx <- reco_resp == "old"
+  mpt_response[idx] <- paste0(tree[idx], chosen_valence[idx], correct_US[idx])
+  mpt_response
+})
+memory$mpt_response_condition <- paste0(memory$mpt_response, ifelse(memory$task_focus =="age", "_x1", "_x2"))
+
+unique(memory$mpt_response)
+level_order <- MPTinR::check.mpt(file.path(study_folder, "WSW_exp3.eqn"))$eqn.order.categories
+
+memory$mpt_response_condition <- factor(memory$mpt_response_condition, levels = level_order)
+mpt_data <- unclass(table(memory$sid, memory$mpt_response_condition))
+mpt_data_hierarchical <- as.data.frame(unclass(table(memory$sid, memory$mpt_response)))
+mpt_data_hierarchical$sid <- as.integer(rownames(mpt_data_hierarchical))
+mpt_data_hierarchical <- merge(
+  mpt_data_hierarchical
+  , subset(memory, !duplicated(sid), select = c("sid", "task_focus"))
+  , sort = FALSE
+)
+
+# Evaluative ratings ----
+rating <- subset(
+  data_list$rating_trial
+  , select = c(cols_all, "evaluative_rating")
+) |>
+  droplevels()
+
+
+dir.create(file.path(study_folder, "data"), showWarnings = FALSE)
+saveRDS(mpt_data, file = file.path(study_folder, "data", "mpt_data.rds"))
+saveRDS(mpt_data_hierarchical, file = file.path(study_folder, "data", "mpt_data_hierarchical.rds"))
+saveRDS(rating, file = file.path(study_folder, "data", "rating.rds"))
