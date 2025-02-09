@@ -84,7 +84,7 @@ main effect *US valence*,
 two-way interaction *task focus* with *US valence*,
 `r anova_rating$full_result$task_focus_us_valence`.
 
-```{r eval = FALSE}
+```{r }
 lme_model <- lmer(
   formula = evaluative_rating ~ us_valence * task_focus + (us_valence | sid) + (1 | cs)
   , data = subset(rating, !is.na(us_valence)) 
@@ -226,41 +226,42 @@ summary(mpt_model_ec_predictor)
 
 
 
-```{r eval = FALSE}
-individual_parameters <- as.data.frame(getParam(exp3pilot, parameter = "theta"))
+```{r eval = TRUE}
+library(TreeBUGS)
+individual_parameters <- as.data.frame(getParam(mpt_model_ec_predictor, parameter = "theta"))
 parameter_names <- colnames(individual_parameters)
-individual_parameters$id <- rownames(individual_parameters)
-para_ratings_both<- merge(mpt_data_subset, individual_parameters, by = "id")
-save(para_ratings_both,file = "exp3pilot_x_ratings_val.rdata")
+#individual_parameters$id <- rownames(individual_parameters)
+para_ratings_both<- cbind(mpt_data_hierarchical, individual_parameters)
+#save(para_ratings_both,file = "exp3pilot_x_ratings_val.rdata")
 data <- para_ratings_both
-data$ec <- data$positive - data$negative
-t.test(data$ec)
-data$instructions_conditioning <- factor(data$instructions_conditioning, levels = c("age_task","val_task"))
+#data$ec <- data$positive - data$negative
+t.test(data$ec_effect)
+#data$task_focus <- factor(data$task_focus, levels = c("age_task","val_task"))
 
 library(lme4)
 library(ggeffects)
 
-contrasts(data$instructions_conditioning) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+contrasts(data$task_focus) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
 cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
 
 model <- lm(
-  formula = ec ~ (cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b))*instructions_conditioning
+  formula = ec_effect ~ (cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b))*task_focus
   , data = data
 )
 #car::scatterplotMatrix(data[, c("D", "C", "d")])
 
 summary(model)
 plot(model)
-#ggpredict(model, terms = ~ D + instructions_conditioning) |>
+#ggpredict(model, terms = ~ D + task_focus) |>
   #plot(show_data = TRUE)
 
 library(emmeans)
 
-emmeans(model, specs = ~ instructions_conditioning) |> 
+emmeans(model, specs = ~ task_focus) |> 
   summary(infer = TRUE, side = ">")
 ```
 
-```{r eval = FALSE}
+```{r }
 
 emtrends(model, specs = ~ 1, var = "D")
 
@@ -268,56 +269,56 @@ ggeffect(model, terms = ~ D) |>
   plot(rawdata = TRUE)
 ```
 
-```{r eval = FALSE}
-ggeffect(model, terms = ~ instructions_conditioning) |>
+```{r }
+ggeffect(model, terms = ~ task_focus) |>
   plot(rawdata = TRUE)
 ```
 
-```{r eval = FALSE}
-ggeffect(model, terms = ~ cntr(D) * instructions_conditioning) |>
+```{r }
+ggeffect(model, terms = ~ cntr(D) * task_focus) |>
   plot(rawdata = TRUE)
 ```
 
-```{r eval = FALSE}
-ggeffect(model, terms = ~ cntr(C) * instructions_conditioning) |>
+```{r }
+ggeffect(model, terms = ~ cntr(C) * task_focus) |>
   plot(rawdata = TRUE)
 ```
 
-```{r eval = FALSE}
-ggeffect(model, terms = ~ cntr(d) * instructions_conditioning) |>
+```{r }
+ggeffect(model, terms = ~ cntr(d) * task_focus) |>
   plot(rawdata = TRUE)
 ```
 
-```{r eval = FALSE}
+```{r }
 ggeffect(model, terms = ~ cntr(d)) |>
   plot(rawdata = TRUE)
 ```
 
 ## Mediation
 
-```{r eval = FALSE}
+```{r }
 library(mediation)
 mediation_results <- mediate(
-  model.m = lm(d ~ instructions_conditioning, data = data)
-  , model.y = lm(ec ~ d * instructions_conditioning, data = data)
+  model.m = lm(d ~ task_focus, data = data)
+  , model.y = lm(ec_effect ~ d * task_focus, data = data)
   , mediator = "d"
-  , treat = "instructions_conditioning"
-  , treat.value = "val_task"
-  , control.value = "age_task"
+  , treat = "task_focus"
+  , treat.value = "valence"
+  , control.value = "age"
 )
 summary(mediation_results)
 ```
 
-```{r eval = FALSE}
+```{r }
 library(lavaan)
 mediation_syntax <-"
     # Regressions
-    D ~ a_D*instructions_conditioning 
-    C ~ a_C*instructions_conditioning
-    d ~ a_d*instructions_conditioning
-    b ~ a_b*instructions_conditioning
-    a ~ a_a*instructions_conditioning
-    ec ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + ade*instructions_conditioning
+    D ~ a_D*task_focus 
+    C ~ a_C*task_focus
+    d ~ a_d*task_focus
+    b ~ a_b*task_focus
+    a ~ a_a*task_focus
+    ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + ade*task_focus
     
     #Define New Parameters
     ab_D := a_D*b_D                                   #the product term is computed as a*b
@@ -329,7 +330,7 @@ mediation_syntax <-"
 "
 
 sem(mediation_syntax, data = data) |>
-  summary()
+  summary(standardized=TRUE)
 ```
 
 
