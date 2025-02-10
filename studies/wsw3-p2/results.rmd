@@ -230,8 +230,22 @@ summary(mpt_model_ec_predictor)
 library(TreeBUGS)
 individual_parameters <- as.data.frame(getParam(mpt_model_ec_predictor, parameter = "theta"))
 parameter_names <- colnames(individual_parameters)
+
+tt <- transformedParameters(mpt_model_ec_predictor,
+  list("p_us_identity = D*C", "p_us_valence = D*(1-C)*d"),
+  level = "individual"
+) |>
+  do.call(what = "rbind") |>
+  colMeans()
+
+branch_probabilities <- data.frame(
+  p_us_valence = tt[grepl(names(tt), pattern = "p_us_valence")]
+  , p_us_identity = tt[grepl(names(tt), pattern = "p_us_identity")]
+  , row.names = NULL
+)
+
 #individual_parameters$id <- rownames(individual_parameters)
-para_ratings_both<- cbind(mpt_data_hierarchical, individual_parameters)
+para_ratings_both<- cbind(mpt_data_hierarchical, individual_parameters, branch_probabilities)
 #save(para_ratings_both,file = "exp3pilot_x_ratings_val.rdata")
 data <- para_ratings_both
 #data$ec <- data$positive - data$negative
@@ -265,33 +279,31 @@ emmeans(model, specs = ~ task_focus) |>
 
 emtrends(model, specs = ~ 1, var = "D")
 
-ggeffect(model, terms = ~ D) |>
-  plot(rawdata = TRUE)
 ```
 
 ```{r }
 ggeffect(model, terms = ~ task_focus) |>
-  plot(rawdata = TRUE)
+  plot(show_data = TRUE)
 ```
 
 ```{r }
 ggeffect(model, terms = ~ cntr(D) * task_focus) |>
-  plot(rawdata = TRUE)
+  plot(show_data = TRUE)
 ```
 
 ```{r }
 ggeffect(model, terms = ~ cntr(C) * task_focus) |>
-  plot(rawdata = TRUE)
+  plot(show_data = TRUE)
 ```
 
 ```{r }
 ggeffect(model, terms = ~ cntr(d) * task_focus) |>
-  plot(rawdata = TRUE)
+  plot(show_data = TRUE)
 ```
 
 ```{r }
 ggeffect(model, terms = ~ cntr(d)) |>
-  plot(rawdata = TRUE)
+  plot(show_data = TRUE)
 ```
 
 ## Mediation
@@ -311,26 +323,90 @@ ggeffect(model, terms = ~ cntr(d)) |>
 
 ```{r }
 library(lavaan)
+z <- function(x) {as.numeric(scale(x))}
+
+data <- within(data, {
+  Dd <- z(D) * z(d)
+  DC <- z(D) * z(C)
+  dC <- z(d) * z(C)
+  DdC <- z(D) * z(d) * z(C)
+})
+
+
 mediation_syntax <-"
     # Regressions
     D ~ a_D*task_focus 
     C ~ a_C*task_focus
     d ~ a_d*task_focus
-    b ~ a_b*task_focus
-    a ~ a_a*task_focus
-    ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + ade*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
+    Dd ~ a_Dd*task_focus
+    DC ~ a_DC*task_focus
+    dC ~ a_dC*task_focus
+    DdC ~ a_DdC*task_focus
+    # ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
+    ec_effect ~ b_D*D + b_C*C + b_d*d + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
     
     #Define New Parameters
     ab_D := a_D*b_D                                   #the product term is computed as a*b
     ab_C := a_C*b_C
     ab_d := a_d*b_d
-    ab_b := a_b*b_b
-    ab_a := a_a*b_a
-    c := ade + ab_D + ab_C + ab_d + ab_b + ab_a  #having defined ab, we can use this here.
+    ab_Dd := a_Dd*b_Dd
+    ab_DC := a_DC*b_DC
+    ab_dC := a_dC*b_dC
+    ab_DdC := a_DdC*b_DdC
+    total_effect := ade + ab_D + ab_C + ab_d + ab_Dd + ab_DC + ab_dC + ab_DdC  #having defined ab, we can use this here.
 "
 
 sem(mediation_syntax, data = data) |>
   summary(standardized=TRUE)
 ```
 
+```{r}
+lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data) |>
+  ggpredict(terms = ~ C + d) |>
+  plot(show_data = TRUE)
+```
+
+
+```{r}
+hist(data$p_us_identity)
+hist(data$p_us_valence)
+data$ln_us_identity <- qnorm(data$p_us_identity)
+data$ln_us_valence <- qnorm(data$p_us_valence)
+data$I_valence_memory <- data$ln_us_identity * data$ln_us_valence
+
+mediation_syntax <-"
+    # Regressions
+    # D ~ a_D*task_focus 
+    # C ~ a_C*task_focus
+    # d ~ a_d*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
+    ln_us_valence  ~ a_us_valence*task_focus
+    ln_us_identity ~ a_us_identity*task_focus
+    I_valence_memory ~ a_inter*task_focus
+    ec_effect ~ b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + b_inter*I_valence_memory + ade*task_focus
+    
+    #Define New Parameters
+    ab_us_valence := a_us_valence*b_us_valence
+    ab_us_identity := a_us_identity*b_us_identity
+    ab_inter := a_inter*b_inter
+    c := ade + ab_us_valence + ab_us_identity + ab_inter #having defined ab, we can use this here.
+"
+
+path_model <- sem(mediation_syntax, data = data)
+path_model |>
+  summary(standardized=TRUE)
+
+m1 <- lm(ln_us_identity ~ task_focus, data = data) |>
+  plot()
+m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
+  plot()
+lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
+  ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
+  plot(show_data = TRUE)
+
+```
+```
 
