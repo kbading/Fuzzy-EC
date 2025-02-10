@@ -297,16 +297,16 @@ ggeffect(model, terms = ~ cntr(d)) |>
 ## Mediation
 
 ```{r }
-library(mediation)
-mediation_results <- mediate(
-  model.m = lm(d ~ task_focus, data = data)
-  , model.y = lm(ec_effect ~ d * task_focus, data = data)
-  , mediator = "d"
-  , treat = "task_focus"
-  , treat.value = "valence"
-  , control.value = "age"
-)
-summary(mediation_results)
+# library(mediation)
+# mediation_results <- mediate(
+#   model.m = lm(d ~ task_focus, data = data)
+#   , model.y = lm(ec_effect ~ d * task_focus, data = data)
+#   , mediator = "d"
+#   , treat = "task_focus"
+#   , treat.value = "valence"
+#   , control.value = "age"
+# )
+# summary(mediation_results)
 ```
 
 ```{r }
