@@ -369,7 +369,7 @@ ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, d
 emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
   summary(infer = TRUE)
 
-emtrends(ec_lm, var = "C", specs = ~ d, at = list(C = ppoints(n = 9))) |>
+emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
   summary(infer = TRUE)
 ```
 
