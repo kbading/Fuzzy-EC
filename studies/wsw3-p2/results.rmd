@@ -338,25 +338,24 @@ mediation_syntax <-"
     D ~ a_D*task_focus 
     C ~ a_C*task_focus
     d ~ a_d*task_focus
-    b ~ a_b*task_focus
-    a ~ a_a*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
     Dd ~ a_Dd*task_focus
     DC ~ a_DC*task_focus
     dC ~ a_dC*task_focus
     DdC ~ a_DdC*task_focus
-    ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
+    # ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
+    ec_effect ~ b_D*D + b_C*C + b_d*d + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
     
     #Define New Parameters
     ab_D := a_D*b_D                                   #the product term is computed as a*b
     ab_C := a_C*b_C
     ab_d := a_d*b_d
-    ab_b := a_b*b_b
-    ab_a := a_a*b_a
     ab_Dd := a_Dd*b_Dd
     ab_DC := a_DC*b_DC
     ab_dC := a_dC*b_dC
     ab_DdC := a_DdC*b_DdC
-    c := ade + ab_D + ab_C + ab_d + ab_b + ab_a + ab_Dd + ab_DC + ab_dC + ab_DdC  #having defined ab, we can use this here.
+    total_effect := ade + ab_D + ab_C + ab_d + ab_Dd + ab_DC + ab_dC + ab_DdC  #having defined ab, we can use this here.
 "
 
 sem(mediation_syntax, data = data) |>
@@ -364,35 +363,50 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-hist(log(data$p_us_identity))
-hist(log(data$p_us_valence))
-data$ln_us_identity <- log(data$p_us_identity)
-data$ln_us_valence <- log(data$p_us_valence)
+lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data) |>
+  ggpredict(terms = ~ C + d) |>
+  plot(show_data = TRUE)
+```
+
+
+```{r}
+hist(data$p_us_identity)
+hist(data$p_us_valence)
+data$ln_us_identity <- qnorm(data$p_us_identity)
+data$ln_us_valence <- qnorm(data$p_us_valence)
+data$I_valence_memory <- data$ln_us_identity * data$ln_us_valence
 
 mediation_syntax <-"
     # Regressions
-    D ~ a_D*task_focus 
-    C ~ a_C*task_focus
-    d ~ a_d*task_focus
-    b ~ a_b*task_focus
-    a ~ a_a*task_focus
+    # D ~ a_D*task_focus 
+    # C ~ a_C*task_focus
+    # d ~ a_d*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
     ln_us_valence  ~ a_us_valence*task_focus
     ln_us_identity ~ a_us_identity*task_focus
-    ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + ade*task_focus
+    I_valence_memory ~ a_inter*task_focus
+    ec_effect ~ b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + b_inter*I_valence_memory + ade*task_focus
     
     #Define New Parameters
-    ab_D := a_D*b_D                                   #the product term is computed as a*b
-    ab_C := a_C*b_C
-    ab_d := a_d*b_d
-    ab_b := a_b*b_b
-    ab_a := a_a*b_a
     ab_us_valence := a_us_valence*b_us_valence
     ab_us_identity := a_us_identity*b_us_identity
-    c := ade + ab_D + ab_C + ab_d + ab_b + ab_a + ab_us_valence + ab_us_identity  #having defined ab, we can use this here.
+    ab_inter := a_inter*b_inter
+    c := ade + ab_us_valence + ab_us_identity + ab_inter #having defined ab, we can use this here.
 "
 
-sem(mediation_syntax, data = data) |>
+path_model <- sem(mediation_syntax, data = data)
+path_model |>
   summary(standardized=TRUE)
+
+m1 <- lm(ln_us_identity ~ task_focus, data = data) |>
+  plot()
+m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
+  plot()
+lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
+  ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
+  plot(show_data = TRUE)
+
 ```
 ```
 
