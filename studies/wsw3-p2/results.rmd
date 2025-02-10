@@ -363,9 +363,14 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data) |>
-  ggpredict(terms = ~ C + d) |>
-  plot(show_data = TRUE)
+ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)# |>
+  marginaleffects::plot_predictions(condition = c("d", "C"))
+
+emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
+  summary(infer = TRUE)
+
+emtrends(ec_lm, var = "C", specs = ~ d, at = list(C = ppoints(n = 9))) |>
+  summary(infer = TRUE)
 ```
 
 
