@@ -363,11 +363,24 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data) |>
-  ggpredict(terms = ~ C + d) |>
+lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
+  ggpredict(terms = ~ d:C) |>
   plot(show_data = TRUE)
 ```
 
+```{r}
+lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
+  ggeffect(terms = ~ d:D) |>
+  plot(show_data = TRUE)
+
+```
+
+```{r}
+lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
+  ggeffect(terms = ~ d:D:C) |>
+  plot(show_data = TRUE)
+
+```
 
 ```{r}
 hist(data$p_us_identity)
