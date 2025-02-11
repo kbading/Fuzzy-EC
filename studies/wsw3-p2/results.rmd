@@ -259,6 +259,7 @@ library(ggeffects)
 
 ## Mediation
 
+
 ```{r eval = FALSE}
 library(mediation)
 mediation_results <- mediate(
@@ -317,7 +318,7 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)# |>
+ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)
 
 ec_lm |>
   marginaleffects::plot_predictions(condition = c("d", "C"))
@@ -330,7 +331,9 @@ emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
 
 emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
   summary(infer = TRUE)
+
 ```
+
 
 How could we explain this interaction pattern?
 
