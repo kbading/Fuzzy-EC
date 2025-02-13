@@ -1,6 +1,7 @@
 ---
 title: "Test Script for who-said-what experiment 3"
 author: "Karoline Bading & Marius Barth"
+date: "`r Sys.Date()`"
 output:
   html_document:
     toc: yes
@@ -75,6 +76,7 @@ rating_wide <- pivot_wider(rating_aggregated, values_from = "evaluative_rating",
   within({
     ec_effect <- positive - negative
   })
+marginal_means
 ```
 
 main effect *task focus*,
@@ -84,7 +86,7 @@ main effect *US valence*,
 two-way interaction *task focus* with *US valence*,
 `r anova_rating$full_result$task_focus_us_valence`.
 
-```{r }
+```{r eval = FALSE}
 lme_model <- lmer(
   formula = evaluative_rating ~ us_valence * task_focus + (us_valence | sid) + (1 | cs)
   , data = subset(rating, !is.na(us_valence)) 
@@ -128,14 +130,13 @@ models <- lapply(
     )
   }
 )
-lapply(models, class)
 ```
 
 ```{r}
 model_comparisons <- do.call("anova", models)
-
-dG2 <- apa_print(model_comparisons)
-dG2
+model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
+# dG2 <- apa_print(model_comparisons)
+# dG2
 ```
 
 
@@ -149,7 +150,7 @@ mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "mpt_data_hiera
     ec_valence_focus <- (task_focus == "valence") * ec_effect
     ec_age_focus <- (task_focus == "age") * ec_effect
   })
-nrow(mpt_data_hierarchical)
+# nrow(mpt_data_hierarchical)
 ```
 
 
@@ -194,7 +195,7 @@ summary(exp3pilot)
 ```
 
 
-## Hierarchical MPT model w/ EC effect as predictor
+## Hierarchical MPT model w/ EC effects as predictors
 
 ```{r}
 # Estimate parameters
@@ -254,72 +255,26 @@ t.test(data$ec_effect)
 
 library(lme4)
 library(ggeffects)
-
-contrasts(data$task_focus) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
-cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
-
-model <- lm(
-  formula = ec_effect ~ (cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b))*task_focus
-  , data = data
-)
-#car::scatterplotMatrix(data[, c("D", "C", "d")])
-
-summary(model)
-plot(model)
-#ggpredict(model, terms = ~ D + task_focus) |>
-  #plot(show_data = TRUE)
-
-library(emmeans)
-
-emmeans(model, specs = ~ task_focus) |> 
-  summary(infer = TRUE, side = ">")
-```
-
-```{r }
-
-emtrends(model, specs = ~ 1, var = "D")
-
-```
-
-```{r }
-ggeffect(model, terms = ~ task_focus) |>
-  plot(show_data = TRUE)
-```
-
-```{r }
-ggeffect(model, terms = ~ cntr(D) * task_focus) |>
-  plot(show_data = TRUE)
-```
-
-```{r }
-ggeffect(model, terms = ~ cntr(C) * task_focus) |>
-  plot(show_data = TRUE)
-```
-
-```{r }
-ggeffect(model, terms = ~ cntr(d) * task_focus) |>
-  plot(show_data = TRUE)
-```
-
-```{r }
-ggeffect(model, terms = ~ cntr(d)) |>
-  plot(show_data = TRUE)
 ```
 
 ## Mediation
 
-```{r }
-# library(mediation)
-# mediation_results <- mediate(
-#   model.m = lm(d ~ task_focus, data = data)
-#   , model.y = lm(ec_effect ~ d * task_focus, data = data)
-#   , mediator = "d"
-#   , treat = "task_focus"
-#   , treat.value = "valence"
-#   , control.value = "age"
-# )
-# summary(mediation_results)
+
+```{r eval = FALSE}
+library(mediation)
+mediation_results <- mediate(
+  model.m = lm(d ~ task_focus, data = data)
+  , model.y = lm(ec_effect ~ d * task_focus, data = data)
+  , mediator = "d"
+  , treat = "task_focus"
+  , treat.value = "valence"
+  , control.value = "age"
+)
+summary(mediation_results)
 ```
+
+
+### with parameter estimates as predictors
 
 ```{r }
 library(lavaan)
@@ -363,19 +318,29 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
+<<<<<<< HEAD
 
 lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
   ggpredict(terms = ~ d:C) |>
   plot(show_data = TRUE)
 
 ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)# |>
+=======
+ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)
+
+ec_lm |>
+>>>>>>> 3f15a08c8a37fd0e7e988be401eae3096a04c0d8
   marginaleffects::plot_predictions(condition = c("d", "C"))
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("C", "d"))
 
 emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
   summary(infer = TRUE)
 
 emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
   summary(infer = TRUE)
+<<<<<<< HEAD
 
 ```
 
@@ -383,19 +348,24 @@ emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
 lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
   ggeffect(terms = ~ d:D) |>
   plot(show_data = TRUE)
+=======
+>>>>>>> 3f15a08c8a37fd0e7e988be401eae3096a04c0d8
 
 ```
 
-```{r}
-lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
-  ggeffect(terms = ~ d:D:C) |>
-  plot(show_data = TRUE)
 
-```
+How could we explain this interaction pattern?
+
+- $d$ is a proxy for participants' eagerness to encode valence, so participants with small $d$ but high $C$ maybe did not encode valence (for both C and not-C items).
+- 
+
+
+
+### with unconditional probabilities of US-valence and US-identity memory as predictors
 
 ```{r}
-hist(data$p_us_identity)
-hist(data$p_us_valence)
+# hist(data$p_us_identity)
+# hist(data$p_us_valence)
 data$ln_us_identity <- qnorm(data$p_us_identity)
 data$ln_us_valence <- qnorm(data$p_us_valence)
 data$I_valence_memory <- data$ln_us_identity * data$ln_us_valence
@@ -423,10 +393,10 @@ path_model <- sem(mediation_syntax, data = data)
 path_model |>
   summary(standardized=TRUE)
 
-m1 <- lm(ln_us_identity ~ task_focus, data = data) |>
-  plot()
-m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
-  plot()
+# m1 <- lm(ln_us_identity ~ task_focus, data = data) |>
+#   plot()
+# m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
+#   plot()
 lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
   ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
   plot(show_data = TRUE)
