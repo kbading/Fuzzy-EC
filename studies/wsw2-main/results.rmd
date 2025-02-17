@@ -1,0 +1,398 @@
+---
+title: "Test Script for who-said-what experiment 2"
+author: "Karoline Bading & Marius Barth"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include = FALSE}
+library(tidyr)
+
+library(afex)
+library(emmeans)
+library(papaja)
+
+set_sum_contrasts()
+
+knitr::opts_chunk$set(
+  echo = TRUE
+  , message = FALSE
+  , comment = NA
+)
+
+source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
+```
+
+
+```{r}
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw2-main")
+mpt_data <- readRDS(file.path(study_folder, "data", "mpt_data.rds"))
+mpt_aggregated <- colSums(mpt_data)
+
+rating <- readRDS(file.path(study_folder, "data", "rating.rds"))
+```
+
+
+## Evaluative rating
+
+```{r}
+apa_beeplot(
+  data = subset(rating, !is.na(us_valence))
+  , id = "sid"
+  , dv = "evaluative_rating"
+  , factors = c("task_order", "us_valence")
+  , ylim = c(1, 8)
+  , args_legend = list(x = "topleft")
+)
+
+anova_rating_model <- aov_4(
+  formula = evaluative_rating ~ task_order * (us_valence | sid)
+  , data = subset(rating, !is.na(us_valence))
+  , fun_aggregate = mean
+)
+
+marginal_means <- emmeans(
+  anova_rating_model
+  , specs = ~ us_valence + task_order
+) |>
+  contrast(
+    list(
+      "EC effect,  rating-first condition"       = c(1, -1, 0, 0)
+      , "EC effect, memory-first condition" = c(0, 0, 1, -1)
+    )
+    , side = ">"
+  )
+
+anova_rating <- apa_print(anova_rating_model)
+
+rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_order + sid, data = rating, FUN = mean)
+rating_wide <- pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
+  within({
+    ec_effect <- positive - negative
+  })
+marginal_means
+```
+
+main effect *task order*,
+`r anova_rating$full_result$task_order`,
+main effect *US valence*,
+`r anova_rating$full_result$us_valence`,
+two-way interaction *task order* with *US valence*,
+`r anova_rating$full_result$task_order_us_valence`.
+
+```{r eval = FALSE}
+lme_model <- lmer(
+  formula = evaluative_rating ~ us_valence * task_order + (us_valence | sid) + (1 | cs)
+  , data = subset(rating, !is.na(us_valence)) 
+)
+summary(lme_model)
+ggeffects::ggpredict(lme_model, terms = ~ task_order + us_valence) |>
+  plot()
+```
+
+
+
+## MPT model
+
+```{r}
+restrictions_list <- list(
+  x  = list("G_x1=.125","G_x2=.125")
+  , D_equal = list("G_x1=.125","G_x2=.125", "D_x1=D_x2")
+  , C_equal = list("G_x1=.125","G_x2=.125", "C_x1=C_x2")
+  , d_equal = list("G_x1=.125","G_x2=.125", "d_x1=d_x2")
+  , a_equal = list("G_x1=.125","G_x2=.125", "a_x1=a_x2")
+  , b_equal = list("G_x1=.125","G_x2=.125", "b_x1=b_x2")
+  , D_eval0 = list("G_x1=.125","G_x2=.125", "D_x1=0")
+  , D_memo0   = list("G_x1=.125","G_x2=.125", "D_x2=0")
+  , C_eval0   = list("G_x1=.125","G_x2=.125", "C_x1=0")
+  , C_memo0   = list("G_x1=.125","G_x2=.125", "C_x2=0")
+  , d_eval0   = list("G_x1=.125","G_x2=.125", "d_x1=0")
+  , d_memo0   = list("G_x1=.125","G_x2=.125", "d_x2=0")
+  , b_eval5   = list("G_x1=.125","G_x2=.125", "b_x1=0.5")
+  , b_memo5   = list("G_x1=.125","G_x2=.125", "b_x2=0.5")
+  , a_eval5   = list("G_x1=.125","G_x2=.125", "a_x1=0.5")
+  , a_memo5   = list("G_x1=.125","G_x2=.125", "a_x2=0.5")
+)
+
+models <- lapply(
+  restrictions_list
+  , FUN = function(x) {
+    fit.mpt(
+      data = mpt_aggregated
+      , model.filename = file.path(study_folder, "WSW_exp2.eqn")
+      , restrictions.filename = x
+    )
+  }
+)
+```
+
+```{r}
+model_comparisons <- do.call("anova", models)
+model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
+# dG2 <- apa_print(model_comparisons)
+# dG2
+```
+
+
+
+## Hierarchical MPT model
+
+```{r}
+mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "mpt_data_hierarchical.rds")) |>
+  merge(rating_wide, sort = FALSE) |>
+  within({
+    ec_rating_first <- (task_order == "Rating first") * ec_effect
+    ec_memory_first <- (task_order == "Memory first") * ec_effect
+  })
+# nrow(mpt_data_hierarchical)
+```
+
+
+```{r}
+trait_mpt <- function(file, ...) {
+  if( file.exists(file) ) {
+    model <- qs::qread(file)
+  } else {
+    model <- TreeBUGS::traitMPT(...)
+    qs::qsave(model, file = file)
+  }
+  model
+}
+
+# Estimate parameters
+trait_model <- trait_mpt(
+  file = file.path(study_folder, "model-objects", "trait_mpt.qs")
+  , eqnfile = file.path(study_folder, "WSW_exp2_hierarchical.eqn")
+  , data = mpt_data_hierarchical
+  , n.adapt  = 2e3
+  , n.burnin = 2e4
+  , n.thin   = 2e1
+  , n.iter   = 4e4
+  , n.chains = 4
+  , restrictions = list("G=0.125")
+  , ppp = 5e3
+  , covData = mpt_data_hierarchical[, "task_order", drop = FALSE]
+  , predStructure = list("a b D d C; task_order")
+  , IVprec = "dgamma(.5,.5)"
+  , predType = rep("f", 1L)
+)
+```
+
+```{r}
+TreeBUGS::plotFit(trait_model)
+TreeBUGS::plotFreq(trait_model)
+TreeBUGS::plotParam(trait_model)
+```
+
+```{r}
+summary(trait_model)
+```
+
+
+## Hierarchical MPT model w/ EC effects as predictors
+
+```{r}
+# Estimate parameters
+mpt_model_ec_predictor <-  trait_mpt(
+  file = file.path(study_folder, "model-objects", "trait_mpt_ec_as_predictor.qs")
+  , eqnfile = file.path(study_folder, "WSW_exp2_hierarchical.eqn")
+  , data = mpt_data_hierarchical
+  , n.adapt  = 2e3
+  , n.burnin = 2e4
+  , n.thin   = 2e1
+  , n.iter   = 4e4
+  , n.chains = 4
+  , restrictions = list("G=0.125")
+  , ppp = 5e3
+  , covData = mpt_data_hierarchical[, c("task_order", "ec_rating_first", "ec_memory_first"), drop = FALSE]
+  , predStructure = list("a b D d C; task_order", "a b D d C; ec_rating_first", "a b D d C; ec_memory_first")
+  , IVprec = "dgamma(.5,.5)"
+  , predType = c("f", "c", "c")
+)
+```
+
+```{r}
+summary(mpt_model_ec_predictor)
+```
+
+
+
+
+
+
+
+```{r eval = TRUE}
+library(TreeBUGS)
+individual_parameters <- as.data.frame(getParam(mpt_model_ec_predictor, parameter = "theta"))
+parameter_names <- colnames(individual_parameters)
+
+tt <- transformedParameters(mpt_model_ec_predictor,
+  list("p_us_identity = D*C", "p_us_valence = D*(1-C)*d"),
+  level = "individual"
+) |>
+  do.call(what = "rbind") |>
+  colMeans()
+
+branch_probabilities <- data.frame(
+  p_us_valence = tt[grepl(names(tt), pattern = "p_us_valence")]
+  , p_us_identity = tt[grepl(names(tt), pattern = "p_us_identity")]
+  , row.names = NULL
+)
+
+#individual_parameters$id <- rownames(individual_parameters)
+data <- cbind(mpt_data_hierarchical, individual_parameters, branch_probabilities)
+
+#data$ec <- data$positive - data$negative
+t.test(data$ec_effect)
+#data$task_order <- factor(data$task_order, levels = c("age_task","val_task"))
+
+library(lme4)
+library(ggeffects)
+```
+
+## Mediation
+
+
+```{r eval = FALSE}
+library(mediation)
+mediation_results <- mediate(
+  model.m = lm(d ~ task_order, data = data)
+  , model.y = lm(ec_effect ~ d * task_order, data = data)
+  , mediator = "d"
+  , treat = "task_order"
+  , treat.value = "valence"
+  , control.value = "age"
+)
+summary(mediation_results)
+```
+
+
+### with parameter estimates as predictors
+
+```{r }
+library(lavaan)
+z <- function(x) {as.numeric(scale(x))}
+
+data <- within(data, {
+  Dd <- z(D) * z(d)
+  DC <- z(D) * z(C)
+  dC <- z(d) * z(C)
+  DdC <- z(D) * z(d) * z(C)
+})
+
+
+mediation_syntax <-"
+    # Regressions
+    D ~ a_D*task_order 
+    C ~ a_C*task_order
+    d ~ a_d*task_order
+    # b ~ a_b*task_order
+    # a ~ a_a*task_order
+    Dd ~ a_Dd*task_order
+    DC ~ a_DC*task_order
+    dC ~ a_dC*task_order
+    DdC ~ a_DdC*task_order
+    # ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_order
+    ec_effect ~ b_D*D + b_C*C + b_d*d + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_order
+    
+    #Define New Parameters
+    ab_D := a_D*b_D                                   #the product term is computed as a*b
+    ab_C := a_C*b_C
+    ab_d := a_d*b_d
+    ab_Dd := a_Dd*b_Dd
+    ab_DC := a_DC*b_DC
+    ab_dC := a_dC*b_dC
+    ab_DdC := a_DdC*b_DdC
+    total_effect := ade + ab_D + ab_C + ab_d + ab_Dd + ab_DC + ab_dC + ab_DdC  #having defined ab, we can use this here.
+"
+
+sem(mediation_syntax, data = data) |>
+  summary(standardized=TRUE)
+```
+
+```{r}
+ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_order, data = data)
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("d", "C"))
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("C", "d"))
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("D", "C"))
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("C", "D"))
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("D", "d"))
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("d", "D"))
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("d", "C", "D"))
+
+
+emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
+  summary(infer = TRUE)
+
+emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
+  summary(infer = TRUE)
+
+```
+
+
+How could we explain this interaction pattern?
+
+- $d$ is a proxy for participants' eagerness to encode valence, so participants with small $d$ but high $C$ maybe did not encode valence (for both C and not-C items).
+- 
+
+
+
+### with unconditional probabilities of US-valence and US-identity memory as predictors
+
+```{r}
+# hist(data$p_us_identity)
+# hist(data$p_us_valence)
+data$ln_us_identity <- qnorm(data$p_us_identity)
+data$ln_us_valence <- qnorm(data$p_us_valence)
+data$I_valence_memory <- data$ln_us_identity * data$ln_us_valence
+
+mediation_syntax <-"
+    # Regressions
+    # D ~ a_D*task_order 
+    # C ~ a_C*task_order
+    # d ~ a_d*task_order
+    # b ~ a_b*task_order
+    # a ~ a_a*task_order
+    ln_us_valence  ~ a_us_valence*task_order
+    ln_us_identity ~ a_us_identity*task_order
+    I_valence_memory ~ a_inter*task_order
+    ec_effect ~ b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + b_inter*I_valence_memory + ade*task_order
+    
+    #Define New Parameters
+    ab_us_valence := a_us_valence*b_us_valence
+    ab_us_identity := a_us_identity*b_us_identity
+    ab_inter := a_inter*b_inter
+    c := ade + ab_us_valence + ab_us_identity + ab_inter #having defined ab, we can use this here.
+"
+
+path_model <- sem(mediation_syntax, data = data)
+path_model |>
+  summary(standardized=TRUE)
+
+# m1 <- lm(ln_us_identity ~ task_order, data = data) |>
+#   plot()
+# m2 <- lm(ln_us_valence ~ task_order, data = data) |>
+#   plot()
+lm(ec_effect ~ task_order + ln_us_identity * ln_us_valence, data = data) |>
+  ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
+  plot(show_data = TRUE)
+
+
+```
