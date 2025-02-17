@@ -1,0 +1,513 @@
+---
+title: "WSW Study 3: How many participants do we need to have enough power to find a US valence x Task interaction effect on evaluative ratings?"
+author: "Jérémy Béna"
+date: today
+format: 
+  html:
+    toc: true
+    published-title: "Date"
+    code-fold: true
+    code-summary: "Display R code"
+    code-tools: true
+embed-resources: true
+execute: 
+  warning: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, comment = NA)
+```
+
+```{r read_data}
+#Load (or install and load) packages
+if (!require("pacman")) install.packages("pacman")
+p_load('jsonlite', 'tidyverse', 'psych', 'papaja', 'kableExtra', 'afex', 'emmeans', 'effectsize', 'Superpower', 'gt', 'ggstatsplot') 
+
+set_sum_contrasts()
+
+#read data files
+read_file('data/pilot2_age.txt')%>%
+#... split it into lines ...
+ str_split('\n') %>% first() %>%
+#... filter empty rows ...
+ discard(function(x) x == '') %>%
+#... parse JSON into a data.frame
+ map_dfr(fromJSON, flatten=T) -> dat_age
+
+read_file('data/pilot2_val.txt')%>%
+#... split it into lines ...
+ str_split('\n') %>% first() %>%
+#... filter empty rows ...
+ discard(function(x) x == '') %>%
+#... parse JSON into a data.frame
+ map_dfr(fromJSON, flatten=T) -> dat_val
+
+#arrange
+dat = full_join(dat_age, dat_val)
+
+dat$url.srid = as.factor(dat$url.srid)
+dat$us_valence = as.factor(dat$us_valence)
+dat$reco_resp = as.factor(dat$reco_resp)
+
+dat = dat %>%
+   fill(url.srid, .direction = "down") %>% 
+  group_by(url.srid) %>% 
+  fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "down") %>%
+  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6', .direction = "up") %>%
+  select(url.srid, sender, consent, duration, ended_on, pay_attention, serious, response, response_action 
+      #general information
+         , '-0','-1','-2','-3','-4','-5','-6',comment_study,count_trial_learning, cs, us, us_valence, us_age, uss, resp_pos_learning #learning phase
+         , count_trial_memory, idtarg, reco_resp, source_mem  #memory phase
+         , count_trial_ratings, cs_rating #rating phase
+         , instructions_conditioning 
+          ) 
+
+dat$sports <- ifelse(dat$'-1'==TRUE|
+                       dat$'-2'==TRUE|
+                       dat$'-3'==TRUE|
+                       dat$'-4'==TRUE|
+                       dat$'-5'==TRUE|
+                       dat$'-0'==TRUE|
+                       dat$'-6'==TRUE,0,1)
+
+#exclude
+dat = dat %>% filter(sports == 1 & pay_attention == 1 & serious == 1)
+```
+
+I first present the target 2 (US valence) $\times$ 2 (Learning instructions) mixed ANOVA on mean evaluative ratings and correlations between repeated measures within each Learning instructions condition. I then present power analyses in four scenarios to plan for sample size to detect (1) a US valence $\times$ Learning instructions interaction (larger EC effect in the valence focus than in the age focus condition) and (2) a simple effect of US valence in the valence focus condition. Note that these estimates may be conservative, as I used an $\alpha$ level of .05 in all analyses (I did not adapt the $\alpha$ level for one-sided tests). 
+
+# Summary
+
+If the interaction is exactly the one found in Pilot study 2 (with identical means, sds, and correlations; Scenario 1), we would need a total of 50 participants. If we have reasons to suspect a smaller interaction (Scenarios 2 and 3), we would need up to a total of 264 participants (Scenario 3; Scenario 2 is less pessimistic with a total of 96 participants). If we expect smaller (but still positive) correlations between mean evaluative ratings within each Learning instructions condition, we may need too many participants, too (Scenario 4). 
+
+# Calculate means and sds in each US Valence $\times$ Learning instructions cell
+
+```{r ratings}
+ratings = subset(dat,sender == "rating_trial")
+
+ratings$cs_rating = as.numeric(ratings$cs_rating)
+ratings$us_age[is.na(ratings$us_age)] = "dist"
+ratings = ratings %>% mutate(cs_sex = ifelse(grepl("m_m", cs), "male", "female")) 
+
+ratings_cs = ratings %>% filter(us_valence!="dist") %>% droplevels()
+
+rat = ratings_cs %>% group_by(url.srid, us_valence, instructions_conditioning) %>%
+  summarize(mean_rating = mean(cs_rating))
+
+rat_agg = describeBy(rat$mean_rating, list(rat$us_valence, rat$instructions_conditioning), mat = TRUE)
+
+gt(describeBy(rat$mean_rating, list(rat$us_valence, rat$instructions_conditioning), mat = TRUE, digits = 2), caption = "Descriptive statistics of mean evaluative ratings as a function of US valence ('group1') and Learning instructions ('group2')")
+```
+
+# Check the interaction in a $2 \times 2$ mixed ANOVA on mean evaluative ratings
+
+```{r ec_effect}
+mod1 = aov_ez(data=rat
+       ,id="url.srid"
+       ,dv="mean_rating"
+       ,within ="us_valence"
+       ,between="instructions_conditioning"
+       )
+
+p_mod1 = apa_print(mod1, es = "pes")
+
+s_eff = pairs(emmeans(mod1,~us_valence|instructions_conditioning))
+
+p_s_eff = apa_print(s_eff)
+```
+
+The US valence $\times$ Learning instructions interaction was significant, `r p_mod1$full_result$instructions_conditioning_us_valence`. The EC effect (neg-pos) was significant in the Valence focus condition, `r p_s_eff$full_result$Val_task_Negative_positive` but not in the Age focus condition, `r p_s_eff$full_result$Age_task_Negative_positive` (see Fig. below).
+
+```{r figure, fig.cap="Mean evaluative ratings as a function of US valence and Learning instructions"}
+grouped_ggwithinstats(data = rat
+    , x = us_valence
+    , grouping.var = instructions_conditioning
+    , y = mean_rating,
+    , xlab = "US Valence",
+    , ylab = "Mean evaluative ratings"
+    , results.subtitle = FALSE
+)
+```
+
+# Correlations between mean evaluative ratings for CS paired with US+ vs. US- in each Learning instructions condition
+
+```{r cor}
+rat_age = rat %>% filter(instructions_conditioning=="age_task")
+p_ca = apa_print(cor.test(rat_age$mean_rating[rat_age$us_valence=="positive"], rat_age$mean_rating[rat_age$us_valence=="negative"]))
+
+rat_val = rat %>% filter(instructions_conditioning=="val_task")
+p_cv = apa_print(cor.test(rat_val$mean_rating[rat_val$us_valence=="positive"], rat_val$mean_rating[rat_val$us_valence=="negative"]))
+```
+
+Mean evaluative ratings for CS paired with US+ and US- were positively associated in each Learning instructions condition (valence focus: `r p_cv$estimate`; age focus: `r p_ca$estimate`).
+
+# Four scenarios for the power analyses: From quite optimistic to less so
+
+Find required _n_ (per Learning instructions condition) to have enough statistical power ($1-\beta = .8$) to detect the US valence $\times$ Learning instructions interaction on mean evaluative ratings (+ the EC effect in the valence focus condition) in four scenarios:
+
+- **Scenario 1:** Exact means, SDs, and correlations as in Pilot Study 2
+- **Scenario 2:** Scenario 1 but increase (reduce) the EC effect in the age (valence) focus condition to reduce the interaction effect
+- **Scenario 3:** Scenario 2 but reduce the interaction effect even more
+- **Scenario 4:** Scenario 2 but reduce correlations to $r = .5$
+
+Additional scenarios (negative and null correlations between repeated measures) are considered in the "Additional analyses" section.
+
+Analyses were conducted with at least $n =$ 10 and maximum $n =$ 150 in each Learning instructions condition.
+
+## Scenario 1: Exact means, SDs, and correlations as in Pilot Study 2
+
+```{r setup_design1}
+n = 50 #just to generate the anova design
+
+r_age = cor(rat_age$mean_rating[rat_age$us_valence=="positive"],rat_age$mean_rating[rat_age$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the age condition
+
+r_val = cor(rat_val$mean_rating[rat_val$us_valence=="positive"], rat_val$mean_rating[rat_val$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the valence condition
+
+r_mat = matrix(c(1,r_age,0,0
+         ,r_age,1,0,0
+         ,0,0,1,r_val
+         ,0,0,r_val,1), nrow=4) #use values from the correlations calculated above 
+
+design_exp = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu = c(rat_agg$mean[1], rat_agg$mean[2], rat_agg$mean[3], rat_agg$mean[4]) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat
+                           ,plot = TRUE)
+```
+
+```{r results_power1}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design1 = plot_power(design_exp
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "us_val|learn_instr"
+                          ,alpha_level = a_lev
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design1$plot_emm
+
+gt(power_design1$anova_n,caption = "Power analysis for the ANOVA -- Scenario 1")
+
+gt(power_design1$effect_sizes,caption = "Effect sizes in the ANOVA -- Scenario 1")
+
+gt(power_design1$emm_n,caption = "Power analysis for the post hoc analyses -- Scenario 1")
+
+gt(power_design1$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Scenario 1")
+```
+
+In **Scenario 1**, we would need at least **`r power_design1$anova_n$n[3]` participants in each Learning instructions condition** ($N_{total}$ = `r power_design1$anova_n$n[3]*2`) to have enough power ($1-\beta$ = `r power_design1$anova_n$desired_power[3]/100`; calculated: `r round(power_design1$anova_n$achieved_power[3]/100, digits=2)`) to find the interaction (estimated to be $\eta^2_p$ $\approx$ `r round(power_design1$effect_sizes$partial_eta_squared[3], digits=3)`). 
+
+This sample size provides enough power to find an EC effect of $\eta^2_p$ $\approx$ `r round(power_design1$effect_sizes_emm$partial_eta_squared[2], digits=3)` in the **Valence** focus condition, as $1 - \beta$ = `r round(power_design1$emm_n$achieved_power[2]/100, digits=2)` to find this effect is achieved with $n$ = `r power_design1$emm_n$n[2]`. 
+
+Regarding the EC effect in the **Age** focus condition, $n$ = `r power_design1$emm_n$n[1]` `r ifelse(power_design1$emm_n$n[1]==100, "(maximum n in the analysis)", "")` is `r ifelse(power_design1$emm_n$achieved_power[1]<80, "not enough", "needed")` to detect it ($1-\beta$ = `r round(power_design1$emm_n$achieved_power[1]/100, digits=2)`; $\eta^2_p$ $\approx$ `r round(power_design1$effect_sizes_emm$partial_eta_squared[1], digits=3)`).
+
+## Scenario 2: Scenario 1 but reduce the interaction effect
+
+I tried to reduce the interaction term without affecting much main effects. I increased the EC effect in the age focus condition and reduced it in the valence focus condition to calculate power to detect both a smaller interaction and a smaller EC effect in the valence focus condition.
+
+```{r setup_design2}
+n = 50 #just to generate the anova design
+
+r_age = cor(rat_age$mean_rating[rat_age$us_valence=="positive"],rat_age$mean_rating[rat_age$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the age condition
+
+r_val = cor(rat_val$mean_rating[rat_val$us_valence=="positive"], rat_val$mean_rating[rat_val$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the valence condition
+
+reduce_inter = .04 #changes EC effects by .08; reduces interaction by .16
+
+r_mat = matrix(c(1,r_age,0,0
+         ,r_age,1,0,0
+         ,0,0,1,r_val
+         ,0,0,r_val,1), nrow=4) #use values from the correlations calculated above 
+
+design_exp2 = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu = c(rat_agg$mean[1]-reduce_inter, rat_agg$mean[2]+reduce_inter, rat_agg$mean[3]+reduce_inter, rat_agg$mean[4]-reduce_inter) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat
+                           ,plot = TRUE)
+```
+
+```{r results_power2}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design2 = plot_power(design_exp2
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "us_val|learn_instr"
+                          ,alpha_level = a_lev
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design2$plot_emm
+
+gt(power_design2$anova_n,caption = "Power analysis for the ANOVA -- Scenario 2")
+
+gt(power_design2$effect_sizes,caption = "Effect sizes in the ANOVA -- Scenario 2")
+
+gt(power_design2$emm_n,caption = "Power analysis for the post hoc analyses -- Scenario 2")
+
+gt(power_design2$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Scenario 2")
+```
+
+In **Scenario 2**, we would need at least **`r power_design2$anova_n$n[3]` participants in each Learning instructions condition** ($N_{total}$ = `r power_design2$anova_n$n[3]*2`) to have enough power ($1-\beta$ = `r power_design2$anova_n$desired_power[3]/100`; calculated: `r round(power_design2$anova_n$achieved_power[3]/100, digits=2)`) to find the interaction (estimated to be $\eta^2_p$ $\approx$ `r round(power_design2$effect_sizes$partial_eta_squared[3], digits=3)`). 
+
+This sample size provides enough power to find an EC effect of $\eta^2_p$ $\approx$ `r round(power_design2$effect_sizes_emm$partial_eta_squared[2], digits=3)` in the **Valence** focus condition, as $1 - \beta$ = `r round(power_design2$emm_n$achieved_power[2]/100, digits=2)` to find this effect is achieved with $n$ = `r power_design2$emm_n$n[2]`. 
+
+Regarding the EC effect in the **Age** focus condition, $n$ = `r power_design2$emm_n$n[1]` `r ifelse(power_design2$emm_n$n[1]==100, "(maximum n in the analysis)", "")` is `r ifelse(power_design2$emm_n$achieved_power[1]<80, "not enough", "needed")` to detect it ($1-\beta$ = `r round(power_design2$emm_n$achieved_power[1]/100, digits=2)`; $\eta^2_p$ $\approx$ `r round(power_design2$effect_sizes_emm$partial_eta_squared[1], digits=3)`).
+
+## Scenario 3: Scenario 2 but reduce the interaction effect even more
+
+```{r setup_design3}
+n = 50 #just to generate the anova design
+
+r_age = cor(rat_age$mean_rating[rat_age$us_valence=="positive"],rat_age$mean_rating[rat_age$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the age condition
+
+r_val = cor(rat_val$mean_rating[rat_val$us_valence=="positive"], rat_val$mean_rating[rat_val$us_valence=="negative"]) #correlation between ratings on CS paired with US+ and US- in the valence condition
+
+reduce_inter2 = .08 #changes EC effects by .16; reduces interaction by .32
+
+r_mat = matrix(c(1,r_age,0,0
+         ,r_age,1,0,0
+         ,0,0,1,r_val
+         ,0,0,r_val,1), nrow=4) #use values from the correlations calculated above 
+
+design_exp3 = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu =c(rat_agg$mean[1]-reduce_inter2, rat_agg$mean[2]+reduce_inter2, rat_agg$mean[3]+reduce_inter2, rat_agg$mean[4]-reduce_inter2) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat
+                           ,plot = TRUE)
+```
+
+```{r results_power3}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design3 = plot_power(design_exp3
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "us_val|learn_instr"
+                          ,alpha_level = a_lev
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design3$plot_emm
+
+gt(power_design3$anova_n,caption = "Power analysis for the ANOVA -- Scenario 3")
+
+gt(power_design3$effect_sizes,caption = "Effect sizes in the ANOVA -- Scenario 3")
+
+gt(power_design3$emm_n,caption = "Power analysis for the post hoc analyses -- Scenario 3")
+
+gt(power_design3$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Scenario 3")
+```
+
+In **Scenario 3**, we would need at least **`r power_design3$anova_n$n[3]` participants in each Learning instructions condition** ($N_{total}$ = `r power_design3$anova_n$n[3]*2`) to have enough power ($1-\beta$ = `r power_design3$anova_n$desired_power[3]/100`; calculated: `r round(power_design3$anova_n$achieved_power[3]/100, digits=2)`) to find the interaction (estimated to be $\eta^2_p$ $\approx$ `r round(power_design3$effect_sizes$partial_eta_squared[3], digits=3)`). 
+
+This sample size provides enough power to find an EC effect of $\eta^2_p$ $\approx$ `r round(power_design3$effect_sizes_emm$partial_eta_squared[2], digits=3)` in the **Valence** focus condition, as $1 - \beta$ = `r round(power_design3$emm_n$achieved_power[2]/100, digits=2)` to find this effect is achieved with $n$ = `r power_design3$emm_n$n[2]`. 
+
+Regarding the EC effect in the **Age** focus condition, $n$ = `r power_design3$emm_n$n[1]` `r ifelse(power_design3$emm_n$n[1]==100, "(maximum n in the analysis)", "")` is `r ifelse(power_design3$emm_n$achieved_power[1]<80, "not enough", "needed")` to detect it ($1-\beta$ = `r round(power_design3$emm_n$achieved_power[1]/100, digits=2)`; $\eta^2_p$ $\approx$ `r round(power_design3$effect_sizes_emm$partial_eta_squared[1], digits=3)`).
+
+## Scenario 4: Scenario 2 but r = .5
+
+```{r setup_design4}
+n = 50 #just to generate the anova design
+
+r_age2 = .5
+r_val2 = .5
+
+reduce_inter3 = reduce_inter
+
+r_mat2 = matrix(c(1,r_age2,0,0
+         ,r_age2,1,0,0
+         ,0,0,1,r_val2
+         ,0,0,r_val2,1), nrow=4)
+
+design_exp4 = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu = c(rat_agg$mean[1]-reduce_inter3, rat_agg$mean[2]+reduce_inter3, rat_agg$mean[3]+reduce_inter3, rat_agg$mean[4]-reduce_inter3) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat2
+                           ,plot = TRUE)
+```
+
+```{r results_power4}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design4 = plot_power(design_exp4
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "learn_instr|us_val"
+                          ,contrast_type = "pairwise"
+                          ,alpha_level = a_lev 
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design4$plot_emm
+
+gt(power_design4$anova_n,caption = "Power analysis for the ANOVA -- Scenario 4")
+
+gt(power_design4$effect_sizes,caption = "Effect sizes in the ANOVA -- Scenario 4")
+
+gt(power_design4$emm_n,caption = "Power analysis for the post hoc analyses -- Scenario 4")
+
+gt(power_design4$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Scenario 4")
+```
+
+In **Scenario 4**, we would need at least **`r power_design4$anova_n$n[3]` participants in each Learning instructions condition** ($N_{total}$ = `r power_design4$anova_n$n[3]*2`) to have enough power ($1-\beta$ = `r power_design4$anova_n$desired_power[3]/100`; calculated: `r round(power_design4$anova_n$achieved_power[3]/100, digits=2)`) to find the interaction (estimated to be $\eta^2_p$ $\approx$ `r round(power_design4$effect_sizes$partial_eta_squared[3], digits=3)`). 
+
+This sample size provides enough power to find an EC effect of $\eta^2_p$ $\approx$ `r round(power_design4$effect_sizes_emm$partial_eta_squared[2], digits=3)` in the **Valence** focus condition, as $1 - \beta$ = `r round(power_design4$emm_n$achieved_power[2]/100, digits=2)` to find this effect is achieved with $n$ = `r power_design4$emm_n$n[2]`. 
+
+Regarding the EC effect in the **Age** focus condition, $n$ = `r power_design4$emm_n$n[1]` `r ifelse(power_design4$emm_n$n[1]==100, "(maximum n in the analysis)", "")` is `r ifelse(power_design4$emm_n$achieved_power[1]<80, "not enough", "needed")` to detect it ($1-\beta$ = `r round(power_design4$emm_n$achieved_power[1]/100, digits=2)`; $\eta^2_p$ $\approx$ `r round(power_design4$effect_sizes_emm$partial_eta_squared[1], digits=3)`).
+
+# Additional analyses
+
+## If the correlations between repeated measures are negative or Zero?
+
+### Additional scenario 1: Scenario 1 with r = -0.5
+
+```{r setup_add1}
+n = 50 
+
+r_age = -.5
+r_val = -.5
+
+r_mat = matrix(c(1,r_age,0,0
+         ,r_age,1,0,0
+         ,0,0,1,r_val
+         ,0,0,r_val,1), nrow=4) #use values from the correlations calculated above 
+
+design_exp_add1 = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu = c(rat_agg$mean[1], rat_agg$mean[2], rat_agg$mean[3], rat_agg$mean[4]) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat
+                           ,plot = FALSE)
+```
+
+```{r results_power_add1}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design_add1 = plot_power(design_exp_add1
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "us_val|learn_instr"
+                          ,alpha_level = a_lev
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design_add1$plot_emm
+
+gt(power_design_add1$anova_n,caption = "Power analysis for the ANOVA -- Additional scenario 1")
+
+gt(power_design_add1$effect_sizes,caption = "Effect sizes in the ANOVA -- Additional scenario 1")
+
+gt(power_design_add1$emm_n,caption = "Power analysis for the post hoc analyses -- Additional scenario 1")
+
+gt(power_design_add1$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Additional scenario 1")
+```
+
+### Additional scenario 2: Scenario 1 with r = 0
+
+```{r setup_add2}
+n = 50 
+
+r_age = 0
+r_val = 0
+
+r_mat = matrix(c(1,r_age,0,0
+         ,r_age,1,0,0
+         ,0,0,1,r_val
+         ,0,0,r_val,1), nrow=4) #use values from the correlations calculated above 
+
+design_exp_add2 = ANOVA_design(design = "2b*2w"
+                          ,label_list = c("learn_instr"
+                                          , "age", "valence"
+                                          ,"us_val"
+                                          ,"neg", "pos")
+                           ,n = n
+                           ,mu = c(rat_agg$mean[1], rat_agg$mean[2], rat_agg$mean[3], rat_agg$mean[4]) 
+                           ,sd = c(rat_agg$sd[1], rat_agg$sd[2], rat_agg$sd[3], rat_agg$sd[4])
+                           ,r=r_mat
+                           ,plot = FALSE)
+```
+
+```{r results_power_add2}
+n_min = 10
+n_max = 150
+pwr = .8
+a_lev = .05
+
+#Find statistical power for a range of sample sizes
+power_design_add2 = plot_power(design_exp_add2
+                          ,min_n = n_min
+                          ,max_n = n_max
+                          ,desired_power = pwr*100
+                          ,emm = TRUE
+                          ,emm_comp = "us_val|learn_instr"
+                          ,alpha_level = a_lev
+                          ,plot = FALSE
+                          ,verbose = FALSE) 
+
+#power_design_add1$plot_emm
+
+gt(power_design_add2$anova_n,caption = "Power analysis for the ANOVA -- Additional scenario 2")
+
+gt(power_design_add2$effect_sizes,caption = "Effect sizes in the ANOVA -- Additional scenario 2")
+
+gt(power_design_add2$emm_n,caption = "Power analysis for the post hoc analyses -- Additional scenario 2")
+
+gt(power_design_add2$effect_sizes_emm,caption = "Effect sizes of the EC effects -- Additional scenario 2")
+```
