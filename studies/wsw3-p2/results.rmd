@@ -9,6 +9,8 @@ output:
     code_folding: hide
   pdf_document:
     toc: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -135,8 +137,6 @@ models <- lapply(
 ```{r}
 model_comparisons <- do.call("anova", models)
 model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
-# dG2 <- apa_print(model_comparisons)
-# dG2
 ```
 
 
@@ -150,7 +150,6 @@ mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "mpt_data_hiera
     ec_valence_focus <- (task_focus == "valence") * ec_effect
     ec_age_focus <- (task_focus == "age") * ec_effect
   })
-# nrow(mpt_data_hierarchical)
 ```
 
 
@@ -406,7 +405,5 @@ path_model |>
 lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
   ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
   plot(show_data = TRUE)
-
-```
 ```
 
