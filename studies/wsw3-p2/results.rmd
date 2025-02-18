@@ -222,6 +222,27 @@ summary(mpt_model_ec_predictor)
 ```
 
 
+```{r}
+simple_mpt <- list(NULL, "d_x1 = d_x2") |>
+  lapply(function(x) {
+    TreeBUGS::simpleMPT(
+      eqnfile = file.path(study_folder, "WSW_exp3.eqn")
+      , data = colSums(mpt_data)
+      , restrictions = list("G_x1=G_x2= 0.125", x)
+      , n.iter   = 4e4
+      , n.burnin = 2e4
+      , n.thin   = 2e1
+      , n.chains = 4
+      , ppp      = 5e3
+      , cores    = 4L
+      # , alpha = c(a_x1 = 20, a_x2 = 20)
+      # , beta  = c(a_x1 = 20, a_x2 = 20)
+    )
+})
+BFs <- TreeBUGS::BayesFactorMPT(simple_mpt)
+BFs$posterior[1] / BFs$posterior[2]
+lapply(simple_mpt, summary)[[1L]]
+```
 
 
 
@@ -318,18 +339,8 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-<<<<<<< HEAD
-
-lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
-  ggpredict(terms = ~ d:C) |>
-  plot(show_data = TRUE)
-
-ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)# |>
-=======
-ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_focus, data = data)
-
+ec_lm <- lm(formula = ec_effect ~ D * C * d, data = data)
 ec_lm |>
->>>>>>> 3f15a08c8a37fd0e7e988be401eae3096a04c0d8
   marginaleffects::plot_predictions(condition = c("d", "C"))
 
 ec_lm |>
@@ -340,17 +351,12 @@ emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
 
 emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
   summary(infer = TRUE)
-<<<<<<< HEAD
-
 ```
 
 ```{r}
 lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
   ggeffect(terms = ~ d:D) |>
   plot(show_data = TRUE)
-=======
->>>>>>> 3f15a08c8a37fd0e7e988be401eae3096a04c0d8
-
 ```
 
 
