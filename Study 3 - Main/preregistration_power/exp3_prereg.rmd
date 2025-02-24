@@ -105,7 +105,7 @@ As explained earlier, the $C$ parameter estimates the (conditional) probability 
 Similarly, the $d$ parameter estimates the (conditional) probability of retrieving the correct US valence (without retrieving the correct US identity) for a given CS recognized as coming from the learning phase (and may thus de-confound task focus effects on US valence memory from effects on other forms of [associative] memory and/or on guessing processes).
 Based on a pilot study (in which we used the same materials and procedure), we expect significant task focus effects on both MPT parameters (prediction P2: $C_{valence-focus}>C_{age-focus}$; prediction P3: $d_{valence-focus}>d_{age-focus}$).
 Finally, we will also test for task focus effects on the $D$, $b$ and $a$ parameters.
-Based on the pilot study, we expect significant effects of task focus on the $D$ and $b$ parameters (prediction P4: $D_{valence-focus}>D_{age-focus}$; prediction P5: $d_{age-focus}>d_{valence-focus}$).
+Based on the pilot study, we expect significant effects of task focus on the $D$ and $b$ parameters (prediction P4: $D_{valence-focus}>D_{age-focus}$; prediction P5: $b_{age-focus}>b_{valence-focus}$).
 For the $a$ parameter, no such effect is expected.
 
 # Methods
@@ -189,9 +189,9 @@ The study will be run online.
 All verbal materials will be presented in English.
 
 ### Learning phase
-In the valence focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather positive or rather negative. If your impression of the face-trait pair is rather positive, press the [X/M] key. If your impression of the face-trait pair is rather negative, press the [M/X] key. Press the spacebar to continue with the instructions.” (valence-to-key assigment will be randomly determined for each participant anew).
-In the age focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather typically old or typically young. If your impression of the face-trait pair is rather typically old, press the [X/M] key. If your impression of the face-trait pair is rather typically young, press the [M/X] key. Press the spacebar to continue with the instructions.” (age-to-key assigment will be randomly determined for each participant anew).
-For both task focus conditions, the second instruction slide will show the following text: “Next, you will be presented with the face-trait pairs. Please pay close attention to each pair. This part of the experiment will take about 8 minutes. Press the spacebar to start the task.”
+In the valence focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather positive or rather negative. If your impression of the face-trait pair is rather positive, press the [X/M] key. If your impression of the face-trait pair is rather negative, press the [M/X] key. Press the space bar to continue with the instructions.” (valence-to-key assignment will be randomly determined for each participant anew).
+In the age focus condition, the first instruction slide will display the following text: “In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather typically old or typically young. If your impression of the face-trait pair is rather typically old, press the [X/M] key. If your impression of the face-trait pair is rather typically young, press the [M/X] key. Press the space bar to continue with the instructions.” (age-to-key assignment will be randomly determined for each participant anew).
+For both task focus conditions, the second instruction slide will show the following text: “Next, you will be presented with the face-trait pairs. Please pay close attention to each pair. This part of the experiment will take about 8 minutes. Press the space bar to start the task.”
 
 Subsequently, participants will work through a learning procedure consisting of 72 trials.
 Each trial will start with a CS presented in the middle of the screen.
@@ -204,24 +204,24 @@ In both cases, the screen will be cleared of all stimuli (CS-US pair, two lines/
 The trials will be separated by presenting an empty screen for 4,000 ms.
 For each participant, trial order will be randomized in sets of 24 trials.
 In each set (three in total), the 24 CS-US pairs will be presented once.
-The end of the learning procedure will be announced by a slide displaying the following text: “The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. Press the spacebar to continue.”
+The end of the learning procedure will be announced by a slide displaying the following text: “The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. Press the space bar to continue.”
 
 ### Test phase
 After the learning phase, participants enter the test phase. The test phase consists of two tasks (performed in the following order): evaluation task and memory task.
 
 #### Evaluation task
-In both task focus conditions, the slide announcing the end of the learning phase will be followed by a slide displaying the following text: “In the second part of the experiment, you will be presented with individual faces. Please indicate your personal evaluation of the presented faces. To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your evaluation of a given face. When you are ready, press the spacebar to start the task.”.
+In both task focus conditions, the slide announcing the end of the learning phase will be followed by a slide displaying the following text: “In the second part of the experiment, you will be presented with individual faces. Please indicate your personal evaluation of the presented faces. To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your evaluation of a given face. When you are ready, press the space bar to start the task.”.
 
 Subsequently, participants will work through an evaluation task consisting of 48 randomly ordered trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question (“How positive or negative is your personal evaluation of the face presented above?”) together with a rating scale ranging from 1 (“very negative”) to 8 (“very positive”) will be displayed.
 Trials will be separated by a blank screen presented for 500 ms.
-The end of the evaluation task will be announced by a slide showing the following text: “The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue.”
-The end of the evaluation task will be announced by a slide displaying the following text: “The second part of the experiment is now finished. Press the spacebar to continue with the third part.”.
+The end of the evaluation task will be announced by a slide showing the following text: “The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the space bar to continue.”
+The end of the evaluation task will be announced by a slide displaying the following text: “The second part of the experiment is now finished. Press the space bar to continue with the third part.”.
 
 #### Memory task
-In both task focus conditions, the slide announcing the end of the evaluation task will be followed by a slide displaying the following text: “In the third part of the experiment, you will again be presented with faces. Some of these faces were part of the face-trait pairs you saw in the first part of this experiment. Other faces were not shown in the first part of this experiment: these faces were not part of the face-trait pairs you saw in the first part of this experiment. For each face, please indicate whether it is "shown" (i.e., part of the face-trait pairs you saw) or "not shown" (i.e., NOT part of the face-trait pairs you saw). Press the spacebar to continue with the instructions.”.
+In both task focus conditions, the slide announcing the end of the evaluation task will be followed by a slide displaying the following text: “In the third part of the experiment, you will again be presented with faces. Some of these faces were part of the face-trait pairs you saw in the first part of this experiment. Other faces were not shown in the first part of this experiment: these faces were not part of the face-trait pairs you saw in the first part of this experiment. For each face, please indicate whether it is "shown" (i.e., part of the face-trait pairs you saw) or "not shown" (i.e., NOT part of the face-trait pairs you saw). Press the space bar to continue with the instructions.”.
 On the next instruction slide, the following text will be shown: “Whenever you classify a face as "shown", you will be asked to perform a second task. In this second task, you will be presented with 16 traits. Your task will be to select the trait with which the face was paired in the first part
 of this experiment. If you remember the paired trait, click on it. If you cannot remember the previously paired trait, try to guess the correct one. 
-Click on the trait corresponding to your guess. When you are ready, press the spacebar to start the task.”
+Click on the trait corresponding to your guess. When you are ready, press the space bar to start the task.”
 
 Subsequently, participants will work through a memory task consisting of 48 randomly ordered trials. 
 On each trial, an image (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. 
@@ -235,7 +235,7 @@ For truly “shown” faces, the correct US will be presented on a randomly sele
 Three of these USs will have the same US valence and US age as the correct US, four USs will have the same US valence but the opposite US age as the correct US, four USs will have the same US age but the opposite US valence as the correct US, and four USs will have the opposite US age and the opposite US valence as the correct US.
 Other than that, the USs will be randomly selected for each trial and participant anew.
 For new faces (erroneously classified as “shown”), the buttons will be filled with 16 randomly selected USs (four USs per US valence $\times$ US age condition). After clicking on one of the 16 USs, participants will be presented with a blank screen (500 ms) followed by the next trial (i.e., they will be presented with a screen showing another face, the recognition task question, and the two response options).
-The end of the memory task will be announced by a slide showing the following text: “The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue.”
+The end of the memory task will be announced by a slide showing the following text: “The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the space bar to continue.”
 
 ### Check measures
 After the test phase, we will collect several check measures (which we will use as exclusion criteria).
