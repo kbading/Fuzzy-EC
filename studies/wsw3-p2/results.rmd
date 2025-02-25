@@ -19,6 +19,7 @@ library(tidyr)
 library(afex)
 library(emmeans)
 library(papaja)
+library(memoise)
 
 set_sum_contrasts()
 
@@ -222,25 +223,29 @@ summary(mpt_model_ec_predictor)
 
 
 ```{r}
-simple_mpt <- list(NULL, "d_x1 = d_x2") |>
+file_cache <- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), ".rcache"), compress = "gzip")
+simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
+
+simple_mpt <- restrictions_list |>
   lapply(function(x) {
-    TreeBUGS::simpleMPT(
+    simpleMPT(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
-      , restrictions = list("G_x1=G_x2= 0.125", x)
-      , n.iter   = 4e4
-      , n.burnin = 2e4
-      , n.thin   = 2e1
-      , n.chains = 4
-      , ppp      = 5e3
-      , cores    = 4L
-      # , alpha = c(a_x1 = 20, a_x2 = 20)
-      # , beta  = c(a_x1 = 20, a_x2 = 20)
+      , restrictions = x
+      , n.iter   = 4e4L
+      , n.burnin = 2e4L
+      , n.thin   = 2e1L
+      , ppp      = 5e1L
+      , n.chains = 4e0L
+      , cores    = 4e0L
     )
 })
-BFs <- TreeBUGS::BayesFactorMPT(simple_mpt)
-BFs$posterior[1] / BFs$posterior[2]
-lapply(simple_mpt, summary)[[1L]]
+BFs <- TreeBUGS::BayesFactorMPT(simple_mpt, cores = 4L)
+model_fits <- lapply(simple_mpt, TreeBUGS::PPP, T2 = FALSE)
+# Compare baseline model with d_age = d_valence
+BFs$posterior[[1L]] / BFs$posterior[-1L]
+log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
+
 ```
 
 

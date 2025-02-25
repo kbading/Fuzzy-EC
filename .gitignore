@@ -6,3 +6,6 @@
 
 **_cache
 **_files
+
+# memoise cache
+.rcache
