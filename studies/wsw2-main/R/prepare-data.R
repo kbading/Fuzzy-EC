@@ -22,13 +22,14 @@ data <- file.path(study_folder, "data-raw", c("wsw2_rawdata.txt")) |>
 data <- data |>
   fill(url.srid, .direction = "down") |>
   group_by(url.srid) |>
-  fill(consent, pay_attention, serious, task_order, .direction = "downup")
+  fill(consent, pay_attention, serious, order, .direction = "downup")
 
 # data$sports <- ifelse(
   # data$'-1'==TRUE | data$'-2'==TRUE | data$'-3'==TRUE | data$'-4'==TRUE | data$'-5'==TRUE | data$'-0'==TRUE | data$'-6'==TRUE
   # , 0
   # , 1
 # )
+
 
 data <- within(data, {
   cs_rating  <- as.numeric(cs_rating)

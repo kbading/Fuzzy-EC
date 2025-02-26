@@ -222,9 +222,10 @@ summary(mpt_model_ec_predictor)
 ```
 
 
-```{r}
+```{r simple-mpt}
 file_cache <- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), ".rcache"), compress = "gzip")
 simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
+BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
 
 simple_mpt <- restrictions_list |>
   lapply(function(x) {
@@ -235,14 +236,13 @@ simple_mpt <- restrictions_list |>
       , n.iter   = 4e4L
       , n.burnin = 2e4L
       , n.thin   = 2e1L
-      , ppp      = 5e1L
+      , ppp      = 2e3L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
 })
-BFs <- TreeBUGS::BayesFactorMPT(simple_mpt, cores = 4L)
-model_fits <- lapply(simple_mpt, TreeBUGS::PPP, T2 = FALSE)
-# Compare baseline model with d_age = d_valence
+BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
+# Compare baseline model with other models
 BFs$posterior[[1L]] / BFs$posterior[-1L]
 log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
 
