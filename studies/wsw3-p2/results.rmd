@@ -140,6 +140,33 @@ model_comparisons <- do.call("anova", models)
 model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
 ```
 
+## Bayesian MPT model
+
+```{r simple-mpt}
+file_cache <- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), ".rcache"), compress = "gzip")
+simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
+BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
+
+simple_mpt <- restrictions_list |>
+  lapply(function(x) {
+    simpleMPT(
+      eqnfile = file.path(study_folder, "WSW_exp3.eqn")
+      , data = colSums(mpt_data)
+      , restrictions = x
+      , n.iter   = 4e5L
+      , n.burnin = 2e5L
+      , n.thin   = 2e1L
+      , ppp      = 2e3L
+      , n.chains = 4e0L
+      , cores    = 4e0L
+    )
+})
+BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
+# Compare baseline model with other models
+BFs$posterior[[1L]] / BFs$posterior[-1L]
+log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
+
+```
 
 
 ## Hierarchical MPT model
@@ -222,31 +249,7 @@ summary(mpt_model_ec_predictor)
 ```
 
 
-```{r simple-mpt}
-file_cache <- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), ".rcache"), compress = "gzip")
-simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
-BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
 
-simple_mpt <- restrictions_list |>
-  lapply(function(x) {
-    simpleMPT(
-      eqnfile = file.path(study_folder, "WSW_exp3.eqn")
-      , data = colSums(mpt_data)
-      , restrictions = x
-      , n.iter   = 4e4L
-      , n.burnin = 2e4L
-      , n.thin   = 2e1L
-      , ppp      = 2e3L
-      , n.chains = 4e0L
-      , cores    = 4e0L
-    )
-})
-BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
-# Compare baseline model with other models
-BFs$posterior[[1L]] / BFs$posterior[-1L]
-log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
-
-```
 
 
 
