@@ -333,7 +333,6 @@ we will estimate separate models (each of which will include one of 12 restricti
 [11] $g_\textrm{valence-focus}=.125$,
 [12] $g_\textrm{age-focus}=.125$) 
 and compare them with the unrestricted baseline model using the Bayes Factor.
-
 To test for parameter differences between task focus conditions,
 we will again estimate separate models (each of which will include one of six restrictions:
 [13] $D_\textrm{valence-focus}=D_\textrm{age-focus}$,
