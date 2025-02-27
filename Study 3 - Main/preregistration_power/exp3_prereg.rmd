@@ -258,12 +258,18 @@ For individual analyses (on data from the evaluation, item and source memory tas
 ## Data processing and statistical analyses
 ### Evaluative ratings
 For each participant, we will calculate an EC scores by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
+
 Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t* tests).
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
 If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
-We will also compare EC effects between valence vs. age focus conditions (using a two-sample *t* test).
-If the mean EC score in valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
+
+To test prediction P1 ($EC_{valence-focus}>EC_{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
+If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
 If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
+Note that the one-sided *t* test ($\alpha=.1$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
+For a direct match with the specifications of the power analyses, prediction P1 will also be tested in a 2 (US valence) $\times$ 2 (task focus) mixed ANOVA on evaluative ratings (instead of EC scores).
+As before, we will conduct a one-sided test of prediction P1 if the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition (by using $\alpha=.1$ for the two-way interaction between US valence and task focus). 
+If the mean difference is reversed, the significance of the two-way interaction will be judged based on $\alpha=.05$.
 
 ### Memory data
 For each participant and CS, responses from the two memory tasks will be recoded into a joint memory index according to the following scheme.
