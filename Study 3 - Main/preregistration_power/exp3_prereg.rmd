@@ -59,8 +59,8 @@ Finally, *gpos* (*gneg*) estimates the probability of guessing the identity of t
 (ref:my-figure-caption) The 'who said what' multinomial processing tree model in the context of an evaluative conditioning procedure. The rectangles on the left-hand side represent the stimuli displayed in the memory task, and the rectangles on the right-hand side represent the responses.
 
 ```{r cspos-tree, fig.cap="(ref:my-figure-caption)"}
-
-knitr::include_graphics(("mpt_wsw_model_exp3_KB2.jpg"))
+wesanderson::wes_palette("Zissou1", n = 6, type = "continuous")
+# knitr::include_graphics(("mpt_wsw_model_exp3_KB2.jpg"))
 
 
 ```
@@ -263,7 +263,7 @@ Separated by task focus condition, we will test the mean EC score against zero (
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
 If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
 
-To test prediction P1 ($EC_{valence-focus}>EC_{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
+To test prediction P1 ($EC_\textrm{valence-focus}>EC_\textrm{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
 If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
 If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
 Note that the one-sided *t* test ($\alpha=.1$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
@@ -275,6 +275,7 @@ If the mean difference is reversed, the significance of the two-way interaction 
 For each participant and CS, responses from the two memory tasks will be recoded into a joint memory index according to the following scheme.
 
 #### CSs
+
 - If a positively (negatively) paired CS is incorrectly classified as "new" in the recognition task, this response will be recoded as "PosUSnew" ("NegUSnew") on the joint memory index. 
 
 - If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and the correct positive (negative) trait is chosen in the source memory task, these responses will be recoded as "PosUSposcor" ("NegUSnegcor") on the joint memory index.
@@ -284,40 +285,69 @@ For each participant and CS, responses from the two memory tasks will be recoded
 - If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and a negative (positive) trait is chosen in the source memory task, these responses will be recoded as "PosUSnegincor" ("NegUSposincor") on the joint memory index.
 
 #### New stimuli
+
 - If an (unpaired) new stimulus is correctly classified as "new" in the recognition task, the response will be recoded as "Newnew" on the joint memory index. 
 
 - If an (unpaired) new stimulus is incorrectly classified as "old" in the recognition task and a positive (negative) trait is chosen in the source memory task, these responses will be recoded as "Newposincor" ("Newnegincor") on the joint memory index.
 
-Subsequently, the frequency distribution of the joint memory index (aggregated across participants) will be analyzed with the MPT model.
-We will use a Bayesian MPT model as implemented in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020, see also @singmann_evaluating_2024] with default Beta priors ($\alpha = \beta = 1$) for parameters $\theta$.
-We will first fit a baseline model estimating the following parameters separately for the two task focus conditions: $D$, $C$, $d$, $a$ and $b$.
+The frequency distribution of the joint memory index (aggregated across participants) will be analyzed with 
+a Bayesian implementation of the MPT model, which is available in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020; see also @singmann_evaluating_2024]
+For each of the model's parameters, we will use (default) Beta priors with $\alpha = \beta = 1$,
+resulting in a uniform prior distribution in the unit interval.
+
+We will first estimate a baseline model where parameters $D$, $C$, $d$, $a$ and $b$ are free to vary between task focus conditions.
 For both task focus conditions, the $g$ parameter will be set to $.125$ (corresponding to the inverse of the number of response options per US valence condition [8] in the source memory task).
 The baseline model thus includes the following invariance assumptions (within each task focus condition): 
 
-- (A1) $D=D_{pos}=D_{neg}=D_{new}$
+- (A1) $D=D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
 
-- (A2) $C=C_{pos}=C_{neg}$
+- (A2) $C=C_\textit{pos}=C_\textit{neg}$
 
-- (A3) $d=d_{pos}=d_{neg}$
+- (A3) $d=d_\textit{pos}=d_\textit{neg}$
 
-- (A4) $b=b_{pos}=b_{neg}=b_{new}$
+- (A4) $b=b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
 
-- (A5) $a=a_{pos}=a_{neg}=a_{new}$
+- (A5) $a=a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
 
-- (A6) $g=g_{pos}=g_{neg}=.125$
+- (A6) $g=g_\textit{pos}=g_\textit{neg}=.125$
 
-Model adequacy (i.e., model fit) will be assessed with posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010];
-posterior-predictive $p$ values smaller than .05 will be used as a cutoff criterion.
-If the baseline model achieves adequate fit,
-we will fit several restricted versions of the MPT model.
+To assess model adequacy (i.e., model fit),
+we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together
+with its corresponding posterior-predictive $p$ value.
+We will interpret $p \leq. 05$ as indicating insufficient model fit.
+
+If the baseline model achieves adequate fit (i.e., $p > .05$),
+we will estimate several restricted versions of the MPT model.
 To test each parameter against its reference value ($0$ for $D$, $C$ and $d$; $.5$ for $a$ and $b$; $.125$ for $g$),
-we will fit separate models (each of which will include one of 12 restrictions: [1] $D_\textrm{valence-focus}=0$, [2] $D_\textrm{age-focus}=0$, [3] $C_\textrm{valence-focus}=0$, [4] $C_\textrm{age-focus}=0$, [5] $d_\textrm{valence-focus}=0$, [6] $d_\textrm{age-focus}=0$, [7] $b_\textrm{valence-focus}=.5$, [8] $b_\textrm{age-focus}=.5$, [9] $a_\textrm{valence-focus}=.5$, [10] $a_\textrm{age-focus}=.5$, [11] $g_\textrm{valence-focus}=.125$, [12] $g_\textrm{age-focus}=.125$) and compare them with the unrestricted baseline model using
-To test for parameter differences between task focus conditions, we will again fit separate models (each of which will include one of six restrictions: [13] $D_\textrm{valence-focus}=D_\textrm{age-focus}$, [14] $C_\textrm{valence-focus}=C_\textrm{age-focus}$, [15] $d_\textrm{valence-focus}=d_\textrm{age-focus}$, [16] $b_\textrm{valence-focus}=b_\textrm{age-focus}$, [17] $a_\textrm{valence-focus}=a_\textrm{age-focus}$, [18] $g_\textrm{valence-focus}=g_\textrm{age-focus}$) and test them against the unrestricted baseline model.
+we will estimate separate models (each of which will include one of 12 restrictions:
+[1] $D_\textrm{valence-focus}=0$,
+[2] $D_\textrm{age-focus}=0$,
+[3] $C_\textrm{valence-focus}=0$,
+[4] $C_\textrm{age-focus}=0$,
+[5] $d_\textrm{valence-focus}=0$,
+[6] $d_\textrm{age-focus}=0$,
+[7] $b_\textrm{valence-focus}=.5$,
+[8] $b_\textrm{age-focus}=.5$,
+[9] $a_\textrm{valence-focus}=.5$,
+[10] $a_\textrm{age-focus}=.5$,
+[11] $g_\textrm{valence-focus}=.125$,
+[12] $g_\textrm{age-focus}=.125$) 
+and compare them with the unrestricted baseline model using the Bayes Factor.
 
-If the baseline model does not achieve adequate fit,
+To test for parameter differences between task focus conditions,
+we will again estimate separate models (each of which will include one of six restrictions:
+[13] $D_\textrm{valence-focus}=D_\textrm{age-focus}$,
+[14] $C_\textrm{valence-focus}=C_\textrm{age-focus}$,
+[15] $d_\textrm{valence-focus}=d_\textrm{age-focus}$,
+[16] $b_\textrm{valence-focus}=b_\textrm{age-focus}$,
+[17] $a_\textrm{valence-focus}=a_\textrm{age-focus}$, 
+[18] $g_\textrm{valence-focus}=g_\textrm{age-focus}$)
+and compare these models against the baseline model using the Bayes Factor.
+
+If the baseline model does not achieve adequate fit (i.e., $p \leq .05$),
 we will try to identify a less restrictive (baseline) model that provides a more adequate account of the data.
-Model selection (of an alternative baseline model) will be based on model comparisons using the  Bayes Factor, 
-complemented by substantive and pragmatic considerations. 
+Model selection (of an alternative baseline model) will be based on model comparisons using the Bayes Factor, 
+complemented by substantive and pragmatic considerations.
 
 # References
 
