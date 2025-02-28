@@ -287,16 +287,16 @@ dat_mpt = full_join(dat_mpt.1, dat_new
 
 ```{r}
 # #participants frequencies for each response type, even if 0 responses for a given participant
-# dat_mpt_freq = dat_mpt %>% #in dat_mpt
-#   group_by(url.srid, resp_mpt, .drop=FALSE) %>% #group observations by participant (url.srid) and resp_mpt (already capturing the tree)
-#   tally %>% 
-#   spread(resp_mpt, n, fill=0) #use a "wide" format
-# 
-# dat_mpt_freq_fit = dat_mpt_freq %>% ungroup() %>% select(-url.srid) 
+dat_mpt_freq = dat_mpt %>% #in dat_mpt
+  group_by(url.srid, resp_mpt, .drop=FALSE) %>% #group observations by participant (url.srid) and resp_mpt (already capturing the tree)
+  tally %>%
+  spread(resp_mpt, n, fill=0) #use a "wide" format
+
+dat_mpt_freq_fit = dat_mpt_freq %>% ungroup() %>% select(-url.srid)
 # 
 # #aggregated level if needed
-# dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
-#   group_by(resp_mpt, .drop=FALSE) %>% #group observations by resp_mpt (already capturing the tree)
+dat_mpt_freq_agg = dat_mpt %>% #in dat_mpt
+  group_by(resp_mpt, .drop=FALSE) %>% #group observations by resp_mpt (already capturing the tree)
 #   tally
 ```
 

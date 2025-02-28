@@ -32,9 +32,12 @@ study_folder <- file.path(
 
 ```{r load-and-prepare-data}
 
-dat = readRDS("ind_par_rate.RDS")
-
-
+#dat = readRDS("ind_par_rate.RDS")
+dat <- readRDS("data_wsw_final_pilot.RDS")
+length(unique(dat$url.srid))
+names(dat)
+table(dat$serious)
+table(dat$pay_attention)
 ```
 
 ```{r}

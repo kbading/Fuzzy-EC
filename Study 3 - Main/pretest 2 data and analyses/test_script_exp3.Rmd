@@ -109,7 +109,7 @@ ratings_cs$cs_sex <- ifelse(ratings_cs$cs %in% c("045_m_m_n_a","179_m_m_n_a","10
 
 
 
-aov_ez(data=ratings_cs,id="url.srid",dv="cs_rating",within = c("us_valence"),between=c("instructions_conditioning"))
+apa_print(aov_ez(data=ratings_cs,id="url.srid",dv="cs_rating",within = c("us_valence"),between=c("instructions_conditioning")),estimate="es")
 
 ratings_cs_2 <- aggregate(ratings_cs, FUN = mean, cs_rating ~ us_valence * url.srid + instructions_conditioning)
 library(reshape2)
@@ -127,6 +127,18 @@ effectsize(age.t)
 ```
 
 ```{r}
+# from Gpower: d=.78, one-tailed, alpha = .05, 1-beta = .8 --> 12
+# from Gpower: d=.31, one-tailed, alpha = .05, 1-beta = .8 --> 66
+```
+
+```{r}
+# library(pwrss)
+# xx1 <- pwrss.f.rmanova(eta2 = .025,  n.levels = 2, n.rm = 2,
+#                   power = 0.80, alpha = 0.1,
+#                  corr.rm = -1, type = "interaction")
+```
+
+```{r}
 apa_barplot(data=ratings_cs,id="url.srid",dv="cs_rating",factor = c("instructions_conditioning","us_valence"))
 ```
 
@@ -140,6 +152,7 @@ aov_ez(data=age,id="url.srid",dv="cs_rating",within = c("us_valence"))
 
 
 ```
+
 ```{r}
 
 aov_ez(data=val,id="url.srid",dv="cs_rating",within = c("us_valence","us_age","cs_sex"))

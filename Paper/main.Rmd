@@ -34,7 +34,7 @@ abstract: |
 keywords          : "keywords"
 wordcount         : "X"
 
-bibliography      : ["r-references.bib", '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`']
+bibliography      : ["r-references.bib", "methexp.bib"]
 floatsintext      : yes
 linenumbers       : no
 draft             : no

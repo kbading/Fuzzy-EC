@@ -320,7 +320,7 @@ If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
 To test prediction P1 ($\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
 If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
 If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
-Note that the one-sided *t* test ($\alpha=.1$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
+Note that the one-sided *t* test ($\alpha=.05$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
 For a direct match with the specifications of the power analyses, prediction P1 will also be tested in a 2 (US valence) $\times$ 2 (task focus) mixed ANOVA on evaluative ratings (instead of EC scores).
 As before, we will conduct a one-sided test of prediction P1 if the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition (by using $\alpha=.1$ for the two-way interaction between US valence and task focus). 
 If the mean difference is reversed, the significance of the two-way interaction will be judged based on $\alpha=.05$.
@@ -345,7 +345,7 @@ For each participant and CS, responses from the two memory tasks will be recoded
 - If an (unpaired) new stimulus is incorrectly classified as "old" in the recognition task and a positive (negative) trait is chosen in the associative memory task, these responses will be recoded as "Newposincor" ("Newnegincor") on the joint memory index.
 
 The frequency distribution of the joint memory index (aggregated across participants) will be analyzed with 
-a Bayesian implementation of the MPT model, which is available in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020; see also @singmann_evaluating_2024]
+a Bayesian implementation of the MPT model, which is available in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020; see also @singmann_evaluating_2024].
 For each of the model's parameters, we will use (default) Beta priors with $\alpha = \beta = 1$,
 resulting in a uniform prior distribution in the unit interval.
 We will use these default priors for both the baseline model and all nested versions of the model (see below).

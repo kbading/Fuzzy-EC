@@ -797,7 +797,7 @@ apa_beeplot(data = power.dvf_equal_dnvf
 ```
 
 ```{r}
-load("dat_mpt_exp3.rdata")
+load("dat_mpt_exp2.rdata")
 
 memfirst <- subset(dat_mpt_exp3,order == "mem_first") #96 participants
 level_order <- check.mpt("WSW_exp2.eqn")$eqn.order.categories
@@ -871,3 +871,37 @@ dG2 <- apa_print(model_comparisons)
 ```{r}
 d.sub <- subset(power.dvf_equal_dnvf, b.par == .3 & a.par == .5 & D.par == .5)
 ```
+
+# Power analyses based on WSW3_pilot2
+
+```{r}
+Dval.par <- c(.613,.651,.689)
+Dage.par <- c(.383,.432,.480)
+Cval.par <- c(.339,.392,.444)
+Cage.par <- c(.095,.154,.212)
+dval.par <- c(.197,.325,.453)
+dage.par <- c(.000,.173)
+aval.par <- c(.532)
+aage.par <- c(.533)
+bval.par <- c(.291,.343,.395)
+bage.par <- c(.468,.510,.553)
+g.par <- c(.125,.125,.125)
+
+# #c <- outer(a,b,FUN = paste0)
+d <- expand.grid(Dval.par = Dval.par
+                 , Dage.par = Dage.par
+                 , Cval.par = Cval.par
+                 , Cage.par = Cage.par
+                 , dval.par = dval.par
+                 , dage.par = dage.par
+                 , aval.par = aval.par
+                 , aage.par = aage.par
+                 , bval.par = bval.par
+                 , bage.par = bage.par
+                 , g.par = g.par)
+
+power.combinations <- d[,c("Dval.par","Dage.par","Cval.par","Cage.par","dval.par","dage.par","aval.par","aage.par","bval.par","bage.par","g.par")]
+
+
+```
+
