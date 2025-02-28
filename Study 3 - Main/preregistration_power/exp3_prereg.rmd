@@ -59,8 +59,8 @@ Finally, $g_\mathit{pos}$ ($g_\mathit{neg}$) estimates the probability of guessi
 (ref:my-figure-caption) The 'who said what' multinomial processing tree model in the context of an evaluative conditioning procedure. The rectangles on the left-hand side represent the stimuli displayed in the memory task, and the rectangles on the right-hand side represent the responses.
 
 ```{r cspos-tree, fig.cap="(ref:my-figure-caption)"}
-wesanderson::wes_palette("Zissou1", n = 6, type = "continuous")
-# knitr::include_graphics(("mpt_wsw_model_exp3_KB2.jpg"))
+#wesanderson::wes_palette("Zissou1", n = 6, type = "continuous")
+knitr::include_graphics(("mpt_wsw_model_exp3_KB2.jpg"))
 
 
 ```
@@ -232,7 +232,7 @@ For each participant, each CS-US pair will be presented once in a random order w
 After the learning phase, the following text will be displayed: 
 "The first part of the experiment is now finished! 
 You have now seen all face-trait pairs and may continue with the second part of the experiment. 
-Press the space bar to continue."
+Press the spacebar to continue."
 
 ### Test phase
 Immediately after the learning phase, participants will enter the test phase. The test phase will be identical regardless of the task focus condition and label-key assignment in the learning phase. Participants will first perform an evaluative rating task and then a memory task.
@@ -243,15 +243,15 @@ The evaluative rating task will be introduced as follows:
 Please indicate your personal evaluation of the presented faces.
 To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). 
 Please click on the scale point that best represents your evaluation of a given face. 
-When you are ready, press the space bar to start the task.".
+When you are ready, press the spacebar to start the task.".
 
 Participants will then work through the evaluative rating task, consisting of 48 randomly ordered self-paced trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question ("How negative or positive is your personal evaluation of the face presented above?") together with a rating scale ranging from 1 ("very negative") to 8 ("very positive") will be displayed.
 Trials will be separated by a blank screen presented for 500 ms.
-The end of the evaluation task will be announced by a slide showing the following text: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the space bar to continue."
+The end of the evaluation task will be announced by a slide showing the following text: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 At the end of the evaluative rating task, the following text will be displayed:
 "The second part of the experiment is now finished. 
-Press the space bar to continue with the third part."
+Press the spacebar to continue with the third part."
 
 #### Memory task
 The memory task will be introduced as follows:
@@ -261,7 +261,7 @@ Other faces were not shown in the first part of this experiment: these faces wer
 For each face, please indicate whether it is 
 "shown" (i.e., part of the face-trait pairs you saw) or 
 "not shown" (i.e., NOT part of the face-trait pairs you saw). 
-Press the space bar to continue with the instructions."
+Press the spacebar to continue with the instructions."
 
 On the next instruction slide, the following text will be displayed: 
 "Whenever you classify a face as "shown", you will be asked to perform a second task. 
@@ -270,7 +270,7 @@ Your task will be to select the trait with which the face was paired in the firs
 If you remember the paired trait, click on it. 
 If you cannot remember the previously paired trait, try to guess the correct one. 
 Click on the trait corresponding to your guess. 
-When you are ready, press the space bar to start the task."
+When you are ready, press the spacebar to start the task."
 
 Participants will then work through the memory task, consisting of 48 randomly ordered self-paced trials. 
 On each trial, an image (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. 
@@ -288,7 +288,7 @@ For new faces (erroneously classified as "shown"), the buttons will be filled wi
 The end of the memory task will be announced by a slide showing the following text: 
 "The third and final part of the experiment is now finished. 
 Now we have a few short questions about your experience performing the study.
-Press the space bar to continue."
+Press the spacebar to continue."
 
 ### Check measures
 We will collect several check measures (which we will use as exclusion criteria).
@@ -313,14 +313,14 @@ For individual analyses (on data from the evaluation, item and associative memor
 ### Evaluative ratings
 For each participant, we will calculate an EC scores by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
 
-Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t* tests).
+Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t*-tests).
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
 If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
 
-To test prediction P1 ($\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
+To test prediction P1 ($\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$), we will conduct a two-sample *t*-test comparing EC effects between task focus conditions.
 If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
 If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
-Note that the one-sided *t* test ($\alpha=.05$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
+Note that the one-sided *t*-test (with $\alpha=.05$) is an analogue of the *F*-test (with $\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the minimal sample size).
 For a direct match with the specifications of the power analyses, prediction P1 will also be tested in a 2 (US valence) $\times$ 2 (task focus) mixed ANOVA on evaluative ratings (instead of EC scores).
 As before, we will conduct a one-sided test of prediction P1 if the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition (by using $\alpha=.1$ for the two-way interaction between US valence and task focus). 
 If the mean difference is reversed, the significance of the two-way interaction will be judged based on $\alpha=.05$.
@@ -354,17 +354,17 @@ We will first estimate a baseline model where parameters $D$, $C$, $d$, $a$ and 
 For both task focus conditions, the $g$ parameter will be set to $.125$ (corresponding to the inverse of the number of response options per US valence condition [8] in the associative memory task).
 The baseline model thus includes the following invariance assumptions (within each task focus condition): 
 
-- (A1) $D; D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
+- (A1) $D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
 
-- (A2) $C; C_\textit{pos}=C_\textit{neg}$
+- (A2) $C_\textit{pos}=C_\textit{neg}$
 
-- (A3) $d; d_\textit{pos}=d_\textit{neg}$
+- (A3) $d_\textit{pos}=d_\textit{neg}$
 
-- (A4) $b; b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
+- (A4) $b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
 
-- (A5) $a; a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
+- (A5) $a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
 
-- (A6) $g; g_\textit{pos}=g_\textit{neg}=.125$
+- (A6) $g_\textit{pos}=g_\textit{neg}=.125$
 
 To assess model fit, we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together with its corresponding posterior-predictive $p$ value.
 We will interpret $p \leq. 05$ as indicating insufficient model fit.
