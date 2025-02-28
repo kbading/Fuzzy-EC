@@ -131,12 +131,12 @@ We do not commit to a specific sample size.
 Instead, we pre-register a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
 In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and task focus. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directional prediction P1). The effect size of the US valence $\times$ CS variability interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
 Based on this (minimum) sample, we will then fit the MPT model and calculate Bayes factors comparing a nested version of the model with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the baseline model with free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
-The data collection will be discontinued at this point if (a) the Bayes factor in favor of the less restrictive model variant ($d_\textrm{valence-focus}\neq d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
-the Bayes factor in favor of the more restrictive model variant ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on Jeffreys' scale (Jeffreys, 1939; Lee & Wagenmakers, 2014).]
+The data collection will be discontinued at this point if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
+the Bayes factor in favor of the nested version of the model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on Jeffreys' scale (Jeffreys, 1939; Lee & Wagenmakers, 2014).]
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded).
 After each new set of 20 participants is collected, the previously mentioned Bayes factors will be calculated based on the total sample of non-excluded participants recruited so far.
-As before, data collection will be discontinued after a given set of 20 participants if (a) the Bayes factor in favor of the less restrictive model variant ($d_\textrm{valence-focus}\neq d_\textrm{age-focus}$) exceeds 10 or (b)
-the Bayes factor in favor of the more restrictive model variant ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10.
+As before, data collection will be discontinued after a given set of 20 participants if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 or (b)
+the Bayes factor in favor of the nested model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10.
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded) until the maximum sample size^[The maximum sample size was selected based on the financial resources available to the authors.] (200 participants in total) is reached.
 
 ```{r}
@@ -348,27 +348,25 @@ The frequency distribution of the joint memory index (aggregated across particip
 a Bayesian implementation of the MPT model, which is available in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020; see also @singmann_evaluating_2024]
 For each of the model's parameters, we will use (default) Beta priors with $\alpha = \beta = 1$,
 resulting in a uniform prior distribution in the unit interval.
-We will use these default priors for both the baseline model and all restricted variants of the model (see below).
+We will use these default priors for both the baseline model and all nested versions of the model (see below).
 
 We will first estimate a baseline model where parameters $D$, $C$, $d$, $a$ and $b$ are free to vary between task focus conditions.
 For both task focus conditions, the $g$ parameter will be set to $.125$ (corresponding to the inverse of the number of response options per US valence condition [8] in the associative memory task).
 The baseline model thus includes the following invariance assumptions (within each task focus condition): 
 
-- (A1) $D=D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
+- (A1) $D; D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
 
-- (A2) $C=C_\textit{pos}=C_\textit{neg}$
+- (A2) $C; C_\textit{pos}=C_\textit{neg}$
 
-- (A3) $d=d_\textit{pos}=d_\textit{neg}$
+- (A3) $d; d_\textit{pos}=d_\textit{neg}$
 
-- (A4) $b=b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
+- (A4) $b; b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
 
-- (A5) $a=a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
+- (A5) $a; a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
 
-- (A6) $g=g_\textit{pos}=g_\textit{neg}=.125$
+- (A6) $g; g_\textit{pos}=g_\textit{neg}=.125$
 
-To assess model adequacy (i.e., model fit),
-we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together
-with its corresponding posterior-predictive $p$ value.
+To assess model fit, we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together with its corresponding posterior-predictive $p$ value.
 We will interpret $p \leq. 05$ as indicating insufficient model fit.
 
 If the baseline model achieves adequate fit (i.e., $p > .05$),
