@@ -15,4 +15,3 @@ LaTeX: pdfLaTeX
 BuildType: Makefile
 
 QuitChildProcessesOnExit: Yes
-DisableExecuteRprofile: Yes

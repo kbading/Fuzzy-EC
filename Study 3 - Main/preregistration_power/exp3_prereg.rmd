@@ -2,11 +2,11 @@
 title             : "Pre-registration for Experiment 3"
 shorttitle        : "Pre-registration"
 date              : "`r Sys.Date()`"
-bibliography      : "`r file.path(rprojroot::find_rstudio_root_file(), '..', 'methexp.bib')`"
+bibliography      : "`r source(file.path(rprojroot::find_rstudio_root_file(), '.Rprofile')); methexp_bib()`"
 author: 
   - name          : "Karoline Bading"
     affiliation   : 1
-    corresponding : yes    # Define only one corresponding author
+    corresponding : yes
     address       : "Schleichstraße 4, Tübingen"
     email         : "karoline.bading@uni-tuebingen.de"
   - name          : "Jérémy Béna"
@@ -42,19 +42,19 @@ set_sum_contrasts()
 
 ```
 
-We pre-register an experiment testing the effect of task focus (in the learning phase) on evaluative conditioning (EC).
+We preregister an experiment testing the effect of task focus (in the learning phase) on evaluative conditioning (EC).
 We will use similar materials and procedures as @gast_what_2011.
-We will include two additional memory measures to estimate a newly developed multinomial processing tree (MPT) model and test the effects of task focus on the model parameters.
-The MPT model is an adaptation of the "who said what" model [@klauer_who_1998] to the evaluative conditioning paradigm and estimates memory retrieval of conditioned and unconditioned stimuli at different levels of specificity.
+We will include two  memory measures to estimate a newly developed Multinomial Processing Tree (MPT) model and test the effects of task focus on the model parameters.
+The MPT model is an adaptation of the "who said what" model [@klauer_unraveling_1998] to the evaluative conditioning paradigm and estimates the specificity of memory retrieval of unconditioned stimuli (US) presented with conditioned stimuli (CS) in the learning phase.
 
 As illustrated in Figure\ \@ref(fig:cspos-tree), the MPT model consists of three trees (one for each stimulus type included in the measurement tasks) and estimates a total of six parameter types ($D$, $C$, $d$, $a$, $b$ and $g$) all of which may, in principle, take different numerical values across model trees (as indicated by tree-specific subscripts).
-*Dpos* (*Dneg*) estimates the probability of recognizing a CS presented with a positive (negative) US as coming from the learning phase.
-Similarly, *Dnew* estimates the probability of detecting a previously unseen ("new") stimulus as new.
-*Cpos* (*Cneg*) estimates the probability of retrieving the identity of the positive (negative) US that was paired with a given CS during the learning phase.
-Relatedly, *dpos* (*dneg*) estimates the probability of retrieving the valence of the positive (negative) US that was paired with a given CS during the learning phase.
-Moreover, *apos*/*aneg*/*anew* estimates the probability of guessing a positive US for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
-Furthermore, *bpos*/*bneg*/*bnew* estimates the probability of guessing "old" for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
-Finally, *gpos* (*gneg*) estimates the probability of guessing the identity of the positive (negative) US that was paired with a given CS during the learning phase.
+$D_\mathit{pos}$ ($D_\mathit{neg}$) estimates the probability of recognizing a CS presented with a positive (negative) US as coming from the learning phase.
+Similarly, $D_\mathit{new}$ estimates the probability of detecting a previously unseen ("new") stimulus as new.
+$C_\mathit{pos}$ ($C_\mathit{neg}$) estimates the probability of retrieving the identity of the positive (negative) US that was paired with a given CS during the learning phase.
+Relatedly, $d_\mathit{pos}$ ($d_\mathit{neg}$) estimates the probability of retrieving the valence of the positive (negative) US that was paired with a given CS during the learning phase.
+Moreover, $a_\mathit{pos}$/$a_\mathit{neg}$/$a_\mathit{new}$ estimates the probability of guessing a positive US for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
+Furthermore, $b_\mathit{pos}$/$b_\mathit{neg}$/$b_\mathit{new}$ estimates the probability of guessing "old" for a CS presented with a positive US/for a CS presented with a negative US/for a new stimulus.
+Finally, $g_\mathit{pos}$ ($g_\mathit{neg}$) estimates the probability of guessing the identity of the positive (negative) US that was paired with a given CS during the learning phase.
 
 (ref:my-figure-caption) The 'who said what' multinomial processing tree model in the context of an evaluative conditioning procedure. The rectangles on the left-hand side represent the stimuli displayed in the memory task, and the rectangles on the right-hand side represent the responses.
 
@@ -81,16 +81,16 @@ wesanderson::wes_palette("Zissou1", n = 6, type = "continuous")
 
 ## Prior research and predictions
 The present study is a conceptual replication and extension of @gast_what_2011.
-@gast_what_2011 showed that EC effects are moderated by the nature of an impression formation task that is performed during the learning procedure: across three experiments, EC effects were found to be stronger with impression formation tasks that focused on valence rather than on other, non-valent stimulus dimensions (e.g., age).
-In the present experiment, we will implement the task focus manipulation from Gast and Rothermund's [-@gast_what_2011] Experiment 2 (valence focus vs. age focus), expecting to replicate the so-called valence focus effect on EC (prediction P1: $EC_\textrm{valence-focus}>EC_\textrm{age-focus}$).
+@gast_what_2011 showed that EC effects are moderated by the task that is performed during the learning procedure: across three experiments, EC effects were found to be stronger with tasks that focused on valence rather than on other, non-valent stimulus dimensions (e.g., age).
+In the present experiment, we will implement the task focus manipulation from Gast and Rothermund's [-@gast_what_2011] Experiment 2 (valence focus vs. age focus), expecting to replicate the so-called valence focus effect on EC (prediction P1: $\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$).
 
-In addition to boosting EC effects, valence focus tasks were also found to improve associative memory for the identity of the paired US as well as for the valence of the paired US [@gast_what_2011].
+In addition to boosting EC effects, valence focus tasks were also found to improve associative (in the present case, item-item) memory for the identity of the paired US as well as for the valence of the paired US [@gast_what_2011].
 <!-- Finally, Gast and Rothermund (2011) also reported that the valence focus effect on EC tended to be mediated by associative memory for the US valence but not by associative memory for the US identity. -->
 In the present experiment, we will test for similar effects of task focus on (associative) memory by comparing MPT parameter estimates between task focus conditions.
 This model-based approach to testing these effects will overcome certain drawbacks in the methods used by @gast_what_2011 and provide more fine-grained insights into the effects of task focus on associative memory.
 <!-- (and, potentially, into the mediation of the valence focus effect on EC). -->
 
-To measure associative memory for the US identity and for the US valence, @gast_what_2011 used a measurement procedure similar to the source memory task that we will implement in the present experiment (i.e., selecting, for a given CS, the correct US from a list of positive and negative USs; see Experiments 1 and 3).
+To measure associative memory for the US identity and for the US valence, @gast_what_2011 used a measurement procedure similar to the associative memory task that we will implement in the present experiment (i.e., selecting, for a given CS, the correct US from a list of positive and negative USs; see Experiments 1 and 3).
 Based on this similarity, the drawbacks in the methods used by @gast_what_2011 can be illustrated by *Figure 1*.
 To quantify associative memory for the US valence, @gast_what_2011 calculated a CS-valence memory score indicating the number of CSs for which a US with the correct US valence was selected.
 In the MPT model, this number corresponds to the sum of responses from branches $1.1$, $1.2$, $1.3$, $1.4$, $1.5$, $1.7$, $1.8$, $2.1$, $2.2$, $2.3$, $2.5$, $2.6$, $2.8$ and $2.9$ in *Figure 1*.
@@ -129,14 +129,14 @@ x1 <- (.1^2)/(1+.1^2) # eta2 from f (with f=d/2)
 Participants will be recruited through Prolific and receive monetary compensation for participating in the study.
 We do not commit to a specific sample size.
 Instead, we pre-register a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
-In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and CS variability. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directed nature of prediction P1). The effect size of the US valence $\times$ CS variability interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
-Based on this (minimum) sample, we will then fit the MPT model and calculate Bayes factors comparing the model variant with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the model variant with $d_\textrm{valence-focus}\neq d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
-The data collection will be discontinued at this point if (a) the Bayes factor in favor of the less restrictive model variant ($d_\textrm{valence-focus}\neq d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
-the Bayes factor in favor of the more restrictive model variant ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on Jeffreys' scale (Jeffreys, 1939; Lee & Wagenmakers, 2014).]
+In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and task focus. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directional prediction P1). The effect size of the US valence $\times$ CS variability interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
+Based on this (minimum) sample, we will then fit the MPT model and calculate Bayes factors comparing a nested version of the model with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the baseline model with free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
+The data collection will be discontinued at this point if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
+the Bayes factor in favor of the nested version of the model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on Jeffreys' scale (Jeffreys, 1939; Lee & Wagenmakers, 2014).]
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded).
 After each new set of 20 participants is collected, the previously mentioned Bayes factors will be calculated based on the total sample of non-excluded participants recruited so far.
-As before, data collection will be discontinued after a given set of 20 participants if (a) the Bayes factor in favor of the less restrictive model variant ($d_\textrm{valence-focus}\neq d_\textrm{age-focus}$) exceeds 10 or (b)
-the Bayes factor in favor of the more restrictive model variant ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10.
+As before, data collection will be discontinued after a given set of 20 participants if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 or (b)
+the Bayes factor in favor of the nested model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10.
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded) until the maximum sample size^[The maximum sample size was selected based on the financial resources available to the authors.] (200 participants in total) is reached.
 
 ```{r}
@@ -170,90 +170,144 @@ If neither criterion is met, data collection will be continued in sets of 20 par
 ```
 
 ## Materials
-The experiment is programmed with lab.js [@henninger_lab:_2021] and exported to an HTTPS-protected website with JATOS [@lange_just:_2015].
+The experiment is programmed with lab.js [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
-The CS pool comprises 48 colored images (500 $\times$ 624 pixel) of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
-The images were taken from the FACES database (Ebner, Riediger & Lindenberger, 2010) and optimized with an AI image optimization tool.
+The CS pool comprises 48 colored images of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
+The images were taken from the FACES database [@ebner_facesdatabase_2010] and optimized with an AI image optimization tool.
 
-The US pool comprises 24 adjectives describing human traits.
+The US pool comprises 24 adjectives describing human traits, with 6 adjectives in each US valence $\times$ US age typicality condition.
 Based on a pilot study, we selected six adjectives describing traits that are positive and more typical for younger (than for older) people (*energetic*, *flexible*, *lively*, *open-minded*, *optimistic*, *strong*), six adjectives describing traits that are positive and more typical for older (than for younger) people (*calm*, *dignified*, *nurturing*, *patient*, *realistic*, *wise*), six adjectives describing traits that are negative and more typical for younger (than for older) people (*careless*, *impulsive*, *naive*, *selfish*, *spoilt*, *self-absorbed*), and six adjectives describing traits that are negative and more typical for older (than for younger) people (*demented*, *feeble*, *frail*, *rigid*, *stubborn*, *weak*).
 
 ## Stimulus assignment
-For each participant, 12 randomly selected images will serve as positively paired CSs (i.e., they will be paired with a positive US during the learning phase), 12 randomly selected images will serve as negatively paired CSs (i.e., they will be paired with a negative US during the learning phase), and the remaining 24 images will serve as "new" stimuli (i.e., they will not be presented in the learning phase and appear only in the test phase).
+For each participant, 12 randomly selected images of faces (half female, half male) will serve as positively paired CSs (i.e., they will be paired with a positive US during the learning phase), 12 randomly selected images of faces (half female, half male) will serve as negatively paired CSs (i.e., they will be paired with a negative US during the learning phase), and the remaining 24 images of faces (half female, half male) will serve as "new" stimuli (i.e., they will not be presented in the learning phase and appear only in the test phase).
 
 For each participant, all 24 adjectives will serve as USs during the learning phase.
-Each adjective will be randomly assigned to one of the 24 (randomly selected) CSs.
+Each adjective will be randomly assigned to one of the 24 CSs. Six CSs (half images of female faces) will be paired with positive-typically young USs; 6 other CSs (half images of female faces) will be paired with positive-typically old USs; 6 other CSs (half images of female faces) will be paired with negative-typically young USs; the 6 last CSs (half images of female faces) will be paired with negative-typically old USs. 
 
 ## Procedure
 The study will be run online.
 All verbal materials will be presented in English.
+After providing their informed consent and being asked to focus on the study, participants will be thanked for their participation and asked to carefully read all instructions and perform the tasks. The instructions of the learning phase will then be presented. 
 
 ### Learning phase
-In the valence focus condition, the first instruction slide will display the following text: "In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather positive or rather negative. If your impression of the face-trait pair is rather positive, press the [X/M] key. If your impression of the face-trait pair is rather negative, press the [M/X] key. Press the space bar to continue with the instructions." (valence-to-key assignment will be randomly determined for each participant anew).
-In the age focus condition, the first instruction slide will display the following text: "In the first part of the experiment you will be presented with face-trait pairs. Your task is to look at each face-trait pair and to indicate whether your impression of the pair is rather typically old or typically young. If your impression of the face-trait pair is rather typically old, press the [X/M] key. If your impression of the face-trait pair is rather typically young, press the [M/X] key. Press the space bar to continue with the instructions." (age-to-key assignment will be randomly determined for each participant anew).
-For both task focus conditions, the second instruction slide will show the following text: "Next, you will be presented with the face-trait pairs. Please pay close attention to each pair. This part of the experiment will take about 8 minutes. Press the space bar to start the task."
+All participants will read the following instructions:
+"In the first part of the experiment you will be presented with photographs of faces (called 'faces' below) shown together with adjectives that denote human traits (called 'traits' below).
+Each face will be paired with a single trait.
+For each face-trait pair, the trait will be presented first. 
+After a brief delay, the face will appear underneath.
+Please pay close attention to all traits and faces.
+Each face-trait pair will be presented for a limited time.
+Your task will be to form an impression of each face-trait pair."
 
-Subsequently, participants will work through a learning procedure consisting of 72 trials.
-Each trial will start with a CS presented in the middle of the screen.
-After 500 ms, the US will be appear in green letters, covering the lower half of the CS.
-The CS-US pair will remain on screen for a total of 3,200 ms.
-Participants will have to indicate their impression of the CS-US pair within 2,200 ms after the onset of the US (by pressing the "M" or "X" key).
-If participants respond in time, two small lines will be presented below the CS-US pair (to indicate that the response is recorded).
-If participants do not respond in time, the message "no response" will be displayed in the same position.
-In both cases, the screen will be cleared of all stimuli (CS-US pair, two lines/"no response" message) once the CS-US pair has been presented for 3,200 ms in total.
-The trials will be separated by presenting an empty screen for 4,000 ms.
-For each participant, trial order will be randomized in sets of 24 trials.
-In each set (three in total), the 24 CS-US pairs will be presented once.
-The end of the learning procedure will be announced by a slide displaying the following text: "The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. Press the space bar to continue."
+Then, depending on the task focus condition (valence focus or age focus), participants will read:
+"Specifically, you will have to indicate whether you think each face-trait pair is rather 'negative' ['typically old'] or rather 'positive' ['typically young'].
+Press the spacebar to continue with the instructions."
+
+The position of 'negative', 'positive', 'typically old', and 'typically young' labels will match the label key assignment used in the learning phase (randomly determined for each participant anew): 'positive' ('typically old') on the A key and 'negative' ('typically young') on the M key (or vice-versa).
+
+The instructions will continue as follows: 
+"Next, you will be presented with the face-trait pairs.
+Again, your task is to form an impression of each face-trait pair. You need to carefully look at both the faces and traits being presented.
+Please indicate whether you think each pair is rather 'negative' ['typically old'] or rather 'positive' ['typically old'].
+If you think the pair is rather 'negative' ['typically old'], press 'A' on your keyboard.
+If you think the pair is rather 'positive' [typically young'], press 'L' on your keyboard. 
+Although the presentation time is limited, 
+please try your best to provide a response on each face-trait pair.
+This part of the experiment will take about 8 minutes.
+When you are ready, press the spacebar to start the task.
+(This may take a few seconds.)"
+
+Again, the position of the 'negative', 'positive', 'typically old', and 'typically young' labels and the associated keys will match the label key assignment used in the learning phase.
+
+Participants will then work through the learning task, consisting of 72 trials.
+Each trial will start with a US presented alone in green lower-case letters against a black background at the top of the screen. After 1000 ms, the CS will appear right below the US. 
+The CS-US pair will remain on screen for 4000 ms.
+Participants will have to respond within 3000 ms after the onset of the US (by pressing the "A" or "L" key).
+If participants respond in time, three hyphens will appear below the CS-US pair right after participants have entered a response (to indicate that the response is recorded).
+If participants do not respond in time (i.e., within the 3000 ms), the text "no response" will appear in red below the CS-US pair for 1000 ms.The CS-US pair will then disappear, and the message "no response Press the spacebar to continue." will be displayed in red at the bottom of the screen without time limit.
+The trials will be separated by an empty screen for 2500 ms.
+
+For each participant, each CS-US pair will be presented once in a random order within each set of 24 CS-US pair. Three CS-US pair sets will be presented. The CS-US pairs will be presented in a random order within each set.
+
+After the learning phase, the following text will be displayed: 
+"The first part of the experiment is now finished! 
+You have now seen all face-trait pairs and may continue with the second part of the experiment. 
+Press the space bar to continue."
 
 ### Test phase
-After the learning phase, participants enter the test phase. The test phase consists of two tasks (performed in the following order): evaluation task and memory task.
+Immediately after the learning phase, participants will enter the test phase. The test phase will be identical regardless of the task focus condition and label-key assignment in the learning phase. Participants will first perform an evaluative rating task and then a memory task.
 
-#### Evaluation task
-In both task focus conditions, the slide announcing the end of the learning phase will be followed by a slide displaying the following text: "In the second part of the experiment, you will be presented with individual faces. Please indicate your personal evaluation of the presented faces. To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your evaluation of a given face. When you are ready, press the space bar to start the task.".
+#### Evaluative rating task
+The evaluative rating task will be introduced as follows:
+"In the second part of the experiment, you will be presented with individual faces. 
+Please indicate your personal evaluation of the presented faces.
+To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). 
+Please click on the scale point that best represents your evaluation of a given face. 
+When you are ready, press the space bar to start the task.".
 
-Subsequently, participants will work through an evaluation task consisting of 48 randomly ordered trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question ("How positive or negative is your personal evaluation of the face presented above?") together with a rating scale ranging from 1 ("very negative") to 8 ("very positive") will be displayed.
+Participants will then work through the evaluative rating task, consisting of 48 randomly ordered self-paced trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question ("How negative or positive is your personal evaluation of the face presented above?") together with a rating scale ranging from 1 ("very negative") to 8 ("very positive") will be displayed.
 Trials will be separated by a blank screen presented for 500 ms.
 The end of the evaluation task will be announced by a slide showing the following text: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the space bar to continue."
-The end of the evaluation task will be announced by a slide displaying the following text: "The second part of the experiment is now finished. Press the space bar to continue with the third part.".
+
+At the end of the evaluative rating task, the following text will be displayed:
+"The second part of the experiment is now finished. 
+Press the space bar to continue with the third part."
 
 #### Memory task
-In both task focus conditions, the slide announcing the end of the evaluation task will be followed by a slide displaying the following text: "In the third part of the experiment, you will again be presented with faces. Some of these faces were part of the face-trait pairs you saw in the first part of this experiment. Other faces were not shown in the first part of this experiment: these faces were not part of the face-trait pairs you saw in the first part of this experiment. For each face, please indicate whether it is "shown" (i.e., part of the face-trait pairs you saw) or "not shown" (i.e., NOT part of the face-trait pairs you saw). Press the space bar to continue with the instructions.".
-On the next instruction slide, the following text will be shown: "Whenever you classify a face as "shown", you will be asked to perform a second task. In this second task, you will be presented with 16 traits. Your task will be to select the trait with which the face was paired in the first part
-of this experiment. If you remember the paired trait, click on it. If you cannot remember the previously paired trait, try to guess the correct one. 
-Click on the trait corresponding to your guess. When you are ready, press the space bar to start the task."
+The memory task will be introduced as follows:
+"In the third part of the experiment, you will again be presented with faces. 
+Some of these faces were part of the face-trait pairs you saw in the first part of this experiment. 
+Other faces were not shown in the first part of this experiment: these faces were not part of the face-trait pairs you saw in the first part of this experiment. 
+For each face, please indicate whether it is 
+"shown" (i.e., part of the face-trait pairs you saw) or 
+"not shown" (i.e., NOT part of the face-trait pairs you saw). 
+Press the space bar to continue with the instructions."
 
-Subsequently, participants will work through a memory task consisting of 48 randomly ordered trials. 
+On the next instruction slide, the following text will be displayed: 
+"Whenever you classify a face as "shown", you will be asked to perform a second task. 
+In this second task, you will be presented with 16 traits. 
+Your task will be to select the trait with which the face was paired in the first part of this experiment. 
+If you remember the paired trait, click on it. 
+If you cannot remember the previously paired trait, try to guess the correct one. 
+Click on the trait corresponding to your guess. 
+When you are ready, press the space bar to start the task."
+
+Participants will then work through the memory task, consisting of 48 randomly ordered self-paced trials. 
 On each trial, an image (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. 
 In the lower half, the recognition task question ("Was this face part of the face-trait pairs you saw?") together with the two response options "Yes (shown)" and "No (not shown)" will be displayed.
 If participants respond "No (not shown)", they will see a blank screen (500 ms) and then proceed to the next trial (i.e., they will be presented with a screen showing another face, the recognition task question, and the two response options).
-If participants respond with "Yes (shown)", they will see a blank screen (500 ms) and then proceed to the source memory task.
+If participants respond with "Yes (shown)", they will see a blank screen (500 ms) and then proceed to the associative memory task.
 For this task, the face will again be presented in the upper half of the screen.
-In the lower half, the source memory task question ("Which of the following traits was previously paired with the face presented above?") together with 16 USs will be shown.
+In the lower half, the associative memory task question ("Which of the following traits was previously paired with the face presented above?") together with 16 USs will be shown.
 The 16 USs will be displayed as buttons organized in three rows (with six buttons in the upper two rows and four buttons in the bottom row).
 For truly "shown" faces, the correct US will be presented on a randomly selected button, while the remaining buttons will be filled with 15 randomly selected USs that have been paired with other CSs.
 Three of these USs will have the same US valence and US age as the correct US, four USs will have the same US valence but the opposite US age as the correct US, four USs will have the same US age but the opposite US valence as the correct US, and four USs will have the opposite US age and the opposite US valence as the correct US.
 Other than that, the USs will be randomly selected for each trial and participant anew.
 For new faces (erroneously classified as "shown"), the buttons will be filled with 16 randomly selected USs (four USs per US valence $\times$ US age condition). After clicking on one of the 16 USs, participants will be presented with a blank screen (500 ms) followed by the next trial (i.e., they will be presented with a screen showing another face, the recognition task question, and the two response options).
-The end of the memory task will be announced by a slide showing the following text: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the space bar to continue."
+
+The end of the memory task will be announced by a slide showing the following text: 
+"The third and final part of the experiment is now finished. 
+Now we have a few short questions about your experience performing the study.
+Press the space bar to continue."
 
 ### Check measures
-After the test phase, we will collect several check measures (which we will use as exclusion criteria).
-Firstly, participants will be presented with a screen showing four long sentences.
+We will collect several check measures (which we will use as exclusion criteria).
+First, participants will be presented with a screen showing four long sentences in a single paragraph.
 The first three sentences will refer to attitude research and through length and writing style are meant to discourage participants from reading the whole text. 
 In the very last sentence of the text, participants will be instructed to ignore the upcoming question about their exercise habits (in order to demonstrate that they have read the entire passage). 
-On the next screen, participants are presented with a list of seven physical activities and are asked to indicate which of these activities they performed regularly (by ticking a small box next to the respective activity). 
+On the next screen, participants will be presented with a list of seven physical activities and are asked to indicate which of these activities they performed regularly (by ticking a small box next to the respective activity). 
 After having ticked all relevant boxes (or none at all), participants proceed to the next screen by clicking on the "Continue" button displayed at the bottom of the screen.
-Subsequently, participants will answer ("Yes" or "No") the following attention check item: "Did you pay attention to the faces and traits presented throughout the entire task? (the response to this question will not affect your payment)".
-Next, participants will answer the following seriousness check (based on Aust et al., 2013): "It would be very helpful if you could tell us at this point whether you have taken the requested responses seriously, so that we can use your answers for our scientific analysis, or whether you were just clicking through to take a look at the survey? (again, this will not affect your payment).".
+Subsequently, participants will answer ("Yes" or "No") the following attention check item: "Did you pay attention to the faces and traits presented throughout the entire study? (the response to this question will not affect your payment.)".
+Next, participants will answer the following seriousness check [based on @aust_seriousness_2013]: "It would be very helpful if you could tell us at this point whether you have taken the requested responses seriously, so that we can use your answers for our scientific analysis, or whether you were just clicking through to take a look at the survey? (again, this will not affect your payment.)".
 The response options will be "I have taken the requested responses seriously" and "I have just clicked through, please discard my data".
+Participants will then have the opportunity to share any comments and will be debriefed. 
 
 ## Inclusion and Exclusion criteria
 On Prolific Academic, sex will be balanced to have approximately the same proportions of male and female participants in our sample.
 Moreover, we will only recruit participants (1) whose first language is English, (2) with an approval rate of at least 90%, (3) with at least 100 previous submissions, (4) who did not take part in previous pretests and experiments from members of the current team of authors conducted using the same materials.
 
 Participants who fail at least one check measure (by selecting at least one physical activity, by responding with "No" to the attention check or by responding with "I have just clicked through, please discard my data" to the seriousness check) will be excluded from all analyses.
-For individual analyses (on data from the evaluation, item and source memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
+For individual analyses (on data from the evaluation, item and associative memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
 
 ## Data processing and statistical analyses
 ### Evaluative ratings
@@ -263,7 +317,7 @@ Separated by task focus condition, we will test the mean EC score against zero (
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
 If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
 
-To test prediction P1 ($EC_\textrm{valence-focus}>EC_\textrm{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
+To test prediction P1 ($\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$), we will conduct a two-sample *t* test comparing EC effects between task focus conditions.
 If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
 If the mean difference is reversed, a two-sided test will be conducted ($\alpha=.05$).
 Note that the one-sided *t* test ($\alpha=.1$) is an analogue of the *F* test ($\alpha=.1$) for the two-way interaction of US valence and task focus (which was used to determine the mimimal sample size).
@@ -278,48 +332,47 @@ For each participant and CS, responses from the two memory tasks will be recoded
 
 - If a positively (negatively) paired CS is incorrectly classified as "new" in the recognition task, this response will be recoded as "PosUSnew" ("NegUSnew") on the joint memory index. 
 
-- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and the correct positive (negative) trait is chosen in the source memory task, these responses will be recoded as "PosUSposcor" ("NegUSnegcor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and the correct positive (negative) trait is chosen in the associative memory task, these responses will be recoded as "PosUSposcor" ("NegUSnegcor") on the joint memory index.
 
-- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and an incorrect positive (negative) trait is chosen in the source memory task, these responses will be recoded as "PosUSposincor" ("NegUSnegincor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and an incorrect positive (negative) trait is chosen in the associative memory task, these responses will be recoded as "PosUSposincor" ("NegUSnegincor") on the joint memory index.
 
-- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and a negative (positive) trait is chosen in the source memory task, these responses will be recoded as "PosUSnegincor" ("NegUSposincor") on the joint memory index.
+- If a positively (negatively) paired CS is correctly classified as "old" in the recognition task and a negative (positive) trait is chosen in the associative memory task, these responses will be recoded as "PosUSnegincor" ("NegUSposincor") on the joint memory index.
 
 #### New stimuli
 
 - If an (unpaired) new stimulus is correctly classified as "new" in the recognition task, the response will be recoded as "Newnew" on the joint memory index. 
 
-- If an (unpaired) new stimulus is incorrectly classified as "old" in the recognition task and a positive (negative) trait is chosen in the source memory task, these responses will be recoded as "Newposincor" ("Newnegincor") on the joint memory index.
+- If an (unpaired) new stimulus is incorrectly classified as "old" in the recognition task and a positive (negative) trait is chosen in the associative memory task, these responses will be recoded as "Newposincor" ("Newnegincor") on the joint memory index.
 
 The frequency distribution of the joint memory index (aggregated across participants) will be analyzed with 
 a Bayesian implementation of the MPT model, which is available in the R packages TreeBUGS [@heck_treebugs_2018] and MPTmultiverse [@singmann_mptmultiverse_2020; see also @singmann_evaluating_2024]
 For each of the model's parameters, we will use (default) Beta priors with $\alpha = \beta = 1$,
 resulting in a uniform prior distribution in the unit interval.
+We will use these default priors for both the baseline model and all nested versions of the model (see below).
 
 We will first estimate a baseline model where parameters $D$, $C$, $d$, $a$ and $b$ are free to vary between task focus conditions.
-For both task focus conditions, the $g$ parameter will be set to $.125$ (corresponding to the inverse of the number of response options per US valence condition [8] in the source memory task).
+For both task focus conditions, the $g$ parameter will be set to $.125$ (corresponding to the inverse of the number of response options per US valence condition [8] in the associative memory task).
 The baseline model thus includes the following invariance assumptions (within each task focus condition): 
 
-- (A1) $D=D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
+- (A1) $D; D_\textit{pos}=D_\textit{neg}=D_\textit{new}$
 
-- (A2) $C=C_\textit{pos}=C_\textit{neg}$
+- (A2) $C; C_\textit{pos}=C_\textit{neg}$
 
-- (A3) $d=d_\textit{pos}=d_\textit{neg}$
+- (A3) $d; d_\textit{pos}=d_\textit{neg}$
 
-- (A4) $b=b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
+- (A4) $b; b_\textit{pos}=b_\textit{neg}=b_\textit{new}$
 
-- (A5) $a=a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
+- (A5) $a; a_\textit{pos}=a_\textit{neg}=a_\textit{new}$
 
-- (A6) $g=g_\textit{pos}=g_\textit{neg}=.125$
+- (A6) $g; g_\textit{pos}=g_\textit{neg}=.125$
 
-To assess model adequacy (i.e., model fit),
-we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together
-with its corresponding posterior-predictive $p$ value.
+To assess model fit, we will calculate the posterior-predictive fit statistic $T_1$ [@klauer_hierarchical_2010] together with its corresponding posterior-predictive $p$ value.
 We will interpret $p \leq. 05$ as indicating insufficient model fit.
 
 If the baseline model achieves adequate fit (i.e., $p > .05$),
 we will estimate several restricted versions of the MPT model.
 To test each parameter against its reference value ($0$ for $D$, $C$ and $d$; $.5$ for $a$ and $b$; $.125$ for $g$),
-we will estimate separate models (each of which will include one of 12 restrictions:
+we will estimate separate models (each of which will include one of ten restrictions:
 [1] $D_\textrm{valence-focus}=0$,
 [2] $D_\textrm{age-focus}=0$,
 [3] $C_\textrm{valence-focus}=0$,
@@ -329,18 +382,15 @@ we will estimate separate models (each of which will include one of 12 restricti
 [7] $b_\textrm{valence-focus}=.5$,
 [8] $b_\textrm{age-focus}=.5$,
 [9] $a_\textrm{valence-focus}=.5$,
-[10] $a_\textrm{age-focus}=.5$,
-[11] $g_\textrm{valence-focus}=.125$,
-[12] $g_\textrm{age-focus}=.125$) 
+[10] $a_\textrm{age-focus}=.5$
 and compare them with the unrestricted baseline model using the Bayes Factor.
 To test for parameter differences between task focus conditions,
-we will again estimate separate models (each of which will include one of six restrictions:
-[13] $D_\textrm{valence-focus}=D_\textrm{age-focus}$,
-[14] $C_\textrm{valence-focus}=C_\textrm{age-focus}$,
-[15] $d_\textrm{valence-focus}=d_\textrm{age-focus}$,
-[16] $b_\textrm{valence-focus}=b_\textrm{age-focus}$,
-[17] $a_\textrm{valence-focus}=a_\textrm{age-focus}$, 
-[18] $g_\textrm{valence-focus}=g_\textrm{age-focus}$)
+we will again estimate separate models (each of which will include one of five restrictions:
+[11] $D_\textrm{valence-focus}=D_\textrm{age-focus}$,
+[12] $C_\textrm{valence-focus}=C_\textrm{age-focus}$,
+[13] $d_\textrm{valence-focus}=d_\textrm{age-focus}$,
+[14] $b_\textrm{valence-focus}=b_\textrm{age-focus}$,
+[15] $a_\textrm{valence-focus}=a_\textrm{age-focus}$)
 and compare these models against the baseline model using the Bayes Factor.
 
 If the baseline model does not achieve adequate fit (i.e., $p \leq .05$),

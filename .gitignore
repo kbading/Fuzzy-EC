@@ -9,3 +9,6 @@
 
 # memoise cache
 .rcache
+
+# automatically downloaded methexp library
+.methexp.bib
