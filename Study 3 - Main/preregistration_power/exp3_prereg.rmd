@@ -2,7 +2,7 @@
 title             : "Pre-registration for Experiment 3"
 shorttitle        : "Pre-registration"
 date              : "`r Sys.Date()`"
-bibliography      : "`r source(file.path(rprojroot::find_rstudio_root_file(), '.Rprofile')); methexp_bib()`"
+bibliography      : "`r source(file.path(rprojroot::find_rstudio_root_file(), '.Rprofile')); methexp_bib(update = TRUE)`"
 author: 
   - name          : "Karoline Bading"
     affiliation   : 1
@@ -93,11 +93,11 @@ This model-based approach to testing these effects will overcome certain drawbac
 To measure associative memory for the US identity and for the US valence, @gast_what_2011 used a measurement procedure similar to the associative memory task that we will implement in the present experiment (i.e., selecting, for a given CS, the correct US from a list of positive and negative USs; see Experiments 1 and 3).
 Based on this similarity, the drawbacks in the methods used by @gast_what_2011 can be illustrated by *Figure 1*.
 To quantify associative memory for the US valence, @gast_what_2011 calculated a CS-valence memory score indicating the number of CSs for which a US with the correct US valence was selected.
-In the MPT model, this number corresponds to the sum of responses from branches $1.1$, $1.2$, $1.3$, $1.4$, $1.5$, $1.7$, $1.8$, $2.1$, $2.2$, $2.3$, $2.5$, $2.6$, $2.8$ and $2.9$ in *Figure 1*.
+In the MPT model, this number corresponds to the sum of responses from branches $1.1$, $1.2$, $1.3$, $1.4$, $1.5$, $1.7$, $1.8$, $2.1$, $2.2$, $2.3$, $2.5$, $2.6$, $2.8$ and $2.9$ in Figure\ \@ref(fig:cspos-tree).
 From the perspective of the MPT model, differences in the CS-valence memory score (across task focus conditions) may therefore be driven by changes in any parameter contained in these 14 branches.
 Since most of these parameters do not capture associative memory for the US valence, the CS-valence memory score used by @gast_what_2011 may thus yield artifactual evidence for an effect of task focus on this type of associative memory (most importantly, when the task focus manipulation affects associative memory for the US identity [as measured by the $C$ parameters contained in branches $1.1$ and $2.1$] without affecting associative memory for the US valence [as measured by the $d$ parameters contained in branches $1.2$, $1.3$, $2.2$, and $2.3$]). 
 A similar criticism applies to the CS-US memory score which was used by @gast_what_2011 to measure associative memory for the US identity.
-The CS-US memory score was calculated as the number of CSs for which the correct US was selected, therefore corresponding to the sum of responses from branches $1.1$, $1.2$, $1.4$, $1.7$, $2.1$, $2.2$, $2.5$, and $2.8$ in *Figure 1*.
+The CS-US memory score was calculated as the number of CSs for which the correct US was selected, therefore corresponding to the sum of responses from branches $1.1$, $1.2$, $1.4$, $1.7$, $2.1$, $2.2$, $2.5$, and $2.8$ in Figure\ \@ref(fig:cspos-tree).
 As before, most parameters contained in these branches are unrelated to the to-be-measured type of associative memory, implying that the CS-US memory score may also yield artifactual evidence for a task focus effect on associative memory for the US identity (most importantly, when the task focus manipulation affects associative memory for the US valence [as measured by the $d$ parameters contained in branches $1.2$ and $2.2$] without affecting associative memory for the US identity [as measured by the $C$ parameters contained in branches $1.1$ and $2.1$]).
 
 In the present experiment, we will avoid the previously mentioned confounds by testing for task focus effects on the $C$ and $d$ parameters estimated in the MPT model.
@@ -110,7 +110,7 @@ For the $a$ parameter, no such effect is expected.
 
 # Methods
 ## Design, participants and sample size
-The experiment follows a 2 (US valence: positive vs. negative) x 2 (US age: young vs. old) x 2 (task focus: valence focus vs. age focus) mixed design.
+The experiment follows a 2 (*US valence*: positive vs. negative) x 2 (*US age*: young vs. old) x 2 (*task focus*: valence focus vs. age focus) mixed design.
 The first two factors are varied within participants and the third factor is varied between participants.
 Assignment to task focus conditions will be random (executed by the experimental software).
 
@@ -132,7 +132,7 @@ Instead, we pre-register a minimum sample size (per task focus condition), a max
 In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and task focus. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directional prediction P1). The effect size of the US valence $\times$ CS variability interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
 Based on this (minimum) sample, we will then fit the MPT model and calculate Bayes factors comparing a nested version of the model with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the baseline model with free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
 The data collection will be discontinued at this point if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
-the Bayes factor in favor of the nested version of the model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on Jeffreys' scale (Jeffreys, 1939; Lee & Wagenmakers, 2014).]
+the Bayes factor in favor of the nested version of the model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on @lee_bayesian_2014.]
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded).
 After each new set of 20 participants is collected, the previously mentioned Bayes factors will be calculated based on the total sample of non-excluded participants recruited so far.
 As before, data collection will be discontinued after a given set of 20 participants if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 or (b)
@@ -311,7 +311,7 @@ For individual analyses (on data from the evaluation, item and associative memor
 
 ## Data processing and statistical analyses
 ### Evaluative ratings
-For each participant, we will calculate an EC scores by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
+For each participant, we will calculate an EC score by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
 
 Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t*-tests).
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).

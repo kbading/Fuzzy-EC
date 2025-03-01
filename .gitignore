@@ -7,6 +7,10 @@
 **_cache
 **_files
 
+# intermediate files created by latex
+**.aux
+**.log
+
 # memoise cache
 .rcache
 
