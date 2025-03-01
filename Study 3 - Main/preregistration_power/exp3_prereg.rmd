@@ -110,7 +110,7 @@ For the $a$ parameter, no such effect is expected.
 
 # Methods
 ## Design, participants and sample size
-The experiment follows a 2 (*US valence*: positive vs. negative) x 2 (*US age*: young vs. old) x 2 (*task focus*: valence focus vs. age focus) mixed design.
+The experiment follows a 2 (*US valence*: positive vs. negative) $\times$ 2 (*US age*: young vs. old) $\times$ 2 (*task focus*: valence focus vs. age focus) mixed design.
 The first two factors are varied within participants and the third factor is varied between participants.
 Assignment to task focus conditions will be random (executed by the experimental software).
 
