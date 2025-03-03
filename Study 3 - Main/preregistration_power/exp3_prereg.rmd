@@ -129,7 +129,7 @@ x1 <- (.1^2)/(1+.1^2) # eta2 from f (with f=d/2)
 Participants will be recruited through Prolific and receive monetary compensation for participating in the study.
 We do not commit to a specific sample size.
 Instead, we pre-register a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
-In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and task focus. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directional prediction P1). The effect size of the US valence $\times$ CS variability interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
+In a first step, we will recruit participants until the minimum sample size^[The minimum sample size per task focus condition is based on a power analyses for the two-way interaction between US valence and task focus. In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting the directional prediction P1). The effect size of the US valence $\times$ Task focus interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).] is reached (52 non-excluded participants per task focus condition; exclusion criteria are listed below).
 Based on this (minimum) sample, we will then fit the MPT model and calculate Bayes factors comparing a nested version of the model with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the baseline model with free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
 The data collection will be discontinued at this point if (a) the Bayes factor in favor of the baseline model (free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the presence of a task focus effect on the $d$ parameter is strong) or (b)
 the Bayes factor in favor of the nested version of the model ($d_\textrm{valence-focus}=d_\textrm{age-focus}$) exceeds 10 (i.e., if evidence for the absence of a task focus effect on the $d$ parameter is strong).^[The interpretation of a larger-than-ten Bayes factor as strong evidence (for the presence or absence of a task focus effect on the $d$ parameter) is based on @lee_bayesian_2014.]
@@ -227,7 +227,7 @@ If participants respond in time, three hyphens will appear below the CS-US pair 
 If participants do not respond in time (i.e., within the 3000 ms), the text "no response" will appear in red below the CS-US pair for 1000 ms.The CS-US pair will then disappear, and the message "no response Press the spacebar to continue." will be displayed in red at the bottom of the screen without time limit.
 The trials will be separated by an empty screen for 2500 ms.
 
-For each participant, each CS-US pair will be presented once in a random order within each set of 24 CS-US pair. Three CS-US pair sets will be presented. The CS-US pairs will be presented in a random order within each set.
+For each participant, each CS-US pair will be presented once in a random order within each set of 24 CS-US pairs. Three CS-US pair sets will be presented. The CS-US pairs will be presented in a random order within each set.
 
 After the learning phase, the following text will be displayed: 
 "The first part of the experiment is now finished! 
@@ -247,7 +247,6 @@ When you are ready, press the spacebar to start the task.".
 
 Participants will then work through the evaluative rating task, consisting of 48 randomly ordered self-paced trials. On each trial, a face (one of the 24 CSs or one of the 24 new stimuli) will be presented in the upper half of the screen. In the lower half, the evaluation task question ("How negative or positive is your personal evaluation of the face presented above?") together with a rating scale ranging from 1 ("very negative") to 8 ("very positive") will be displayed.
 Trials will be separated by a blank screen presented for 500 ms.
-The end of the evaluation task will be announced by a slide showing the following text: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 At the end of the evaluative rating task, the following text will be displayed:
 "The second part of the experiment is now finished. 
@@ -264,7 +263,7 @@ For each face, please indicate whether it is
 Press the spacebar to continue with the instructions."
 
 On the next instruction slide, the following text will be displayed: 
-"Whenever you classify a face as "shown", you will be asked to perform a second task. 
+"Whenever you classify a face as 'shown', you will be asked to perform a second task. 
 In this second task, you will be presented with 16 traits. 
 Your task will be to select the trait with which the face was paired in the first part of this experiment. 
 If you remember the paired trait, click on it. 
@@ -304,7 +303,7 @@ Participants will then have the opportunity to share any comments and will be de
 
 ## Inclusion and Exclusion criteria
 On Prolific Academic, sex will be balanced to have approximately the same proportions of male and female participants in our sample.
-Moreover, we will only recruit participants (1) whose first language is English, (2) with an approval rate of at least 90%, (3) with at least 100 previous submissions, (4) who did not take part in previous pretests and experiments from members of the current team of authors conducted using the same materials.
+Moreover, we will only recruit participants (1) whose first language is English, (2) declaring to live in the USA or in the United Kingdom, (3) with an approval rate of at least 90%, (4) with at least 20 previous submissions, and (5) who did not take part in previous pretests and experiments from members of the current team of authors conducted using the same materials.
 
 Participants who fail at least one check measure (by selecting at least one physical activity, by responding with "No" to the attention check or by responding with "I have just clicked through, please discard my data" to the seriousness check) will be excluded from all analyses.
 For individual analyses (on data from the evaluation, item and associative memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
