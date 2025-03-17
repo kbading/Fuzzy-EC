@@ -384,7 +384,7 @@ we will estimate separate models (each of which will include one of ten restrict
 [10] $a_\textrm{age-focus}=.5$
 and compare them with the unrestricted baseline model using the Bayes Factor.
 To test for parameter differences between task focus conditions,
-we will again estimate separate models (each of which will include one of five restrictions:
+we will again estimate separate models (each of which will include one of five restrictions):
 [11] $D_\textrm{valence-focus}=D_\textrm{age-focus}$,
 [12] $C_\textrm{valence-focus}=C_\textrm{age-focus}$,
 [13] $d_\textrm{valence-focus}=d_\textrm{age-focus}$,
@@ -396,6 +396,9 @@ If the baseline model does not achieve adequate fit (i.e., $p \leq .05$),
 we will try to identify a less restrictive (baseline) model that provides a more adequate account of the data.
 Model selection (of an alternative baseline model) will be based on model comparisons using the Bayes Factor, 
 complemented by substantive and pragmatic considerations.
+Such an alternative baseline model may eventually contain separate parameters for positive/negative/new stimuli (e.g., three separate $D$ parameters $D_\textit{pos}, D_\textit{neg}, D_\textit{new}$ within each task focus condition).
+To test for differences between task focus conditions,
+we will, accordingly, compare the alternative baseline model with more restrictive models setting one, two, or all of these three parameters equal between task focus conditions using the Bayes factor.
 
 # References
 
