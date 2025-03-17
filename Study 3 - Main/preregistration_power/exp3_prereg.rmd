@@ -314,7 +314,7 @@ For each participant, we will calculate an EC score by subtracting the mean eval
 
 Separated by task focus condition, we will test the mean EC score against zero (using one-sample *t*-tests).
 If the mean EC score is positive (indicating a regular EC effect), we will conduct a one-sided test ($\alpha=.05$).
-If the mean EC is negative, a two-sided test will be conducted ($\alpha=.05$).
+If the mean EC score is negative, a two-sided test will be conducted ($\alpha=.05$).
 
 To test prediction P1 ($\textrm{EC}_\textrm{valence-focus}>\textrm{EC}_\textrm{age-focus}$), we will conduct a two-sample *t*-test comparing EC effects between task focus conditions.
 If, in line with prediction P1, the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition, we will conduct a one-sided test ($\alpha=.05$).
