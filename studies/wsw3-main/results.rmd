@@ -159,10 +159,10 @@ simple_mpt <- lapply(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
       , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
-      , n.iter   = 2e3L
-      , n.burnin = 1e3L
-      , n.thin   = 1e1L
-      , ppp      = 3e2L
+      , n.iter   = 2e5L
+      , n.burnin = 1e5L
+      , n.thin   = 2e1L
+      , ppp      = 5e3L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
