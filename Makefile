@@ -1,5 +1,5 @@
 
-studies = wsw2-main wsw3-p2
+studies = wsw2-main wsw3-p2 # wsw3-main
 
 results = $(patsubst %, studies/%/results.html, $(studies))
 rating_files = $(patsubst %, studies/%/data/rating.rds, $(studies))
