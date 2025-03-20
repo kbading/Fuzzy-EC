@@ -11,11 +11,11 @@
 **.aux
 **.log
 
-# memoise cache
+# memoise filesystem cache
 .rcache
 
 # automatically downloaded methexp library
 .methexp.bib
 
-studies/**/results.html
+studies/**/**.html
 studies/**/data/
