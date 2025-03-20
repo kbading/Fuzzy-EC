@@ -19,3 +19,7 @@
 
 studies/**/**.html
 studies/**/data/
+
+# ignore old build artifacts
+Paper/mpt analyses/**rds
+Paper/mpt analyses/**html
