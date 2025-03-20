@@ -3,9 +3,12 @@ library(dplyr)
 library(tidyr)
 library(tinylabels)
 
+
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
-data <- file.path(study_folder, "data-raw", c("valence-focus.txt", "age-focus.txt")) |>
+utils::unzip(file.path(study_folder, "data-raw", "test_data_200325.zip"), exdir = tempdir())
+
+data <- file.path(tempdir(), "test_data_200325.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
@@ -19,10 +22,9 @@ data <- file.path(study_folder, "data-raw", c("valence-focus.txt", "age-focus.tx
 
 
 data <- data |>
-  fill(url.srid, .direction = "down") |>
+  fill(url.srid, .direction = "downup") |>
   group_by(url.srid) |>
-  fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "down") |>
-  fill(consent, comment_study, pay_attention,serious,instructions_conditioning,'-0','-1','-2','-3','-4','-5','-6', .direction = "up")
+  fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "downup")
 
 data$sports <- ifelse(
   data$'-1'==TRUE | data$'-2'==TRUE | data$'-3'==TRUE | data$'-4'==TRUE | data$'-5'==TRUE | data$'-0'==TRUE | data$'-6'==TRUE
@@ -40,12 +42,12 @@ data <- within(data, {
   task_focus <- factor(instructions_conditioning, levels = c("age_task", "val_task"), labels = c("age", "valence"))
 })
 
-test_runs <- as.character(c(16977:16980, 16986))
+test_runs <- c()
 
 
 data <- subset(
   data
-  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
+  , TRUE # sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
   , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating","task_focus")
 ) |>
   label_variables(
@@ -122,3 +124,4 @@ dir.create(file.path(study_folder, "data"), showWarnings = FALSE)
 saveRDS(mpt_data, file = file.path(study_folder, "data", "mpt_data.rds"))
 saveRDS(mpt_data_hierarchical, file = file.path(study_folder, "data", "mpt_data_hierarchical.rds"))
 saveRDS(rating, file = file.path(study_folder, "data", "rating.rds"))
+
