@@ -11,7 +11,7 @@
 
 <meta name="author" content="Karoline Bading &amp; Marius Barth" />
 
-<meta name="date" content="2025-02-18" />
+<meta name="date" content="2025-03-20" />
 
 <title>Test Script for who-said-what experiment 3</title>
 
@@ -1570,7 +1570,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Test Script for who-said-what experiment
 3</h1>
 <h4 class="author">Karoline Bading &amp; Marius Barth</h4>
-<h4 class="date">2025-02-18</h4>
+<h4 class="date">2025-03-20</h4>
 
 </div>
 
@@ -1691,8 +1691,44 @@ aage5      7.10e+00  7.00e+00  4.18e-01       2.75e+00       1        0.097 .
 aval5      5.66e+00  7.00e+00  5.80e-01       1.31e+00       1        0.253    
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code># dG2 &lt;- apa_print(model_comparisons)
-# dG2</code></pre>
+</div>
+<div id="bayesian-mpt-model" class="section level2">
+<h2>Bayesian MPT model</h2>
+<pre class="r"><code>file_cache &lt;- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), &quot;.rcache&quot;), compress = &quot;gzip&quot;)
+simpleMPT &lt;- memoise(TreeBUGS::simpleMPT, cache = file_cache)
+BayesFactorMPT &lt;- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
+
+simple_mpt &lt;- restrictions_list |&gt;
+  lapply(function(x) {
+    simpleMPT(
+      eqnfile = file.path(study_folder, &quot;WSW_exp3.eqn&quot;)
+      , data = colSums(mpt_data)
+      , restrictions = x
+      , n.iter   = 4e5L
+      , n.burnin = 2e5L
+      , n.thin   = 2e1L
+      , ppp      = 2e3L
+      , n.chains = 4e0L
+      , cores    = 4e0L
+    )
+})
+BFs &lt;- BayesFactorMPT(simple_mpt, cores = 4L)
+# Compare baseline model with other models
+BFs$posterior[[1L]] / BFs$posterior[-1L]</code></pre>
+<pre><code>       Dageval        Cageval        dageval        aageval        bageval 
+  6.157926e+09   3.174800e+05   2.420720e+01   8.694644e-02   8.173477e+03 
+         Dage0          Dval0          Cage0          Cval0          dage0 
+ -3.937255e+57 -4.784600e+167   7.444743e+07   8.565294e+82   7.767780e-02 
+         dval0          bage5          bval5          aage5          aval5 
+  2.421138e+04   6.209779e-02   5.801951e+05   2.065451e-01   1.338905e-01 </code></pre>
+<pre class="r"><code>log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])</code></pre>
+<pre><code>Warning in log(BFs$posterior[-1L]): NaNs wurden erzeugt</code></pre>
+<pre><code>   Dageval    Cageval    dageval    aageval    bageval      Dage0      Dval0 
+ 22.541006  12.668170   3.186650  -2.442463   9.008650        NaN        NaN 
+     Cage0      Cval0      dage0      dval0      bage5      bval5      aage5 
+ 18.125604 190.959696  -2.555186  10.094578  -2.779045  13.271120  -1.577237 
+     aval5 
+ -2.010733 </code></pre>
 </div>
 <div id="hierarchical-mpt-model" class="section level2">
 <h2>Hierarchical MPT model</h2>
@@ -1701,8 +1737,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
   within({
     ec_valence_focus &lt;- (task_focus == &quot;valence&quot;) * ec_effect
     ec_age_focus &lt;- (task_focus == &quot;age&quot;) * ec_effect
-  })
-# nrow(mpt_data_hierarchical)</code></pre>
+  })</code></pre>
 <pre class="r"><code>trait_mpt &lt;- function(file, ...) {
   if( file.exists(file) ) {
     model &lt;- qs::qread(file)
@@ -2014,65 +2049,6 @@ SD_factor_b_task_focus 1.118
 SD_factor_D_task_focus 1.055
 SD_factor_d_task_focus 1.036
 SD_factor_C_task_focus 1.006</code></pre>
-<pre class="r"><code>simple_mpt &lt;- list(NULL, &quot;d_x1 = d_x2&quot;) |&gt;
-  lapply(function(x) {
-    TreeBUGS::simpleMPT(
-      eqnfile = file.path(study_folder, &quot;WSW_exp3.eqn&quot;)
-      , data = colSums(mpt_data)
-      , restrictions = list(&quot;G_x1=G_x2= 0.125&quot;, x)
-      , n.iter   = 4e4
-      , n.burnin = 2e4
-      , n.thin   = 2e1
-      , n.chains = 4
-      , ppp      = 5e3
-      , cores    = 4L
-      # , alpha = c(a_x1 = 20, a_x2 = 20)
-      # , beta  = c(a_x1 = 20, a_x2 = 20)
-    )
-})</code></pre>
-<pre><code>
-Computing posterior-predictive p-values....</code></pre>
-<pre><code>Warning in mean.default(postPred$T2.obs): Argument ist weder numerisch noch
-boolesch: gebe NA zurück</code></pre>
-<pre><code>Warning in mean.default(postPred$T2.pred): Argument ist weder numerisch noch
-boolesch: gebe NA zurück</code></pre>
-<pre><code>
-Computing posterior-predictive p-values....</code></pre>
-<pre><code>Warning in mean.default(postPred$T2.obs): Argument ist weder numerisch noch
-boolesch: gebe NA zurück
-Warning in mean.default(postPred$T2.obs): Argument ist weder numerisch noch
-boolesch: gebe NA zurück</code></pre>
-<pre class="r"><code>BFs &lt;- TreeBUGS::BayesFactorMPT(simple_mpt)
-BFs$posterior[1] / BFs$posterior[2]</code></pre>
-<pre><code>[1] 23.77233</code></pre>
-<pre class="r"><code>lapply(simple_mpt, summary)[[1L]]</code></pre>
-<pre><code>Call: 
-TreeBUGS::simpleMPT(eqnfile = file.path(study_folder, &quot;WSW_exp3.eqn&quot;), 
-    data = colSums(mpt_data), restrictions = list(&quot;G_x1=G_x2= 0.125&quot;, 
-        x), n.iter = 40000, n.burnin = 20000, n.thin = 20, n.chains = 4, 
-    ppp = 5000, cores = 4L)
-
-           Mean    SD  2.5%   50% 97.5% Time-series SE n.eff  Rhat R_95%
-mean_a_x1 0.534 0.020 0.495 0.534 0.573             NA    NA 1.000 1.000
-mean_a_x2 0.532 0.028 0.479 0.532 0.586             NA    NA 1.000 1.001
-mean_b_x1 0.511 0.021 0.469 0.511 0.553             NA    NA 1.000 1.001
-mean_b_x2 0.345 0.027 0.295 0.345 0.398             NA    NA 1.000 1.001
-mean_C_x1 0.154 0.030 0.099 0.153 0.215             NA    NA 1.000 1.001
-mean_C_x2 0.393 0.027 0.341 0.393 0.446             NA    NA 1.001 1.003
-mean_d_x1 0.057 0.046 0.002 0.045 0.171             NA    NA 1.002 1.005
-mean_D_x1 0.428 0.025 0.379 0.428 0.476             NA    NA 1.000 1.001
-mean_d_x2 0.325 0.065 0.197 0.325 0.452             NA    NA 1.001 1.003
-mean_D_x2 0.650 0.020 0.611 0.650 0.688             NA    NA 1.000 1.002
-
-
-##############
- Model fit statistics (posterior predictive p-values):
- T1.observed T1.predicted         p.T1  T2.observed T2.predicted         p.T2 
-      14.751       16.048        0.562           NA           NA          NaN 
-
-T1 per person:
-    1 
-0.562 </code></pre>
 <pre class="r"><code>library(TreeBUGS)
 individual_parameters &lt;- as.data.frame(getParam(mpt_model_ec_predictor, parameter = &quot;theta&quot;))
 parameter_names &lt;- colnames(individual_parameters)
@@ -2164,7 +2140,7 @@ mediation_syntax &lt;-&quot;
 
 sem(mediation_syntax, data = data) |&gt;
   summary(standardized=TRUE)</code></pre>
-<pre><code>lavaan 0.6-19 ended normally after 3 iterations
+<pre><code>lavaan 0.6-19 ended normally after 2 iterations
 
   Estimator                                         ML
   Optimization method                           NLMINB

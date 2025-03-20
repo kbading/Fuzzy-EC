@@ -16,3 +16,6 @@
 
 # automatically downloaded methexp library
 .methexp.bib
+
+studies/**/results.html
+studies/**/data/
