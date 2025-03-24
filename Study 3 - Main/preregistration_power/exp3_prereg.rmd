@@ -398,7 +398,8 @@ Model selection (of an alternative baseline model) will be based on model compar
 complemented by substantive and pragmatic considerations.
 Such an alternative baseline model may eventually contain separate parameters for positive/negative/new stimuli (e.g., three separate $D$ parameters $D_\textit{pos}, D_\textit{neg}, D_\textit{new}$ within each task focus condition).
 To test for differences between task focus conditions,
-we will, accordingly, compare the alternative baseline model with more restrictive models setting one, two, or all of these three parameters equal between task focus conditions using the Bayes Factor.
+we will, accordingly, compare the alternative baseline model with more restrictive models setting one, two, or three of these parameters equal between task focus conditions (model comparisons will again be based on the Bayes Factor).
+Note that the total number of restrictive models is determined by the number of possible parameters of a given type ($D$: $D_\textit{pos}$, $D_\textit{neg}$, $D_\textit{new}$; $C$: $C_\textit{pos}$, $C_\textit{neg}$; $d$: $d_\textit{pos}$, $d_\textit{neg}$; $b$: $b_\textit{pos}$, $b_\textit{neg}$, $b_\textit{new}$; $a$: $a_\textit{pos}$, $a_\textit{neg}$, $a_\textit{new}$; $g$: $g_\textit{pos}$, $g_\textit{neg}$).
 
 # References
 
