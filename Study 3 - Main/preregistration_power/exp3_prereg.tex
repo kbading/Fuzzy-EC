@@ -54,36 +54,60 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newlength{\cslentryspacingunit} % times entry-spacing
-\setlength{\cslentryspacingunit}{\parskip}
-\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
- {% don't indent paragraphs
-  \setlength{\parindent}{0pt}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-  \let\oldpar\par
-  \def\par{\hangindent=\cslhangindent\oldpar}
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
   \fi
   % set entry spacing
-  \setlength{\parskip}{#2\cslentryspacingunit}
- }%
- {}
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{#1\hfill\break}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \ifLuaTeX
 \usepackage[bidi=basic]{babel}
@@ -154,17 +178,18 @@
 \makeatletter
 \xapptocmd\appendix
   {\xapptocmd\section
-    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi\\: #1}}
+    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi: #1}}
     {}{\InnerPatchFailed}%
   }
 {}{\PatchFailed}
+\makeatother
 \usepackage{csquotes}
 \usepackage{setspace}
 \captionsetup[figure]{font={stretch=1}}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -212,8 +237,7 @@ Finally, \(g_\mathit{pos}\) (\(g_\mathit{neg}\)) estimates the probability of gu
 \includegraphics[width=7.56in]{mpt_wsw_model_exp3_KB2} \caption{The `who said what' multinomial processing tree model in the context of an evaluative conditioning procedure. The rectangles on the left-hand side represent the stimuli displayed in the memory task, and the rectangles on the right-hand side represent the responses.}\label{fig:cspos-tree}
 \end{figure}
 
-\hypertarget{prior-research-and-predictions}{%
-\subsection{Prior research and predictions}\label{prior-research-and-predictions}}
+\subsection{Prior research and predictions}\label{prior-research-and-predictions}
 
 The present study is a conceptual replication and extension of Gast and Rothermund (2011).
 Gast and Rothermund (2011) showed that EC effects are moderated by the task that is performed during the learning procedure: across three experiments, EC effects were found to be stronger with tasks that focused on valence rather than on other, non-valent stimulus dimensions (e.g., age).
@@ -241,11 +265,9 @@ Finally, we will also test for task focus effects on the \(D\), \(b\) and \(a\) 
 Based on the pilot study, we expect significant effects of task focus on the \(D\) and \(b\) parameters (prediction P4: \(D_\textrm{valence-focus}>D_\textrm{age-focus}\); prediction P5: \(b_\textrm{age-focus}>b_\textrm{valence-focus}\)).
 For the \(a\) parameter, no such effect is expected.
 
-\hypertarget{methods}{%
-\section{Methods}\label{methods}}
+\section{Methods}\label{methods}
 
-\hypertarget{design-participants-and-sample-size}{%
-\subsection{Design, participants and sample size}\label{design-participants-and-sample-size}}
+\subsection{Design, participants and sample size}\label{design-participants-and-sample-size}
 
 The experiment follows a 2 (\emph{US valence}: positive vs.~negative) \(\times\) 2 (\emph{US age}: young vs.~old) \(\times\) 2 (\emph{task focus}: valence focus vs.~age focus) mixed design.
 The first two factors are varied within participants and the third factor is varied between participants.
@@ -264,8 +286,7 @@ As before, data collection will be discontinued after a given set of 20 particip
 the Bayes factor in favor of the nested model (\(d_\textrm{valence-focus}=d_\textrm{age-focus}\)) exceeds 10.
 If neither criterion is met, data collection will be continued in sets of 20 participants (excluded or non-excluded) until the maximum sample size\footnote{The maximum sample size was selected based on the financial resources available to the authors.} (200 participants in total) is reached.
 
-\hypertarget{materials}{%
-\subsection{Materials}\label{materials}}
+\subsection{Materials}\label{materials}
 
 The experiment is programmed with lab.js (Henninger, Shevchenko, Mertens, Kieslich, \& Hilbig, 2022) and exported to an HTTPS-protected website with JATOS (Lange, Kühn, \& Filevich, 2015).
 
@@ -275,23 +296,20 @@ The images were taken from the FACES database (Ebner, Riediger, \& Lindenberger,
 The US pool comprises 24 adjectives describing human traits, with 6 adjectives in each US valence \(\times\) US age typicality condition.
 Based on a pilot study, we selected six adjectives describing traits that are positive and more typical for younger (than for older) people (\emph{energetic}, \emph{flexible}, \emph{lively}, \emph{open-minded}, \emph{optimistic}, \emph{strong}), six adjectives describing traits that are positive and more typical for older (than for younger) people (\emph{calm}, \emph{dignified}, \emph{nurturing}, \emph{patient}, \emph{realistic}, \emph{wise}), six adjectives describing traits that are negative and more typical for younger (than for older) people (\emph{careless}, \emph{impulsive}, \emph{naive}, \emph{selfish}, \emph{spoilt}, \emph{self-absorbed}), and six adjectives describing traits that are negative and more typical for older (than for younger) people (\emph{demented}, \emph{feeble}, \emph{frail}, \emph{rigid}, \emph{stubborn}, \emph{weak}).
 
-\hypertarget{stimulus-assignment}{%
-\subsection{Stimulus assignment}\label{stimulus-assignment}}
+\subsection{Stimulus assignment}\label{stimulus-assignment}
 
 For each participant, 12 randomly selected images of faces (half female, half male) will serve as positively paired CSs (i.e., they will be paired with a positive US during the learning phase), 12 randomly selected images of faces (half female, half male) will serve as negatively paired CSs (i.e., they will be paired with a negative US during the learning phase), and the remaining 24 images of faces (half female, half male) will serve as ``new'' stimuli (i.e., they will not be presented in the learning phase and appear only in the test phase).
 
 For each participant, all 24 adjectives will serve as USs during the learning phase.
 Each adjective will be randomly assigned to one of the 24 CSs. Six CSs (half images of female faces) will be paired with positive-typically young USs; 6 other CSs (half images of female faces) will be paired with positive-typically old USs; 6 other CSs (half images of female faces) will be paired with negative-typically young USs; the 6 last CSs (half images of female faces) will be paired with negative-typically old USs.
 
-\hypertarget{procedure}{%
-\subsection{Procedure}\label{procedure}}
+\subsection{Procedure}\label{procedure}
 
 The study will be run online.
 All verbal materials will be presented in English.
 After providing their informed consent and being asked to focus on the study, participants will be thanked for their participation and asked to carefully read all instructions and perform the tasks. The instructions of the learning phase will then be presented.
 
-\hypertarget{learning-phase}{%
-\subsubsection{Learning phase}\label{learning-phase}}
+\subsubsection{Learning phase}\label{learning-phase}
 
 All participants will read the following instructions:
 ``In the first part of the experiment you will be presented with photographs of faces (called `faces' below) shown together with adjectives that denote human traits (called `traits' below).
@@ -337,13 +355,11 @@ After the learning phase, the following text will be displayed:
 You have now seen all face-trait pairs and may continue with the second part of the experiment.
 Press the spacebar to continue.''
 
-\hypertarget{test-phase}{%
-\subsubsection{Test phase}\label{test-phase}}
+\subsubsection{Test phase}\label{test-phase}
 
 Immediately after the learning phase, participants will enter the test phase. The test phase will be identical regardless of the task focus condition and label-key assignment in the learning phase. Participants will first perform an evaluative rating task and then a memory task.
 
-\hypertarget{evaluative-rating-task}{%
-\paragraph{Evaluative rating task}\label{evaluative-rating-task}}
+\paragraph{Evaluative rating task}\label{evaluative-rating-task}
 
 The evaluative rating task will be introduced as follows:
 ``In the second part of the experiment, you will be presented with individual faces.
@@ -359,8 +375,7 @@ At the end of the evaluative rating task, the following text will be displayed:
 ``The second part of the experiment is now finished.
 Press the spacebar to continue with the third part.''
 
-\hypertarget{memory-task}{%
-\paragraph{Memory task}\label{memory-task}}
+\paragraph{Memory task}\label{memory-task}
 
 The memory task will be introduced as follows:
 ``In the third part of the experiment, you will again be presented with faces.
@@ -397,8 +412,7 @@ The end of the memory task will be announced by a slide showing the following te
 Now we have a few short questions about your experience performing the study.
 Press the spacebar to continue.''
 
-\hypertarget{check-measures}{%
-\subsubsection{Check measures}\label{check-measures}}
+\subsubsection{Check measures}\label{check-measures}
 
 We will collect several check measures (which we will use as exclusion criteria).
 First, participants will be presented with a screen showing four long sentences in a single paragraph.
@@ -411,8 +425,7 @@ Next, participants will answer the following seriousness check (based on Aust, D
 The response options will be ``I have taken the requested responses seriously'' and ``I have just clicked through, please discard my data''.
 Participants will then have the opportunity to share any comments and will be debriefed.
 
-\hypertarget{inclusion-and-exclusion-criteria}{%
-\subsection{Inclusion and Exclusion criteria}\label{inclusion-and-exclusion-criteria}}
+\subsection{Inclusion and Exclusion criteria}\label{inclusion-and-exclusion-criteria}
 
 On Prolific Academic, sex will be balanced to have approximately the same proportions of male and female participants in our sample.
 Moreover, we will only recruit participants (1) whose first language is English, (2) declaring to live in the USA or in the United Kingdom, (3) with an approval rate of at least 90\%, (4) with at least 20 previous submissions, and (5) who did not take part in previous pretests and experiments from members of the current team of authors conducted using the same materials.
@@ -420,11 +433,9 @@ Moreover, we will only recruit participants (1) whose first language is English,
 Participants who fail at least one check measure (by selecting at least one physical activity, by responding with ``No'' to the attention check or by responding with ``I have just clicked through, please discard my data'' to the seriousness check) will be excluded from all analyses.
 For individual analyses (on data from the evaluation, item and associative memory task), we will also exclude participants who gave the same response on all trials of the respective measurement procedure.
 
-\hypertarget{data-processing-and-statistical-analyses}{%
-\subsection{Data processing and statistical analyses}\label{data-processing-and-statistical-analyses}}
+\subsection{Data processing and statistical analyses}\label{data-processing-and-statistical-analyses}
 
-\hypertarget{evaluative-ratings}{%
-\subsubsection{Evaluative ratings}\label{evaluative-ratings}}
+\subsubsection{Evaluative ratings}\label{evaluative-ratings}
 
 For each participant, we will calculate an EC score by subtracting the mean evaluative rating for CSs presented with a negative US from the mean evaluative rating for CSs presented with a positive US.
 
@@ -440,13 +451,11 @@ For a direct match with the specifications of the power analyses, prediction P1 
 As before, we will conduct a one-sided test of prediction P1 if the mean EC score in the valence focus condition is numerically larger than the mean EC score in the age focus condition (by using \(\alpha=.1\) for the two-way interaction between US valence and task focus).
 If the mean difference is reversed, the significance of the two-way interaction will be judged based on \(\alpha=.05\).
 
-\hypertarget{memory-data}{%
-\subsubsection{Memory data}\label{memory-data}}
+\subsubsection{Memory data}\label{memory-data}
 
 For each participant and CS, responses from the two memory tasks will be recoded into a joint memory index according to the following scheme.
 
-\hypertarget{css}{%
-\paragraph{CSs}\label{css}}
+\paragraph{CSs}\label{css}
 
 \begin{itemize}
 \item
@@ -459,8 +468,7 @@ For each participant and CS, responses from the two memory tasks will be recoded
   If a positively (negatively) paired CS is correctly classified as ``old'' in the recognition task and a negative (positive) trait is chosen in the associative memory task, these responses will be recoded as ``PosUSnegincor'' (``NegUSposincor'') on the joint memory index.
 \end{itemize}
 
-\hypertarget{new-stimuli}{%
-\paragraph{New stimuli}\label{new-stimuli}}
+\paragraph{New stimuli}\label{new-stimuli}
 
 \begin{itemize}
 \item
@@ -527,45 +535,55 @@ Model selection (of an alternative baseline model) will be based on model compar
 complemented by substantive and pragmatic considerations.
 Such an alternative baseline model may eventually contain separate parameters for positive/negative/new stimuli (e.g., three separate \(D\) parameters \(D_\textit{pos}, D_\textit{neg}, D_\textit{new}\) within each task focus condition).
 To test for differences between task focus conditions,
+<<<<<<< HEAD
 we will, accordingly, compare the alternative baseline model with more restrictive models setting one, two, or three of these parameters equal between task focus conditions (model comparisons will again be based on the Bayes Factor).
 Note that the total number of restrictive models is determined by the number of possible parameters of a given type (\(D\): \(D_\textit{pos}\), \(D_\textit{neg}\), \(D_\textit{new}\); \(C\): \(C_\textit{pos}\), \(C_\textit{neg}\); \(d\): \(d_\textit{pos}\), \(d_\textit{neg}\); \(b\): \(b_\textit{pos}\), \(b_\textit{neg}\), \(b_\textit{new}\); \(a\): \(a_\textit{pos}\), \(a_\textit{neg}\), \(a_\textit{new}\); \(g\): \(g_\textit{pos}\), \(g_\textit{neg}\)).
+=======
+we will, accordingly, compare the alternative baseline model with more restrictive models setting one, two, or all of these three parameters equal between task focus conditions using the Bayes Factor.
+>>>>>>> 285ba1fd5c01c9d846031fc56ad114b32e047600
 
-\hypertarget{references}{%
-\section{References}\label{references}}
+\section{References}\label{references}
 
-\hypertarget{refs}{}
+\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-aust_seriousness_2013}{}}%
+\bibitem[\citeproctext]{ref-aust_seriousness_2013}
 Aust, F., Diedenhofen, B., Ullrich, S., \& Musch, J. (2013). Seriousness checks are useful to improve data validity in online research. \emph{Behavior Research Methods}, \emph{45}(2), 527--535. \url{https://doi.org/10.3758/s13428-012-0265-2}
 
-\leavevmode\vadjust pre{\hypertarget{ref-ebner_facesdatabase_2010}{}}%
+\bibitem[\citeproctext]{ref-ebner_facesdatabase_2010}
 Ebner, N. C., Riediger, M., \& Lindenberger, U. (2010). {FACES}---{A} database of facial expressions in young, middle-aged, and older women and men: {Development} and validation. \emph{Behavior Research Methods}, \emph{42}(1), 351--362. \url{https://doi.org/10.3758/BRM.42.1.351}
 
-\leavevmode\vadjust pre{\hypertarget{ref-gast_what_2011}{}}%
+\bibitem[\citeproctext]{ref-gast_what_2011}
 Gast, A., \& Rothermund, K. (2011). What you see is what will change: {Evaluative} conditioning effects depend on a focus on valence. \emph{Cognition and Emotion}, \emph{25}(1), 89--110. \url{https://doi.org/10.1080/02699931003696380}
 
-\leavevmode\vadjust pre{\hypertarget{ref-heck_treebugs_2018}{}}%
+\bibitem[\citeproctext]{ref-heck_treebugs_2018}
 Heck, D. W., Arnold, N. R., \& Arnold, D. (2018). {TreeBUGS}: {An R} package for hierarchical multinomial-processing-tree modeling. \emph{Behavior Research Methods}, \emph{50}(1), 264--284. \url{https://doi.org/10.3758/s13428-017-0869-7}
 
-\leavevmode\vadjust pre{\hypertarget{ref-henninger_labjs_2022}{}}%
+\bibitem[\citeproctext]{ref-henninger_labjs_2022}
 Henninger, F., Shevchenko, Y., Mertens, U. K., Kieslich, P. J., \& Hilbig, B. E. (2022). Lab.js: {A} free, open, online study builder. \emph{Behavior Research Methods}, \emph{54}(2), 556--573. \url{https://doi.org/10.3758/s13428-019-01283-5}
 
-\leavevmode\vadjust pre{\hypertarget{ref-klauer_hierarchical_2010}{}}%
+\bibitem[\citeproctext]{ref-klauer_hierarchical_2010}
 Klauer, K. C. (2010). Hierarchical {Multinomial Processing Tree Models}: {A Latent-Trait Approach}. \emph{Psychometrika}, \emph{75}(1), 70--98. \url{https://doi.org/10.1007/s11336-009-9141-0}
 
-\leavevmode\vadjust pre{\hypertarget{ref-klauer_unraveling_1998}{}}%
+\bibitem[\citeproctext]{ref-klauer_unraveling_1998}
 Klauer, K. C., \& Wegener, I. (1998). Unraveling social categorization in the '{Who} said what?' paradigm. \emph{Journal of Personality and Social Psychology}, \emph{75}(5), 1155--1178. \url{https://doi.org/10.1037/0022-3514.75.5.1155}
 
-\leavevmode\vadjust pre{\hypertarget{ref-lange_just_2015}{}}%
+\bibitem[\citeproctext]{ref-lange_just_2015}
 Lange, K., Kühn, S., \& Filevich, E. (2015). "{Just} another tool for online studies" ({JATOS}): {An} easy solution for setup and management of web servers supporting online studies. \emph{PloS One}, \emph{10}(6), e0130834. Retrieved from \url{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0130834}
 
+<<<<<<< HEAD
 \leavevmode\vadjust pre{\hypertarget{ref-lee_bayesian_2014}{}}%
 Lee, M. D., \& Wagenmakers, E.-J. (2014). \emph{Bayesian cognitive modeling: {A} practical course}. New York, NY, US: Cambridge University Press. \url{https://doi.org/10.1017/CBO9781139087759}
 
 \leavevmode\vadjust pre{\hypertarget{ref-singmann_mptmultiverse_2020}{}}%
+=======
+\bibitem[\citeproctext]{ref-lee_bayesian_2014}
+Lee, M. D., \& Wagenmakers, E.-J. (2014). \emph{Bayesian cognitive modeling: {A} practical course}. New York, NY, US: Cambridge University Press. \url{https://doi.org/10.1017/CBO9781139087759}
+
+\bibitem[\citeproctext]{ref-singmann_mptmultiverse_2020}
+>>>>>>> 285ba1fd5c01c9d846031fc56ad114b32e047600
 Singmann, H., Heck, D. W., Barth, M., \& Aust, F. (2020). \emph{{MPTmultiverse}: {Multiverse Analysis} of {Multinomial Processing Tree Models}}. \url{https://doi.org/10.32614/CRAN.package.MPTmultiverse}
 
-\leavevmode\vadjust pre{\hypertarget{ref-singmann_evaluating_2024}{}}%
+\bibitem[\citeproctext]{ref-singmann_evaluating_2024}
 Singmann, H., Heck, D. W., Barth, M., Erdfelder, E., Arnold, N. R., Aust, F., \ldots{} Groß, J. (2024). Evaluating the {Robustness} of {Parameter Estimates} in {Cognitive Models}: {A Meta-Analytic Review} of {Multinomial Processing Tree Models Across} the {Multiverse} of {Estimation Methods}. \emph{Psychological Bulletin}, \emph{150}(8), 965--1003. \url{https://doi.org/10.1037/bul0000434}
 
 \end{CSLReferences}
