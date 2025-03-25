@@ -6,9 +6,9 @@ library(tinylabels)
 
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
-utils::unzip(file.path(study_folder, "data-raw", "exp3_batch1.zip"), exdir = tempdir())
+utils::unzip(file.path(study_folder, "data-raw", "exp3_batch3.zip"), exdir = tempdir())
 
-data <- file.path(tempdir(), "exp3_batch1.txt") |>
+data <- file.path(tempdir(), "exp3_batch3.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
@@ -25,6 +25,9 @@ data <- data |>
   fill(url.srid, .direction = "downup") |>
   group_by(url.srid) |>
   fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "downup")
+
+# subset(data, grepl(prolific_pid, pattern = "9bba$"))
+print(length(unique(data$url.srid)))
 
 data$sports <- ifelse(
   data$'-1'==TRUE | data$'-2'==TRUE | data$'-3'==TRUE | data$'-4'==TRUE | data$'-5'==TRUE | data$'-0'==TRUE | data$'-6'==TRUE
@@ -78,6 +81,8 @@ table(memory$us_valence, useNA = "ifany")
 USs <- list(
   positive = c("patient", "realistic", "optimistic", "strong", "dignified", "open-minded", "flexible", "wise", "lively", "calm", "nurturing", "energetic")
 )
+
+
 
 memory$mpt_response <- with(memory, {
   tree <- rep("New", length(us_valence))
