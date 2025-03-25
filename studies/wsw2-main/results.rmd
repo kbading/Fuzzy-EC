@@ -1,5 +1,5 @@
 ---
-title: "Test Script for who-said-what experiment 2"
+title: "Experiment 2"
 author: "Karoline Bading & Marius Barth"
 date: "`r Sys.Date()`"
 output:
@@ -130,11 +130,61 @@ models <- lapply(
     )
   }
 )
+
+baseline_restrictions <- list(
+  G_x1 = .125
+  , G_x2 = .125
+)
+
+hypothesis_restrictions <- list(
+  baseline = list()
+  , D_equal = list(D = c("D_x1", "D_x2"))
+  , C_equal = list(C = c("C_x1", "C_x2"))
+  , d_equal = list(d = c("d_x1", "d_x2"))
+  , a_equal = list(a = c("a_x1", "a_x2"))
+  , b_equal = list(b = c("b_x1", "b_x2"))
+  # , Dage0   = list("D_x1=0")
+  # , Dval0   = list("D_x2=0")
+  # , Cage0   = list("C_x1=0")
+  # , Cval0   = list("C_x2=0")
+  # , dage0   = list("d_x1=0")
+  # , dval0   = list("d_x2=0")
+  # , bage5   = list("b_x1=0.5")
+  # , bval5   = list("b_x2=0.5")
+  # , aage5   = list("a_x1=0.5")
+  # , aval5   = list("a_x2=0.5")
+)
+library(HMMTreeC)
+models <- lapply(
+  hypothesis_restrictions
+  , FUN = function(x) {
+    fit_mpt(
+      data = mpt_data
+      , model = file.path(study_folder, "WSW_exp2.eqn")
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+  palette()
+
+plot(
+  models$baseline
+  , factors = list("Task focus" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+  , parameters = c(
+    D   = expression(italic(D))
+    , C = expression(italic(C))
+    , d = expression(italic(d))
+    , a = expression(italic(a))
+    , b = expression(italic(b))
+  )
+)
+
 ```
 
 ```{r}
-model_comparisons <- do.call("anova", models)
-model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
+model_comparisons <- compare(models)
+model_comparisons
 # dG2 <- apa_print(model_comparisons)
 # dG2
 ```

@@ -1,6 +1,6 @@
 ---
-title : Experiment 3
-author: Karoline Bading & Marius Barth
+title : "Experiment 3"
+author: "Karoline Bading & Marius Barth"
 date  : "`r Sys.Date()`"
 abstract: |
   *Beware, this is a test script!
