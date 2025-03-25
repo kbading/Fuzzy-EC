@@ -22,3 +22,6 @@ studies/*/data/*
 studies/*/model-objects/*
 studies/*/*html
 studies/*/*pdf
+
+Paper/mpt analyses/*.rds
+Paper/mpt analyses/*.html
