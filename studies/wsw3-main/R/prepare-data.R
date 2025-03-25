@@ -6,9 +6,9 @@ library(tinylabels)
 
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
-utils::unzip(file.path(study_folder, "data-raw", "test_data_200325.zip"), exdir = tempdir())
+utils::unzip(file.path(study_folder, "data-raw", "exp3_batch1.zip"), exdir = tempdir())
 
-data <- file.path(tempdir(), "test_data_200325.txt") |>
+data <- file.path(tempdir(), "exp3_batch1.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
@@ -47,7 +47,7 @@ test_runs <- c()
 
 data <- subset(
   data
-  , TRUE # sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
+  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
   , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating","task_focus")
 ) |>
   label_variables(

@@ -3,8 +3,7 @@ title : "Experiment 3"
 author: "Karoline Bading & Marius Barth"
 date  : "`r Sys.Date()`"
 abstract: |
-  *Beware, this is a test script!
-  Keep in mind that (1) exclusion criteria are not applied and (2) only the test data are used.*
+  *Beware, this is a test script!*
 
 output:
   html_document:
@@ -36,9 +35,14 @@ knitr::opts_chunk$set(
 
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
-file_cache <- cache_filesystem(path = file.path(rprojroot::find_rstudio_root_file(), ".rcache"), compress = "gzip")
+file_cache <- cache_filesystem(path = file.path(project_root, ".rcache"), compress = "gzip")
 simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
 BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
+```
+
+```{r}
+wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
+  palette()
 ```
 
 
@@ -51,11 +55,8 @@ rating <- readRDS(file.path(study_folder, "data", "rating.rds"))
 ## Evaluative rating
 
 ```{r}
-table(rating$sid)
-table(rating$us_valence)
-table(rating$us_age)
-table(rating$us_valence,rating$us_age)
-table(rating$evaluative_rating)
+table(subset(rating, !duplicated(sid))$task_focus)
+ftable(us_valence ~ sid + us_age, data = rating)
 ```
 
 ```{r exp3-rating}
@@ -93,7 +94,7 @@ rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_r
   within({
     ec_effect <- positive - negative
   })
-marginal_means
+apa_print(marginal_means)
 ```
 
 main effect *task focus*,
@@ -116,12 +117,6 @@ ggeffects::ggpredict(lme_model, terms = ~ task_focus + us_valence) |>
 
 ## MPT model
 
-```{r}
-table(recognition$sid)
-table(recognition$us_valence,recognition$us_age)
-table(recognition$reco_resp)
-table(source$source_mem)
-```
 
 
 ```{r exp3-ml-models}
@@ -159,6 +154,18 @@ models <- lapply(
     )
   }
 )
+plot(
+  models$baseline
+  , factors = list("Task focus" = c(age = "_x1", valence = "_x2"))
+  , parameters = c(
+    D = expression(italic(D))
+    , C = expression(italic(C))
+    , d = expression(italic(d))
+    , G = expression(italic(g))
+    , b = expression(italic(b))
+    , a = expression(italic(a))
+  )
+)
 ```
 
 ```{r exp3-compare-ml-models}
@@ -180,10 +187,10 @@ simple_mpt <- lapply(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
       , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
-      , n.iter   = 2e5L
-      , n.burnin = 1e5L
+      , n.iter   = 2e4L
+      , n.burnin = 1e4L
       , n.thin   = 2e1L
-      , ppp      = 5e3L
+      , ppp      = 5e2L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
@@ -193,7 +200,7 @@ BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
 
 # Compare baseline model with other models
 data.frame(
-  model = names(BFs$posterior[-1L])
+  model = paste0("Effect of task focus on ", gsub(names(BFs$posterior[-1L]), pattern = "_equal", replacement = ""))
   , logBF = log(BFs$posterior[-1L]) - log(BFs$posterior[[1L]])
   , row.names = NULL
 ) |> within({
