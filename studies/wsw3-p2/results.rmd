@@ -1,5 +1,5 @@
 ---
-title: "Test Script for who-said-what experiment 3"
+title: "Pilot 2 for Experiment 3"
 author: "Karoline Bading & Marius Barth"
 date: "`r Sys.Date()`"
 output:
@@ -186,8 +186,8 @@ plot(
 ```
 
 ```{r}
-model_comparisons <- do.call("anova", models)
-model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
+model_comparisons <- compare(models)
+model_comparisons
 ```
 
 ## Bayesian MPT model

@@ -1,5 +1,5 @@
 ---
-title: "Test Script for who-said-what experiment 2"
+title: "Experiment 2"
 author: "Karoline Bading & Marius Barth"
 date: "`r Sys.Date()`"
 output:
@@ -183,8 +183,8 @@ plot(
 ```
 
 ```{r}
-model_comparisons <- do.call("anova", models)
-model_comparisons |> printCoefmat(digits = 3, has.Pvalue = T, eps.Pvalue = .001)
+model_comparisons <- compare(models)
+model_comparisons
 # dG2 <- apa_print(model_comparisons)
 # dG2
 ```

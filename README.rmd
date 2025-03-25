@@ -1,0 +1,12 @@
+---
+output:
+  github_document:
+    html_preview: false
+---
+
+<!-- Do not edit README.md directly. It is automatically created from README.rmd -->
+
+This project has a `Makefile`.
+In RStudio, after re-loading the project, you may hit `Ctrl + Shift + B` to run analyses.
+If you already installed [GNU make](https://www.gnu.org/software/make/) on your system (which should be the case if you installed git bash),
+you may also `cd` to the repository folder and run `make`.

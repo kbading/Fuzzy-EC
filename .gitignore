@@ -16,3 +16,9 @@
 
 # automatically downloaded methexp library
 .methexp.bib
+
+# ignore build artifacts in folder studies/
+studies/*/data/*
+studies/*/model-objects/*
+studies/*/*html
+studies/*/*pdf
