@@ -35,10 +35,13 @@ source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
 
 ```{r}
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
-mpt_data <- readRDS(file.path(study_folder, "data", "mpt_data.rds"))
-mpt_aggregated <- colSums(mpt_data)
 
-rating <- readRDS(file.path(study_folder, "data", "rating.rds"))
+data <- readRDS(file.path(study_folder, "data", "data.rds"))
+
+rating <- data$rating
+mpt_data <- data$mpt_data
+mpt_data_hierarchical <- data$mpt_data_hierarchical
+mpt_aggregated <- colSums(mpt_data)
 ```
 
 
@@ -222,8 +225,7 @@ log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
 ## Hierarchical MPT model
 
 ```{r}
-mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "mpt_data_hierarchical.rds")) |>
-  merge(rating_wide, sort = FALSE) |>
+mpt_data_hierarchical <-merge(mpt_data_hierarchical, rating_wide, sort = FALSE) |>
   within({
     ec_valence_focus <- (task_focus == "valence") * ec_effect
     ec_age_focus <- (task_focus == "age") * ec_effect
