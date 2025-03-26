@@ -59,7 +59,7 @@ table(subset(rating, !duplicated(sid))$task_focus)
 ftable(us_valence ~ sid + us_age, data = rating)
 ```
 
-```{r exp3-rating}
+```{r exp3-ratings}
 apa_beeplot(
   data = subset(rating, !is.na(us_valence))
   , id = "sid"
@@ -94,15 +94,20 @@ rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_r
   within({
     ec_effect <- positive - negative
   })
-apa_print(marginal_means)
+apa_print(marginal_means) |>
+  apa_table(caption = "EC effects for both task-focus conditions.")
 ```
 
-main effect *task focus*,
-`r anova_rating$full_result$task_focus`,
-main effect *US valence*,
-`r anova_rating$full_result$us_valence`,
-two-way interaction *task focus* with *US valence*,
+Figure\ \@ref(fig:exp3-ratings) shows mean evaluative ratings.
+We analyzed evaluative ratings using
+a 2(*task focus*: valence vs. age) $\times$ 2 (*US valence*: positive vs. negative) mixed-factorial ANOVA
+that revealed
+a main effect *US valence*,
+`r anova_rating$full_result$us_valence` that was qualified by
+the two-way interaction *US valence* and *task focus*,
 `r anova_rating$full_result$task_focus_us_valence`.
+The main effect of *task focus* condition was not significant,
+`r anova_rating$full_result$task_focus`.
 
 ```{r eval = FALSE}
 lme_model <- lmer(
@@ -161,12 +166,17 @@ plot(
     D = expression(italic(D))
     , C = expression(italic(C))
     , d = expression(italic(d))
-    , G = expression(italic(g))
-    , b = expression(italic(b))
+    # , G = expression(italic(g))
     , a = expression(italic(a))
+    , b = expression(italic(b))
   )
 )
 ```
+
+```{r}
+models$baseline
+```
+
 
 ```{r exp3-compare-ml-models}
 compare(models)
@@ -187,10 +197,10 @@ simple_mpt <- lapply(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
       , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
-      , n.iter   = 2e4L
-      , n.burnin = 1e4L
+      , n.iter   = 2e4L # 2e5L
+      , n.burnin = 1e4L # 1e5L
       , n.thin   = 2e1L
-      , ppp      = 5e2L
+      , ppp      = 5e2L # 5e3L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
@@ -208,6 +218,6 @@ data.frame(
   BF_01 <- exp( logBF)
   BF_10 <- exp(-logBF)
 }) |>
-  format(scientific = FALSE, digits = 4)
+  apa_table()
 
 ```
