@@ -4,11 +4,11 @@ studies = wsw2-main wsw3-p2 wsw3-main
 results = $(patsubst %, studies/%/results.html, $(studies))
 data_files = $(patsubst %, studies/%/data/data.rds, $(studies))
 
-models = studies/wsw3-main/model-objects/trait-mpt.rds
+models = $(patsubst %, studies/%/model-objects/trait-mpt.rds, $(studies))
 
 all:	$(results) README.md
 
-$(results): %results.html: %results.rmd %data/data.rds
+$(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.rds
 	@echo "Knitting $@ from $^"
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 

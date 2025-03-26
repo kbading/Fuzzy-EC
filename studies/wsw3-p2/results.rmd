@@ -245,32 +245,17 @@ trait_mpt <- function(file, ...) {
 }
 
 # Estimate parameters
-exp3pilot = trait_mpt(
-  file = file.path(study_folder, "model-objects", "trait_mpt.qs")
-  , eqnfile = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
-  , data = mpt_data_hierarchical
-  , n.adapt  = 2e3
-  , n.burnin = 2e4
-  , n.thin   = 2e1
-  , n.iter   = 4e4
-  , n.chains = 4
-  , restrictions = list("G=0.125")
-  , ppp = 5e3
-  , covData = mpt_data_hierarchical[, "task_focus", drop = FALSE]
-  , predStructure = list("a b D d C; task_focus")
-  , IVprec = "dgamma(.5,.5)"
-  , predType = rep("f", 1L)
-)
+model <- readRDS(file.path(study_folder, "mode-objects", "trait-mpt.rds"))
 ```
 
 ```{r}
-TreeBUGS::plotFit(exp3pilot)
-TreeBUGS::plotFreq(exp3pilot)
-TreeBUGS::plotParam(exp3pilot)
+TreeBUGS::plotFit(model)
+TreeBUGS::plotFreq(model)
+TreeBUGS::plotParam(model)
 ```
 
 ```{r}
-summary(exp3pilot)
+summary(model)
 ```
 
 

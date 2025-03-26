@@ -46,7 +46,7 @@ data <- within(data, {
 test_runs <- c() # as.character(c(16977:16980, 16986))
 
 data <- subset(
-  tibble::as_tibble(data)
+  data
   , # sports == 1 & 
     pay_attention == 1 & serious == 1 & !(url.srid %in% test_runs)
   , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","comment_study","count_trial_learning","cs","us","us_valence","uss","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating", "task_order")
@@ -118,6 +118,7 @@ mpt_data_hierarchical <- merge(
   , subset(memory, !duplicated(sid), select = c("sid", "task_order"))
   , sort = FALSE
 )
+rownames(mpt_data_hierarchical) <- as.character(mpt_data_hierarchical$sid)
 
 # Evaluative ratings ----
 rating <- subset(
