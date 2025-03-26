@@ -234,3 +234,15 @@ data.frame(
   apa_table()
 
 ```
+
+
+## Latent-trait MPT model
+
+```{r}
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
+individual_parameters <- getParam(model, "theta")
+individual_parameters$sid <- rownames(individual_parameters)
+summary(model)
+```
+
+

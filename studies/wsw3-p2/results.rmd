@@ -244,14 +244,14 @@ trait_mpt <- function(file, ...) {
   model
 }
 
-# Estimate parameters
 model <- readRDS(file.path(study_folder, "mode-objects", "trait-mpt.rds"))
 ```
 
 ```{r}
-TreeBUGS::plotFit(model)
-TreeBUGS::plotFreq(model)
-TreeBUGS::plotParam(model)
+par(mfrow = c(1, 3))
+plotFit(model)
+plotFreq(model)
+plotParam(model)
 ```
 
 ```{r}

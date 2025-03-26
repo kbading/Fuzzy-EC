@@ -13,7 +13,7 @@ $(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
 $(models): %model-objects/trait-mpt.rds: %R/trait-mpt.R %data/data.rds
-	@echo "Processing $@ from $^"
+	@echo "Estimating latent-trait MPT model $@ from $^"
 	R -f '$<'
 
 # data files (reverse chronological order) ----
