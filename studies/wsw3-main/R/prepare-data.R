@@ -6,9 +6,9 @@ library(tinylabels)
 
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
-utils::unzip(file.path(study_folder, "data-raw", "exp3_batch3.zip"), exdir = tempdir())
+utils::unzip(file.path(study_folder, "data-raw", "exp3_batch4.zip"), exdir = tempdir())
 
-data <- file.path(tempdir(), "exp3_batch3.txt") |>
+data <- file.path(tempdir(), "exp3_batch4.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
@@ -22,7 +22,7 @@ data <- file.path(tempdir(), "exp3_batch3.txt") |>
 
 
 data <- data |>
-  fill(url.srid, .direction = "downup") |>
+  fill(url.srid, prolific_pid, .direction = "downup") |>
   group_by(url.srid) |>
   fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "downup")
 
