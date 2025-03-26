@@ -4,12 +4,17 @@ studies = wsw2-main wsw3-p2 wsw3-main
 results = $(patsubst %, studies/%/results.html, $(studies))
 data_files = $(patsubst %, studies/%/data/data.rds, $(studies))
 
+models = studies/wsw3-main/model-objects/trait-mpt.rds
+
 all:	$(results) README.md
 
 $(results): %results.html: %results.rmd %data/data.rds
 	@echo "Knitting $@ from $^"
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
+$(models): %model-objects/trait-mpt.rds: %R/trait-mpt.R %data/data.rds
+	@echo "Processing $@ from $^"
+	R -f '$<'
 
 # data files (reverse chronological order) ----
 # we define these for each study, separately, to ensure that wildcard expansion works
