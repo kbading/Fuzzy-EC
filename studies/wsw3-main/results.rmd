@@ -4,7 +4,6 @@ author: "Karoline Bading & Marius Barth"
 date  : "`r Sys.Date()`"
 abstract: |
   *Beware, this is a test script!*
-
 output:
   html_document:
     toc: yes
@@ -35,7 +34,7 @@ knitr::opts_chunk$set(
 
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
-file_cache <- cache_filesystem(path = file.path(project_root, ".rcache"), compress = "gzip")
+file_cache <- cache_filesystem(path = file.path(project_root, ".rcache"), compress = "gzip", algo = "md5")
 simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
 BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
 ```
@@ -47,8 +46,9 @@ wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
 
 
 ```{r exp3-read-data}
-mpt_data <- readRDS(file.path(study_folder, "data", "mpt_data.rds"))
-rating <- readRDS(file.path(study_folder, "data", "rating.rds"))
+data <- readRDS(file.path(study_folder, "data", "data.rds"))
+rating <- data$rating
+mpt_data <- data$mpt_data
 ```
 
 

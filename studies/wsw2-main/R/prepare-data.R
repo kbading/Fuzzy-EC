@@ -128,6 +128,12 @@ rating <- subset(
 
 
 dir.create(file.path(study_folder, "data"), showWarnings = FALSE)
-saveRDS(mpt_data, file = file.path(study_folder, "data", "mpt_data.rds"))
-saveRDS(mpt_data_hierarchical, file = file.path(study_folder, "data", "mpt_data_hierarchical.rds"))
-saveRDS(rating, file = file.path(study_folder, "data", "rating.rds"))
+saveRDS(
+  list(
+    rating = rating
+    , memory = memory
+    , mpt_data = mpt_data
+    , mpt_data_hierarchical = mpt_data_hierarchical
+  )
+  , file = file.path(study_folder, "data", "data.rds")
+)

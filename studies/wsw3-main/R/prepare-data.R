@@ -6,9 +6,10 @@ library(tinylabels)
 
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
-utils::unzip(file.path(study_folder, "data-raw", "exp3_batch4.zip"), exdir = tempdir())
 
-data <- file.path(tempdir(), "exp3_batch4.txt") |>
+utils::unzip(file.path(study_folder, "data-raw", "exp3_batch5.zip"), exdir = tempdir())
+
+data <- file.path(tempdir(), "exp3_batch5.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
@@ -126,7 +127,13 @@ rating <- subset(
 
 
 dir.create(file.path(study_folder, "data"), showWarnings = FALSE)
-saveRDS(mpt_data, file = file.path(study_folder, "data", "mpt_data.rds"))
-saveRDS(mpt_data_hierarchical, file = file.path(study_folder, "data", "mpt_data_hierarchical.rds"))
-saveRDS(rating, file = file.path(study_folder, "data", "rating.rds"))
+saveRDS(
+  list(
+    rating = rating
+    , memory = memory
+    , mpt_data = mpt_data
+    , mpt_data_hierarchical = mpt_data_hierarchical
+  )
+  , file = file.path(study_folder, "data", "data.rds")
+)
 
