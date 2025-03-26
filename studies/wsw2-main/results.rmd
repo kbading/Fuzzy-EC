@@ -17,6 +17,7 @@ library(tidyr)
 library(afex)
 library(emmeans)
 library(papaja)
+library(TreeBUGS)
 
 set_sum_contrasts()
 
@@ -217,7 +218,7 @@ trait_mpt <- function(file, ...) {
 }
 
 # Estimate parameters
-model <- readRDS(file.path(study_folder, "mode-objects", "trait-mpt.rds"))
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 ```
 
 ```{r}

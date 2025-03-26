@@ -20,6 +20,7 @@ library(afex)
 library(emmeans)
 library(papaja)
 library(memoise)
+library(TreeBUGS)
 
 set_sum_contrasts()
 
@@ -244,7 +245,7 @@ trait_mpt <- function(file, ...) {
   model
 }
 
-model <- readRDS(file.path(study_folder, "mode-objects", "trait-mpt.rds"))
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 ```
 
 ```{r}

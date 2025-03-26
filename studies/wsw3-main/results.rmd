@@ -21,6 +21,7 @@ library(emmeans)
 library(papaja)
 library(memoise)
 library(HMMTreeC)
+library(TreeBUGS)
 
 project_root <- rprojroot::find_rstudio_root_file()
 study_folder <- file.path(project_root, "studies", "wsw3-main")
