@@ -3,9 +3,9 @@ title : "Experiment 3"
 author: "Karoline Bading & Marius Barth"
 date  : "`r Sys.Date()`"
 abstract: |
-  *Beware, this is a test script!*
+  Beware, this is a test script!
 output:
-  html_document:
+  bookdown::html_document2:
     toc: yes
     toc_float: yes
     code_folding: hide
@@ -31,6 +31,9 @@ knitr::opts_chunk$set(
   echo = TRUE
   , message = FALSE
 )
+knitr::opts_knit$set(
+  global.par = TRUE
+)
 
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
@@ -39,9 +42,10 @@ simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
 BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
 ```
 
-```{r}
+```{r global-par}
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
+par(las = 1, cex = 1.2)
 ```
 
 
@@ -55,11 +59,14 @@ mpt_data <- data$mpt_data
 ## Evaluative rating
 
 ```{r}
-table(subset(rating, !duplicated(sid))$task_focus)
-ftable(us_valence ~ sid + us_age, data = rating)
+ftable(1 ~ task_focus , subset(rating, !duplicated(sid)))
+# ftable(us_valence ~ sid + us_age, data = rating)
 ```
 
-```{r exp3-ratings}
+
+(ref:exp3-ratings-caption) Mean evaluative ratings for CSs as a function of *US valence* and *task focus*. Error bars represent 95% confidence intervals. Small points represent individual participants' mean evaluative ratings.
+
+```{r exp3-ratings, fig.cap = "(ref:exp3-ratings-caption)"}
 apa_beeplot(
   data = subset(rating, !is.na(us_valence))
   , id = "sid"
@@ -78,24 +85,25 @@ anova_rating_model <- aov_4(
 marginal_means <- emmeans(
   anova_rating_model
   , specs = ~ us_valence + task_focus
-) |>
+)
+
+ec_effects <- marginal_means |>
   contrast(
     list(
-      "EC effect, age-focus condition"       = c(1, -1, 0, 0)
-      , "EC effect, valence-focus condition" = c(0, 0, 1, -1)
+      "age focus"       = c(1, -1, 0, 0)
+      , "valence focus" = c(0, 0, 1, -1)
     )
     , side = ">"
-  )
+  ) |>
+  apa_print()
 
 anova_rating <- apa_print(anova_rating_model)
 
-rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_focus + sid, data = rating, FUN = mean)
-rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
-  within({
-    ec_effect <- positive - negative
-  })
-apa_print(marginal_means) |>
-  apa_table(caption = "EC effects for both task-focus conditions.")
+# rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_focus + sid, data = rating, FUN = mean)
+# rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
+#   within({
+#     ec_effect <- positive - negative
+#   })
 ```
 
 Figure\ \@ref(fig:exp3-ratings) shows mean evaluative ratings.
@@ -108,6 +116,11 @@ the two-way interaction *US valence* and *task focus*,
 `r anova_rating$full_result$task_focus_us_valence`.
 The main effect of *task focus* condition was not significant,
 `r anova_rating$full_result$task_focus`.
+
+EC effect in valence-focus condition:
+`r ec_effects$full_result$valence_focus`.
+EC effect in age-focus condition:
+`r ec_effects$full_result$age_focus`.
 
 ```{r eval = FALSE}
 lme_model <- lmer(
@@ -197,10 +210,10 @@ simple_mpt <- lapply(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
       , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
-      , n.iter   = 2e4L # 2e5L
-      , n.burnin = 1e4L # 1e5L
+      , n.iter   = 2e5L
+      , n.burnin = 1e5L
       , n.thin   = 2e1L
-      , ppp      = 5e2L # 5e3L
+      , ppp      = 5e3L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
@@ -211,12 +224,12 @@ BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
 # Compare baseline model with other models
 data.frame(
   model = paste0("Effect of task focus on ", gsub(names(BFs$posterior[-1L]), pattern = "_equal", replacement = ""))
-  , logBF = log(BFs$posterior[-1L]) - log(BFs$posterior[[1L]])
+  , logBF =  log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
   , row.names = NULL
 ) |> within({
   strong_evidence <- ifelse(abs(logBF) > log(10), "yes", "no")
-  BF_01 <- exp( logBF)
-  BF_10 <- exp(-logBF)
+  BF_01 <- exp(-logBF)
+  BF_10 <- exp( logBF)
 }) |>
   apa_table()
 

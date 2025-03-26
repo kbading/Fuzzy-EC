@@ -7,9 +7,9 @@ library(tinylabels)
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 
 
-utils::unzip(file.path(study_folder, "data-raw", "exp3_batch5.zip"), exdir = tempdir())
+utils::unzip(file.path(study_folder, "data-raw", "exp3_batch7.zip"), exdir = tempdir())
 
-data <- file.path(tempdir(), "exp3_batch5.txt") |>
+data <- file.path(tempdir(), "exp3_batch7.txt") |>
   lapply(function(x) {
     readLines(x) |>
     lapply(FUN = `[[`, i = 1L) |>
