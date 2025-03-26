@@ -18,6 +18,11 @@ $(models): %model-objects/trait-mpt.rds: %R/trait-mpt.R %data/data.rds
 
 # data files (reverse chronological order) ----
 # we define these for each study, separately, to ensure that wildcard expansion works
+studies/wsw3-joint-analysis/data/data.rds: studies/wsw3-joint-analysis/R/prepare-data.R \
+		studies/wsw3-main/data/data.rds studies/wsw3-p2/data/data.rds
+	@echo "Processing $@ from $^"
+	R -f '$<'
+
 studies/wsw3-main/data/data.rds: studies/wsw3-main/R/prepare-data.R studies/wsw3-main/data-raw/* 
 	@echo "Processing $@ from $^"
 	R -f '$<'
