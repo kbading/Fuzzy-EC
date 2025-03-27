@@ -7,7 +7,7 @@ study_folder <- file.path(project_root, "studies", "wsw3-joint-analysis")
 mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))
 
 model <- traitMPT(
-  , eqnfile = file.path("studies", "wsw3-main", "WSW_exp3_hierarchical.eqn")
+  , eqnfile = file.path(project_root, "studies", "wsw3-main", "WSW_exp3_hierarchical.eqn")
   , data = mpt_data_hierarchical
   , n.adapt  = 2e4L
   , n.burnin = 1e5L
