@@ -9,9 +9,9 @@ mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))
 model <- traitMPT(
   , eqnfile = file.path("studies", "wsw3-main", "WSW_exp3_hierarchical.eqn")
   , data = mpt_data_hierarchical
-  , n.adapt  = 2e3L
-  , n.burnin = 2e4L
-  , n.iter   = 4e4L
+  , n.adapt  = 2e4L
+  , n.burnin = 1e5L
+  , n.iter   = 2e5L
   , n.thin   = 2e1L
   , n.chains = 4e0L
   , ppp      = 5e3L
