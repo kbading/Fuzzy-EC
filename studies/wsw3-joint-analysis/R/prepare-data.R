@@ -28,7 +28,7 @@ mpt_data_hierarchical <- Map(
 
 dir.create(file.path(project_root, "studies", "wsw3-joint-analysis", "data"), showWarnings = FALSE)
 saveRDS(
-  mpt_data_hierarchical
+  list(mpt_data_hierarchical = mpt_data_hierarchical)
   , file = file.path(project_root, "studies", "wsw3-joint-analysis", "data", "data.rds")
 )
 
