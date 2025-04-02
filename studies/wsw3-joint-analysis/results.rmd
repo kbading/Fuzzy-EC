@@ -9,6 +9,8 @@ output:
     toc: yes
     toc_float: yes
     code_folding: hide
+  papaja::apa6_pdf:
+    classoption: doc
 editor_options: 
   chunk_output_type: console
 ---
@@ -64,6 +66,8 @@ mpt_data <- data_list$mpt_data
 ```{r}
 model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 summary(model)
+
+model$mptInfo
 ```
 
 ## Mediation analysis
@@ -132,6 +136,7 @@ sem(mediation_syntax, data = data) |>
 
 ```{r}
 ec_lm <- lm(formula = ec_effect ~ D * C * d, data = data)
+summary(ec_lm)
 ec_lm |>
   marginaleffects::plot_predictions(condition = c("d", "C"))
 
@@ -173,7 +178,7 @@ plot(C ~ D, data = data, pch = 16)
 
 
 
-### with unconditional probabilities of US-valence and US-identity memory as predictors
+### with unconditional probabilities of US-valence or US-identity memory as predictors
 
 ```{r}
 # hist(data$p_us_identity)
@@ -191,16 +196,16 @@ mediation_syntax <-"
     # d ~ a_d*task_focus
     # b ~ a_b*task_focus
     # a ~ a_a*task_focus
-    ln_us_valence  ~ a_us_valence*task_focus
-    ln_us_identity ~ a_us_identity*task_focus
-    I_valence_memory ~ a_inter*task_focus
-    ec_effect ~ b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + b_inter*I_valence_memory + ade*task_focus
+    p_us_id_or_val  ~ a_us_id_or_val*task_focus
+    # ln_us_identity ~ a_us_identity*task_focus
+    # I_valence_memory ~ a_inter*task_focus
+    ec_effect ~ b_us_id_or_val*p_us_id_or_val + ade*task_focus
     
     #Define New Parameters
-    ab_us_valence := a_us_valence*b_us_valence
-    ab_us_identity := a_us_identity*b_us_identity
-    ab_inter := a_inter*b_inter
-    c := ade + ab_us_valence + ab_us_identity + ab_inter #having defined ab, we can use this here.
+    # ab_us_valence := a_us_valence*b_us_valence
+    ab_us_id_or_val := a_us_id_or_val*b_us_id_or_val
+    # ab_inter := a_inter*b_inter
+    total_effect := ade + ab_us_id_or_val #having defined ab, we can use this here.
 "
 
 path_model <- sem(mediation_syntax, data = data)
@@ -211,12 +216,15 @@ path_model |>
 #   plot()
 # m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
 #   plot()
-lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
-  ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
+linear_model <- lm(ec_effect ~ task_focus * scale(p_us_id_or_val), data = data)
+  # emtrends(var = "p_us_id_or_val", specs = ~ task_focus) |>
+  # summary(infer = TRUE)
+linear_model |>
+  ggpredict(terms = ~ p_us_id_or_val + task_focus) |>
   plot(show_data = TRUE)
-lm(ec_effect ~ p_us_id_or_val, data = data) |>
-  ggpredict(terms = ~ p_us_id_or_val) |>
-  plot(show_data = TRUE)
+
+summary(linear_model)
+
 ```
 
 
