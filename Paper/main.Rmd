@@ -44,8 +44,10 @@ abstract: |
   
   
 authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
+  Karoline Bading, University of Tübingen,
+  Jérémy Béna, Aix-Marseille University,
+  Marius Barth, University of Cologne, 
+  Klaus Rothermund, University of Jena.
   Karoline Bading and Jérémy Béna share first authorship.
   
 keywords          : "keywords"
@@ -61,7 +63,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : "doc"
+classoption       : jou # man
 output            : papaja::apa6_pdf
 ---
 
@@ -116,8 +118,14 @@ knitr::opts_chunk$set(
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
-n_final <- length(unique(data_list$rating$sid))
 
+n_final <- sum(length(unique(data_list$rating$sid)))
+n_conditions <- split(data_list$rating, data_list$rating$task_order) |>
+  lapply(function(x) {paste0("$n = ", length(unique(x$sid)), "$")})
+n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_conditions))))
+
+
+# ----
 dat <- readRDS(file.path(project_root, "Paper", "/data/data_wsw2.RDS"))
 dat$url.srid <- as.factor(dat$url.srid)
 n_total <- length(unique(dat$url.srid))
@@ -144,14 +152,14 @@ Prolific users who had participated in our previous evaluative conditioning stud
 We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`).
 Based on pre-registered criteria, we excluded five participants who declared that they did not pay attention or that they did not take their responses seriously.
 We excluded another participant whose data was unavailable due to an unknown technical error.
-Taken together, this resulted in a final sample size of `r n_final` participants ($n =$ `r length(unique(dat$url.srid[dat$order=="eval_first"]))` in the evaluation first condition and $n =$ `r length(unique(dat$url.srid[dat$order=="mem_first"]))` in the memory first condition).
+Taken together, this resulted in a final sample size of `r n_final` participants (`r n_conditions$rating_first` in the evaluation first condition and `r n_conditions$memory_first` in the memory first condition).
 
 The sample size was based on a power analysis for an EC effect as small as Cohen's $d = 0.2$. 
 The power analysis was conducted with the R package *pwr* (version 1.3-0; Champely, 2020).
 The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
-We found that 156 participants were required to achieve a statistical power of $.8$ to detect a signicant EC effect.
-We also found that a sample size of *N* = 156 provided statistical power of $.8$ to detect correlations $rs \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores).
-To avoid a final sample smaller than *N* = 156 after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
+We found that 156 participants were required to achieve a statistical power of $1-\beta = .8$ to detect a signicant EC effect.
+We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores).
+To avoid a final sample smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
 
 ### Design
 
