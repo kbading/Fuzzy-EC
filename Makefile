@@ -34,7 +34,10 @@ studies/wsw3-p2/data/data.rds: studies/wsw3-p2/R/prepare-data.R studies/wsw3-p2/
 studies/wsw2-main/data/data.rds: studies/wsw2-main/R/prepare-data.R studies/wsw2-main/data-raw/* 
 	@echo "Processing $@ from $^"
 	R -f '$<'
-
+	
+studies/wsw1/data/data.rds: studies/wsw1/R/prepare-data.R studies/wsw1/data-raw/* 
+	@echo "Processing $@ from $^"
+	R -f '$<'
 
 # README ----
 README.md: README.rmd
