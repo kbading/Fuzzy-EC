@@ -28,7 +28,7 @@ author:
 affiliation:
   - id            : "1"
     institution   : "University of Tübingen"
-  - id            : "1"
+  - id            : "2"
     institution   : "Aix-Marseille University"
   - id            : "3"
     institution   : "University of Cologne"
