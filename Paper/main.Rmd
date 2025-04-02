@@ -157,15 +157,10 @@ Taken together, this resulted in a final sample size of `r n_final` participants
 The sample size was based on a power analysis for an EC effect as small as Cohen's $d = 0.2$. 
 The power analysis was conducted with the R package *pwr* (version 1.3-0; Champely, 2020).
 The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
-<<<<<<< HEAD
-We found that 156 participants were required to achieve a statistical power of $.8$ to detect a significant EC effect.
-We also found that a sample size of *N* = 156 provided statistical power of $.8$ to detect correlations $rs \geq |.22|$ (e.g., between parameter estimates and evaluative conditioning scores).
-To avoid a final sample smaller than *N* = 156 after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
-=======
 We found that 156 participants were required to achieve a statistical power of $1-\beta = .8$ to detect a signicant EC effect.
-We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores).
+We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq |.22|$ (e.g., between parameter estimates and evaluative conditioning scores).
 To avoid a final sample smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
->>>>>>> 248cbc97f2b675076e9807f1efcb57a73b0e1290
+
 
 ### Design
 
@@ -173,16 +168,13 @@ The experiment followed a 2 (US valence: positive vs. negative vs. unpaired) $\t
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
-<<<<<<< HEAD
-The experiment was programmed in *lab.js* [@henninger_lab:_2021].
+
+The experiment was programmed in *lab.js* [@henninger_labjs_2022].
 
 The CS pool comprised 54 5- to 7-letter nonwords which have been used in previous EC research (Stahl & Bading, 2020).
 <!-- For each participants, 24 nonwords were randomly selected to serve as CSs during the learning phase. -->
 <!-- The remaining and 24 were new (i.e., presented only in the test phase). -->
-=======
 
-The experiment was programmed in *lab.js* [@henninger_labjs_2022].
->>>>>>> 248cbc97f2b675076e9807f1efcb57a73b0e1290
 
 ### Measures and procedures
 
