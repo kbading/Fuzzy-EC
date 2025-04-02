@@ -61,7 +61,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : "man"
+classoption       : "doc"
 output            : papaja::apa6_pdf
 ---
 
@@ -88,6 +88,11 @@ study_folder_main <- file.path(
   , "Study 2"
 )
 
+study_folders <- list(
+  wsw2_main = file.path(project_root, "studies", "wsw2-main")
+  , wsw3_main = file.path(project_root, "studies", "wsw3-main")
+)
+
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
@@ -109,7 +114,10 @@ knitr::opts_chunk$set(
 # Experiment 1
 
 ```{r}
-project_root <- rprojroot::find_rstudio_root_file()
+# from MB:
+data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
+n_final <- length(unique(data_list$rating$sid))
+
 dat <- readRDS(file.path(project_root, "Paper", "/data/data_wsw2.RDS"))
 dat$url.srid <- as.factor(dat$url.srid)
 n_total <- length(unique(dat$url.srid))
@@ -117,6 +125,9 @@ dat <- dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels()
 n_final <- length(unique(dat$url.srid))
 socio = read.csv(file.path(project_root, "/Paper/data/sociodemo.csv"))
 socio = socio %>% filter(Status != "RETURNED")
+
+
+
 ```
 
 
