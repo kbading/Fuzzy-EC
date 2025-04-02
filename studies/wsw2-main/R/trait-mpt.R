@@ -9,13 +9,13 @@ mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))$mp
 model <- traitMPT(
   , eqnfile = file.path(study_folder, "WSW_exp2_hierarchical.eqn")
   , data = mpt_data_hierarchical
-  , n.adapt  = 2e3L
-  , n.burnin = 2e4L
-  , n.iter   = 4e4L
+  , n.adapt  = 2e4L
+  , n.burnin = 1e5L
+  , n.iter   = 2e5L
   , n.thin   = 2e1L
   , n.chains = 4e0L
   , ppp      = 5e3L
-  , restrictions = list("G = 0.125")
+  , restrictions = list("G = 0.25")
   , covData = subset(mpt_data_hierarchical, select = "task_order")
   , predStructure = list("a b D d C; task_order")
   , predType = "f"
