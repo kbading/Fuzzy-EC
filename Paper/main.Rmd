@@ -3,25 +3,36 @@ title             : "Memory specificity in evaluation conditioning: a 'Who said 
 shorttitle        : "Memory specificity in EC"
 
 author: 
-  - name          : "Jéréline Benading"
+  - name          : "Karoline Bading"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : ""
-    email         : "karoline.bading@uni-jena.de"
+    address       : "Schleichstraße 4, 72074 Tübingen (Germany)"
+    email         : "karoline.bading@uni-tuebingen.de"
+  - name          : "Jérémy Béna"
+    affiliation   : "2"
     # role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
     #   - "Conceptualization"
     #   - "Writing - Original Draft Preparation"
     #   - "Writing - Review & Editing"
+  - name          : "Marius Barth"
+    affiliation   : "3"
+    # role:
+    #   - "Writing - Review & Editing"
+    #   - "Supervision"
   - name          : "Klaus Rothermund"
-    affiliation   : "2"
+    affiliation   : "4"
     # role:
     #   - "Writing - Review & Editing"
     #   - "Supervision"
       
 affiliation:
   - id            : "1"
-    institution   : "Université Agnostique de Louvain-la-Jena"
-  - id            : "2"
+    institution   : "University of Tübingen"
+  - id            : "1"
+    institution   : "Aix-Marseille University"
+  - id            : "3"
+    institution   : "University of Cologne"
+  - id            : "4"
     institution   : "Friedrich Schiller University Jena"
     
 
@@ -62,6 +73,7 @@ library(MPTinR)
 r_refs("r-references.bib")
 
 project_root <- rprojroot::find_rstudio_root_file()
+
 study_folder_pilot <- file.path(
   project_root
   , "pilot_data_analyses"
@@ -71,8 +83,6 @@ study_folder_main <- file.path(
   project_root
   , "Study 2"
 )
-
-
 
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
@@ -91,22 +101,59 @@ knitr::opts_chunk$set(
 # knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-```{r child = "introduction.rmd", eval = TRUE}
-
+# Experiment 1
+```{r}
+project_root <- rprojroot::find_rstudio_root_file()
+dat <- readRDS(file.path(project_root, "Paper", "/data/data_wsw2.RDS"))
+dat$url.srid <- as.factor(dat$url.srid)
+n_total <- length(unique(dat$url.srid))
+dat <- dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels() 
+n_final <- length(unique(dat$url.srid))
+socio = read.csv(file.path(project_root, "/Paper/data/sociodemo.csv"))
+socio = socio %>% filter(Status != "RETURNED")
 ```
 
-# Methods
-```{r child = "methods.rmd", eval = TRUE}
+## Methods
+The pre-registration, materials and data are publicly available on the Open Science Framework at: https://osf.io/rqkvy/.
 
-```
+### Participants
+Participants were recruited through Prolific and received monetary compensation for their participation.
+The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%.
+Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
+We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`).
+Based on pre-registered criteria, we excluded five participants who declared that they did not pay attention or that they did not take their responses seriously.
+We excluded another participant whose data was unavailable due to an unknown technical error.
+Taken together, this resulted in a final sample size of `r n_final` participants ($n =$ `r length(unique(dat$url.srid[dat$order=="eval_first"]))` in the evaluation first condition and $n =$ `r length(unique(dat$url.srid[dat$order=="mem_first"]))` in the memory first condition).
 
-# Results^[All analyses were conducted with R (R Core Team, 2021). We used the packages XXX (), XXX (), XXX (), XXX (), XXX (), XXX (), XXX ()...]
-```{r child = "results_KB.rmd", eval = TRUE}
-```
+The sample size was based on a power analysis for an EC effect as small as Cohen's $d = 0.2$. 
+The power analysis was conducted with the R package *pwr* (version 1.3-0; Champely, 2020).
+The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
+We found that 156 participants were required to achieve a statistical power of $.8$ to detect a signicant EC effect.
+We also found that a sample size of *N* = 156 provided statistical power of $.8$ to detect correlations $rs \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores).
+To avoid a final sample smaller than *N* = 156 after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
+
+### Design
+The experiment followed a 2 (US valence: positive vs. negative vs. unpaired) $\times$ 2 (Task order: evaluation task first vs. memory task first) mixed design.
+The first factor varied within participants and the second factor varied between participants.
+
+### Materials
+The experiment was programmed in *lab.js* [@henninger_lab:_2021].
+
+
+
+### Measures and procedures
+### Data processing and analysis
+
+## Results
+## Discussion
+
+# Experiment 2
+
+## Methods
+## Results
+## Discussion 
 
 # General discussion
-```{r child = "discussion.rmd", eval = TRUE}
-```
 
 # Appendix
 # (APPENDIX) Appendix {-} 
