@@ -159,18 +159,18 @@ models <- lapply(
     )
   }
 )
-plot(
-  models$baseline
-  , factors = list("Task focus" = c(age = "_x1", valence = "_x2"))
-  , parameters = c(
-    D = expression(italic(D))
-    , C = expression(italic(C))
-    , d = expression(italic(d))
-    # , G = expression(italic(g))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
+# plot(
+#   models$baseline
+#   , factors = list("Task focus" = c(age = "_x1", valence = "_x2"))
+#   , parameters = c(
+#     D = expression(italic(D))
+#     , C = expression(italic(C))
+#     , d = expression(italic(d))
+#     # , G = expression(italic(g))
+#     , a = expression(italic(a))
+#     , b = expression(italic(b))
+#   )
+# )
 ```
 
 ```{r}
