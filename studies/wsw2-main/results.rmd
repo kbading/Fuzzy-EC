@@ -105,7 +105,7 @@ ggeffects::ggpredict(lme_model, terms = ~ task_order + us_valence) |>
 
 ```{r}
 restrictions_list <- list(
-  x  = list("G_x1=.125","G_x2=.125")
+  x  = list("G_x1=.25","G_x2=.25")
   , D_equal = list("G_x1=.25","G_x2=.25", "D_x1=D_x2")
   , C_equal = list("G_x1=.25","G_x2=.25", "C_x1=C_x2")
   , d_equal = list("G_x1=.25","G_x2=.25", "d_x1=d_x2")
@@ -245,7 +245,7 @@ mpt_model_ec_predictor <-  trait_mpt(
   , n.thin   = 2e1
   , n.iter   = 4e4
   , n.chains = 4
-  , restrictions = list("G=0.125")
+  , restrictions = list("G=0.25")
   , ppp = 5e3
   , covData = mpt_data_hierarchical[, c("task_order", "ec_rating_first", "ec_memory_first"), drop = FALSE]
   , predStructure = list("a b D d C; task_order", "a b D d C; ec_rating_first", "a b D d C; ec_memory_first")
