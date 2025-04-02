@@ -18,3 +18,5 @@ AutoAppendNewline: Yes
 BuildType: Makefile
 
 QuitChildProcessesOnExit: Yes
+
+SpellingDictionary: en_US

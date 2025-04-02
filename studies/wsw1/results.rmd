@@ -1,0 +1,123 @@
+---
+title : Experiment 1 (i.e., pilot study)
+author: Karoline Bading & Marius Barth
+output:
+  bookdown::html_document2:
+    toc         : true
+    toc_float   : true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE
+  , message = FALSE
+)
+
+library(HMMTreeC)
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw1")
+```
+
+
+```{r}
+data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
+
+
+
+baseline_restrictions <- list(
+  G = .25
+)
+
+hypothesis_restrictions <- list(
+  baseline = list()
+  , D_eq0  = list(D = .Machine$double.eps)
+  , C_eq0  = list(C = .Machine$double.eps)
+  , d_eq0  = list(d = .Machine$double.eps)
+  , a_eq.5 = list(a = .5)
+  , b_eq.5 = list(b = .5)
+)
+
+models <- lapply(
+  hypothesis_restrictions
+  , FUN = function(x) {
+    fit_mpt(
+      model = file.path(study_folder, "WSW_pilot_hierarchical.eqn")
+      , data = data_list$mpt_data_hierarchical
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+
+```
+
+```{r}
+compare(models)
+```
+
+## Latent-trait MPT
+
+```{r eval = FALSE}
+cor.test(para_ratings_both$D,para_ratings_both$positive)
+cor.test(para_ratings_both$D,para_ratings_both$negative)
+
+cor.test(para_ratings_both$C,para_ratings_both$positive)
+cor.test(para_ratings_both$C,para_ratings_both$negative)
+
+cor.test(para_ratings_both$d,para_ratings_both$positive)
+cor.test(para_ratings_both$d,para_ratings_both$negative)
+```
+
+```{r eval = FALSE}
+data <- para_ratings_both
+data$ec <- data$positive - data$negative
+
+library(lme4)
+library(ggeffects)
+
+#contrasts(data$instructions_conditioning) <- "contr.sum"                   # = effects coding (i.e. sum-to-zero contrasts)
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) } # = function for centering
+
+model <- lm(
+  formula = ec ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a)
+  , data = data
+)
+#car::scatterplotMatrix(data[, c("D", "C", "d")])
+
+summary(model)
+plot(model)
+#ggpredict(model, terms = ~ D + instructions_conditioning) |>
+  #plot(show_data = TRUE)
+
+# emmeans(model) |> 
+#   summary(infer = TRUE, side = ">")
+
+library(emmeans)
+emtrends(model, specs = ~ 1, var = "D")
+
+ggeffect(model, terms = ~ D) |>
+  plot(rawdata = TRUE)
+
+ggeffect(model, terms = ~ cntr(C)) |>
+  plot(rawdata = TRUE)
+
+ggeffect(model, terms = ~ cntr(d)) |>
+  plot(rawdata = TRUE)
+
+rat <- merge(para_ratings_both,ratings_cs,by=c("url.srid"))
+
+rat$us_valence <- factor(rat$us_valence)
+contrasts(rat$us_valence) <- "contr.sum"
+model_1 <- lmer(formula = cs_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*us_valence + (1|url.srid)
+     , data = rat)
+
+summary(model_1)
+ggeffect(model_1, terms = ~ d:us_valence) |>
+  plot(rawdata = TRUE)
+ggeffect(model_1, terms = ~ C:us_valence) |>
+  plot(rawdata = TRUE)
+
+library(emmeans)
+emtrends(model_1, specs = ~ us_valence, var = "d",infer=TRUE)
+emtrends(model_1, specs = ~ us_valence, var = "C",infer=TRUE)
+```
+
