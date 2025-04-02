@@ -42,10 +42,18 @@ abstract: |
 
   <!-- https://tinyurl.com/ybremelq -->
   
+  
+authornote: |
+  Karoline Bading, University of Tübingen,
+  Jérémy Béna, Aix-Marseille University,
+  Marius Barth, University of Cologne, 
+  Klaus Rothermund, University of Jena.
+  Karoline Bading and Jérémy Béna share first authorship.
+  
 keywords          : "keywords"
 wordcount         : "X"
 
-bibliography      : ["r-references.bib", "methexp.bib"]
+bibliography      : ["r-references.bib", "`r methexp_bib()`"]
 floatsintext      : yes
 linenumbers       : no
 draft             : no
@@ -55,20 +63,18 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : "man"
+classoption       : jou # man
 output            : papaja::apa6_pdf
 ---
 
 ```{r setup, include = FALSE}
-library(TreeBUGS)
 library(afex)
 library(emmeans)
 library(ggeffects)
 library(papaja)
-library(lme4)
-library(car)
 library(dplyr)
 library(MPTinR)
+library(TreeBUGS)
 
 r_refs("r-references.bib")
 
@@ -84,6 +90,11 @@ study_folder_main <- file.path(
   , "Study 2"
 )
 
+study_folders <- list(
+  wsw2_main = file.path(project_root, "studies", "wsw2-main")
+  , wsw3_main = file.path(project_root, "studies", "wsw3-main")
+)
+
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
@@ -92,6 +103,7 @@ knitr::opts_chunk$set(
   , warning = FALSE
   , message = FALSE
   , cache = FALSE
+  , fig.env = "figure*"
 )
 ```
 
@@ -102,8 +114,18 @@ knitr::opts_chunk$set(
 ```
 
 # Experiment 1
+
 ```{r}
-project_root <- rprojroot::find_rstudio_root_file()
+# from MB:
+data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
+
+n_final <- sum(length(unique(data_list$rating$sid)))
+n_conditions <- split(data_list$rating, data_list$rating$task_order) |>
+  lapply(function(x) {paste0("$n = ", length(unique(x$sid)), "$")})
+n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_conditions))))
+
+
+# ----
 dat <- readRDS(file.path(project_root, "Paper", "/data/data_wsw2.RDS"))
 dat$url.srid <- as.factor(dat$url.srid)
 n_total <- length(unique(dat$url.srid))
@@ -111,55 +133,93 @@ dat <- dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels()
 n_final <- length(unique(dat$url.srid))
 socio = read.csv(file.path(project_root, "/Paper/data/sociodemo.csv"))
 socio = socio %>% filter(Status != "RETURNED")
+
+
+
 ```
 
-## Methods
+
+## Method
+
 The pre-registration, materials and data are publicly available on the Open Science Framework at: https://osf.io/rqkvy/.
 
+
 ### Participants
+
 Participants were recruited through Prolific and received monetary compensation for their participation.
 The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%.
 Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
 We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`).
 Based on pre-registered criteria, we excluded five participants who declared that they did not pay attention or that they did not take their responses seriously.
 We excluded another participant whose data was unavailable due to an unknown technical error.
-Taken together, this resulted in a final sample size of `r n_final` participants ($n =$ `r length(unique(dat$url.srid[dat$order=="eval_first"]))` in the evaluation first condition and $n =$ `r length(unique(dat$url.srid[dat$order=="mem_first"]))` in the memory first condition).
+Taken together, this resulted in a final sample size of `r n_final` participants (`r n_conditions$rating_first` in the evaluation first condition and `r n_conditions$memory_first` in the memory first condition).
 
 The sample size was based on a power analysis for an EC effect as small as Cohen's $d = 0.2$. 
 The power analysis was conducted with the R package *pwr* (version 1.3-0; Champely, 2020).
 The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
+<<<<<<< HEAD
 We found that 156 participants were required to achieve a statistical power of $.8$ to detect a significant EC effect.
 We also found that a sample size of *N* = 156 provided statistical power of $.8$ to detect correlations $rs \geq |.22|$ (e.g., between parameter estimates and evaluative conditioning scores).
 To avoid a final sample smaller than *N* = 156 after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
+=======
+We found that 156 participants were required to achieve a statistical power of $1-\beta = .8$ to detect a signicant EC effect.
+We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq .22$ (e.g., between parameter estimates and evaluative conditioning scores).
+To avoid a final sample smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
+>>>>>>> 248cbc97f2b675076e9807f1efcb57a73b0e1290
 
 ### Design
+
 The experiment followed a 2 (US valence: positive vs. negative vs. unpaired) $\times$ 2 (Task order: evaluation task first vs. memory task first) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
+<<<<<<< HEAD
 The experiment was programmed in *lab.js* [@henninger_lab:_2021].
 
 The CS pool comprised 54 5- to 7-letter nonwords which have been used in previous EC research (Stahl & Bading, 2020).
 <!-- For each participants, 24 nonwords were randomly selected to serve as CSs during the learning phase. -->
 <!-- The remaining and 24 were new (i.e., presented only in the test phase). -->
+=======
+
+The experiment was programmed in *lab.js* [@henninger_labjs_2022].
+>>>>>>> 248cbc97f2b675076e9807f1efcb57a73b0e1290
 
 ### Measures and procedures
+
 ### Data processing and analysis
 
+
 ## Results
+
 ## Discussion
+
+
 
 # Experiment 2
 
-## Methods
+## Method
+
 ## Results
+
+
+
 ## Discussion 
+
+
 
 # General discussion
 
-# Appendix
-# (APPENDIX) Appendix {-} 
-```{r child = "appendix.rmd", eval = TRUE}
+
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
+
+
+# (APPENDIX) Appendix {-}
+
+```{r child = file.path(project_root, "Paper/appendix.rmd"), eval = TRUE}
 ```
 
 
