@@ -8,18 +8,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r include = FALSE}
-library(papaja)
-library(TreeBUGS)
-library(afex)
-library(emmeans)
-library(ggeffects)
-library(lme4)
-library(car)
-library(dplyr)
-library(MPTinR)
-
-```
+# level-1 headings create a new appendix
 
 ## Amazing paragraph
 

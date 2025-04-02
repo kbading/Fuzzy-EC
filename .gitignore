@@ -25,3 +25,8 @@ studies/*/*pdf
 
 Paper/mpt analyses/*.rds
 Paper/mpt analyses/*.html
+Paper/*.tex
+Paper/*.pdf
+
+**r-references.bib
+
