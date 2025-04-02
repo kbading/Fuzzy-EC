@@ -173,7 +173,7 @@ wesanderson::wes_palette("Zissou1", n = 3, type = "c") |>
 
 plot(
   models$baseline
-  , factors = list("Task focus" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
   , parameters = c(
     D   = expression(italic(D))
     , C = expression(italic(C))
@@ -188,9 +188,6 @@ plot(
 ```{r}
 model_comparisons <- compare(models)
 model_comparisons
-# dG2 <- apa_print(model_comparisons)
-# dG2
-models$baseline
 ```
 
 ## Hierarchical MPT model
@@ -201,7 +198,6 @@ mpt_data_hierarchical <- merge(mpt_data_hierarchical, rating_wide, sort = FALSE)
     ec_rating_first <- (task_order == "Rating first") * ec_effect
     ec_memory_first <- (task_order == "Memory first") * ec_effect
   })
-# nrow(mpt_data_hierarchical)
 ```
 
 
@@ -217,7 +213,7 @@ trait_mpt <- function(file, ...) {
 }
 
 # Estimate parameters
-model <- readRDS(file.path(study_folder, "model-objects", "trait_mpt.rds"))
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 ```
 
 ```{r}
