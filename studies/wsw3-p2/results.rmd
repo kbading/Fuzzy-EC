@@ -18,8 +18,11 @@ library(tidyr)
 
 library(afex)
 library(emmeans)
+library(ggeffects)
 library(papaja)
 library(memoise)
+library(TreeBUGS)
+library(lavaan)
 
 set_sum_contrasts()
 
@@ -244,33 +247,18 @@ trait_mpt <- function(file, ...) {
   model
 }
 
-# Estimate parameters
-exp3pilot = trait_mpt(
-  file = file.path(study_folder, "model-objects", "trait_mpt.qs")
-  , eqnfile = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
-  , data = mpt_data_hierarchical
-  , n.adapt  = 2e3
-  , n.burnin = 2e4
-  , n.thin   = 2e1
-  , n.iter   = 4e4
-  , n.chains = 4
-  , restrictions = list("G=0.125")
-  , ppp = 5e3
-  , covData = mpt_data_hierarchical[, "task_focus", drop = FALSE]
-  , predStructure = list("a b D d C; task_focus")
-  , IVprec = "dgamma(.5,.5)"
-  , predType = rep("f", 1L)
-)
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 ```
 
 ```{r}
-TreeBUGS::plotFit(exp3pilot)
-TreeBUGS::plotFreq(exp3pilot)
-TreeBUGS::plotParam(exp3pilot)
+par(mfrow = c(1, 3))
+plotFit(model)
+plotFreq(model)
+plotParam(model)
 ```
 
 ```{r}
-summary(exp3pilot)
+summary(model)
 ```
 
 
@@ -307,8 +295,11 @@ summary(mpt_model_ec_predictor)
 
 
 
-```{r eval = TRUE}
-library(TreeBUGS)
+
+
+## Mediation
+
+```{r}
 individual_parameters <- as.data.frame(getParam(mpt_model_ec_predictor, parameter = "theta"))
 parameter_names <- colnames(individual_parameters)
 
@@ -325,39 +316,11 @@ branch_probabilities <- data.frame(
   , row.names = NULL
 )
 
-#individual_parameters$id <- rownames(individual_parameters)
-para_ratings_both<- cbind(mpt_data_hierarchical, individual_parameters, branch_probabilities)
-#save(para_ratings_both,file = "exp3pilot_x_ratings_val.rdata")
-data <- para_ratings_both
-#data$ec <- data$positive - data$negative
-t.test(data$ec_effect)
-#data$task_focus <- factor(data$task_focus, levels = c("age_task","val_task"))
-
-library(lme4)
-library(ggeffects)
-```
-
-## Mediation
-
-
-```{r eval = FALSE}
-library(mediation)
-mediation_results <- mediate(
-  model.m = lm(d ~ task_focus, data = data)
-  , model.y = lm(ec_effect ~ d * task_focus, data = data)
-  , mediator = "d"
-  , treat = "task_focus"
-  , treat.value = "valence"
-  , control.value = "age"
-)
-summary(mediation_results)
+data <- cbind(mpt_data_hierarchical, individual_parameters, branch_probabilities)
 ```
 
 
-### with parameter estimates as predictors
-
-```{r }
-library(lavaan)
+```{r}
 z <- function(x) {as.numeric(scale(x))}
 
 data <- within(data, {

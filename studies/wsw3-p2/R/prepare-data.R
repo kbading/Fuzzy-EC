@@ -109,6 +109,7 @@ mpt_data_hierarchical <- merge(
   , subset(memory, !duplicated(sid), select = c("sid", "task_focus"))
   , sort = FALSE
 )
+rownames(mpt_data_hierarchical) <- as.character(mpt_data_hierarchical$sid)
 
 # Evaluative ratings ----
 rating <- subset(

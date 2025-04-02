@@ -3,9 +3,9 @@ title : "Experiment 3"
 author: "Karoline Bading & Marius Barth"
 date  : "`r Sys.Date()`"
 abstract: |
-  *Beware, this is a test script!*
+  Beware, this is a test script!
 output:
-  html_document:
+  bookdown::html_document2:
     toc: yes
     toc_float: yes
     code_folding: hide
@@ -18,9 +18,12 @@ editor_options:
 ```{r setup, include = FALSE}
 library(afex)
 library(emmeans)
+library(ggeffects)
 library(papaja)
 library(memoise)
 library(HMMTreeC)
+library(TreeBUGS)
+library(lavaan)
 
 project_root <- rprojroot::find_rstudio_root_file()
 study_folder <- file.path(project_root, "studies", "wsw3-main")
@@ -31,6 +34,9 @@ knitr::opts_chunk$set(
   echo = TRUE
   , message = FALSE
 )
+knitr::opts_knit$set(
+  global.par = TRUE
+)
 
 source(file.path(project_root, "R", "mptinr_helper.R"))
 
@@ -39,27 +45,31 @@ simpleMPT <- memoise(TreeBUGS::simpleMPT, cache = file_cache)
 BayesFactorMPT <- memoise(TreeBUGS::BayesFactorMPT, cache = file_cache)
 ```
 
-```{r}
+```{r global-par}
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
+par(las = 1, cex = 1.2)
 ```
 
 
 ```{r exp3-read-data}
-data <- readRDS(file.path(study_folder, "data", "data.rds"))
-rating <- data$rating
-mpt_data <- data$mpt_data
+data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
+rating <- data_list$rating
+mpt_data <- data_list$mpt_data
 ```
 
 
 ## Evaluative rating
 
 ```{r}
-table(subset(rating, !duplicated(sid))$task_focus)
-ftable(us_valence ~ sid + us_age, data = rating)
+ftable(1 ~ task_focus , subset(rating, !duplicated(sid)))
+# ftable(us_valence ~ sid + us_age, data = rating)
 ```
 
-```{r exp3-ratings}
+
+(ref:exp3-ratings-caption) Mean evaluative ratings for CSs as a function of *US valence* and *task focus*. Error bars represent 95% confidence intervals. Small points represent individual participants' mean evaluative ratings.
+
+```{r exp3-ratings, fig.cap = "(ref:exp3-ratings-caption)"}
 apa_beeplot(
   data = subset(rating, !is.na(us_valence))
   , id = "sid"
@@ -78,14 +88,17 @@ anova_rating_model <- aov_4(
 marginal_means <- emmeans(
   anova_rating_model
   , specs = ~ us_valence + task_focus
-) |>
+)
+
+ec_effects <- marginal_means |>
   contrast(
     list(
-      "EC effect, age-focus condition"       = c(1, -1, 0, 0)
-      , "EC effect, valence-focus condition" = c(0, 0, 1, -1)
+      "age focus"       = c(1, -1, 0, 0)
+      , "valence focus" = c(0, 0, 1, -1)
     )
     , side = ">"
-  )
+  ) |>
+  apa_print()
 
 anova_rating <- apa_print(anova_rating_model)
 
@@ -94,8 +107,6 @@ rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_r
   within({
     ec_effect <- positive - negative
   })
-apa_print(marginal_means) |>
-  apa_table(caption = "EC effects for both task-focus conditions.")
 ```
 
 Figure\ \@ref(fig:exp3-ratings) shows mean evaluative ratings.
@@ -108,6 +119,11 @@ the two-way interaction *US valence* and *task focus*,
 `r anova_rating$full_result$task_focus_us_valence`.
 The main effect of *task focus* condition was not significant,
 `r anova_rating$full_result$task_focus`.
+
+EC effect in valence-focus condition:
+`r ec_effects$full_result$valence_focus`.
+EC effect in age-focus condition:
+`r ec_effects$full_result$age_focus`.
 
 ```{r eval = FALSE}
 lme_model <- lmer(
@@ -197,10 +213,10 @@ simple_mpt <- lapply(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
       , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
-      , n.iter   = 2e4L # 2e5L
-      , n.burnin = 1e4L # 1e5L
+      , n.iter   = 2e5L
+      , n.burnin = 1e5L
       , n.thin   = 2e1L
-      , ppp      = 5e2L # 5e3L
+      , ppp      = 5e3L
       , n.chains = 4e0L
       , cores    = 4e0L
     )
@@ -211,13 +227,184 @@ BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
 # Compare baseline model with other models
 data.frame(
   model = paste0("Effect of task focus on ", gsub(names(BFs$posterior[-1L]), pattern = "_equal", replacement = ""))
-  , logBF = log(BFs$posterior[-1L]) - log(BFs$posterior[[1L]])
+  , logBF =  log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
   , row.names = NULL
 ) |> within({
   strong_evidence <- ifelse(abs(logBF) > log(10), "yes", "no")
-  BF_01 <- exp( logBF)
-  BF_10 <- exp(-logBF)
+  BF_01 <- exp(-logBF)
+  BF_10 <- exp( logBF)
 }) |>
   apa_table()
 
 ```
+
+
+## Latent-trait MPT model
+
+```{r}
+model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
+summary(model)
+```
+
+## Mediation analysis
+
+```{r}
+individual_parameters <- as.data.frame(getParam(model, parameter = "theta"))
+# individual_parameters$sid <- rownames(individual_parameters)
+
+tt <- transformedParameters(model,
+  list("p_us_identity = D*C", "p_us_valence = D*(1-C)*d", "p_us_id_or_val = D*C + D*(1-C)*d"),
+  level = "individual"
+) |>
+  do.call(what = "rbind") |>
+  colMeans()
+
+branch_probabilities <- data.frame(
+  p_us_valence = tt[grepl(names(tt), pattern = "p_us_valence")]
+  , p_us_identity = tt[grepl(names(tt), pattern = "p_us_identity")]
+  , p_us_id_or_val = tt[grepl(names(tt), pattern = "p_us_id_or_val")]
+  , row.names = NULL
+)
+
+data <- cbind(data_list$mpt_data_hierarchical, individual_parameters, branch_probabilities)
+data <- merge(data, as.data.frame(rating_wide), by = c("sid", "task_focus"))
+```
+
+
+```{r}
+z <- function(x) {as.numeric(scale(x))}
+
+data <- within(data, {
+  Dd <- z(D) * z(d)
+  DC <- z(D) * z(C)
+  dC <- z(d) * z(C)
+  DdC <- z(D) * z(d) * z(C)
+})
+
+
+mediation_syntax <-"
+    # Regressions
+    D ~ a_D*task_focus 
+    C ~ a_C*task_focus
+    d ~ a_d*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
+    Dd ~ a_Dd*task_focus
+    DC ~ a_DC*task_focus
+    dC ~ a_dC*task_focus
+    DdC ~ a_DdC*task_focus
+    # ec_effect ~ b_D*D + b_C*C + b_d*d + b_b*b + b_a*a + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
+    ec_effect ~ b_D*D + b_C*C + b_d*d + b_Dd*Dd + b_DC*DC + b_dC*dC + b_DdC*DdC + ade*task_focus
+    
+    #Define New Parameters
+    ab_D := a_D*b_D                                   #the product term is computed as a*b
+    ab_C := a_C*b_C
+    ab_d := a_d*b_d
+    ab_Dd := a_Dd*b_Dd
+    ab_DC := a_DC*b_DC
+    ab_dC := a_dC*b_dC
+    ab_DdC := a_DdC*b_DdC
+    total_effect := ade + ab_D + ab_C + ab_d + ab_Dd + ab_DC + ab_dC + ab_DdC  #having defined ab, we can use this here.
+"
+
+sem(mediation_syntax, data = data) |>
+  summary(standardized=TRUE)
+```
+
+```{r}
+ec_lm <- lm(formula = ec_effect ~ D * C * d, data = data)
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("d", "C"))
+
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("C", "d"))
+
+emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
+  summary(infer = TRUE)
+
+emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
+  summary(infer = TRUE)
+```
+
+```{r three-way-interaction}
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("d", "C", "D"))
+
+conditions <- list(
+  d = seq(0, 1, length.out = 1e3)
+  , C   = c(.2, .5, .8)
+  , D = c(.2, .5, .8)
+)
+
+marginaleffects::plot_predictions(ec_lm, condition = conditions)
+emtrends(ec_lm, var = "d", specs = ~ C + D, at = conditions[2:3]) |>
+  summary(infer = TRUE)
+
+```
+
+```{r}
+par(mfrow = c(1, 3))
+plot(d ~ C, data = data, pch = 16)
+abline(a = 0, b = 1)
+plot(d ~ D, data = data, pch = 16)
+plot(C ~ D, data = data, pch = 16)
+```
+
+
+
+```{r}
+lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
+  ggeffect(terms = ~ d:D) |>
+  plot(show_data = TRUE)
+```
+
+
+
+
+### with unconditional probabilities of US-valence and US-identity memory as predictors
+
+```{r}
+# hist(data$p_us_identity)
+# hist(data$p_us_valence)
+data$ln_us_identity <- qnorm(data$p_us_identity)
+data$ln_us_valence <- qnorm(data$p_us_valence)
+data$ln_us_id_or_val <- log(data$p_us_id_or_val)
+data$I_valence_memory <- data$ln_us_identity * data$ln_us_valence
+
+mediation_syntax <-"
+    # Regressions
+    # D ~ a_D*task_focus 
+    # C ~ a_C*task_focus
+    # d ~ a_d*task_focus
+    # b ~ a_b*task_focus
+    # a ~ a_a*task_focus
+    ln_us_valence  ~ a_us_valence*task_focus
+    ln_us_identity ~ a_us_identity*task_focus
+    # I_valence_memory ~ a_inter*task_focus
+    ec_effect ~ b_us_valence*ln_us_valence + b_us_identity*ln_us_identity + ade*task_focus
+    
+    #Define New Parameters
+    ab_us_valence := a_us_valence*b_us_valence
+    ab_us_identity := a_us_identity*b_us_identity
+    # ab_inter := a_inter*b_inter
+    c := ade + ab_us_valence + ab_us_identity#  + ab_inter #having defined ab, we can use this here.
+"
+
+path_model <- sem(mediation_syntax, data = data)
+path_model |>
+  summary(standardized=TRUE)
+
+# m1 <- lm(ln_us_identity ~ task_focus, data = data) |>
+#   plot()
+# m2 <- lm(ln_us_valence ~ task_focus, data = data) |>
+#   plot()
+lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
+  ggpredict(terms = ~ ln_us_valence + ln_us_identity) |>
+  plot(show_data = TRUE)
+
+lm(ec_effect ~ task_focus + p_us_valence * p_us_identity, data = data) |>
+  ggpredict(terms = ~ p_us_valence) |>
+  plot(show_data = TRUE)
+```
+
+
