@@ -43,12 +43,12 @@ abstract: |
   <!-- https://tinyurl.com/ybremelq -->
   
   
-authornote: |
-  Karoline Bading, University of Tübingen,
-  Jérémy Béna, Aix-Marseille University,
-  Marius Barth, University of Cologne, 
-  Klaus Rothermund, University of Jena.
-  Karoline Bading and Jérémy Béna share first authorship.
+# authornote: |
+#   Karoline Bading, University of Tübingen,
+#   Jérémy Béna, Aix-Marseille University,
+#   Marius Barth, University of Cologne, 
+#   Klaus Rothermund, University of Jena.
+#   Karoline Bading and Jérémy Béna share first authorship.
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -114,6 +114,11 @@ knitr::opts_chunk$set(
 ```
 
 # Experiment 1
+## Methods
+## Results
+## Discussion
+
+# Experiment 2
 
 ```{r}
 # from MB:
@@ -138,14 +143,10 @@ socio = socio %>% filter(Status != "RETURNED")
 
 ```
 
-
 ## Method
-
 The pre-registration, materials and data are publicly available on the Open Science Framework at: https://osf.io/rqkvy/.
 
-
 ### Participants
-
 Participants were recruited through Prolific and received monetary compensation for their participation.
 The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%.
 Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
@@ -161,25 +162,52 @@ We found that 156 participants were required to achieve a statistical power of $
 We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq |.22|$ (e.g., between parameter estimates and evaluative conditioning scores).
 To avoid a final sample smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%)
 
-
 ### Design
-
-The experiment followed a 2 (US valence: positive vs. negative vs. unpaired) $\times$ 2 (Task order: evaluation task first vs. memory task first) mixed design.
+The experiment followed a 2 (US valence: positive vs. negative vs. unpaired) $\times$ 2 (task order: evaluation task first vs. memory task first) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
-
 The experiment was programmed in *lab.js* [@henninger_labjs_2022].
 
-The CS pool comprised 54 5- to 7-letter nonwords which have been used in previous EC research (Stahl & Bading, 2020).
-<!-- For each participants, 24 nonwords were randomly selected to serve as CSs during the learning phase. -->
-<!-- The remaining and 24 were new (i.e., presented only in the test phase). -->
+The CS pool comprised 54 5- to 7-letter nonwords (e.g., "botsy", "ikzunt", "ampfong").
+The nonwords were taken from a previous EC study (Stahl & Bading, 2020).
+For each participant, 24 nonwords were randomly selected to serve as CSs during the learning phase.
+Another 24 nonwords were randomly selected to serve as distractor stimuli in the test phase.
 
+As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
+The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), 12 images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) were therefore used as positive USs, while 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$) and were thus used as negative USs. Positive and negative USs differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+For each participant, the 24 USs were combined one-to-one with the 24 CSs (via random assignment).
 
 ### Measures and procedures
 
-### Data processing and analysis
+#### Learning phase
 
+#### Test phase
+After the learning phase, participants entered the test phase. In the test phase, participants performed two tasks: an evaluation task and a memory task. Participants were randomly assigned to one of the two task order conditions. In the evaluation task first condition, participants performed the evaluation task and then the memory task. The task order was reversed in the memory first condition. The wording of the task instructions differed slightly between task order conditions. 
+The instructions can be found in the pre-registration (see OSF repository).
+
+##### Evaluation task
+In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
+Participants rated how positive or negative they found each nonword on a 8-point Likert scale ranging from "very negative" (1) to "very positive" (8).
+The 48 trials were separated by blank screens presented for 500 ms.
+Trial order was randomized for each participant anew.
+
+##### Memory task
+In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
+The 48 trials were separated by blank screens presented for 500 ms.
+Trial order was randomized for each participant anew.
+
+Each trial began with with the recognition memory task: participants were asked whether the nonword had been part of the nonword-image pairs presented in the learning phase.
+To indicate their response, participants were presented with two buttons labeled "Yes (old)" and "No (new)".
+If participants responded "No (new)", they proceeded to the next recognition memory trial.
+If participants responded "Yes (old)", they proceeded to the associative memory task.
+In this task, the nonword was presented together with eight images (all of which had been shown as USs during the learning phase).
+The eight images were displayed in two rows of four images (with random assignment of images to positions).
+For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). 
+For distractor stimuli incorrectly classified as "old", eight randomly selected images (4 $\times$ positive, 4 $\times$ negative) were presented.
+Participants were instructed to guess the correct option if they could not remember the previously paired image for a given nonword.
+
+### Data processing and analysis
 
 ## Results
 
