@@ -2,7 +2,7 @@
 library(TreeBUGS)
 
 project_root <- rprojroot::find_rstudio_root_file()
-study_folder <- file.path(project_root, "studies", "wsw2-main")
+study_folder <- file.path(project_root, "studies", "wsw1")
 # 
 # data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
 # mpt_data_hierarchical <- merge(data_list$mpt_data_hierarchical, data_list$rating_wide, sort = FALSE)
