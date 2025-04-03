@@ -102,11 +102,7 @@ ec_effects <- marginal_means |>
 
 anova_rating <- apa_print(anova_rating_model)
 
-rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_focus + sid, data = rating, FUN = mean)
-rating_wide <- tidyr::pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
-  within({
-    ec_effect <- positive - negative
-  })
+rating_wide <- data_list$rating_wide
 ```
 
 Figure\ \@ref(fig:exp3-ratings) shows mean evaluative ratings.
