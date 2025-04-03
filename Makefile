@@ -6,6 +6,11 @@ data_files = $(patsubst %, studies/%/data/data.rds, $(studies))
 
 models = $(patsubst %, studies/%/model-objects/trait-mpt.rds, $(studies))
 
+extended_models = studies/wsw2-main/model-objects/trait-mpt-with-ec.rds \
+  studies/wsw3-main/model-objects/trait-mpt-with-ec.rds \
+  studies/wsw3-p2/model-objects/trait-mpt-with-ec.rds \
+  studies/wsw3-joint-analysis/model-objects/trait-mpt-with-ec.rds
+
 all:	$(results) README.md
 
 $(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.rds
@@ -13,6 +18,10 @@ $(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
 $(models): %model-objects/trait-mpt.rds: %R/trait-mpt.R %data/data.rds
+	@echo "Estimating latent-trait MPT model $@ from $^"
+	R -f '$<'
+	
+$(extended_models): %model-objects/trait-mpt-with-ec.rds: %R/trait-mpt-with-ec.R %data/data.rds
 	@echo "Estimating latent-trait MPT model $@ from $^"
 	R -f '$<'
 
