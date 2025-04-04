@@ -7,7 +7,7 @@ study_folder <- file.path(project_root, "studies", "wsw3-main")
 data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
 
 mpt_data_hierarchical <- merge(data_list$mpt_data_hierarchical, data_list$rating_wide, sort = FALSE)
-stopifnot(all(mpt_data$hierarchical$sid == data_list$mpt_data_hierarchical$sid))
+stopifnot(all(mpt_data_hierarchical$sid == data_list$mpt_data_hierarchical$sid))
 
 mpt_data_hierarchical <- within(
   mpt_data_hierarchical
