@@ -1,5 +1,5 @@
 
-studies = wsw1 wsw2-main wsw3-p2 wsw3-main
+studies = wsw1 wsw2-main wsw3-p2 wsw3-main wsw3-joint-analysis
 
 results = $(patsubst %, studies/%/results.html, $(studies))
 data_files = $(patsubst %, studies/%/data/data.rds, $(studies))
