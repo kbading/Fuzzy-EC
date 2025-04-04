@@ -39,11 +39,11 @@ source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
 ```{r}
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
 
-data <- readRDS(file.path(study_folder, "data", "data.rds"))
+data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
 
-rating <- data$rating
-mpt_data <- data$mpt_data
-mpt_data_hierarchical <- data$mpt_data_hierarchical
+rating <- data_list$rating
+mpt_data <- data_list$mpt_data
+mpt_data_hierarchical <- data_list$mpt_data_hierarchical
 mpt_aggregated <- colSums(mpt_data)
 ```
 
