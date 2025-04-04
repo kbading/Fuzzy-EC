@@ -25,7 +25,7 @@ study_folder <- file.path(project_root, "studies", "wsw3-joint-analysis")
 #   , predType = c("f")
 #   , IVprec = "dgamma(.5,.5)"
 # )
-
+model <- list()
 
 dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(model, file = file.path(study_folder, "model-objects", "trait-mpt-with-ec.rds"))
