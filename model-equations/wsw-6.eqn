@@ -1,0 +1,25 @@
+24
+PosUS     PosUSposcor       D*C
+PosUS     PosUSposcor       D*(1-C)*d*G
+PosUS     PosUSposincor     D*(1-C)*d*(1-G)
+PosUS     PosUSposcor       D*(1-C)*(1-d)*a*G
+PosUS     PosUSposincor     D*(1-C)*(1-d)*a*(1-G)
+PosUS     PosUSnegincor     D*(1-C)*(1-d)*(1-a)
+PosUS     PosUSposcor       (1-D)*b*a*G
+PosUS     PosUSposincor     (1-D)*b*a*(1-G)
+PosUS     PosUSnegincor     (1-D)*b*(1-a)
+PosUS     PosUSnew          (1-D)*(1-b)
+NegUS     NegUSnegcor       D*C
+NegUS     NegUSnegcor       D*(1-C)*d*G
+NegUS     NegUSnegincor     D*(1-C)*d*(1-G)
+NegUS     NegUSposincor     D*(1-C)*(1-d)*a
+NegUS     NegUSnegcor       D*(1-C)*(1-d)*(1-a)*G
+NegUS     NegUSnegincor     D*(1-C)*(1-d)*(1-a)*(1-G)
+NegUS     NegUSposincor     (1-D)*b*a
+NegUS     NegUSnegcor       (1-D)*b*(1-a)*G
+NegUS     NegUSnegincor     (1-D)*b*(1-a)*(1-G)
+NegUS     NegUSnew          (1-D)*(1-b)
+New       Newnew            D
+New       Newposincor       (1-D)*b*a
+New       Newnegincor       (1-D)*b*(1-a)
+New       Newnew            (1-D)*(1-b)
