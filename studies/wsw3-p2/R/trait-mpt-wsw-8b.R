@@ -17,7 +17,7 @@ model <- traitMPT(
   , ppp      = 5e3L
   , restrictions = list("G = 0.125")
   , covData = subset(mpt_data_hierarchical, select = "task_focus")
-  , predStructure = list("a b D d_positive d_negative C_positive C_negative ; task_order")
+  , predStructure = list("a b D d_positive d_negative C_positive C_negative ; task_focus")
   , predType = "f"
   , IVprec = "dgamma(.5,.5)"
 )
