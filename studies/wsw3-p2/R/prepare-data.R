@@ -40,8 +40,14 @@ data <- within(data, {
   task_focus <- factor(instructions_conditioning, levels = c("age_task", "val_task"), labels = c("age", "valence"))
 })
 
-test_runs <- as.character(c(16977:16980, 16986))
+test_runs <- as.character(c(16977:16980, 16986L))
 
+excluded_participants <- list(
+  sports = subset(data, !duplicated(sid) & sports == 0)$sid
+  , not_attention = subset(data, !duplicated(sid) & pay_attention == 0)$sid
+  , not_serious = subset(data, !duplicated(sid) & serious == 0)$sid
+  , test_runs   = test_runs
+)
 
 data <- subset(
   data
@@ -134,6 +140,7 @@ saveRDS(
     , memory = memory
     , mpt_data = mpt_data
     , mpt_data_hierarchical = mpt_data_hierarchical
+    , excluded_participants = excluded_participants
   )
   , file = file.path(study_folder, "data", "data.rds")
 )

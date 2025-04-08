@@ -21,7 +21,7 @@ study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw1"
 
 ```{r}
 data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
-
+excluded_participants <- data_list$excluded_participants
 
 
 baseline_restrictions <- list(
