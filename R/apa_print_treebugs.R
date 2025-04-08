@@ -61,3 +61,10 @@ apa_fit <- function(x) {
     )
   )
 }
+
+get_theta <- function(x) {
+  y <- as.data.frame(TreeBUGS::getParam(x, parameter = "theta"))
+  y$sid <- rownames(y)
+  rownames(y) <- NULL
+  y
+}
