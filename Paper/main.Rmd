@@ -91,8 +91,10 @@ study_folder_main <- file.path(
 )
 
 study_folders <- list(
-  wsw2_main = file.path(project_root, "studies", "wsw2-main")
+    wsw1 = file.path(project_root, "studies", "wsw1")
+  , wsw2_main = file.path(project_root, "studies", "wsw2-main")
   , wsw3_main = file.path(project_root, "studies", "wsw3-main")
+  , wsw3_p2   = file.path(project_root, "studies", "wsw3-p2")
 )
 
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
@@ -114,6 +116,16 @@ knitr::opts_chunk$set(
 ```
 
 # Experiment 1 (Pilot)
+
+```{r}
+# from MB:
+data_list <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
+data_list$excluded_participants
+```
+
+
+
+
 ## Methods
 The experiment was not pre-registered.
 The materials and data are publicly available at: https://osf.io/rqkvy/.
@@ -135,6 +147,13 @@ The experiment followed a 2 (US valence: positive vs. negative) within-subjects 
 ### Data processing
 
 ## Results
+
+```{r}
+exp1_trait_model <- readRDS(study_folders$wsw1, "model-objects", "trait-mpt.rds")
+# exp1_trait_model <- readRDS(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds")
+```
+
+
 ## Discussion
 
 # Experiment 2
@@ -142,6 +161,7 @@ The experiment followed a 2 (US valence: positive vs. negative) within-subjects 
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
+data_list$excluded_participants
 
 n_final <- sum(length(unique(data_list$rating$sid)))
 n_conditions <- split(data_list$rating, data_list$rating$task_order) |>
@@ -249,9 +269,22 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ## Results
 
+```{r}
+exp2_trait_model <- readRDS(study_folders$wsw2_main, "model-objects", "trait-mpt.rds")
+# exp2_trait_model <- readRDS(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds")
+```
+
 ## Discussion
 
 # Experiment 3
+
+```{r}
+# from MB:
+data_list <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
+data_list$excluded_participants                       # Participant IDs
+lapply(data_list$excluded_participants, FUN = length) # How many?
+```
+
 
 ## Method
 The experiment was pre-registered on the OSF.
@@ -390,6 +423,12 @@ Finally, participants were debriefed about the purpose of the study and then red
 ### Data processing and statistical analysis
 
 ## Results
+
+```{r}
+exp3_trait_model <- readRDS(study_folders$wsw3_main, "model-objects", "trait-mpt.rds")
+# exp3_trait_model <- readRDS(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds")
+```
+
 
 ## Discussion 
 
