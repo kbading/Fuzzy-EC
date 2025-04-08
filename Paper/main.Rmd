@@ -334,7 +334,7 @@ Prolific users who participated in previous pretests and experiments (conducted 
 
 We recruited xxx participants (`r prop_sex$Female` female; `r age`).
 As pre-registered, we excluded xxx participants who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data").
-Taken together, this resulted in a final sample size of `r `sum(n_sex)` participants (`r n_conditions$valence` in the valence focus condition and `r n_conditions$age` in the age focus condition condition).
+Taken together, this resulted in a final sample size of `r sum(n_sex)` participants (`r n_conditions$valence` in the valence focus condition and `r n_conditions$age` in the age focus condition condition).
 
 The number of recruited participants was based on a pre-registered sampling plan (see OSF repository).
 We pre-registered a minimum sample size (per learning task focus condition), a maximum sample size (across learning task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
