@@ -273,23 +273,18 @@ exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", 
 exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
 ```
 
-
 ```{r}
 ratings_and_parameters <- merge(data_list$rating_wide, get_theta(exp2_trait_model))
 
-rating_and_parameters_long <- merge(data_list$rating, get_theta(exp2_trait_model_8b)) |>
+rating_and_parameters_long_8b <- merge(data_list$rating, get_theta(exp2_trait_model_8b)) |>
   within({
     d <- ifelse(us_valence == "positive", d_positive, d_negative)
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
+rating_and_parameters_long <- merge(data_list$rating, get_theta(exp2_trait_model))
+
 ```
-
-
-
-
-
-
 
 ## Discussion
 
