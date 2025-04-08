@@ -16,7 +16,7 @@ mpt_data_hierarchical <- within(
     ec_valence_focus <- ec_effect * (task_focus == "valence")
   }
 )
-
+rownames(mpt_data_hierarchical) <- mpt_data_hierarchical$sid
 
 model <- traitMPT(
   , eqnfile = file.path(study_folder, "WSW_exp3_hierarchical.eqn")

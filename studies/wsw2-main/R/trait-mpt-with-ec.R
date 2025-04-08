@@ -15,6 +15,7 @@ mpt_data_hierarchical <- within(
     ec_memory_first <- ec_effect * (task_order == "Memory first")
   }
 )
+rownames(mpt_data_hierarchical) <- mpt_data_hierarchical$sid
 
 
 model <- traitMPT(
