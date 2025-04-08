@@ -120,7 +120,7 @@ knitr::opts_chunk$set(
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
-data_list$excluded_participants
+#data_list$excluded_participants
 ```
 
 
@@ -150,9 +150,8 @@ The experiment followed a 2 (US valence: positive vs. negative) within-subjects 
 
 ```{r}
 exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
-# exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds"))
+exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds"))
 ```
-
 
 ## Discussion
 
@@ -161,7 +160,7 @@ exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trai
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
-data_list$excluded_participants
+#data_list$excluded_participants
 
 n_final <- sum(length(unique(data_list$rating$sid)))
 n_conditions <- split(data_list$rating, data_list$rating$task_order) |>
@@ -271,7 +270,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ```{r}
 exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
-# exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
+exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
 ```
 
 ## Discussion
@@ -281,7 +280,7 @@ exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", 
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
-data_list$excluded_participants                       # Participant IDs
+#data_list$excluded_participants                       # Participant IDs
 lapply(data_list$excluded_participants, FUN = length) # How many?
 ```
 
@@ -332,7 +331,7 @@ We collected a quota sample with approximately equal shares of male and female p
 The sampling pool was restricted to Prolific users (1) whose first language is English, (2) who live in the USA or in the United Kingdom, and (3) who have at least 20 previous submissions and a Prolific approval rate of at least 90%.
 Prolific users who participated in previous pretests and experiments (conducted by the members of the current team of authors) using the same materials were excluded from the sampling pool.
 
-We recruited `r nrow(demographics)` participants (`r prop_sex$Female` female; `r age`).
+We recruited 142 participants (`r prop_sex$Female` female; `r age`).
 As pre-registered,
 we excluded `r length(unique(unlist(data_list$excluded_participants)))` participants
 who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data").
@@ -463,7 +462,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ```{r}
 exp3_trait_model <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt.rds"))
-# exp3_trait_model <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds"))
+exp3_trait_model_8b <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds"))
 ```
 
 
