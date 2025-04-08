@@ -126,11 +126,18 @@ rating <- subset(
 ) |>
   droplevels()
 
+rating_aggregated <- aggregate(evaluative_rating ~ us_valence + task_focus + sid, data = rating, FUN = mean)
+rating_wide <- pivot_wider(rating_aggregated, values_from = "evaluative_rating", names_from = "us_valence") |>
+  within({
+    ec_effect <- positive - negative
+  })
+
 
 dir.create(file.path(study_folder, "data"), showWarnings = FALSE)
 saveRDS(
   list(
     rating = rating
+    , rating_wide = rating_wide
     , memory = memory
     , mpt_data = mpt_data
     , mpt_data_hierarchical = mpt_data_hierarchical

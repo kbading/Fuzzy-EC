@@ -1,18 +1,28 @@
 
-studies = wsw1 wsw2-main wsw3-p2 wsw3-main
+studies = wsw1 wsw2-main wsw3-p2 wsw3-main wsw3-joint-analysis
 
 results = $(patsubst %, studies/%/results.html, $(studies))
 data_files = $(patsubst %, studies/%/data/data.rds, $(studies))
 
 models = $(patsubst %, studies/%/model-objects/trait-mpt.rds, $(studies))
+extended_models = $(patsubst %, studies/%/model-objects/trait-mpt-with-ec.rds, $(studies))
+wsw8b_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b.rds, $(studies))
 
 all:	$(results) README.md
 
-$(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.rds
+$(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.rds %model-objects/trait-mpt-with-ec.rds %model-objects/trait-mpt-wsw-8b.rds
 	@echo "Knitting $@ from $^"
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
 $(models): %model-objects/trait-mpt.rds: %R/trait-mpt.R %data/data.rds
+	@echo "Estimating latent-trait MPT model $@ from $^"
+	R -f '$<'
+	
+$(extended_models): %model-objects/trait-mpt-with-ec.rds: %R/trait-mpt-with-ec.R %data/data.rds
+	@echo "Estimating latent-trait MPT model $@ from $^"
+	R -f '$<'
+	
+$(wsw8b_models): %model-objects/trait-mpt-wsw-8b.rds: %R/trait-mpt-wsw-8b.R %data/data.rds
 	@echo "Estimating latent-trait MPT model $@ from $^"
 	R -f '$<'
 

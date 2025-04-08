@@ -1,0 +1,25 @@
+# Who-said-what model with *C* and *d* varying by US valence
+PosUS     PosUSposcor       D*C_positive
+PosUS     PosUSposcor       D*(1-C_positive)*d_positive*G
+PosUS     PosUSposincor     D*(1-C_positive)*d_positive*(1-G)
+PosUS     PosUSposcor       D*(1-C_positive)*(1-d_positive)*a*G
+PosUS     PosUSposincor     D*(1-C_positive)*(1-d_positive)*a*(1-G)
+PosUS     PosUSnegincor     D*(1-C_positive)*(1-d_positive)*(1-a)
+PosUS     PosUSposcor       (1-D)*b*a*G
+PosUS     PosUSposincor     (1-D)*b*a*(1-G)
+PosUS     PosUSnegincor     (1-D)*b*(1-a)
+PosUS     PosUSnew          (1-D)*(1-b)
+NegUS     NegUSnegcor       D*C_negative
+NegUS     NegUSnegcor       D*(1-C_negative)*d_negative*G
+NegUS     NegUSnegincor     D*(1-C_negative)*d_negative*(1-G)
+NegUS     NegUSposincor     D*(1-C_negative)*(1-d_negative)*a
+NegUS     NegUSnegcor       D*(1-C_negative)*(1-d_negative)*(1-a)*G
+NegUS     NegUSnegincor     D*(1-C_negative)*(1-d_negative)*(1-a)*(1-G)
+NegUS     NegUSposincor     (1-D)*b*a
+NegUS     NegUSnegcor       (1-D)*b*(1-a)*G
+NegUS     NegUSnegincor     (1-D)*b*(1-a)*(1-G)
+NegUS     NegUSnew          (1-D)*(1-b)
+New       Newnew            D
+New       Newposincor       (1-D)*b*a
+New       Newnegincor       (1-D)*b*(1-a)
+New       Newnew            (1-D)*(1-b)
