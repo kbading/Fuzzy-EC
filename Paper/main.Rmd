@@ -76,6 +76,8 @@ library(dplyr)
 library(MPTinR)
 library(TreeBUGS)
 
+set_sum_contrasts()
+
 r_refs("r-references.bib")
 
 project_root <- rprojroot::find_rstudio_root_file()
