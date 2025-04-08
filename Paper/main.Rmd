@@ -318,6 +318,10 @@ age <- with(demographics, {
   )
 })
 
+n_conditions <- split(data_list$rating, data_list$rating$task_focus) |>
+  lapply(function(x) {paste0("$n = ", length(unique(x$sid)), "$")})
+n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_conditions))))
+
 
 
 ```
@@ -328,9 +332,9 @@ We collected a quota sample with approximately equal shares of male and female p
 The sampling pool was restricted to Prolific users (1) whose first language is English, (2) who live in the USA or in the United Kingdom, and (3) who have at least 20 previous submissions and a Prolific approval rate of at least 90%.
 Prolific users who participated in previous pretests and experiments (conducted by the members of the current team of authors) using the same materials were excluded from the sampling pool.
 
-We recruited xxx participants (`r prop_sex$Female`, ` female; `r age`).
+We recruited xxx participants (`r prop_sex$Female` female; `r age`).
 As pre-registered, we excluded xxx participants who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data").
-Taken together, this resulted in a final sample size of xxx participants (xxx in the valence focus condition and xxx in the age focus condition condition).
+Taken together, this resulted in a final sample size of `r `sum(n_sex)` participants (`r n_conditions$valence` in the valence focus condition and `r n_conditions$age` in the age focus condition condition).
 
 The number of recruited participants was based on a pre-registered sampling plan (see OSF repository).
 We pre-registered a minimum sample size (per learning task focus condition), a maximum sample size (across learning task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
