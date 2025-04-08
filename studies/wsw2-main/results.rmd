@@ -200,7 +200,6 @@ mpt_data_hierarchical <- merge(mpt_data_hierarchical, rating_wide, sort = FALSE)
   })
 ```
 
-
 ```{r}
 trait_mpt <- function(file, ...) {
   if( file.exists(file) ) {
@@ -262,10 +261,10 @@ summary(mpt_model_ec_predictor)
 
 ```{r eval = TRUE}
 library(TreeBUGS)
-individual_parameters <- as.data.frame(getParam(mpt_model_ec_predictor, parameter = "theta"))
+individual_parameters <- as.data.frame(getParam(model, parameter = "theta"))
 parameter_names <- colnames(individual_parameters)
 
-tt <- transformedParameters(mpt_model_ec_predictor,
+tt <- transformedParameters(model,
   list("p_us_identity = D*C", "p_us_valence = D*(1-C)*d"),
   level = "individual"
 ) |>
@@ -350,32 +349,55 @@ sem(mediation_syntax, data = data) |>
 ```
 
 ```{r}
-ec_lm <- lm(formula = ec_effect ~ qnorm(D) * qnorm(C) * qnorm(d) + task_order, data = data)
+library(afex)
+contrasts(data$task_order) <- "contr.sum"
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) }
+
+ec_lm <- lm(formula = ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data)
+
+summary(ec_lm)
+ec_lm |>
+  marginaleffects::plot_predictions(condition = c("D"))
 
 ec_lm |>
-  marginaleffects::plot_predictions(condition = c("d", "C"))
+  marginaleffects::plot_predictions(condition = c("C"))
 
 ec_lm |>
-  marginaleffects::plot_predictions(condition = c("C", "d"))
+  marginaleffects::plot_predictions(condition = c("d"))
+```
 
-ec_lm |>
-  marginaleffects::plot_predictions(condition = c("D", "C"))
-ec_lm |>
-  marginaleffects::plot_predictions(condition = c("C", "D"))
-ec_lm |>
-  marginaleffects::plot_predictions(condition = c("D", "d"))
-ec_lm |>
-  marginaleffects::plot_predictions(condition = c("d", "D"))
+```{r}
+ec_lm <- lm(formula = ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data)
 
-ec_lm |>
-  marginaleffects::plot_predictions(condition = c("d", "C", "D"))
+summary(ec_lm)
 
 
-emtrends(ec_lm, var = "d", specs = ~ C, at = list(C = c(0, .1, .2, .3, .8))) |>
+
+lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data) |>
+  ggpredict(terms = ~ cntr(D):task_order) |>
+  plot(show_data = TRUE)
+
+lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data) |>
+  ggpredict(terms = ~ cntr(C):task_order) |>
+  plot(show_data = TRUE)
+
+```
+
+
+```{r}
+
+ec_lm <- lm(formula = ec_effect ~ (cntr(D)*cntr(C)*cntr(d))+task_order, data = data)
+
+summary(ec_lm)
+
+emtrends(ec_lm, var = "d", specs = ~ D, at = list(D = c(0, .1, .2, .3, .8))) |>
   summary(infer = TRUE)
 
-emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
+emtrends(ec_lm, var = "D", specs = ~ task_order) |>
   summary(infer = TRUE)
+
+# emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
+#   summary(infer = TRUE)
 
 ```
 
