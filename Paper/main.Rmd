@@ -269,15 +269,15 @@ hypothesis_restrictions_8b <- list(
   , dneg_eq0  = list(d_negative = .Machine$double.eps)
   , a_eq.5 = list(a = .5)
   , b_eq.5 = list(b = .5)
-  , C_eq  = list(C_negative = "C_positive")
-  , d_eq  = list(d_negative = "d_positive")
+  , C_eq  = list(C = c("C_positive", "C_negative"))
+  , d_eq  = list(d = c("d_positive", "d_negative"))
 )
 
 models_8b <- lapply(
   hypothesis_restrictions_8b
   , FUN = function(x) {
     fit_mpt(
-      model = file.path(study_folders$wsw1, "wsw-8b.eqn")
+      model = file.path(project_root, "model-equations", "wsw-8b.eqn")
       , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
       , restrictions = c(baseline_restrictions, x)
     )
