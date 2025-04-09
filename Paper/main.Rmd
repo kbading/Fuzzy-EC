@@ -142,12 +142,80 @@ The study was run online.
 The experiment followed a 2 (US valence: positive vs. negative) within-subjects design.
 
 ### Materials
+The CS pool comprised 48 colored images of human faces with neutral expressions (24 female faces, 24 male faces).
+The images were taken from xxx.
+
+As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
+The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), 12 images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) were therefore used as positive USs, while 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$) and were thus used as negative USs. Positive and negative USs differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+
+For each participant, 12 randomly selected face images (50% female) served as positively paired CSs (i.e., they were paired with a positive US during the learning phase), 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images served as distractor stimuli in the test phase.
+
+For each participant, all 24 adjectives served as USs during the learning phase. 
+The 24 adjectives were randomly assigned to the 24 CSs.
+Twelve CSs (50% female) were paired with positive USs and twelve CSs (50% female) were paired with negative USs.
 
 ### Measures and procedures
+All verbal materials were presented in English.
+After providing informed consent and being asked to focus on the study,
+participants were thanked for their participation and asked to pay close attention to all instructions and tasks.
+Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
+First, participants read the following instruction slide: "In the first part of the experiment you will be presented with image pairs. Each image pair consists of a face and another picture. Your task is simply to pay close attention to each image pair. Press the spacebar to continue with the instructions."
+Subsequently, participants read the following instruction slide: "Next you will be presented with the image pairs. Please pay close attention to each image pair. This part of the experiment will take about 2.5 minutes. Press the spacebar to start the task."
+
+After pressing the spacebar, participants worked through the learning task, consisting of 72 trials.
+The trials were separated by blank screens presented for 1,000 ms.
+On each trial, a face image (CS, center-left position) was presented together with a valenced image (US, center-right position).
+CS and US appeared at the same time and remained on screen for 1,000 ms.
+For each participant, trial order was randomized in sets of 24 trials.
+In each set (three in total), each of the 24 CS-US pairs was presented once.
+
+After the last trial of the learning task, participants read the following instruction slide: "The first part of the experiment is now finished. You have now seen all image pairs and may continue with the second part of the experiment. Press the spacebar to continue."
+
 #### Test phase
-#### Control measures
+After the learning phase, participants entered the test phase. 
+In the test phase, participants performed two measurement tasks: a memory task followed by an evaluation task. 
+The order of the two tasks (memory task first) was the same for all participants.
+
+##### Memory task
+First, participants were presented with the following instruction slide: "In the second part of the experiment you will be presented with individual faces. Some of these faces were part of the previously presented image pairs. Other faces will be new: they were not part of the image pairs you saw in the previous task. For each face, please indicate whether it is 'old' (i.e., part of the previously presented image pairs) or 'new' (i.e., not part of the previously presented image pairs). Press the spacebar to continue."
+
+Next, participants read the following instruction slide: "Whenever you classify a face as 'old', you will be asked to perform a second task. In this second task, you will be presented with eight pictures. Your task will be to select the picture with which the face was previously paired with. If you can remember the paired picture, click on it and then click on the 'continue' button at the bottom of the screen. If you cannot remember the previously paired picture, try to guess the correct one. Again, click on the image corresponding to your guess and then on the "continue" button at the bottom of the screen. Ready? Then press the spacebar to continue."
+
+After pressing the spacebar, participants performed the memory task, consisting of 48 trials.
+In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
+The 48 trials were separated by blank screens presented for 500 ms.
+Trial order was randomized for each participant anew.
+Each trial began with with the recognition memory task: participants were asked whether the face had been part of the nonword-image pairs presented in the learning phase.
+To indicate their response, participants were presented with two buttons labeled "Yes (old)" and "No (new)".
+If participants responded "No (new)", they proceeded to the next recognition memory trial.
+If participants responded "Yes (old)", they proceeded to the associative memory task (in which they were asked to identify the previously paired US).
+In this task, the face image was presented together with eight valenced images (all of which had been shown as USs during the learning phase).
+The eight images were displayed in two rows of four images (with random assignment of images to positions).
+For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). 
+For distractor stimuli incorrectly classified as "old", eight randomly selected images (4 $\times$ positive, 4 $\times$ negative) were presented.
+
+After the last trial of the memory task, participants read the following instruction slide: "The second part of the experiment is now finished. Press the spacebar to continue with the third part."
+
+##### Evaluation task
+First, participants read the following instruction slide: "In the third part of the experiment, you will again be presented with the face images. This time you will be asked to indicate your impression of the persons depicted in the images. To indicate your impression of a given person, you will be presented with an 11-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your impression of the person depicted in a given image. Then click on the 'continue' button to proceed to the next face. Ready? Then press the spacebar to continue."
+
+After pressing the spacebar, particpants worked through the evaluation task, consisting of 48 trials.
+In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
+Participants rated how positive or negative they found each face on a 11-point Likert scale ranging from "very negative" (-5) to "very positive" (+5).
+The 48 trials were separated by blank screens presented for 500 ms.
+Trial order was randomized for each participant anew.
+
+After the last trial of the evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press spacebar to continue."
+
+#### Control measures and debriefing
+After pressing the spacebar, participants were asked whether they paid attention to the images presented throughout the experiment.
+The response options ("Yes" vs. "No") were presented as two buttons.
+Subsequently, participants were asked whether they took the requested responses seriously.
+The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
+Subsequently, participants were given the chance to comment on the study.
+Finally, participants were presented with the following text (debriefing them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
 
 ### Data processing
 
@@ -159,13 +227,13 @@ exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "t
 ```
 
 ```{r}
-summary(exp1_trait_model)
+#summary(exp1_trait_model)
 
-plotParam(exp1_trait_model)
+#plotParam(exp1_trait_model)
 
-summary(exp1_trait_model_8b)
+#summary(exp1_trait_model_8b)
 
-plotParam(exp1_trait_model_8b)
+#plotParam(exp1_trait_model_8b)
 ```
 
 ```{r}
