@@ -269,8 +269,8 @@ hypothesis_restrictions_8b <- list(
   , dneg_eq0  = list(d_negative = .Machine$double.eps)
   , a_eq.5 = list(a = .5)
   , b_eq.5 = list(b = .5)
-  , C_eq  = list(C_negative = C_positive)
-  , d_eq  = list(d_negative = d_positive)
+  , C_eq  = list(C_negative = "C_positive")
+  , d_eq  = list(d_negative = "d_positive")
 )
 
 models_8b <- lapply(
