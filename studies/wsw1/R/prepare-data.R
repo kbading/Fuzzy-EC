@@ -45,18 +45,22 @@ data <- within(data, {
   serious <- as.integer(serious)
 })
 
+agg <- aggregate(evaluative_rating ~ sid, data = subset(data, sender == "rating_trial"), FUN = sd)
+
+
 test_runs <- integer(0L)
 
 excluded_participants <- list(
   not_attention = subset(data, !duplicated(sid) & pay_attention == 0)$sid
   , not_serious = subset(data, !duplicated(sid) & serious == 0)$sid
   , test_runs   = test_runs
+  , always_gave_the_same_rating = agg$sid[agg$evaluative_rating == 0]
 )
 
 data <- subset(
   data
   , # sports == 1 & 
-    pay_attention == 1 & serious == 1 & !(url.srid %in% test_runs)
+    pay_attention == 1 & serious == 1 & !(url.srid %in% test_runs) & !(sid %in% excluded_participants$always_gave_the_same_rating)
   , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","comment_study","count_trial_learning","cs","us","us_valence","uss","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating")
 ) |>
   label_variables(
