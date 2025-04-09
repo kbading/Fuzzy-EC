@@ -260,6 +260,42 @@ baseline_restrictions <- list(
   G = .25
 )
 
+hypothesis_restrictions_8b <- list(
+  baseline = list()
+  , D_eq0  = list(D = .Machine$double.eps)
+  , Cpos_eq0  = list(C_positive = .Machine$double.eps)
+  , Cneg_eq0  = list(C_negative = .Machine$double.eps)
+  , dpos_eq0  = list(d_positive = .Machine$double.eps)
+  , dneg_eq0  = list(d_negative = .Machine$double.eps)
+  , a_eq.5 = list(a = .5)
+  , b_eq.5 = list(b = .5)
+  , C_eq  = list(C_negative = C_positive)
+  , d_eq  = list(d_negative = d_positive)
+)
+
+models_8b <- lapply(
+  hypothesis_restrictions_8b
+  , FUN = function(x) {
+    fit_mpt(
+      model = file.path(study_folders$wsw1, "wsw-8b.eqn")
+      , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+
+compare(models_8b)
+models_8b$baseline
+```
+
+
+```{r}
+#exp1_mpt_data <- data_list_pilot$memory
+
+baseline_restrictions <- list(
+  G = .25
+)
+
 hypothesis_restrictions <- list(
   baseline = list()
   , D_eq0  = list(D = .Machine$double.eps)
@@ -291,7 +327,7 @@ wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
 par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,1))
 plot(
   models$baseline
-   # , factors = list("CS variability" = c("low" = "_invariable|_invar","high" = "_variable|_var"))
+    , factors = list(y=c("a"=""))
   , parameters = c(
       "D" = expression(italic(D))
     , "C" = expression(italic(C))
