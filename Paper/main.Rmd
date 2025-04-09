@@ -123,9 +123,8 @@ cntr <- function(x, ...){x - mean(x, ...)}
 # Experiment 1 (Pilot)
 
 ```{r}
-# from MB:
 data_list <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
-#data_list$excluded_participants
+data_list$excluded_participants
 ```
 
 
@@ -237,15 +236,24 @@ exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "t
 ```
 
 ```{r}
-ratings_and_parameters <- merge(data_list$rating_wide, get_theta(exp1_trait_model))
+ratings_and_parameters <- merge(
+  data_list$rating_wide
+  , get_theta(model = exp1_trait_model, data = data_list$mpt_data_hierarchical)
+)
 
-ratings_and_parameters_long_8b <- merge(data_list$rating, get_theta(exp1_trait_model_8b)) |>
+ratings_and_parameters_long_8b <- merge(
+  data_list$rating
+  , get_theta(model = exp1_trait_model_8b, data = data_list$mpt_data_hierarchical)
+) |>
   within({
     d <- ifelse(us_valence == "positive", d_positive, d_negative)
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
-ratings_and_parameters_long <- merge(data_list$rating, get_theta(exp1_trait_model))
+ratings_and_parameters_long <- merge(
+  data_list$rating
+  , get_theta(model = exp1_trait_model, data = data_list$mpt_data_hierarchical)
+)
 
 ratings_and_parameters_long <- subset(ratings_and_parameters_long,us_valence %in% c("positive","negative"))
 
@@ -258,6 +266,7 @@ contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
 
 ```{r}
 model_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
+summary(model_exp1)
 ap_model_exp1 <- apa_print(model_exp1)
 ap_model_exp1
 ```
@@ -391,15 +400,18 @@ exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects
 ```
 
 ```{r}
-ratings_and_parameters <- merge(data_list$rating_wide, get_theta(exp2_trait_model))
+individual_parameters    <- get_theta(exp2_trait_model   , data = data_list$mpt_data_hierarchical)
+individual_parameters_8b <- get_theta(exp2_trait_model_8b, data = data_list$mpt_data_hierarchical)
 
-ratings_and_parameters_long_8b <- merge(data_list$rating, get_theta(exp2_trait_model_8b)) |>
+ratings_and_parameters <- merge(data_list$rating_wide, individual_parameters)
+
+ratings_and_parameters_long_8b <- merge(data_list$rating, individual_parameters_8b) |>
   within({
     d <- ifelse(us_valence == "positive", d_positive, d_negative)
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
-ratings_and_parameters_long <- merge(data_list$rating, get_theta(exp2_trait_model))
+ratings_and_parameters_long <- merge(data_list$rating, individual_parameters)
 
 ratings_and_parameters_long <- subset(ratings_and_parameters_long,us_valence %in% c("positive","negative"))
 
@@ -409,8 +421,9 @@ contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
 contrasts(ratings_and_parameters_long_8b$task_order) <- "contr.sum"
-
 ```
+
+
 
 ```{r}
 model_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_order + (1|sid)
@@ -629,21 +642,40 @@ exp3joint_trait_model_8b <- readRDS(file.path(study_folders$wsw3_joint, "model-o
 ```
 
 ```{r}
-ratings_and_parameters <- merge(data_list$rating_wide, get_theta(exp3_trait_model))
+ratings_and_parameters <- merge(
+  data_list$rating_wide
+  , get_theta(exp3_trait_model, data = data_list$mpt_data_hierarchical)
+)
+lm(formula = ec_effect ~ cntr(D) * cntr(C) * cntr(d), data = ratings_and_parameters) |>
+  summary()
 
-ratings_and_parameters_pilot <- merge(data_list_pilot$rating_wide, get_theta(exp3pilot_trait_model))
+ratings_and_parameters_pilot <- merge(
+  data_list_pilot$rating_wide
+  , get_theta(exp3pilot_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+)
+lm(formula = ec_effect ~ cntr(D) * cntr(C) * cntr(d) + task_focus, data = ratings_and_parameters_pilot) |>
+  summary()
 
-ratings_and_parameters_joint <- merge(data_list_joint$rating_wide, get_theta(exp3joint_trait_model))
+# ratings_and_parameters_joint <- merge(
+#   data_list_joint$rating_wide
+#   , get_theta(exp3joint_trait_model, data = data_list_joint$mpt_data_hierarchical)
+# )
 
 ratings_and_parameters_pilot$sid <- paste0(ratings_and_parameters_pilot$sid,"pilot")
 
-ratings_and_parameters_long_8b <- merge(data_list$rating, get_theta(exp3_trait_model_8b)) |>
+ratings_and_parameters_long_8b <- merge(
+  data_list$rating
+  , get_theta(exp3_trait_model_8b, data = data_list$mpt_data_hierarchical)
+) |>
   within({
     d <- ifelse(us_valence == "positive", d_positive, d_negative)
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
-ratings_and_parameters_long_8b_pilot <- merge(data_list_pilot$rating, get_theta(exp3pilot_trait_model_8b)) |>
+ratings_and_parameters_long_8b_pilot <- merge(
+  data_list_pilot$rating
+  , get_theta(exp3pilot_trait_model_8b, data_list_pilot$mpt_data_hierarchical)
+) |>
   within({
     d <- ifelse(us_valence == "positive", d_positive, d_negative)
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
@@ -651,9 +683,15 @@ ratings_and_parameters_long_8b_pilot <- merge(data_list_pilot$rating, get_theta(
 
 ratings_and_parameters_long_8b_pilot$sid <- paste0(ratings_and_parameters_long_8b_pilot$sid,"pilot")
 
-ratings_and_parameters_long <- merge(data_list$rating, get_theta(exp3_trait_model))
+ratings_and_parameters_long <- merge(
+  data_list$rating
+  , get_theta(exp3_trait_model, data = data_list$mpt_data_hierarchical)
+)
 
-ratings_and_parameters_long_pilot <- merge(data_list_pilot$rating, get_theta(exp3pilot_trait_model))
+ratings_and_parameters_long_pilot <- merge(
+  data_list_pilot$rating
+  , get_theta(exp3pilot_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+)
 
 ratings_and_parameters_long_pilot$sid <- paste0(ratings_and_parameters_long_pilot$sid,"pilot")
 
@@ -676,6 +714,8 @@ contrasts(ratings_and_parameters_long_pilot$task_focus) <- "contr.sum"
 contrasts(ratings_and_parameters_long_8b_pilot$task_focus) <- "contr.sum"
 
 ratings_and_parameters_both <- rbind(ratings_and_parameters,ratings_and_parameters_pilot)
+colnames(ratings_and_parameters)
+colnames(ratings_and_parameters_pilot)
 
 ratings_and_parameters_long_both <- rbind(ratings_and_parameters_long,ratings_and_parameters_long_pilot)
 
