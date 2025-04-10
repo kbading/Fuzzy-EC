@@ -19,7 +19,7 @@ model <- traitMPT(
   , ppp      = 5e3L
   , restrictions = list("G = 0.25")
   , covData = subset(mpt_data_hierarchical, select = "ec_effect")
-  , predStructure = list("a b D d C; ec_effect")
+  , predStructure = list("a b D d_positive d_negative C_positive C_negative ; ec_effect")
   , predType = c("c")
 )
 
