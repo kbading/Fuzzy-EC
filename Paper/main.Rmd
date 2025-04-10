@@ -220,7 +220,7 @@ Finally, participants were presented with the following text (debriefing them ab
 
 ### Data processing and statistical analysis
 First, we inspected the data for indications of non-compliance (among participants who passed the two control measures).
-We found one participants who gave the same response on all trials of the evaluation task (but different responses across trials in the memory task).
+We found one participant who gave the same response on all trials of the evaluation task (but different responses across trials in the memory task).
 We interpreted the response behavior in the evaluation task as an indicator of non-compliance and decided to exclude the participant from all analyses.
 
 The evaluative ratings were analyzed (without further processing) using the R package *stats*.
@@ -422,7 +422,6 @@ The 7-parameter variant of the MPT model provided an adequate account of the dat
 Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
 The difference between $C_{positive}$ and $C_{negative}$ was non-significant, `r apa_wsw8b_comps$statistic$C_eq`, as was the difference between $d_{positive}$ and $d_{negative}$, `r apa_wsw8b_comps$statistic$d_eq`.
 By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, `r apa_wsw6$statistic$modelfit`.
-
 Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
 
 ### Relationships between evaluative ratings and MPT parameters
