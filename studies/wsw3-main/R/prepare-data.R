@@ -27,8 +27,6 @@ data <- data |>
   group_by(url.srid) |>
   fill(consent, comment_study,pay_attention,serious, instructions_conditioning, '-0','-1','-2','-3','-4','-5','-6', .direction = "downup")
 
-# subset(data, grepl(prolific_pid, pattern = "9bba$"))
-print(length(unique(data$url.srid)))
 
 data$sports <- ifelse(
   data$'-1'==TRUE | data$'-2'==TRUE | data$'-3'==TRUE | data$'-4'==TRUE | data$'-5'==TRUE | data$'-0'==TRUE | data$'-6'==TRUE
@@ -40,26 +38,41 @@ data <- within(data, {
   cs_rating  <- as.numeric(cs_rating)
   url.srid   <- factor(url.srid)
   us_valence <- factor(us_valence, levels = c("positive", "negative"))
-  reco_resp  <- factor(reco_resp)
+  reco_resp  <- factor(reco_resp, levels = c("new", "old"))
   evaluative_rating <- as.numeric(cs_rating)
   sid <- as.integer(url.srid)
   task_focus <- factor(instructions_conditioning, levels = c("age_task", "val_task"), labels = c("age", "valence"))
+  
+  idx_us <- as.integer(gsub(source_mem, pattern = "^us", replacement = ""))
 })
+
+
+
+# Exclusion criteria ----
+# always the same evaluative rating
+rating_sd <- aggregate(evaluative_rating ~ sid, data = data, FUN = sd)
+# always old or always new
+prop_old <- aggregate(cbind(prop_old = as.numeric(reco_resp) - 1) ~ sid, data = data, FUN = mean)
+# always the same US position
+us_position <- aggregate(idx_us ~ sid, data = data, FUN = sd)
 
 test_runs <- integer(0L)
 
 excluded_participants <- list(
-  sports = subset(data, !duplicated(sid) & sports == 0)$sid
+  sports          = subset(data, !duplicated(sid) & sports == 0)$sid
   , not_attention = subset(data, !duplicated(sid) & pay_attention == 0)$sid
-  , not_serious = subset(data, !duplicated(sid) & serious == 0)$sid
+  , not_serious   = subset(data, !duplicated(sid) & serious == 0)$sid
   , test_runs   = test_runs
+  , always_gave_the_same_rating = with(rating_sd, sid[evaluative_rating == 0])
+  , proportion_old              = with(prop_old , sid[prop_old == 0 | prop_old == 1])
+  , always_the_same_us_position = with(us_position, sid[idx_us == 0])
 )
 
 
 data <- subset(
   data
-  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs
-  , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","source_mem","count_trial_ratings","evaluative_rating","task_focus")
+  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs & !(sid %in% unlist(excluded_participants))
+  , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","idx_us","count_trial_ratings","evaluative_rating","task_focus")
 ) |>
   label_variables(
     evaluative_rating = "Evaluative rating"
@@ -72,25 +85,16 @@ data_list <- split(data, f = data$sender)
 cols_all <- c("sid", "task_focus", "cs", "us", "us_valence", "us_age")
 
 recognition <- subset(data_list$recognition_trial, select = c(cols_all, "reco_resp"))
-source      <- subset(data_list$source_trial     , select = c(cols_all, "uss", "idtarg", "source_mem"))
+source      <- subset(data_list$source_trial     , select = c(cols_all, "uss", "idtarg", "idx_us"))
 memory      <- merge(recognition, source, by = cols_all)
 
-memory$source_mem_resp <- NA
 
 memory$correct_us_source <- memory$us
-memory$idx_us <- as.integer(gsub(memory$source_mem, pattern = "^us", replacement = ""))
-
-for(i in seq_len(nrow(memory))){
-  memory$source_mem_resp[i]   <- memory$uss[[i]][memory$idx_us[i]]
-}
-
-table(memory$us_valence, useNA = "ifany")
+memory$source_mem_resp <- unlist(Map(x = memory$uss, i = memory$idx_us, f = `[`))
 
 USs <- list(
   positive = c("patient", "realistic", "optimistic", "strong", "dignified", "open-minded", "flexible", "wise", "lively", "calm", "nurturing", "energetic")
 )
-
-
 
 memory$mpt_response <- with(memory, {
   tree <- rep("New", length(us_valence))
