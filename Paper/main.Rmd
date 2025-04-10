@@ -412,7 +412,7 @@ plot(
 title("Panel B")
 title(xlab = "Model parameter", ylab = "Estimate")
 
-apa_wsw8b <- apa_print(models_8b)
+apa_wsw8b <- apa_print(models_8b$baseline)
 
 apa_wsw8b_comps <- apa_print(compare(models_8b))
 ```
