@@ -389,7 +389,25 @@ models <- lapply(
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
 
-par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,1))
+#par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
+par(mfrow=c(1,2))
+plot(
+  models_8b$baseline
+    , factors = list(y=c("a"=""))
+  , parameters = c(
+      "D" = expression(italic(D))
+    , "C_positive" = expression(italic(C_positive))
+    , "C_negative" = expression(italic(C_negative))
+    , "d_positive" = expression(italic(d_positive))
+    , "d_negative" = expression(italic(d_positive))
+    , "b" = expression(italic(b))
+    , "a" = expression(italic(a))
+  )
+  , ylim = c(0, 1)
+  , args_legend = list(x = 4, y = 1.4)
+)
+title("Panel A")
+title(xlab = "Model parameter", ylab = "Estimate")
 plot(
   models$baseline
     , factors = list(y=c("a"=""))
@@ -403,7 +421,8 @@ plot(
   , ylim = c(0, 1)
   , args_legend = list(x = 4, y = 1.4)
 )
-title(xlab = "Model parameter", ylab = "Parameter estimate")
+title("Panel B")
+title(xlab = "Model parameter", ylab = "Estimate")
 ```
 
 ### Relationships between evaluative ratings and MPT parameters
