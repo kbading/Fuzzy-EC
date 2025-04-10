@@ -368,7 +368,7 @@ models <- lapply(
     )
   }
 )
-
+apa_wsw6 <- apa_print(models$baseline)
 compare(models)
 models$baseline
 ```
@@ -411,14 +411,17 @@ plot(
 )
 title("Panel B")
 title(xlab = "Model parameter", ylab = "Estimate")
-apa_wsw8b <- apa_print(models_8b$baseline)
+
+apa_wsw8b <- apa_print(models_8b)
+
+apa_wsw8b_comps <- apa_print(compare(models_8b))
 ```
 
 
 The 7-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
 Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
-The difference between $C_{positive}$ and $C_{negative}$ was non-significant, xxx, as was the difference between $d_{positive}$ and $d_{negative}$, xxx.
-By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, xxx.
+The difference between $C_{positive}$ and $C_{negative}$ was non-significant, `r apa_wsw8b_comps$statistic$C_eq`, as was the difference between $d_{positive}$ and $d_{negative}$, `r apa_wsw8b_comps$statistic$d_eq`.
+By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, `r apa_wsw6$statistic$modelfit`.
 
 Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
 
