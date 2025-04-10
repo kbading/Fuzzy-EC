@@ -338,21 +338,9 @@ models_8b <- lapply(
 )
 
 #compare(models_8b)
-models_8b$baseline$goodness_of_fit
-models_8b$baseline
+#models_8b$baseline$goodness_of_fit
+#models_8b$baseline
 ```
-
-The 7-parameter variant of the MPT model fit the data well, xxx.
-Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
-The difference between $C_{positive}$ and $C_{negative}$ was non-significant, xxx, as was the difference between $d_{positive}$ and $d_{negative}$, xxx.
-By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) achieved adequate fit as well, xxx.
-
-Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
-
-
-
-
-
 
 ```{r}
 #exp1_mpt_data <- data_list_pilot$memory
@@ -381,8 +369,8 @@ models <- lapply(
   }
 )
 
-#compare(models)
-#models$baseline
+compare(models)
+models$baseline
 ```
 
 ```{r}
@@ -424,6 +412,14 @@ plot(
 title("Panel B")
 title(xlab = "Model parameter", ylab = "Estimate")
 ```
+
+
+The 7-parameter variant of the MPT model provided an adequate account of the data, xxx.
+Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
+The difference between $C_{positive}$ and $C_{negative}$ was non-significant, xxx, as was the difference between $d_{positive}$ and $d_{negative}$, xxx.
+By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, xxx.
+
+Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
 
 ### Relationships between evaluative ratings and MPT parameters
 
