@@ -59,7 +59,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : jou
+classoption       : man
 output            : papaja::apa6_pdf
 ---
 
@@ -125,9 +125,9 @@ data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
 ```
 
 ## Methods
-The experiment was not pre-registered.
+Experiment 1 was conducted as a pilot and therefore not pre-registered.
 The materials and data are publicly available at: https://osf.io/rqkvy/.
-The study was run online.
+The experiment was run online.
 
 ### Participants
 Participants were recruited through Prolific and received monetary compensation for their participation.
@@ -204,7 +204,7 @@ First, participants read the following instruction slide: "In the third part of 
 
 After pressing the spacebar, particpants worked through the evaluation task, consisting of 48 trials.
 In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
-Participants rated how positive or negative they found each face on a 11-point Likert scale ranging from "very negative" (-5) to "very positive" (+5).
+Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). (Note that participants responses were stored as numerical values ranging from 1 to 11.)
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
@@ -219,6 +219,28 @@ Subsequently, participants were given the chance to comment on the study.
 Finally, participants were presented with the following text (debriefing them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
 
 ### Data processing and statistical analysis
+First, we inspected the data for indications of non-compliance (among participants who passed the two control measures).
+We found one participants who gave the same response on all trials of the evaluation task (but different responses across trials in the memory task).
+We interpreted the response behavior in the evaluation task as an indicator of non-compliance and decided to exclude the participant from all analyses.
+
+The evaluative ratings were analyzed (without further processing) using the R package *stats*.
+
+For the MPT model analyses, the responses from the two memory tasks were first recoded into a joint memory index according to the following scheme:
+
+- If a positively (negatively) paired CS was incorrectly classified as "new", the response was recoded as "PosUSnew" ("NegUSnew"). 
+
+- If a positively (negatively) paired CS was correctly classified as "old" and the correct positive (negative) US was selected, the responses were recoded as "PosUSposcor" ("NegUSnegcor").
+
+- If a positively (negatively) paired CS was correctly classified as "old" and an incorrect positive (negative) trait was selected, the responses were recoded as "PosUSposincor" ("NegUSnegincor").
+
+- If a positively (negatively) paired CS was correctly classified as "old" and a negative (positive) trait was selected, the responses were recoded as "PosUSnegincor" ("NegUSposincor")
+
+- If an (unpaired) new stimulus was correctly classified as "new", the response was recoded as "Newnew".
+
+- If an (unpaired) new stimulus was incorrectly classified as "old" and a positive (negative) trait was selected, the responses will be recoded as "Newposincor" ("Newnegincor").
+
+Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with different versions of the MPT model.
+The MPT model analyses were carried out using the R package *HMMTreeC*.
 
 ```{r}
 exp1_ratings <- data_list_pilot$rating
@@ -226,6 +248,9 @@ exp1_ratings <- data_list_pilot$rating
 exp1_ratings_sd <- aggregate(exp1_ratings,evaluative_rating ~ sid, FUN = sd) # 1 x sd = 0 --> sid = 43
 exp1_ratings <- subset(exp1_ratings,sid != 43)
 exp1_ratings_wide <- subset(data_list_pilot$rating_wide,sid != 43)
+
+data_list_pilot$rating <- subset(data_list_pilot$rating,sid != 43)
+data_list_pilot$rating_wide <- subset(data_list_pilot$rating_wide,sid != 43)
 ```
 
 ```{r}
@@ -245,12 +270,40 @@ rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd) # 0 x sd = 0
 
 ```{r}
 exp1_ratings$cs_sex <- ifelse(exp1_ratings$cs %in% c("f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12","f13","f14","f15","f16","f17","f18","f19","f20","f21","f22","f23","f24"),"female","male")
-exp1_ratings_anova <- aov_ez(data = subset(exp1_ratings,us_valence %in% c("positive","negative")), id = "sid", dv = "evaluative_rating", within = c("us_valence","cs_sex"))
+exp1_ratings$us_valence2 <- "no pairing"
+exp1_ratings$us_valence2 <- ifelse(is.na(exp1_ratings$us_valence)==TRUE, "no pairing",as.character(exp1_ratings$us_valence))
 
-exp1_ec <- t.test(exp1_ratings_wide$positive,exp1_ratings_wide$negative,paired=TRUE,alternative="greater")
+exp1_ratings_agg <- aggregate(exp1_ratings,FUN=mean,evaluative_rating~sid*us_valence2)
+library(reshape2)
+exp1_ratings_agg2 <- dcast(exp1_ratings_agg,value.var="evaluative_rating",sid~us_valence2)
 
-effectsize::cohens_d(exp1_ec)
+exp1_posneg <- apa_print(t.test(exp1_ratings_agg2$positive,exp1_ratings_agg2$negative,paired=TRUE,alternative="greater"))
+
+mean_pos <- round(mean(exp1_ratings_agg2$positive),2)
+sd_pos <- round(sd(exp1_ratings_agg2$positive),2)
+
+mean_neg <- round(mean(exp1_ratings_agg2$negative),2)
+sd_neg <- round(sd(exp1_ratings_agg2$negative),2)
+
+mean_nop<- round(mean(exp1_ratings_agg2$`no pairing`),2)
+sd_nop <- round(sd(exp1_ratings_agg2$`no pairing`),2)
+
+exp1_posdist <- apa_print(t.test(exp1_ratings_agg2$positive,exp1_ratings_agg2$`no pairing`,paired=TRUE,alternative="greater"))
+exp1_negdist <- apa_print(t.test(exp1_ratings_agg2$negative,exp1_ratings_agg2$`no pairing`,paired=TRUE,alternative="less"))
+
+#effectsize::cohens_d(exp1_ec)
 ```
+
+Evaluative ratings for CSs and distractor stimuli were analyzed using paired-samples *t*-tests.
+
+The mean rating for positively paired CSs was higher than the mean rating for negatively paired CSs ($M_{positive}=$ `r mean_pos`, $SD_{positive}=$ `r sd_pos`; $M_{negative}=$ `r mean_neg`, $SD_{negative}=$ `r sd_neg`)
+The mean difference (i.e., the mean EC effect) reached significance in a one-tailed test, `r exp1_posneg$full_result`.
+
+The mean rating for positively paired CSs was also higher than the mean rating for unpaired distractor stimuli ($M_{distractor}=$ `r mean_nop`, $SD_{distractor}=$ `r sd_nop`).
+However, the mean difference failed to reach significance even in a one-tailed test, `r exp1_posdist$full_result`.
+
+Finally, the mean rating for negatively paired CSs was lower than the mean rating for unpaired distractor stimuli.
+The mean difference was again non-significant even in a one-tailed test, `r exp1_negdist$full_result`.
 
 ### MPT model
 ```{r}
@@ -284,10 +337,10 @@ models_8b <- lapply(
   }
 )
 
-compare(models_8b)
-models_8b$baseline
+#compare(models_8b)
+#models_8b$baseline$goodness_of_fit
+#models_8b$baseline
 ```
-
 
 ```{r}
 #exp1_mpt_data <- data_list_pilot$memory
@@ -316,15 +369,33 @@ models <- lapply(
   }
 )
 
-#compare(models)
-#models$baseline
+compare(models)
+models$baseline
 ```
 
 ```{r}
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
 
-par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,1))
+#par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
+par(mfrow=c(1,2))
+plot(
+  models_8b$baseline
+    , factors = list(y=c("a"=""))
+  , parameters = c(
+      "D" = expression(italic(D))
+    , "C_positive" = expression(italic(C_positive))
+    , "C_negative" = expression(italic(C_negative))
+    , "d_positive" = expression(italic(d_positive))
+    , "d_negative" = expression(italic(d_positive))
+    , "b" = expression(italic(b))
+    , "a" = expression(italic(a))
+  )
+  , ylim = c(0, 1)
+  , args_legend = list(x = 4, y = 1.4)
+)
+title("Panel A")
+title(xlab = "Model parameter", ylab = "Estimate")
 plot(
   models$baseline
     , factors = list(y=c("a"=""))
@@ -338,8 +409,18 @@ plot(
   , ylim = c(0, 1)
   , args_legend = list(x = 4, y = 1.4)
 )
-title(xlab = "Model parameter", ylab = "Parameter estimate")
+title("Panel B")
+title(xlab = "Model parameter", ylab = "Estimate")
+apa_wsw8b <- apa_print(models_8b$baseline)
 ```
+
+
+The 7-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
+Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
+The difference between $C_{positive}$ and $C_{negative}$ was non-significant, xxx, as was the difference between $d_{positive}$ and $d_{negative}$, xxx.
+By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, xxx.
+
+Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
 
 ### Relationships between evaluative ratings and MPT parameters
 
@@ -349,13 +430,13 @@ title(xlab = "Model parameter", ylab = "Parameter estimate")
 ```
 
 ```{r}
-#summary(exp1_trait_model)
-
-#plotParam(exp1_trait_model)
-
-#summary(exp1_trait_model_8b)
-
-#plotParam(exp1_trait_model_8b)
+# summary(exp1_trait_model)
+# 
+# plotParam(exp1_trait_model)
+# 
+# summary(exp1_trait_model_8b)
+# 
+# plotParam(exp1_trait_model_8b)
 ```
 
 ```{r}
@@ -363,7 +444,7 @@ title(xlab = "Model parameter", ylab = "Parameter estimate")
 #   data_list_pilot$rating_wide
 #   , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
 # )
-# 
+# # 
 # ratings_and_parameters_long_8b <- merge(
 #   data_list_pilot$rating
 #   , get_theta(model = exp1_trait_model_8b, data = data_list_pilot$mpt_data_hierarchical)
@@ -388,19 +469,29 @@ title(xlab = "Model parameter", ylab = "Parameter estimate")
 ```
 
 ```{r}
-# model_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = subset(ratings_and_parameters,sid!=43))
-#summary(model_exp1)
-#ap_model_exp1 <- apa_print(model_exp1)
-#ap_model_exp1
+# model_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
+# summary(model_exp1)
+# ap_model_exp1 <- apa_print(model_exp1)
+# ap_model_exp1
 ```
 
 ```{r}
-# model_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (us_valence|sid)
-#            , data = ratings_and_parameters_long_8b)
-# ap_model_exp1 <- apa_print(model_exp1)
-#ap_model_exp1
+# model_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+#            , data = subset(ratings_and_parameters_long_8b,us_valence%in%c("positive","negative")))
+# ap_model_exp2 <- apa_print(model_exp2)
+# ap_model_exp2
 ```
 
+```{r}
+# model_exp3 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+#            , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
+# ap_model_exp3 <- apa_print(model_exp3)
+# ap_model_exp3
+```
+
+```{r}
+# cor.test(ratings_and_parameters$C,ratings_and_parameters$d)
+```
 
 ## Discussion
 
@@ -408,11 +499,11 @@ title(xlab = "Model parameter", ylab = "Parameter estimate")
 
 ```{r}
 # from MB:
-data_list <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
+data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
 #data_list$excluded_participants
 
-n_final <- sum(length(unique(data_list$rating$sid)))
-n_conditions <- split(data_list$rating, data_list$rating$task_order) |>
+n_final <- sum(length(unique(data_list_exp2$rating$sid)))
+n_conditions <- split(data_list_exp2$rating, data_list_exp2$rating$task_order) |>
   lapply(function(x) {paste0("$n = ", length(unique(x$sid)), "$")})
 n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_conditions))))
 
@@ -515,7 +606,41 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ### Data processing and statistical analysis
 
+```{r}
+exp2_ratings <- data_list_exp2$rating
+#table(xxx$sid)
+exp2_ratings_sd <- aggregate(exp2_ratings,evaluative_rating ~ sid, FUN = sd) # 4 x sd = 0 --> sid = 49, 104, 138, 139
+exp2_ratings_sd <- subset(exp2_ratings_sd, evaluative_rating > 0)
+exp2_ratings <- subset(exp2_ratings,sid %in% exp2_ratings_sd$sid)
+exp2_ratings_wide <- subset(data_list_exp2$rating_wide,sid %in% exp2_ratings_sd$sid)
+```
+
+```{r}
+rrr <- data_list_exp2$memory
+#table(rrr$sid)
+rrr$reco_resp_num <- ifelse(rrr$reco_resp=="old",1,0)
+rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd) # 1 x sd = 141 (always 'new')
+#table(rrr$sid,rrr$source_mem) # 0 x sd = 0
+
+```
+
 ## Results
+
+### Evaluative ratings
+```{r}
+exp2_ratings <- subset(exp2_ratings,sid!=141)
+exp2_ratings_wide <- subset(exp2_ratings_wide,sid!=141)
+
+exp2_ratings_anova <- aov_ez(data = subset(exp2_ratings, us_valence %in% c("positive","negative")), id = "sid", dv = "evaluative_rating", within = c("us_valence"),between=c("task_order"))
+
+exp2_ec <- t.test(exp2_ratings_wide$positive,exp2_ratings_wide$negative,paired=TRUE,alternative="greater")
+
+effectsize::cohens_d(exp2_ec)
+```
+
+### MPT model
+
+### Relationships between evaluative ratings and MPT parameters
 
 ```{r}
 # exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
