@@ -305,7 +305,7 @@ However, the mean difference failed to reach significance even in a one-tailed t
 Finally, the mean rating for negatively paired CSs was lower than the mean rating for unpaired distractor stimuli.
 The mean difference was again non-significant even in a one-tailed test, `r exp1_negdist$full_result`.
 
-### MPT model
+### MPT model analyses
 ```{r}
 #exp1_mpt_data <- data_list_pilot$memory
 
@@ -369,8 +369,9 @@ models <- lapply(
   }
 )
 apa_wsw6 <- apa_print(models$baseline)
-compare(models)
-models$baseline
+#compare(models)
+#models$baseline
+apa_wsw_comps <- apa_print(compare(models))
 ```
 
 ```{r}
@@ -417,18 +418,51 @@ apa_wsw8b <- apa_print(models_8b$baseline)
 apa_wsw8b_comps <- apa_print(compare(models_8b))
 ```
 
-
-The 7-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
-Parameter estimates and confidence intervals are reported in *Figure xxx* (Panel A).
+The 8-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
+Parameter estimates and confidence intervals from the 7-parameter model are reported in *Figure xxx* (Panel A).
 The difference between $C_{positive}$ and $C_{negative}$ was non-significant, `r apa_wsw8b_comps$statistic$C_eq`, as was the difference between $d_{positive}$ and $d_{negative}$, `r apa_wsw8b_comps$statistic$d_eq`.
 By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, `r apa_wsw6$statistic$modelfit`.
+
 Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
+The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as "old" (and distractor stimuli as "new") in $45.6$% of trials.
+By implication, participants did not recognize CSs as "old" (and distractor stimuli as "new") in $54.4$% of trials.
+
+#### CSs recognized as "old"
+The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as "old".
+This implies that US identity was absent for $32.6$% of CSs recognized as "old".
+
+##### CSs without US identity memory
+The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of CSs for which US identity memory was absent, participants possessed US valence memory in approx. $19.9$% of trials.
+By implication, participants did not possess US valence memory in approx. $80.1$% of trials (pertaining to the subset of CSs for which US identity memory was absent).
+
+###### CSs without US valence memory
+For the subset of CSs for which US valence memory was also absent, participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
+This implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of CSs for which US valence memory was absent).
+Note that the $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq.5`, demonstrating an overall tendency towards selecting a negative US.
+
+#### CSs not recognized as "old"
+In the subset of CSs that were not recognized as "old", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
+Note that the $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq.5`, demonstrating an overall tendency towards selecting the "new" response.
+
+##### CSs guessed as "old"
+For the subset of CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
+This again implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of CSs that were guessed as "old").
+
+#### Distractor stimuli not recognized as "new"
+In the subset of distractor stimuli that were not recognized as "new", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
+As for CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
+This again implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of distractor stimuli that were guessed as "old").
 
 ### Relationships between evaluative ratings and MPT parameters
 
 ```{r}
-# exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
-# exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds"))
+exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
+
+exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds"))
+
+exp1_trait_model_ec <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-with-ec.rds"))
+
+exp1_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
 ```
 
 ```{r}
@@ -436,63 +470,107 @@ Parameter estimates and confidence intervals from the 5-parameter variant of the
 # 
 # plotParam(exp1_trait_model)
 # 
+# summary(exp1_trait_model_ec)
+# 
+# plotParam(exp1_trait_model_ec)
+# 
 # summary(exp1_trait_model_8b)
 # 
 # plotParam(exp1_trait_model_8b)
+# 
+# summary(exp1_trait_model_8b_ec)
+# 
+# plotParam(exp1_trait_model_8b_ec)
+```
+
+#### wsw6 without EC
+```{r}
+ratings_and_parameters <- merge(
+  data_list_pilot$rating_wide
+  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+)
+
+ratings_and_parameters_long <- merge(
+  data_list_pilot$rating
+  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+)
+
+contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
+
 ```
 
 ```{r}
-# ratings_and_parameters <- merge(
+model1_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
+#summary(model1_exp1)
+ap_model1_exp1 <- apa_print(model1_exp1)
+ap_model1_exp1
+```
+
+```{r}
+model2_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+           , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
+ap_model2_exp1 <- apa_print(model2_exp1)
+ap_model2_exp1
+```
+
+#### wsw8b without EC
+
+```{r}
+ratings_and_parameters_long_8b <- merge(
+   data_list_pilot$rating
+   , get_theta(model = exp1_trait_model_8b, data = data_list_pilot$mpt_data_hierarchical)
+ ) |>
+   within({
+     d <- ifelse(us_valence == "positive", d_positive, d_negative)
+     C <- ifelse(us_valence == "positive", C_positive, C_negative)
+   })
+ 
+contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
+```
+
+```{r}
+model3_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
+           , data = subset(ratings_and_parameters_long_8b,us_valence%in%c("positive","negative")))
+ap_model3_exp1 <- apa_print(model3_exp1)
+ap_model3_exp1
+```
+
+#### wsw6 with EC
+
+```{r}
+# ratings_and_parameters_ec <- merge(
 #   data_list_pilot$rating_wide
-#   , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
-# )
-# # 
-# ratings_and_parameters_long_8b <- merge(
-#   data_list_pilot$rating
-#   , get_theta(model = exp1_trait_model_8b, data = data_list_pilot$mpt_data_hierarchical)
-# ) |>
-#   within({
-#     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-#     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-#   })
-# 
-# ratings_and_parameters_long <- merge(
-#   data_list_pilot$rating
-#   , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+#   , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
 # )
 # 
-# ratings_and_parameters_long <- subset(ratings_and_parameters_long,us_valence %in% c("positive","negative"))
+# ratings_and_parameters_ec_long <- merge(
+#   data_list_pilot$rating
+#   , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
+# )
 # 
-# ratings_and_parameters_long_8b <- subset(ratings_and_parameters_long_8b,us_valence %in% c("positive","negative"))
-# 
-# contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
+# contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 
 ```
 
+#### wsw8b with EC
 ```{r}
-# model_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
-# summary(model_exp1)
-# ap_model_exp1 <- apa_print(model_exp1)
-# ap_model_exp1
+ratings_and_parameters_long_8b_ec <- merge(
+   data_list_pilot$rating
+   , get_theta(model = exp1_trait_model_8b_ec, data = data_list_pilot$mpt_data_hierarchical)
+ ) |>
+   within({
+     d <- ifelse(us_valence == "positive", d_positive, d_negative)
+     C <- ifelse(us_valence == "positive", C_positive, C_negative)
+   })
+ 
+contrasts(ratings_and_parameters_long_8b_ec$us_valence) <- "contr.sum"
 ```
 
 ```{r}
-# model_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-#            , data = subset(ratings_and_parameters_long_8b,us_valence%in%c("positive","negative")))
-# ap_model_exp2 <- apa_print(model_exp2)
-# ap_model_exp2
-```
-
-```{r}
-# model_exp3 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-#            , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
-# ap_model_exp3 <- apa_print(model_exp3)
-# ap_model_exp3
-```
-
-```{r}
-# cor.test(ratings_and_parameters$C,ratings_and_parameters$d)
+model6_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
+           , data = subset(ratings_and_parameters_long_8b_ec,us_valence%in%c("positive","negative")))
+ap_model6_exp1 <- apa_print(model6_exp1)
+ap_model6_exp1
 ```
 
 ## Discussion
