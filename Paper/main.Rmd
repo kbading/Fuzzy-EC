@@ -117,7 +117,7 @@ cntr <- function(x, ...){x - mean(x, ...)}
 # knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-# Experiment 1 (Pilot)
+# Pilot
 
 ```{r}
 data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
@@ -125,9 +125,9 @@ data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
 ```
 
 ## Methods
-Experiment 1 was conducted as a pilot and therefore not pre-registered.
+The pilot was not pre-registered.
 The materials and data are publicly available at: https://osf.io/rqkvy/.
-The experiment was run online.
+The data collection was conducted online.
 
 ### Participants
 Participants were recruited through Prolific and received monetary compensation for their participation.
@@ -143,6 +143,8 @@ The number of recruited participants was determined *ad hoc* and was not based o
 The experiment followed a 2 (US valence: positive vs. negative) within-subjects design.
 
 ### Materials
+The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
+
 The CS pool comprised 48 colored images of human faces with neutral expressions (24 female faces, 24 male faces).
 The images were taken from xxx.
 
@@ -563,7 +565,7 @@ summary(emtrends(model5_exp1,var= "a", specs= ~ us_valence),infer=TRUE)
 
 ## Discussion
 
-# Experiment 2
+# Experiment 1
 
 ```{r}
 data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
@@ -586,7 +588,7 @@ socio = socio %>% filter(Status != "RETURNED")
 ## Method
 The experiment was pre-registered on the OSF.
 The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
-The study was run online.
+The data collection was conducted online.
 
 ### Participants
 Participants were recruited through Prolific and received monetary compensation for their participation.
@@ -609,7 +611,7 @@ The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (meas
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
-The experiment was programmed in *lab.js* [@henninger_labjs_2022].
+The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 54 nonwords made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*).
 The nonwords were taken from a previous EC study (Stahl & Bading, 2020).
@@ -712,6 +714,72 @@ baseline_restrictions <- list(
 hypothesis_restrictions <- list(
   baseline = list()
   , D_equal = list(D = c("D_x1", "D_x2"))
+  , Cx1_equal = list(C = c("Cpos_x1", "Cneg_x1"))
+  , Cx2_equal = list(C = c("Cpos_x2", "Cneg_x2"))
+  , dx1_equal = list(d = c("dpos_x1", "dneg_x1"))
+  , dx2_equal = list(d = c("dpos_x2", "dneg_x2"))
+  , a_equal = list(a = c("a_x1", "a_x2"))
+  , b_equal = list(b = c("b_x1", "b_x2"))
+  , Deval0   = list(D_x1 = .Machine$double.eps)
+  , Dmem0   = list(D_x2 = .Machine$double.eps)
+  , Cposeval0   = list(Cpos_x1 = .Machine$double.eps)
+  , Cnegeval0   = list(Cneg_x1 = .Machine$double.eps)
+  , Cposmem0   = list(Cpos_x2 = .Machine$double.eps)
+  , Cnegmem0   = list(Cneg_x2 = .Machine$double.eps)
+  , dposeval0   = list(dpos_x1 = .Machine$double.eps)
+  , dnegeval0   = list(dneg_x1 = .Machine$double.eps)
+  , dposmem0   = list(dpos_x2 = .Machine$double.eps)
+  , dnegmem0   = list(dneg_x2 = .Machine$double.eps)
+  , beval5   = list(b_x1 = 0.5)
+  , bmem5   = list(b_x2 = 0.5)
+  , aeval5   = list(a_x1 = 0.5)
+  , amem5   = list(a_x2 = 0.5)
+)
+
+models <- lapply(
+  hypothesis_restrictions
+  , FUN = function(x) {
+    fit_mpt(
+      data = data_list_exp2$mpt_data
+      , model = file.path(study_folders$wsw2_main, "WSW_8b_exp2.eqn")
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+  palette()
+
+plot(
+  models$baseline
+  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+  , parameters = c(
+    D   = expression(italic(D))
+    , Cpos = expression(italic(Cpos))
+    , Cneg = expression(italic(Cneg))
+    , dpos = expression(italic(dpos))
+    , dneg = expression(italic(dneg))
+    , a = expression(italic(a))
+    , b = expression(italic(b))
+  )
+)
+
+```
+
+```{r}
+model_comparisons <- compare(models)
+model_comparisons
+```
+
+
+```{r}
+baseline_restrictions <- list(
+  G_x1 = .25
+  , G_x2 = .25
+)
+
+hypothesis_restrictions <- list(
+  baseline = list()
+  , D_equal = list(D = c("D_x1", "D_x2"))
   , C_equal = list(C = c("C_x1", "C_x2"))
   , d_equal = list(d = c("d_x1", "d_x2"))
   , a_equal = list(a = c("a_x1", "a_x2"))
@@ -763,46 +831,117 @@ model_comparisons
 ### Relationships between evaluative ratings and MPT parameters
 
 ```{r}
-# exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
-# exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
-```
+exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
+summary(exp2_trait_model)
 
-```{r}
-# individual_parameters    <- get_theta(exp2_trait_model   , data = data_list$mpt_data_hierarchical)
-# individual_parameters_8b <- get_theta(exp2_trait_model_8b, data = data_list$mpt_data_hierarchical)
-# 
-# ratings_and_parameters <- merge(data_list$rating_wide, individual_parameters)
-# 
-# ratings_and_parameters_long_8b <- merge(data_list$rating, individual_parameters_8b) |>
-#   within({
-#     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-#     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-#   })
-# 
-# ratings_and_parameters_long <- merge(data_list$rating, individual_parameters)
-# 
-# ratings_and_parameters_long <- subset(ratings_and_parameters_long,us_valence %in% c("positive","negative"))
-# 
-# ratings_and_parameters_long_8b <- subset(ratings_and_parameters_long_8b,us_valence %in% c("positive","negative"))
-# 
-# contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b$task_order) <- "contr.sum"
+exp2_trait_model_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-with-ec.rds"))
+summary(exp2_trait_model_ec)
+
+exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
+summary(exp2_trait_model_8b)
+
+exp2_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
+summary(exp2_trait_model_8b_ec)
 ```
 
 
+```{r}
+ratings_and_parameters_ec_long <- merge(
+  data_list_exp2$rating
+  , get_theta(model = exp2_trait_model_ec, data = data_list_exp2$mpt_data_hierarchical)
+)
+
+ratings_and_parameters_long <- merge(
+  data_list_exp2$rating
+  , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
+)
+
+contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_ec_long$task_order) <- "contr.sum"
+contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
+```
 
 ```{r}
-# model_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_order + (1|sid)
-#            , data = ratings_and_parameters_long_8b)
-# ap_model_exp2 <- apa_print(model_exp2)
-#ap_model_exp2
+ratings_and_parameters_ec <- merge(
+  data_list_exp2$rating_wide
+  , get_theta(model = exp2_trait_model_ec, data = data_list_exp2$mpt_data_hierarchical)
+)
+
+ratings_and_parameters <- merge(
+  data_list_exp2$rating_wide
+  , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
+)
+
+both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
+
+cor.test(both$D.x,both$D.y)
+# t.test(both$D.x,both$D.y)
+# 
+cor.test(both$C.x,both$C.y)
+# t.test(both$C.x,both$C.y)
+# 
+cor.test(both$d.x,both$d.y)
+# t.test(both$d.x,both$d.y)
+# 
+cor.test(both$b.x,both$b.y)
+# t.test(both$b.x,both$b.y)
+# 
+cor.test(both$a.x,both$a.y)
+# t.test(both$a.x,both$a.y)
+```
+
+```{r}
+model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_order + (1|sid)
+           , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
+
+ap_model5_exp2 <- apa_print(model5_exp2)
+ap_model5_exp2$full_result
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ D:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "D", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ C:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "C", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ d:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "d", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ C:task_order) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "C", specs= ~ task_order),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ D:task_order) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "D", specs= ~ task_order),infer=TRUE)
 ```
 
 ## Discussion
 
-# Experiment 3
+# Experiment 2
 
 ```{r}
 # from MB:
@@ -825,7 +964,7 @@ data_list$rating_wide$study <- "main"
 ## Method
 The experiment was pre-registered on the OSF.
 The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
-The study was run online.
+The data collection was conducted online.
 
 ### Participants
 
