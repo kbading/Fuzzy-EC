@@ -702,8 +702,62 @@ effectsize::cohens_d(exp2_ec)
 ```
 
 ### MPT model
-```{r}
 
+```{r}
+baseline_restrictions <- list(
+  G_x1 = .25
+  , G_x2 = .25
+)
+
+hypothesis_restrictions <- list(
+  baseline = list()
+  , D_equal = list(D = c("D_x1", "D_x2"))
+  , C_equal = list(C = c("C_x1", "C_x2"))
+  , d_equal = list(d = c("d_x1", "d_x2"))
+  , a_equal = list(a = c("a_x1", "a_x2"))
+  , b_equal = list(b = c("b_x1", "b_x2"))
+  , Dage0   = list(D_x1 = .Machine$double.eps)
+  , Dval0   = list(D_x2 = .Machine$double.eps)
+  , Cage0   = list(C_x1 = .Machine$double.eps)
+  , Cval0   = list(C_x2 = .Machine$double.eps)
+  , dage0   = list(d_x1 = .Machine$double.eps)
+  , dval0   = list(d_x2 = .Machine$double.eps)
+  , bage5   = list(b_x1 = 0.5)
+  , bval5   = list(b_x2 = 0.5)
+  , aage5   = list(a_x1 = 0.5)
+  , aval5   = list(a_x2 = 0.5)
+)
+
+models <- lapply(
+  hypothesis_restrictions
+  , FUN = function(x) {
+    fit_mpt(
+      data = data_list_exp2$mpt_data
+      , model = file.path(study_folders$wsw2_main, "WSW_exp2.eqn")
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+  palette()
+
+plot(
+  models$baseline
+  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+  , parameters = c(
+    D   = expression(italic(D))
+    , C = expression(italic(C))
+    , d = expression(italic(d))
+    , a = expression(italic(a))
+    , b = expression(italic(b))
+  )
+)
+
+```
+
+```{r}
+model_comparisons <- compare(models)
+model_comparisons
 ```
 
 ### Relationships between evaluative ratings and MPT parameters
