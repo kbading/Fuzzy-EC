@@ -418,7 +418,7 @@ apa_wsw8b <- apa_print(models_8b$baseline)
 apa_wsw8b_comps <- apa_print(compare(models_8b))
 ```
 
-The 8-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
+The 7-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
 Parameter estimates and confidence intervals from the 7-parameter model are reported in *Figure xxx* (Panel A).
 The difference between $C_{positive}$ and $C_{negative}$ was non-significant, `r apa_wsw8b_comps$statistic$C_eq`, as was the difference between $d_{positive}$ and $d_{negative}$, `r apa_wsw8b_comps$statistic$d_eq`.
 By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, `r apa_wsw6$statistic$modelfit`.
@@ -438,11 +438,12 @@ By implication, participants did not possess US valence memory in approx. $80.1$
 ###### CSs without US valence memory
 For the subset of CSs for which US valence memory was also absent, participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
 This implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of CSs for which US valence memory was absent).
-Note that the $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq.5`, demonstrating an overall tendency towards selecting a negative US.
+Note that the $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq_5`, demonstrating an overall tendency towards selecting a negative US.
 
 #### CSs not recognized as "old"
 In the subset of CSs that were not recognized as "old", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
-Note that the $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq.5`, demonstrating an overall tendency towards selecting the "new" response.
+By implication, participants guessed "new" in $85.2$% of trials in which a CS was not recognized as "old".
+Note that the $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`, demonstrating an overall tendency towards selecting the "new" response.
 
 ##### CSs guessed as "old"
 For the subset of CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
@@ -450,6 +451,9 @@ This again implies that participants guessed a negative US in approx. $57.3$% of
 
 #### Distractor stimuli not recognized as "new"
 In the subset of distractor stimuli that were not recognized as "new", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
+By implication, participants guessed "new" in $85.2$% of trials in which a distractor stimuli was not recognized as "new".
+
+##### Distractor stimuli guessed as "old"
 As for CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
 This again implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of distractor stimuli that were guessed as "old").
 
@@ -466,19 +470,19 @@ exp1_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw1, "model-objects",
 ```
 
 ```{r}
-# summary(exp1_trait_model)
+#summary(exp1_trait_model)
 # 
 # plotParam(exp1_trait_model)
 # 
-# summary(exp1_trait_model_ec)
+#summary(exp1_trait_model_ec)
 # 
 # plotParam(exp1_trait_model_ec)
 # 
-# summary(exp1_trait_model_8b)
+#summary(exp1_trait_model_8b)
 # 
 # plotParam(exp1_trait_model_8b)
 # 
-# summary(exp1_trait_model_8b_ec)
+#summary(exp1_trait_model_8b_ec)
 # 
 # plotParam(exp1_trait_model_8b_ec)
 ```
@@ -503,14 +507,14 @@ contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
 model1_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
 #summary(model1_exp1)
 ap_model1_exp1 <- apa_print(model1_exp1)
-ap_model1_exp1
+#ap_model1_exp1
 ```
 
 ```{r}
 model2_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
 ap_model2_exp1 <- apa_print(model2_exp1)
-ap_model2_exp1
+#ap_model2_exp1
 ```
 
 #### wsw8b without EC
@@ -532,24 +536,38 @@ contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
 model3_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_long_8b,us_valence%in%c("positive","negative")))
 ap_model3_exp1 <- apa_print(model3_exp1)
-ap_model3_exp1
+#ap_model3_exp1
 ```
 
 #### wsw6 with EC
 
 ```{r}
-# ratings_and_parameters_ec <- merge(
-#   data_list_pilot$rating_wide
-#   , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
-# )
+ratings_and_parameters_ec <- merge(
+  data_list_pilot$rating_wide
+  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
+)
 # 
-# ratings_and_parameters_ec_long <- merge(
-#   data_list_pilot$rating
-#   , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
-# )
+ratings_and_parameters_ec_long <- merge(
+  data_list_pilot$rating
+  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
+)
 # 
-# contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 
+```
+
+```{r}
+model4_exp1 <- lm(ec_effect ~ cntr(D)*cntr(C)*cntr(d),data = ratings_and_parameters_ec)
+#summary(model1_exp1)
+ap_model4_exp1 <- apa_print(model4_exp1)
+#ap_model4_exp1
+```
+
+```{r}
+model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+           , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
+ap_model5_exp1 <- apa_print(model5_exp1)
+#ap_model5_exp1
 ```
 
 #### wsw8b with EC
@@ -567,10 +585,10 @@ contrasts(ratings_and_parameters_long_8b_ec$us_valence) <- "contr.sum"
 ```
 
 ```{r}
-model6_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
+model6_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_long_8b_ec,us_valence%in%c("positive","negative")))
 ap_model6_exp1 <- apa_print(model6_exp1)
-ap_model6_exp1
+#ap_model6_exp1
 ```
 
 ## Discussion
@@ -596,9 +614,6 @@ dat <- dat %>% filter(pay_attention != 0 & serious != 0) %>% droplevels()
 n_final <- length(unique(dat$url.srid))
 socio = read.csv(file.path(project_root, "/Paper/data/sociodemo.csv"))
 socio = socio %>% filter(Status != "RETURNED")
-
-
-
 ```
 
 ## Method
