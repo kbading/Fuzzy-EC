@@ -635,7 +635,10 @@ For each participant, trial order was randomized in sets of 24 trials.
 In each set (three in total), each of the 24 CS-US pairs was presented once.
 
 #### Test phase
-After the learning phase, participants entered the test phase. In the test phase, participants performed two measurement tasks: an evaluation task and a memory task. Participants were randomly assigned to one of the two measurement task order conditions. In the "evaluation task first" condition, participants performed the evaluation task and then the memory task. The task order was reversed in the "memory task first" condition. The wording of the task instructions differed slightly between task order conditions. 
+After the learning phase, participants entered the test phase. 
+In the test phase, participants performed two measurement tasks: an evaluation task and a memory task. Participants were randomly assigned to one of the two measurement task order conditions. 
+In the "evaluation task first" condition, participants performed the evaluation task and then the memory task. The task order was reversed in the "memory task first" condition. 
+The wording of the task instructions differed slightly between task order conditions. 
 
 ##### Evaluation task
 In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
