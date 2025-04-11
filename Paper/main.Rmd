@@ -460,38 +460,18 @@ This again implies that participants guessed a negative US in approx. $57.3$% of
 ### Relationships between evaluative ratings and MPT parameters
 
 ```{r}
-exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
-
-exp1_trait_model_8b <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b.rds"))
 
 exp1_trait_model_ec <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-with-ec.rds"))
-
-exp1_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
-```
-
-```{r}
-#summary(exp1_trait_model)
-# 
-# plotParam(exp1_trait_model)
-# 
 #summary(exp1_trait_model_ec)
-# 
-# plotParam(exp1_trait_model_ec)
-# 
-#summary(exp1_trait_model_8b)
-# 
-# plotParam(exp1_trait_model_8b)
-# 
-#summary(exp1_trait_model_8b_ec)
-# 
-# plotParam(exp1_trait_model_8b_ec)
+
+exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
+#summary(exp1_trait_model)
 ```
 
-#### wsw6 without EC
 ```{r}
-ratings_and_parameters <- merge(
-  data_list_pilot$rating_wide
-  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
+ratings_and_parameters_ec_long <- merge(
+  data_list_pilot$rating
+  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
 )
 
 ratings_and_parameters_long <- merge(
@@ -499,96 +479,86 @@ ratings_and_parameters_long <- merge(
   , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
 )
 
+contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-
 ```
-
-```{r}
-model1_exp1 <- lm(ec_effect ~ cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a),data = ratings_and_parameters)
-#summary(model1_exp1)
-ap_model1_exp1 <- apa_print(model1_exp1)
-#ap_model1_exp1
-```
-
-```{r}
-model2_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
-ap_model2_exp1 <- apa_print(model2_exp1)
-#ap_model2_exp1
-```
-
-#### wsw8b without EC
-
-```{r}
-ratings_and_parameters_long_8b <- merge(
-   data_list_pilot$rating
-   , get_theta(model = exp1_trait_model_8b, data = data_list_pilot$mpt_data_hierarchical)
- ) |>
-   within({
-     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-   })
- 
-contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
-```
-
-```{r}
-model3_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_long_8b,us_valence%in%c("positive","negative")))
-ap_model3_exp1 <- apa_print(model3_exp1)
-#ap_model3_exp1
-```
-
-#### wsw6 with EC
 
 ```{r}
 ratings_and_parameters_ec <- merge(
   data_list_pilot$rating_wide
   , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
 )
-# 
-ratings_and_parameters_ec_long <- merge(
-  data_list_pilot$rating
-  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
+
+ratings_and_parameters <- merge(
+  data_list_pilot$rating_wide
+  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
 )
+
+both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
+
+# cor.test(both$D.x,both$D.y)
+# t.test(both$D.x,both$D.y)
 # 
-contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
-
-```
-
-```{r}
-model4_exp1 <- lm(ec_effect ~ cntr(D)*cntr(C)*cntr(d),data = ratings_and_parameters_ec)
-#summary(model1_exp1)
-ap_model4_exp1 <- apa_print(model4_exp1)
-#ap_model4_exp1
+# cor.test(both$C.x,both$C.y)
+# t.test(both$C.x,both$C.y)
+# 
+# cor.test(both$d.x,both$d.y)
+# t.test(both$d.x,both$d.y)
+# 
+# cor.test(both$b.x,both$b.y)
+# t.test(both$b.x,both$b.y)
+# 
+# cor.test(both$a.x,both$a.y)
+# t.test(both$a.x,both$a.y)
 ```
 
 ```{r}
 model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
+
 ap_model5_exp1 <- apa_print(model5_exp1)
-#ap_model5_exp1
-```
-
-#### wsw8b with EC
-```{r}
-ratings_and_parameters_long_8b_ec <- merge(
-   data_list_pilot$rating
-   , get_theta(model = exp1_trait_model_8b_ec, data = data_list_pilot$mpt_data_hierarchical)
- ) |>
-   within({
-     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-   })
- 
-contrasts(ratings_and_parameters_long_8b_ec$us_valence) <- "contr.sum"
+ap_model5_exp1$full_result
 ```
 
 ```{r}
-model6_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_long_8b_ec,us_valence%in%c("positive","negative")))
-ap_model6_exp1 <- apa_print(model6_exp1)
-#ap_model6_exp1
+ggeffect(model5_exp1, terms = ~ D:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp1,var= "D", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp1, terms = ~ C:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp1,var= "C", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp1, terms = ~ d:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp1, terms = ~ b:us_valence) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp1,var= "b", specs= ~ us_valence),infer=TRUE)
+```
+
+```{r}
+ggeffect(model5_exp1, terms = ~ a:us_valence) |> plot()
+
+```
+
+```{r}
+summary(emtrends(model5_exp1,var= "a", specs= ~ us_valence),infer=TRUE)
 ```
 
 ## Discussion
@@ -596,17 +566,14 @@ ap_model6_exp1 <- apa_print(model6_exp1)
 # Experiment 2
 
 ```{r}
-# from MB:
 data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
-#data_list$excluded_participants
+data_list_exp2$excluded_participants
 
 n_final <- sum(length(unique(data_list_exp2$rating$sid)))
 n_conditions <- split(data_list_exp2$rating, data_list_exp2$rating$task_order) |>
   lapply(function(x) {paste0("$n = ", length(unique(x$sid)), "$")})
 n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_conditions))))
 
-
-# ----
 dat <- readRDS(file.path(project_root, "Paper", "/data/data_wsw2.RDS"))
 dat$url.srid <- as.factor(dat$url.srid)
 n_total <- length(unique(dat$url.srid))
@@ -703,7 +670,6 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ```{r}
 exp2_ratings <- data_list_exp2$rating
-#table(xxx$sid)
 exp2_ratings_sd <- aggregate(exp2_ratings,evaluative_rating ~ sid, FUN = sd) # 4 x sd = 0 --> sid = 49, 104, 138, 139
 exp2_ratings_sd <- subset(exp2_ratings_sd, evaluative_rating > 0)
 exp2_ratings <- subset(exp2_ratings,sid %in% exp2_ratings_sd$sid)
@@ -720,7 +686,6 @@ rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd) # 1 x sd = 141 (always 'new
 ```
 
 ## Results
-
 ### Evaluative ratings
 ```{r}
 exp2_ratings <- subset(exp2_ratings,sid!=141)
@@ -734,6 +699,9 @@ effectsize::cohens_d(exp2_ec)
 ```
 
 ### MPT model
+```{r}
+
+```
 
 ### Relationships between evaluative ratings and MPT parameters
 
@@ -782,7 +750,7 @@ effectsize::cohens_d(exp2_ec)
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
-#data_list$excluded_participants                       # Participant IDs
+data_list$excluded_participants                       # Participant IDs
 #lapply(data_list$excluded_participants, FUN = length) # How many?
 
 data_list_pilot <- readRDS(file.path(study_folders$wsw3_p2, "data", "data.rds"))
@@ -796,7 +764,6 @@ data_list$rating$study <- "main"
 data_list$rating_wide$study <- "main"
 
 ```
-
 
 ## Method
 The experiment was pre-registered on the OSF.
@@ -837,7 +804,6 @@ n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_co
 
 
 ```
-
 
 Participants were recruited through Prolific and received monetary compensation for their participation.
 We collected a quota sample with approximately equal shares of male and female participants.
