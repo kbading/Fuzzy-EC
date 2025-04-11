@@ -856,6 +856,15 @@ ratings_and_parameters_long <- merge(
   , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
 )
 
+ratings_and_parameters_8b_long <- merge(
+  data_list_exp2$rating
+  , get_theta(exp2_trait_model_8b, data = data_list_exp2$mpt_data_hierarchical)
+  )|>
+  within({
+    d <- ifelse(us_valence == "positive", d_positive, d_negative)
+    C <- ifelse(us_valence == "positive", C_positive, C_negative)
+  })
+
 contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_ec_long$task_order) <- "contr.sum"
