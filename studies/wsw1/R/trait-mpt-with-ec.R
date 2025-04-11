@@ -7,7 +7,7 @@ study_folder <- file.path(project_root, "studies", "wsw1")
 data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
 mpt_data_hierarchical <- merge(data_list$mpt_data_hierarchical, data_list$rating_wide, sort = FALSE)
 stopifnot(all(mpt_data_hierarchical$sid == data_list$mpt_data_hierarchical$sid))
-
+rownames(mpt_data_hierarchical) <- mpt_data_hierarchical$sid
 
 model <- traitMPT(
   , eqnfile = file.path(study_folder, "WSW_pilot_hierarchical.eqn")
