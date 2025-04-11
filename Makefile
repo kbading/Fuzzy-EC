@@ -11,7 +11,11 @@ wsw8b_with_ec_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b-wi
 
 all:	$(results) README.md
 
-$(results): %results.html: %results.rmd %data/data.rds %model-objects/trait-mpt.rds %model-objects/trait-mpt-with-ec.rds %model-objects/trait-mpt-wsw-8b.rds
+$(results): %results.html: %results.rmd %data/data.rds \
+  %model-objects/trait-mpt.rds \
+  %model-objects/trait-mpt-with-ec.rds \
+  %model-objects/trait-mpt-wsw-8b.rds \
+  %model-objects/trait-mpt-wsw-8b-with-ec.rds
 	@echo "Knitting $@ from $^"
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
