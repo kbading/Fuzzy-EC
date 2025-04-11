@@ -27,7 +27,7 @@ model <- traitMPT(
   , n.chains = 4e0L
   , ppp      = 5e3L
   , restrictions = list("G = 0.25")
-  , covData = subset(mpt_data_hierarchical, select = "task_order")
+  , covData = subset(mpt_data_hierarchical, select = c("task_order", "ec_rating_first", "ec_memory_first"))
   , predStructure = list("a b D d_positive d_negative C_positive C_negative ; task_order ec_rating_first ec_memory_first")
   , predType = c("f", "c", "c")
 )
