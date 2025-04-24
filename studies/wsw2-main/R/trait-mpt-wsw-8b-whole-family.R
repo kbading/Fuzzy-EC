@@ -27,7 +27,7 @@ hypothesis_restrictions <- list(
 model <- readLines(file.path(project_root, "model-equations", "wsw-8b.eqn"))
 
 cl <- methexp_cluster(
-  master = "134.95.17.36"
+  master = "134.95.17.62"
   , servants = paste0("134.95.17.", 62:65)
   , user = "mariusbarth"
   , cores = 1L
