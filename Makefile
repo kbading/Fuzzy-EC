@@ -9,7 +9,13 @@ extended_models = $(patsubst %, studies/%/model-objects/trait-mpt-with-ec.rds, $
 wsw8b_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b.rds, $(studies))
 wsw8b_with_ec_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b-with-ec.rds, $(studies))
 
-all:	$(results) README.md
+all:	$(results) README.md studies/wsw2-main/model-objects/waic-wsw-8b.rds
+
+studies/wsw2-main/model-objects/waic-wsw-8b.rds: studies/wsw2-main/R/waic-wsw-8b.R studies/wsw2-main/model-objects/trait-mpt-wsw-8b-whole-family.rds
+	R -q -f studies/wsw2-main/R/waic-wsw-8b.R
+	
+studies/wsw2-main/model-objects/trait-mpt-wsw-8b-whole-family.rds: studies/wsw2-main/R/waic-wsw-8b.R studies/wsw2-main/data/data.rds
+	R -q -f studies/wsw2-main/R/waic-wsw-8b.R
 
 $(results): %results.html: %results.rmd %data/data.rds \
   %model-objects/trait-mpt.rds \
