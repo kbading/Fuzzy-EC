@@ -381,40 +381,40 @@ apa_wsw_comps <- apa_print(compare(models))
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
 
-par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
-par(mfrow=c(1,2))
-plot(
-  models_8b$baseline
-    , factors = list(y=c("a"=""))
-  , parameters = c(
-      "D" = expression(italic(D))
-    , "C_positive" = expression(italic(C_positive))
-    , "C_negative" = expression(italic(C_negative))
-    , "d_positive" = expression(italic(d_positive))
-    , "d_negative" = expression(italic(d_positive))
-    , "b" = expression(italic(b))
-    , "a" = expression(italic(a))
-  )
-  , ylim = c(0, 1)
-  , args_legend = list(x = 4, y = 1.4)
-)
-title("Panel A")
-title(xlab = "Model parameter", ylab = "Estimate")
-plot(
-  models$baseline
-    , factors = list(y=c("a"=""))
-  , parameters = c(
-      "D" = expression(italic(D))
-    , "C" = expression(italic(C))
-    , "d" = expression(italic(d))
-    , "b" = expression(italic(b))
-    , "a" = expression(italic(a))
-  )
-  , ylim = c(0, 1)
-  , args_legend = list(x = 4, y = 1.4)
-)
-title("Panel B")
-title(xlab = "Model parameter", ylab = "Estimate")
+# par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
+# par(mfrow=c(1,2))
+# plot(
+#   models_8b$baseline
+#     , factors = list(y=c("a"=""))
+#   , parameters = c(
+#       "D" = expression(italic(D))
+#     , "C_positive" = expression(italic(C_positive))
+#     , "C_negative" = expression(italic(C_negative))
+#     , "d_positive" = expression(italic(d_positive))
+#     , "d_negative" = expression(italic(d_positive))
+#     , "b" = expression(italic(b))
+#     , "a" = expression(italic(a))
+#   )
+#   , ylim = c(0, 1)
+#   , args_legend = list(x = 4, y = 1.4)
+# )
+# title("Panel A")
+# title(xlab = "Model parameter", ylab = "Estimate")
+# plot(
+#   models$baseline
+#     , factors = list(y=c("a"=""))
+#   , parameters = c(
+#       "D" = expression(italic(D))
+#     , "C" = expression(italic(C))
+#     , "d" = expression(italic(d))
+#     , "b" = expression(italic(b))
+#     , "a" = expression(italic(a))
+#   )
+#   , ylim = c(0, 1)
+#   , args_legend = list(x = 4, y = 1.4)
+# )
+# title("Panel B")
+# title(xlab = "Model parameter", ylab = "Estimate")
 
 apa_wsw8b <- apa_print(models_8b$baseline)
 
@@ -517,7 +517,7 @@ both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
 
 ```{r}
 model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
+           , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
 
 ap_model5_exp1 <- apa_print(model5_exp1)
 ap_model5_exp1$full_result
@@ -925,11 +925,11 @@ ap_model5_exp2$full_result
 ```
 
 ```{r}
-ggeffect(model5_exp2, terms = ~ C:task_order) |> plot()
+ggeffect(model5_exp2, terms = ~ b:task_order) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp2,var= "C", specs= ~ task_order),infer=TRUE)
+summary(emtrends(model5_exp2,var= "b", specs= ~ task_order),infer=TRUE)
 ```
 
 ```{r}
