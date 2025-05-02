@@ -51,6 +51,7 @@ wordcount         : "X"
 
 bibliography      : ["r-references.bib", "`r methexp_bib()`"]
 floatsintext      : yes
+figsintext      : yes
 linenumbers       : no
 draft             : no
 mask              : no
@@ -380,7 +381,7 @@ apa_wsw_comps <- apa_print(compare(models))
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
 
-#par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
+par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
 par(mfrow=c(1,2))
 plot(
   models_8b$baseline
@@ -515,7 +516,7 @@ both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
 ```
 
 ```{r}
-model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
 
 ap_model5_exp1 <- apa_print(model5_exp1)
@@ -547,20 +548,20 @@ summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
 ```
 
 ```{r}
-ggeffect(model5_exp1, terms = ~ b:us_valence) |> plot()
+# ggeffect(model5_exp1, terms = ~ b:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp1,var= "b", specs= ~ us_valence),infer=TRUE)
+# summary(emtrends(model5_exp1,var= "b", specs= ~ us_valence),infer=TRUE)
 ```
 
 ```{r}
-ggeffect(model5_exp1, terms = ~ a:us_valence) |> plot()
+# ggeffect(model5_exp1, terms = ~ a:us_valence) |> plot()
 
 ```
 
 ```{r}
-summary(emtrends(model5_exp1,var= "a", specs= ~ us_valence),infer=TRUE)
+# summary(emtrends(model5_exp1,var= "a", specs= ~ us_valence),infer=TRUE)
 ```
 
 ## Discussion
@@ -749,19 +750,19 @@ models <- lapply(
 wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
   palette()
 
-plot(
-  models$baseline
-  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-  , parameters = c(
-    D   = expression(italic(D))
-    , Cpos = expression(italic(Cpos))
-    , Cneg = expression(italic(Cneg))
-    , dpos = expression(italic(dpos))
-    , dneg = expression(italic(dneg))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
+# plot(
+#   models$baseline
+#   , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+#   , parameters = c(
+#     D   = expression(italic(D))
+#     , Cpos = expression(italic(Cpos))
+#     , Cneg = expression(italic(Cneg))
+#     , dpos = expression(italic(dpos))
+#     , dneg = expression(italic(dneg))
+#     , a = expression(italic(a))
+#     , b = expression(italic(b))
+#   )
+# )
 
 ```
 
@@ -769,7 +770,6 @@ plot(
 model_comparisons <- compare(models)
 model_comparisons
 ```
-
 
 ```{r}
 baseline_restrictions <- list(
@@ -809,17 +809,17 @@ models <- lapply(
 wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
   palette()
 
-plot(
-  models$baseline
-  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-  , parameters = c(
-    D   = expression(italic(D))
-    , C = expression(italic(C))
-    , d = expression(italic(d))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
+# plot(
+#   models$baseline
+#   , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+#   , parameters = c(
+#     D   = expression(italic(D))
+#     , C = expression(italic(C))
+#     , d = expression(italic(d))
+#     , a = expression(italic(a))
+#     , b = expression(italic(b))
+#   )
+# )
 
 ```
 
@@ -833,15 +833,17 @@ model_comparisons
 ```{r}
 exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
 summary(exp2_trait_model)
-
+# 
 exp2_trait_model_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-with-ec.rds"))
 summary(exp2_trait_model_ec)
 
 exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
 summary(exp2_trait_model_8b)
+plotParam(exp2_trait_model_8b)
 
 exp2_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
 summary(exp2_trait_model_8b_ec)
+plotParam(exp2_trait_model_8b_ec)
 ```
 
 
@@ -865,10 +867,24 @@ ratings_and_parameters_8b_long <- merge(
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
+ratings_and_parameters_8b_long_ec <- merge(
+  data_list_exp2$rating
+  , get_theta(exp2_trait_model_8b_ec, data = data_list_exp2$mpt_data_hierarchical)
+  )|>
+  within({
+    d <- ifelse(us_valence == "positive", d_positive, d_negative)
+    C <- ifelse(us_valence == "positive", C_positive, C_negative)
+  })
+
 contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_8b_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_8b_long_ec$us_valence) <- "contr.sum"
+
 contrasts(ratings_and_parameters_ec_long$task_order) <- "contr.sum"
 contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
+contrasts(ratings_and_parameters_8b_long$task_order) <- "contr.sum"
+contrasts(ratings_and_parameters_8b_long_ec$task_order) <- "contr.sum"
 ```
 
 ```{r}
@@ -902,10 +918,18 @@ cor.test(both$a.x,both$a.y)
 
 ```{r}
 model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_order + (1|sid)
-           , data = subset(ratings_and_parameters_ec_long,us_valence%in%c("positive","negative")))
+           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
 
 ap_model5_exp2 <- apa_print(model5_exp2)
 ap_model5_exp2$full_result
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ C:task_order) |> plot()
+```
+
+```{r}
+summary(emtrends(model5_exp2,var= "C", specs= ~ task_order),infer=TRUE)
 ```
 
 ```{r}
@@ -932,22 +956,6 @@ ggeffect(model5_exp2, terms = ~ d:us_valence) |> plot()
 summary(emtrends(model5_exp2,var= "d", specs= ~ us_valence),infer=TRUE)
 ```
 
-```{r}
-ggeffect(model5_exp2, terms = ~ C:task_order) |> plot()
-```
-
-```{r}
-summary(emtrends(model5_exp2,var= "C", specs= ~ task_order),infer=TRUE)
-```
-
-```{r}
-ggeffect(model5_exp2, terms = ~ D:task_order) |> plot()
-```
-
-```{r}
-summary(emtrends(model5_exp2,var= "D", specs= ~ task_order),infer=TRUE)
-```
-
 ## Discussion
 
 # Experiment 2
@@ -958,12 +966,12 @@ data_list <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
 data_list$excluded_participants                       # Participant IDs
 #lapply(data_list$excluded_participants, FUN = length) # How many?
 
-data_list_pilot <- readRDS(file.path(study_folders$wsw3_p2, "data", "data.rds"))
+# data_list_pilot <- readRDS(file.path(study_folders$wsw3_p2, "data", "data.rds"))
 
-data_list_joint <- readRDS(file.path(study_folders$wsw3_joint, "data", "data.rds"))
+# data_list_joint <- readRDS(file.path(study_folders$wsw3_joint, "data", "data.rds"))
 
-data_list_pilot$rating$study <- "pilot"
-data_list_pilot$rating_wide$study <- "pilot"
+# data_list_pilot$rating$study <- "pilot"
+# data_list_pilot$rating_wide$study <- "pilot"
 
 data_list$rating$study <- "main"
 data_list$rating_wide$study <- "main"
@@ -1145,108 +1153,55 @@ Finally, participants were debriefed about the purpose of the study and then red
 ## Results
 
 ```{r}
-# exp3_trait_model <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt.rds"))
-# exp3_trait_model_8b <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds"))
-# 
+exp3_trait_model <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt.rds"))
+
+exp3_trait_model_8b <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds"))
+
+exp3_trait_model_ec <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-with-ec.rds"))
+
+exp3_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
+
 # exp3pilot_trait_model <- readRDS(file.path(study_folders$wsw3_p2, "model-objects", "trait-mpt.rds"))
-# exp3pilot_trait_model_8b <- readRDS(file.path(study_folders$wsw3_p2, "model-objects", "trait-mpt-wsw-8b.rds"))
 # 
+# exp3pilot_trait_model_8b <- readRDS(file.path(study_folders$wsw3_p2, "model-objects", "trait-mpt-wsw-8b.rds"))
+
 # exp3joint_trait_model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "trait-mpt.rds"))
 # exp3joint_trait_model_8b <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "trait-mpt-wsw-8b.rds"))
 ```
 
 ```{r}
-# ratings_and_parameters <- merge(
-#   data_list$rating_wide
-#   , get_theta(exp3_trait_model, data = data_list$mpt_data_hierarchical)
-# )
-# lm(formula = ec_effect ~ cntr(D) * cntr(C) * cntr(d), data = ratings_and_parameters) |>
-#   summary()
-
-# ratings_and_parameters_pilot <- merge(
-#   data_list_pilot$rating_wide
-#   , get_theta(exp3pilot_trait_model, data = data_list_pilot$mpt_data_hierarchical)
-# )
-# lm(formula = ec_effect ~ cntr(D) * cntr(C) * cntr(d) + task_focus, data = ratings_and_parameters_pilot) |>
-#   summary()
-
-# ratings_and_parameters_joint <- merge(
-#   data_list_joint$rating_wide
-#   , get_theta(exp3joint_trait_model, data = data_list_joint$mpt_data_hierarchical)
-# )
-
-# ratings_and_parameters_pilot$sid <- paste0(ratings_and_parameters_pilot$sid,"pilot")
-# 
-# ratings_and_parameters_long_8b <- merge(
-#   data_list$rating
-#   , get_theta(exp3_trait_model_8b, data = data_list$mpt_data_hierarchical)
-# ) |>
-#   within({
-#     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-#     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-#   })
-# 
-# ratings_and_parameters_long_8b_pilot <- merge(
-#   data_list_pilot$rating
-#   , get_theta(exp3pilot_trait_model_8b, data_list_pilot$mpt_data_hierarchical)
-# ) |>
-#   within({
-#     d <- ifelse(us_valence == "positive", d_positive, d_negative)
-#     C <- ifelse(us_valence == "positive", C_positive, C_negative)
-#   })
-# 
-# ratings_and_parameters_long_8b_pilot$sid <- paste0(ratings_and_parameters_long_8b_pilot$sid,"pilot")
-# 
-# ratings_and_parameters_long <- merge(
-#   data_list$rating
-#   , get_theta(exp3_trait_model, data = data_list$mpt_data_hierarchical)
-# )
-
-# ratings_and_parameters_long_pilot <- merge(
-#   data_list_pilot$rating
-#   , get_theta(exp3pilot_trait_model, data = data_list_pilot$mpt_data_hierarchical)
-# )
-# 
-# ratings_and_parameters_long_pilot$sid <- paste0(ratings_and_parameters_long_pilot$sid,"pilot")
-# 
-# ratings_and_parameters_long <- subset(ratings_and_parameters_long,us_valence %in% c("positive","negative"))
-# 
-# ratings_and_parameters_long_8b <- subset(ratings_and_parameters_long_8b,us_valence %in% c("positive","negative"))
-# 
-# ratings_and_parameters_long_pilot <- subset(ratings_and_parameters_long_pilot,us_valence %in% c("positive","negative"))
-# 
-# ratings_and_parameters_long_8b_pilot <- subset(ratings_and_parameters_long_8b_pilot,us_valence %in% c("positive","negative"))
-# 
-# contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long$task_focus) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b$task_focus) <- "contr.sum"
-# 
-# contrasts(ratings_and_parameters_long_pilot$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b_pilot$us_valence) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_pilot$task_focus) <- "contr.sum"
-# contrasts(ratings_and_parameters_long_8b_pilot$task_focus) <- "contr.sum"
-# 
-# ratings_and_parameters_both <- rbind(ratings_and_parameters,ratings_and_parameters_pilot)
-# #colnames(ratings_and_parameters)
-# #colnames(ratings_and_parameters_pilot)
-# 
-# ratings_and_parameters_long_both <- rbind(ratings_and_parameters_long,ratings_and_parameters_long_pilot)
-# 
-# ratings_and_parameters_long_8b_both <- rbind(ratings_and_parameters_long_8b,ratings_and_parameters_long_8b_pilot)
-# 
+summary(exp3_trait_model)
+summary(exp3_trait_model_8b)
 ```
 
 ```{r}
-# ratings_and_parameters_long_8b_both$study <- factor(ratings_and_parameters_long_8b_both$study)
-# 
-# contrasts(ratings_and_parameters_long_8b_both$study) <- "contr.sum"
-# 
-# model_exp3 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_focus*study + (1|sid)
-#            , data = ratings_and_parameters_long_8b_both)
-# ap_model_exp3 <- apa_print(model_exp3)
-#ap_model_exp3
+ratings_and_parameters_ec_long <- merge(
+  data_list$rating
+  , get_theta(model = exp3_trait_model_ec, data = data_list$mpt_data_hierarchical)
+)
+
+ratings_and_parameters_long <- merge(
+  data_list$rating
+  , get_theta(model = exp3_trait_model, data = data_list$mpt_data_hierarchical)
+)
+
+contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
+contrasts(ratings_and_parameters_ec_long$task_focus) <- "contr.sum"
+contrasts(ratings_and_parameters_long$task_focus) <- "contr.sum"
 ```
+
+```{r}
+model_exp3 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_focus + (1|sid)
+           , data = ratings_and_parameters_ec_long)
+ap_model_exp3 <- apa_print(model_exp3)
+ap_model_exp3$table
+```
+
+```{r}
+summary(emtrends(model_exp3,var= "C", specs= ~ us_valence),infer=TRUE)
+```
+
 
 ## Discussion 
 
