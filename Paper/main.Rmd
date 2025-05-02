@@ -381,40 +381,35 @@ apa_wsw_comps <- apa_print(compare(models))
 wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
   palette()
 
-# par(mar = c(5, 4, 5, 2), xpd = TRUE,mfrow=c(1,2))
-# par(mfrow=c(1,2))
-# plot(
-#   models_8b$baseline
-#     , factors = list(y=c("a"=""))
-#   , parameters = c(
-#       "D" = expression(italic(D))
-#     , "C_positive" = expression(italic(C_positive))
-#     , "C_negative" = expression(italic(C_negative))
-#     , "d_positive" = expression(italic(d_positive))
-#     , "d_negative" = expression(italic(d_positive))
-#     , "b" = expression(italic(b))
-#     , "a" = expression(italic(a))
-#   )
-#   , ylim = c(0, 1)
-#   , args_legend = list(x = 4, y = 1.4)
-# )
-# title("Panel A")
-# title(xlab = "Model parameter", ylab = "Estimate")
-# plot(
-#   models$baseline
-#     , factors = list(y=c("a"=""))
-#   , parameters = c(
-#       "D" = expression(italic(D))
-#     , "C" = expression(italic(C))
-#     , "d" = expression(italic(d))
-#     , "b" = expression(italic(b))
-#     , "a" = expression(italic(a))
-#   )
-#   , ylim = c(0, 1)
-#   , args_legend = list(x = 4, y = 1.4)
-# )
-# title("Panel B")
-# title(xlab = "Model parameter", ylab = "Estimate")
+par(mar = c(5, 5, 5, 2), mfrow=c(1,2))
+plot(
+  models_8b$baseline
+  # , factors = list("us_valence" = c(positive = "_positive", negative = "_negative"))
+  , parameters = c(
+      "D" = expression(italic(D))
+    , "C_positive" = expression(italic(C)[p])
+    , "C_negative" = expression(italic(C)[n])
+    , "d_positive" = expression(italic(d)[p])
+    , "d_negative" = expression(italic(d)[n])
+    , "b" = expression(italic(b))
+    , "a" = expression(italic(a))
+    # , G = expression(italic(G))
+  )
+)
+title("Panel A")
+
+plot(
+  models$baseline
+  , parameters = c(
+      "D" = expression(italic(D))
+    , "C" = expression(italic(C))
+    , "d" = expression(italic(d))
+    , "b" = expression(italic(b))
+    , "a" = expression(italic(a))
+  )
+  # , args_legend = list(x = 4, y = 1.4)
+)
+title("Panel B")
 
 apa_wsw8b <- apa_print(models_8b$baseline)
 
