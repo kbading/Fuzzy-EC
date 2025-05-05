@@ -19,7 +19,7 @@ setDefaultCluster(cl)
 waics <- clusterMap(
   x = readRDS(file = file.path(study_folder, "model-objects", "trait-mpt-wsw-8b-whole-family.rds"))
   , fun = function(x) {
-    WAIC(x,  n.adapt = 2e4L, n.chains = 6L, n.iter = 1e5L, n.thin = 1e2L)
+    TreeBUGS::WAIC(x,  n.adapt = 2e4L, n.chains = 6L, n.iter = 1e5L, n.thin = 1e2L)
   }
   , .scheduling = "dynamic"
 )
