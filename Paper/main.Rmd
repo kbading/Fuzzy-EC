@@ -1,5 +1,5 @@
 ---
-title             : "Memory specificity in evaluation conditioning: a 'Who said what' approach"
+title             : "Memory specificity in evaluative conditioning: a multinomial modeling approach"
 shorttitle        : "Memory specificity in EC"
 
 author: 
@@ -118,7 +118,23 @@ cntr <- function(x, ...){x - mean(x, ...)}
 # knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-# Pilot
+Evaluative conditioning (EC) refers to a change in the evaluation of an initially neutral "conditioned" stimulus (CS) after its pairing with a positive or negative "unconditioned" stimulus (US).
+
+- memory for CS-US pairings is most important moderator
+
+- US identity memory vs. US valence memory: definitions and measurement tasks
+
+- distinction is important for methodological vs. theoretical reasons: (1) EC without awareness/memory, (2) different memory-based accounts imply different relationships between EC and two types of pairing memory
+
+- present research is concerned with (2): specifically, improving methodology for testing different memory-based accounts
+
+- we identify fours shortcomings in current measurement tasks and explain their problematic implications for testing memory-based accounts: (1) US valence scores are likely contaminated by US identity memory, (2) US identity scores may be contaminated by US valence memory, (3) US identity/valence scores can be contaminated by bias for positive vs. negative response options, (4) US identity/valence scores are confounded with CS recognition memory
+
+- we propose a multinomial model as a solution for these shortcomings: adaptation of the "who-said-what" model by Klauer and Wegener (1998)
+
+- we present three experiments: (1) shows fit to pairing memory data based on standard EC procedure, (2) explores effects of task order (memory first vs. rating first) as important procedural feature for successful applications in future applications, (3) reports an experimental application re-investigating a widely cited finding in EC research (Gast & Rothermund, 2011)
+
+# Experiment 1
 
 ```{r}
 data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
@@ -126,7 +142,7 @@ data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
 ```
 
 ## Methods
-The pilot was not pre-registered.
+Experiment 1 was not pre-registered.
 The materials and data are publicly available at: https://osf.io/rqkvy/.
 The data collection was conducted online.
 
@@ -136,9 +152,10 @@ The sampling pool was restricted to English speakers with at least 100 previous 
 Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
 We recruited 50 participants (xxx$\%$ female; $M_{age} = xxx$; $SD_{age} = xxx$).
 The number of recruited participants was determined *ad hoc* and was not based on a power analysis.
-<!-- We excluded one participant who declared that they did not pay attention to the images presented throughout the experiment. -->
-<!-- We excluded another participant whose data was unavailable due to an unknown technical error. -->
-<!-- Taken together, this resulted in a final sample size of 49 participants. -->
+We excluded one participant who declared that they did not pay attention to the images presented throughout the experiment.
+We excluded another participant who gave the same response on all trials of the evaluation task.
+We interpreted this response behavior as an indicator of non-compliance and decided to exclude the participant from all analyses.
+Taken together, this resulted in a final sample size of 48 participants.
 
 ### Design
 The experiment followed a 2 (US valence: positive vs. negative) within-subjects design.
@@ -150,18 +167,18 @@ The CS pool comprised 48 colored images of human faces with neutral expressions 
 The images were taken from xxx.
 
 As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
-The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), 12 images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) were therefore used as positive USs, while 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$) and were thus used as negative USs. Positive and negative USs differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
+The positive and negative images differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
 For each participant, 12 randomly selected face images (50% female) served as positively paired CSs (i.e., they were paired with a positive US during the learning phase), 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images served as distractor stimuli in the test phase.
 
-For each participant, all 24 adjectives served as USs during the learning phase. 
-The 24 adjectives were randomly assigned to the 24 CSs.
+For each participant, all 24 images served as USs during the learning phase. 
+The 24 images were randomly assigned to the 24 CSs.
 Twelve CSs (50% female) were paired with positive USs and twelve CSs (50% female) were paired with negative USs.
 
 ### Measures and procedures
 All verbal materials were presented in English.
-After providing informed consent and being asked to focus on the study,
-participants were thanked for their participation and asked to pay close attention to all instructions and tasks.
+After providing informed consent and being asked to focus on the study, participants were thanked for their participation and asked to pay close attention to all instructions and tasks.
 Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
@@ -170,7 +187,7 @@ Subsequently, participants read the following instruction slide: "Next you will 
 
 After pressing the spacebar, participants worked through the learning task, consisting of 72 trials.
 The trials were separated by blank screens presented for 1,000 ms.
-On each trial, a face image (CS, center-left position) was presented together with a valenced image (US, center-right position).
+On each trial, a CS (face image, center-left position) was presented together with a US (positive or negative image, center-right position).
 CS and US appeared at the same time and remained on screen for 1,000 ms.
 For each participant, trial order was randomized in sets of 24 trials.
 In each set (three in total), each of the 24 CS-US pairs was presented once.
@@ -191,12 +208,12 @@ After pressing the spacebar, participants performed the memory task, consisting 
 In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
-Each trial began with with the recognition memory task: participants were asked whether the face had been part of the nonword-image pairs presented in the learning phase.
+Each trial began with the CS recognition task: participants were asked whether the presented face image had been part of the image pairs presented in the learning phase.
 To indicate their response, participants were presented with two buttons labeled "Yes (old)" and "No (new)".
 If participants responded "No (new)", they proceeded to the next recognition memory trial.
-If participants responded "Yes (old)", they proceeded to the associative memory task (in which they were asked to identify the previously paired US).
-In this task, the face image was presented together with eight valenced images (all of which had been shown as USs during the learning phase).
-The eight images were displayed in two rows of four images (with random assignment of images to positions).
+If participants responded "Yes (old)", they proceeded to the US memory task (in which they were asked to identify the previously paired US).
+In this task, the CS was presented together with eight USs from the learning phase.
+The eight US images were displayed in two rows of four images (with random assignment of images to positions).
 For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). 
 For distractor stimuli incorrectly classified as "old", eight randomly selected images (4 $\times$ positive, 4 $\times$ negative) were presented.
 
@@ -211,23 +228,19 @@ Participants rated how positive or negative they found each face on a 11-point r
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
-After the last trial of the evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press spacebar to continue."
+After the last trial of the evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 #### Control measures and debriefing
 After pressing the spacebar, participants were asked whether they paid attention to the images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
-The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
+The response options ("I have taken the requested responses seriously." vs. "I have just clicked through, please discard my data.") were again presented as two buttons.
 Subsequently, participants were given the chance to comment on the study.
 Finally, participants were presented with the following text (debriefing them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
+After pressing the spacebar, participants were redirected to Prolific and reimbursed for their participation.
 
 ### Data processing and statistical analysis
-First, we inspected the data for indications of non-compliance (among participants who passed the two control measures).
-We found one participant who gave the same response on all trials of the evaluation task (but different responses across trials in the memory task).
-We interpreted the response behavior in the evaluation task as an indicator of non-compliance and decided to exclude the participant from all analyses.
-
 The evaluative ratings were analyzed (without further processing) using the R package *stats*.
-
 For the MPT model analyses, the responses from the two memory tasks were first recoded into a joint memory index according to the following scheme:
 
 - If a positively (negatively) paired CS was incorrectly classified as "new", the response was recoded as "PosUSnew" ("NegUSnew"). 
@@ -242,12 +255,51 @@ For the MPT model analyses, the responses from the two memory tasks were first r
 
 - If an (unpaired) new stimulus was incorrectly classified as "old" and a positive (negative) trait was selected, the responses will be recoded as "Newposincor" ("Newnegincor").
 
-Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with different versions of the MPT model.
-The MPT model analyses were carried out using the R package *HMMTreeC*.
+```{r}
+baseline_restrictions <- list(
+  G = .25
+)
+
+hypothesis_restrictions_8b <- list(
+  baseline = list()
+  , D_eq0  = list(D = .Machine$double.eps)
+  , Cpos_eq0  = list(C_positive = .Machine$double.eps)
+  , Cneg_eq0  = list(C_negative = .Machine$double.eps)
+  , dpos_eq0  = list(d_positive = .Machine$double.eps)
+  , dneg_eq0  = list(d_negative = .Machine$double.eps)
+  , a_eq.5 = list(a = .5)
+  , b_eq.5 = list(b = .5)
+  , C_eq  = list(C = c("C_positive", "C_negative"))
+  , d_eq  = list(d = c("d_positive", "d_negative"))
+  , fiveparam = list(C = c("C_positive", "C_negative"),d = c("d_positive", "d_negative"))
+)
+
+models_8b <- lapply(
+  hypothesis_restrictions_8b
+  , FUN = function(x) {
+    fit_mpt(
+      model = file.path(project_root, "model-equations", "wsw-8b.eqn")
+      , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+
+exp1 <- apa_print(compare(models_8b))
+#models_8b$baseline$goodness_of_fit
+#models_8b$baseline
+```
+
+Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with the R package *HMMTreeC*.
+We implemented different versions of the MPT model 
+In all versions of the model, the $g$ parameter was set to $.25$ (corresponding to the inverse of the number of response options per US valence in the US memory task).
+To allow for potential memory differences across US valence conditions, we first fitted a model variant that included separate $C$ and $d$ parameters for positively vs. negative paired CSs (next to joint $D$, $b$ and $a$ parameters).
+We then compared this 7-parameter model with a more restrictive 5-parameter model in which $C$ and $d$ parameters were set equal across US valence conditions.
+There was no significant difference in model fit between the two models, `r $full_result$fiveparam`.
+We therefore decided to report the simpler 5-parameter model.
 
 ```{r}
 exp1_ratings <- data_list_pilot$rating
-#table(xxx$sid)
 exp1_ratings_sd <- aggregate(exp1_ratings,evaluative_rating ~ sid, FUN = sd) # 1 x sd = 0 --> sid = 43
 exp1_ratings <- subset(exp1_ratings,sid != 43)
 exp1_ratings_wide <- subset(data_list_pilot$rating_wide,sid != 43)
@@ -298,20 +350,16 @@ exp1_negdist <- apa_print(t.test(exp1_ratings_agg2$negative,exp1_ratings_agg2$`n
 ```
 
 Evaluative ratings for CSs and distractor stimuli were analyzed using paired-samples *t*-tests.
-
-The mean rating for positively paired CSs was higher than the mean rating for negatively paired CSs ($M_{positive}=$ `r mean_pos`, $SD_{positive}=$ `r sd_pos`; $M_{negative}=$ `r mean_neg`, $SD_{negative}=$ `r sd_neg`)
+The mean rating for positively paired CSs was higher than the mean rating for negatively paired CSs ($M_{positive}=$ `r mean_pos`, $SD_{positive}=$ `r sd_pos`; $M_{negative}=$ `r mean_neg`, $SD_{negative}=$ `r sd_neg`).
 The mean difference (i.e., the mean EC effect) reached significance in a one-tailed test, `r exp1_posneg$full_result`.
-
 The mean rating for positively paired CSs was also higher than the mean rating for unpaired distractor stimuli ($M_{distractor}=$ `r mean_nop`, $SD_{distractor}=$ `r sd_nop`).
 However, the mean difference failed to reach significance even in a one-tailed test, `r exp1_posdist$full_result`.
-
 Finally, the mean rating for negatively paired CSs was lower than the mean rating for unpaired distractor stimuli.
 The mean difference was again non-significant even in a one-tailed test, `r exp1_negdist$full_result`.
 
 ### MPT model analyses
-```{r}
-#exp1_mpt_data <- data_list_pilot$memory
 
+```{r}
 baseline_restrictions <- list(
   G = .25
 )
@@ -378,82 +426,30 @@ apa_wsw_comps <- apa_print(compare(models))
 ```
 
 ```{r}
-wesanderson::wes_palette("Zissou1", n = 3, type = "continuous") |>
-  palette()
-
-par(mar = c(5, 5, 5, 2), mfrow=c(1,2))
-plot(
-  models_8b$baseline
-  # , factors = list("us_valence" = c(positive = "_positive", negative = "_negative"))
-  , parameters = c(
-      "D" = expression(italic(D))
-    , "C_positive" = expression(italic(C)[p])
-    , "C_negative" = expression(italic(C)[n])
-    , "d_positive" = expression(italic(d)[p])
-    , "d_negative" = expression(italic(d)[n])
-    , "b" = expression(italic(b))
-    , "a" = expression(italic(a))
-    # , G = expression(italic(G))
-  )
-)
-title("Panel A")
-
-plot(
-  models$baseline
-  , parameters = c(
-      "D" = expression(italic(D))
-    , "C" = expression(italic(C))
-    , "d" = expression(italic(d))
-    , "b" = expression(italic(b))
-    , "a" = expression(italic(a))
-  )
-  # , args_legend = list(x = 4, y = 1.4)
-)
-title("Panel B")
-
 apa_wsw8b <- apa_print(models_8b$baseline)
-
 apa_wsw8b_comps <- apa_print(compare(models_8b))
 ```
 
-The 7-parameter variant of the MPT model provided an adequate account of the data, `r apa_wsw8b$stat$modelfit`.
-Parameter estimates and confidence intervals from the 7-parameter model are reported in *Figure xxx* (Panel A).
-The difference between $C_{positive}$ and $C_{negative}$ was non-significant, `r apa_wsw8b_comps$statistic$C_eq`, as was the difference between $d_{positive}$ and $d_{negative}$, `r apa_wsw8b_comps$statistic$d_eq`.
-By implication, the restrictive 5-parameter variant of the MPT model (with $C_{positive}=C_{negative}$ and $d_{positive}=d_{negative}$) fit the data well, `r apa_wsw6$statistic$modelfit`.
+The 5-parameter model fit the data well, `r apa_wsw6$statistic$modelfit`.
+Parameter estimates and confidence intervals are reported in Table 1.
 
-Parameter estimates and confidence intervals from the 5-parameter variant of the MPT model are reported in *Figure xxx* (Panel B).
 The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as "old" (and distractor stimuli as "new") in $45.6$% of trials.
 By implication, participants did not recognize CSs as "old" (and distractor stimuli as "new") in $54.4$% of trials.
 
-#### CSs recognized as "old"
 The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as "old".
-This implies that US identity was absent for $32.6$% of CSs recognized as "old".
+This implies that US identity was absent for $32.6$% of CSs recognized as "old" (hereafter also referred to as "recognized" CSs).
 
-##### CSs without US identity memory
-The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of CSs for which US identity memory was absent, participants possessed US valence memory in approx. $19.9$% of trials.
-By implication, participants did not possess US valence memory in approx. $80.1$% of trials (pertaining to the subset of CSs for which US identity memory was absent).
+The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of "recognized" CSs without US identity memory, participants possessed US valence memory in approx. $19.9$% of trials.
+By implication, participants did not possess US valence memory for approx. $80.1$% of "recognized" CSs without US identity memory.
 
-###### CSs without US valence memory
-For the subset of CSs for which US valence memory was also absent, participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
-This implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of CSs for which US valence memory was absent).
-Note that the $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq_5`, demonstrating an overall tendency towards selecting a negative US.
+The $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`.
+This suggests that, for CSs not recognized as "old" (as distractor stimuli not recognized as "new"), participants had an overall tendency towards selecting the "new" response.
+Specifically, the size of the parameter estimate indicates that $14.8$% of CSs not recognized as "old" (and distractor stimuli not recognized as "new") were guessed as "old".
+By implication, participants guessed "new" for $85.2$% of CSs not recognized as "old" (and distractor stimuli not recognized as "new").
 
-#### CSs not recognized as "old"
-In the subset of CSs that were not recognized as "old", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
-By implication, participants guessed "new" in $85.2$% of trials in which a CS was not recognized as "old".
-Note that the $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`, demonstrating an overall tendency towards selecting the "new" response.
-
-##### CSs guessed as "old"
-For the subset of CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
-This again implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of CSs that were guessed as "old").
-
-#### Distractor stimuli not recognized as "new"
-In the subset of distractor stimuli that were not recognized as "new", participants guessed "old" in $14.8$% of trials, as indicated by the $b$ parameter estimate.
-By implication, participants guessed "new" in $85.2$% of trials in which a distractor stimuli was not recognized as "new".
-
-##### Distractor stimuli guessed as "old"
-As for CSs guessed as "old", participants guessed a positive US in approx. $42.7$% of trials, as indicated by the $a$ parameter estimate.
-This again implies that participants guessed a negative US in approx. $57.3$% of trials (pertaining to the subset of distractor stimuli that were guessed as "old").
+The $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq_5`.
+This suggests that, in the absence of both US identity and US valence memory, participants had an overall tendency towards selecting a negative image in the US memory task.
+Specifically, the size of the parameter estimate indicates that participants selected a positive (negative) US for $42.7$% ($57.3$%) of CSs and distractor stimuli guessed as "old" (and "recognized" CSs without US identity and US valence memory).
 
 ### Relationships between evaluative ratings and MPT parameters
 
