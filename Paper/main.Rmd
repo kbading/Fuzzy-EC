@@ -1,6 +1,6 @@
 ---
-title             : "Memory specificity in evaluative conditioning: a multinomial modeling approach"
-shorttitle        : "Memory specificity in EC"
+title             : "Measuring memory involved in evaluative conditioning: a multinomial modeling approach"
+shorttitle        : "Memory in evaluative conditioning"
 
 author: 
   - name          : "Karoline Bading"
@@ -38,7 +38,7 @@ affiliation:
 
 
 abstract: |
-  BLABLABLABLABLA
+  The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
 
   <!-- https://tinyurl.com/ybremelq -->
   
@@ -60,7 +60,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : man
+classoption       : jou
 output            : papaja::apa6_pdf
 ---
 
@@ -119,19 +119,51 @@ cntr <- function(x, ...){x - mean(x, ...)}
 ```
 
 Evaluative conditioning (EC) refers to a change in the evaluation of an initially neutral "conditioned" stimulus (CS) after its pairing with a positive or negative "unconditioned" stimulus (US).
+As a tool for studying the basic cognitive processes involved in attitude formation, the EC paradigm is widely used in social psychology and in research on evaluative learning.
+Over the years, these two fields of investigation have produced various accounts of EC.
+Despite their many differences, most of these accounts share a core idea: one way or another, they all give central importance to the formation and retrieval of explicit memory for the CS-US pairings as the cognitive foundation for the emergence of EC.
+Based on a widely cited meta-analysis [@hofmann_evaluative_2010], this shared assumption seems to be well founded: pairing memory (as a proxy of contingency awareness) was found to be the strongest moderator of EC.
 
-- memory for CS-US pairings is most important moderator
+In early research, pairing memory was mainly understood as associative memory for the specific US that had been paired with a given CS [e.g., @baeyens_contingency_1990; Walther & Nagengast, 2006].
+However, as pointed out by @stahl_evaluative_2009, such US identity memory is not the only form of pairing memory that might be relevant for EC: instead of (or in addition to) being built on memory for the previously paired USs, EC effects may also stem from memory for the valence of these stimuli [@stahl_respective_2009-1].
+This seminal distinction between memory for the US identity and memory for the US valence is important in EC research for multiple reasons.
+On the methodological side, US valence memory is less specific and thus more exhaustive (than US identity memory), making it the more suitable construct for testing the intriguing possibility of EC without memory for the CS-US pairings (Hütter et al., 2012; Stahl et al., 2009; Shanks and St. John, 1994).
+On the theoretical side, the distinction between US identity and US valence memory is important because different accounts of EC draw on different types of pairing memory (as its cognitive foundation).
+Importantly, this implies that conceptualizing (and measuring) US identity and US valence memory as separate constructs is required to achieve theoretical progress in explaining EC effects.
+In this vein, the present research is aimed at providing a refined perspective on different forms of pairing memory, on the one hand, and introducing superior tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand.
 
-- US identity memory vs. US valence memory: definitions and measurement tasks
+In the remainder of this article is structured as follows.
+Firstly, we identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC.
+Secondly, we introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory.
+Thirdly, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
 
-- distinction is important for methodological vs. theoretical reasons: (1) EC without awareness/memory, (2) different memory-based accounts imply different relationships between EC and two types of pairing memory
+# Common measures of CS-US pairing memory and their shortcomings
 
-- present research is concerned with (2): specifically, improving methodology for testing different memory-based accounts
+In a typical procedure for measuring US identity memory, individual CSs are presented together with a fixed number of USs (including the previously paired/correct one).
+For a given CS thus presented, the available USs may all have the same valence (equal to that of the previously paired US) or include both positive and negative options (in equal numbers).
+For each CS, participants are asked to select the correct (i.e., previously paired) option from the set of available USs.
+For cases in which US identity memory is absent, participants may be instructed to guess the correct option or be provided with an additional "I don't know" option.
+The typical format for measuring US identity memory is thus forced-choice recognition with a chance level equal to the inverse of the number of response options (USs).
 
-- we identify fours shortcomings in current measurement tasks and explain their problematic implications for testing memory-based accounts: (1) US valence scores are likely contaminated by US identity memory, (2) US identity scores may be contaminated by US valence memory, (3) US identity/valence scores can be contaminated by bias for positive vs. negative response options, (4) US identity/valence scores are confounded with CS recognition memory
+Memory for the US valence is usually measured in one of two ways: either by recoding responses from the US identity memory task (in terms of their valence) or by implementing a separate procedure in which US valence memory is probed directly.
+In a typical example for such a procedure, participants are presented with individual CSs and asked to indicate, for a given CS, whether it had been paired with positive or negative stimuli during the learning phase.
+For cases in which such US valence memory is not available, participants may be instructed to guess the correct valence or be provided with an additional "I don't know" option.
+The chance level in a typical measure of US valence memory is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that in measures of US identity memory (assuming that more than two response options are presented).
 
-- we propose a multinomial model as a solution for these shortcomings: adaptation of the "who-said-what" model by Klauer and Wegener (1998)
+As explained by @pleyers_aware_2007, the relationships between EC and CS-US pairing memory may be analyzed at the level of participants or at the level of individual CSs.
+When discussing the problematic aspects of the previously introduced measures we will therefore distinguish between these two levels of analysis.
 
+## Measures of US valence memory are likely affected by US identity memory
+
+## Measures of US identity memory are likely affected by US valence memory
+
+## Measures of US identity and US valence memory are likely affected by response biases
+
+## Measures of US identity and US valence memory are likely affected by CS recognition memory
+
+# A multinomial processing tree model for CS recognition and CS-US pairing memory
+
+# The present research
 - we present three experiments: (1) shows fit to pairing memory data based on standard EC procedure, (2) explores effects of task order (memory first vs. rating first) as important procedural feature for successful applications in future applications, (3) reports an experimental application re-investigating a widely cited finding in EC research (Gast & Rothermund, 2011)
 
 # Experiment 1
@@ -295,7 +327,7 @@ We implemented different versions of the MPT model
 In all versions of the model, the $g$ parameter was set to $.25$ (corresponding to the inverse of the number of response options per US valence in the US memory task).
 To allow for potential memory differences across US valence conditions, we first fitted a model variant that included separate $C$ and $d$ parameters for positively vs. negative paired CSs (next to joint $D$, $b$ and $a$ parameters).
 We then compared this 7-parameter model with a more restrictive 5-parameter model in which $C$ and $d$ parameters were set equal across US valence conditions.
-There was no significant difference in model fit between the two models, `r $full_result$fiveparam`.
+There was no significant difference in model fit between the two models, `r exp1$full_result$fiveparam`.
 We therefore decided to report the simpler 5-parameter model.
 
 ```{r}
@@ -387,15 +419,9 @@ models_8b <- lapply(
     )
   }
 )
-
-#compare(models_8b)
-#models_8b$baseline$goodness_of_fit
-#models_8b$baseline
 ```
 
 ```{r}
-#exp1_mpt_data <- data_list_pilot$memory
-
 baseline_restrictions <- list(
   G = .25
 )
@@ -420,8 +446,6 @@ models <- lapply(
   }
 )
 apa_wsw6 <- apa_print(models$baseline)
-#compare(models)
-#models$baseline
 apa_wsw_comps <- apa_print(compare(models))
 ```
 
@@ -489,53 +513,38 @@ ratings_and_parameters <- merge(
 )
 
 both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
-
-# cor.test(both$D.x,both$D.y)
-# t.test(both$D.x,both$D.y)
-# 
-# cor.test(both$C.x,both$C.y)
-# t.test(both$C.x,both$C.y)
-# 
-# cor.test(both$d.x,both$d.y)
-# t.test(both$d.x,both$d.y)
-# 
-# cor.test(both$b.x,both$b.y)
-# t.test(both$b.x,both$b.y)
-# 
-# cor.test(both$a.x,both$a.y)
-# t.test(both$a.x,both$a.y)
 ```
 
 ```{r}
-model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d))*us_valence + (1|sid)
+model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
            , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
 
 ap_model5_exp1 <- apa_print(model5_exp1)
-ap_model5_exp1$full_result
+#ap_model5_exp1$full_result
 ```
 
 ```{r}
-ggeffect(model5_exp1, terms = ~ D:us_valence) |> plot()
+#ggeffect(model5_exp1, terms = ~ D:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp1,var= "D", specs= ~ us_valence),infer=TRUE)
+#summary(emtrends(model5_exp1,var= "D", specs= ~ us_valence),infer=TRUE)
 ```
 
 ```{r}
-ggeffect(model5_exp1, terms = ~ C:us_valence) |> plot()
+#ggeffect(model5_exp1, terms = ~ C:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp1,var= "C", specs= ~ us_valence),infer=TRUE)
+#summary(emtrends(model5_exp1,var= "C", specs= ~ us_valence),infer=TRUE)
 ```
 
 ```{r}
-ggeffect(model5_exp1, terms = ~ d:us_valence) |> plot()
+#ggeffect(model5_exp1, terms = ~ d:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
+#summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
 ```
 
 ```{r}
@@ -557,7 +566,7 @@ summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
 
 ## Discussion
 
-# Experiment 1
+# Experiment 2
 
 ```{r}
 data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
@@ -578,7 +587,7 @@ socio = socio %>% filter(Status != "RETURNED")
 ```
 
 ## Method
-The experiment was pre-registered on the OSF.
+Experiment 2 was pre-registered on the OSF.
 The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
 The data collection was conducted online.
 
@@ -701,27 +710,29 @@ effectsize::cohens_d(exp2_ec)
 baseline_restrictions <- list(
   G_x1 = .25
   , G_x2 = .25
+  , C_x1 = "Cpos_x1=Cneg_x1"
+  , C_x2 = "Cpos_x2=Cneg_x2"
+  , d_x1 = "dpos_x1=dneg_x1"
+  , d_x2 = "dpos_x2=dneg_x2"
 )
 
 hypothesis_restrictions <- list(
   baseline = list()
   , D_equal = list(D = c("D_x1", "D_x2"))
-  , Cx1_equal = list(C = c("Cpos_x1", "Cneg_x1"))
-  , Cx2_equal = list(C = c("Cpos_x2", "Cneg_x2"))
-  , dx1_equal = list(d = c("dpos_x1", "dneg_x1"))
-  , dx2_equal = list(d = c("dpos_x2", "dneg_x2"))
+  , C_equal = list(C = c("C_x1", "C_x2"))
+  , d_equal = list(d = c("d_x1", "d_x2"))
+  # , Cx1_equal = list(C = c("Cpos_x1", "Cneg_x1"))
+  # , Cx2_equal = list(C = c("Cpos_x2", "Cneg_x2"))
+  # , dx1_equal = list(d = c("dpos_x1", "dneg_x1"))
+  # , dx2_equal = list(d = c("dpos_x2", "dneg_x2"))
   , a_equal = list(a = c("a_x1", "a_x2"))
   , b_equal = list(b = c("b_x1", "b_x2"))
   , Deval0   = list(D_x1 = .Machine$double.eps)
   , Dmem0   = list(D_x2 = .Machine$double.eps)
-  , Cposeval0   = list(Cpos_x1 = .Machine$double.eps)
-  , Cnegeval0   = list(Cneg_x1 = .Machine$double.eps)
-  , Cposmem0   = list(Cpos_x2 = .Machine$double.eps)
-  , Cnegmem0   = list(Cneg_x2 = .Machine$double.eps)
-  , dposeval0   = list(dpos_x1 = .Machine$double.eps)
-  , dnegeval0   = list(dneg_x1 = .Machine$double.eps)
-  , dposmem0   = list(dpos_x2 = .Machine$double.eps)
-  , dnegmem0   = list(dneg_x2 = .Machine$double.eps)
+  , Ceval0   = list(C_x1 = .Machine$double.eps)
+  , Cmem0   = list(C_x2 = .Machine$double.eps)
+  , deval0   = list(d_x1 = .Machine$double.eps)
+  , dmem0   = list(d_x2 = .Machine$double.eps)
   , beval5   = list(b_x1 = 0.5)
   , bmem5   = list(b_x2 = 0.5)
   , aeval5   = list(a_x1 = 0.5)
