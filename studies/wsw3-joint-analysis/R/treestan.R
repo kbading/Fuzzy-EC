@@ -15,6 +15,7 @@ treestan_model <- TreeStan::fit_mpt(
   , lm_y = mpt_data_hierarchical$ec_effect
   , warmup  = 2000
   , iter    = 4000
+  , chains  =    8
 )
 
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan.rds"))

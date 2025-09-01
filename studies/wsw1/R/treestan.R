@@ -23,7 +23,7 @@ model <- TreeStan::fit_mpt(
   , lm_y = mpt_data_hierarchical$ec_effect
   , warmup  = 2000
   , iter    = 4000
-  , chains  = 8
+  , chains  =    8
   # , control = list(
   #   adapt_delta = .9
   #   , stepsize  = .07 # initial stepsize
