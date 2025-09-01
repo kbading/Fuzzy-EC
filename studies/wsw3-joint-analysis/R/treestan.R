@@ -7,7 +7,7 @@ study_folder <- file.path(project_root, "studies", "wsw3-joint-analysis")
 
 mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))$mpt_data_hierarchical
 
-treestan_model <- TreeStan::fit_mpt(
+model <- TreeStan::fit_mpt(
   eqn_file = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
   , restrictions = list(G = 1/8)
   , data = mpt_data_hierarchical
