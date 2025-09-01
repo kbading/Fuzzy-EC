@@ -109,6 +109,7 @@ knitr::opts_chunk$set(
   , message = FALSE
   , cache = FALSE
   , fig.env = "figure*"
+  , fig.crop = TRUE
   # , fig.width  = 15
   # , fig.height =  9
 )
@@ -818,9 +819,11 @@ Specifically, the size of the parameter estimate indicates that participants sel
 model <- readRDS(file.path(study_folders$wsw1, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9}
+```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
 par(mfrow = c(2, 3))
 plot_regression(model, pars = c("D", "C", "d", "a", "b"))
+
+# bayes_factors(model)
 ```
 
 
@@ -1175,9 +1178,26 @@ ggeffect(model5_exp2, terms = ~ C:us_valence) |> plot()
 ggeffect(model5_exp2, terms = ~ d:us_valence) |> plot()
 ```
 
+### Stan model
+
+```{r}
+model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "treestan.rds"))
+```
+
+```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+par(mfrow = c(2, 3))
+plot_regression(
+  model, pars = c("D", "C", "d", "a", "b")
+  # , pt.bg = data_list_exp2$mpt_data_hierarchical$task_order
+)
+
+# bayes_factors(model)
+```
+
+
 ## Discussion
 
-# Experiment 2
+# Experiment 3
 
 ```{r}
 # from MB:
@@ -1421,6 +1441,18 @@ ap_model_exp3$table
 summary(emtrends(model_exp3,var= "C", specs= ~ us_valence),infer=TRUE)
 ```
 
+## Stan model
+
+```{r}
+model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
+```
+
+```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+par(mfrow = c(2, 3))
+plot_regression(model, pars = c("D", "C", "d", "a", "b"))
+
+# bayes_factors(model)
+```
 
 ## Discussion 
 
