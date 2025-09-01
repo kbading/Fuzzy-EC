@@ -827,7 +827,7 @@ Specifically, the size of the parameter estimate indicates that participants sel
 model <- readRDS(file.path(study_folders$wsw1, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+```{r warning = FALSE, fig.cap = "Experiment 1. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
 par(mfrow = c(2, 3))
 plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 
@@ -1107,7 +1107,7 @@ model_comparisons <- compare(models)
 model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+```{r warning = FALSE, fig.cap = "Experiment 2. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
 par(mfrow = c(2, 3))
 plot_regression(
   model, pars = c("D", "C", "d", "a", "b")
@@ -1318,7 +1318,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+```{r warning = FALSE, fig.cap = "Experiment 3. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
 par(mfrow = c(2, 3))
 plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 

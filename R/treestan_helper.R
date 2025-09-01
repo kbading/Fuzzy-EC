@@ -44,7 +44,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   palette(wesanderson::wes_palette("Zissou1", n = 3, type = "c"))
   for(i in x@parameter_index[pars]) {
     plot.new()
-    plot.window(xlim = c(0, 1), ylim = c(-4, 8))
+    plot.window(xlim = c(0, 1), ylim = c(-2, 6))
     
     arrows(
       x0 = theta[2, , i]
