@@ -1,6 +1,5 @@
 
 library(TreeStan)
-treestan_options(refresh = 0)
 
 project_root <- rprojroot::find_rstudio_root_file()
 study_folder <- file.path(project_root, "studies", "wsw1")
@@ -21,13 +20,11 @@ model <- TreeStan::fit_mpt(
   , data = mpt_data_hierarchical
   # , formula = ~ task_focus
   , lm_y = mpt_data_hierarchical$ec_effect
-  , warmup  = 2000
-  , iter    = 4000
-  , chains  =    8
-  # , control = list(
-  #   adapt_delta = .9
-  #   , stepsize  = .07 # initial stepsize
-  # )
+  , warmup  = 2e3L
+  , iter    = 4e3L
+  , chains  = 8e0L
+  , cores   = parallel::detectCores()
+  , refresh = if(interactive()) 1e2L else 0L
 )
 # shinystan::launch_shinystan(model)
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan.rds"))

@@ -18,18 +18,18 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   
   theta_m  <- rstan::extract(x, "theta_m" )[[1L]]
   theta_sd <- rstan::extract(x, "theta_sd")[[1L]]
-  theta_z  <- rstan::extract(x, "theta_z" )[[1L]]
+  theta_c  <- rstan::extract(x, "theta_c" )[[1L]]
   lm_beta  <- rstan::extract(x, "lm_beta" )[[1L]]
   
   theta_new <- seq(0, 1, length = 1e2L)
   newdata_y_predict <- lapply(
     X = theta_new
-    , FUN = function(x, mean, sd, lm_beta) {
-      theta_z <- (x - mean) / sd
-      theta_z * lm_beta
+    , FUN = function(x, mean, lm_beta) {
+      theta_c <- (x - mean) # / sd
+      theta_c * lm_beta
     }
     , mean = theta_m
-    , sd = theta_sd
+    # , sd = theta_sd
     , lm_beta = lm_beta
   )
   
@@ -86,7 +86,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   }
 }
 
-bayes_factors <- function(x, pars = "lm_beta", ...) {
+bayes_factors <- function(x, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...) {
   pars <- match.arg(pars, choices = c("beta", "lm_beta"), several.ok = FALSE)
   # lm_beta: slopes (MPT parameter predicting EC)
   samples <- rstan::extract(x, pars = pars)[[1L]]
@@ -100,7 +100,7 @@ bayes_factors <- function(x, pars = "lm_beta", ...) {
     }
     , simplify = TRUE
   ))
-  prior_dens_at_0 <- dnorm(0, log = TRUE)
+  prior_dens_at_0 <- dnorm(0, mean = prior_mean, sd = prior_sd, log = TRUE)
   
   data.frame(
     parameter = names(sort(x@parameter_index))
