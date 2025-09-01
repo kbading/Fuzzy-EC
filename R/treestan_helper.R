@@ -1,5 +1,7 @@
 
-plot_regression <- function(x, quantiles = c(.025, .5, .975), pt.col = 1, pt.bg = 1, ...) {
+plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, pt.bg = 1, ...) {
+  
+  if(missing(pars)) pars <- names(x@parameter_index)
   
   three_stats <- function(x, ...) {
     quantile(x, probs = quantiles, names = FALSE)
@@ -40,7 +42,7 @@ plot_regression <- function(x, quantiles = c(.025, .5, .975), pt.col = 1, pt.bg 
   
   par(mfrow = c(2, 3), las = 1)
   palette(wesanderson::wes_palette("Zissou1", n = 3, type = "c"))
-  for(i in 1:6) {
+  for(i in x@parameter_index[pars]) {
     plot.new()
     plot.window(xlim = c(0, 1), ylim = c(-4, 8))
     

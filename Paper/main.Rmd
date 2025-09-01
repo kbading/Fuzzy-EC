@@ -74,6 +74,7 @@ library(MPTinR)
 library(TreeBUGS)
 library(HMMTreeC)
 
+if(!requireNamespace("magick", quietly = FALSE)) install.packages("magick")
 set_sum_contrasts()
 
 r_refs("r-references.bib")
@@ -100,6 +101,7 @@ study_folders <- list(
 
 source(file.path(project_root, "R", "apa_print_treebugs.R"))
 source(file.path(project_root, "R", "mptinr_helper.R"))
+source(file.path(project_root, "R", "treestan_helper.R"))
 
 knitr::opts_chunk$set(
   echo = FALSE
@@ -107,6 +109,8 @@ knitr::opts_chunk$set(
   , message = FALSE
   , cache = FALSE
   , fig.env = "figure*"
+  # , fig.width  = 15
+  # , fig.height =  9
 )
 
 cntr <- function(x, ...){x - mean(x, ...)}
@@ -159,7 +163,7 @@ In the next section, we will add to this critique by showing that affect-as-info
 
 ## Measures of US valence memory are likely affected by US identity memory
 
-```{r}
+```{r cache = TRUE}
 IDs <- 100
 CSs <- 24
 val <- c(rep("positive",12),rep("negative",12))
@@ -270,7 +274,7 @@ To illustrate this point, imagine the same sample of participants now using affe
 
 ## Measures of US identity memory are likely affected by US valence memory
 
-```{r}
+```{r cache = TRUE}
 IDs <- 100
 CSs <- 24
 val <- c(rep("positive",12),rep("negative",12))
@@ -369,7 +373,7 @@ contrasts(data_agg3b$us_valence) <- "contr.sum"
 
 ## Measures of US identity and US valence memory are likely affected by response biases
 
-```{r}
+```{r cache = TRUE}
 IDs <- 100
 CSs <- 24
 val <- c(rep("positive",6),rep("negative",18))
@@ -627,11 +631,11 @@ baseline_restrictions <- list(
 
 hypothesis_restrictions_8b <- list(
   baseline = list()
-  , D_eq0  = list(D = .Machine$double.eps)
-  , Cpos_eq0  = list(C_positive = .Machine$double.eps)
-  , Cneg_eq0  = list(C_negative = .Machine$double.eps)
-  , dpos_eq0  = list(d_positive = .Machine$double.eps)
-  , dneg_eq0  = list(d_negative = .Machine$double.eps)
+  , D_eq0  = list(D = 0)
+  , Cpos_eq0  = list(C_positive = 0)
+  , Cneg_eq0  = list(C_negative = 0)
+  , dpos_eq0  = list(d_positive = 0)
+  , dneg_eq0  = list(d_negative = 0)
   , a_eq.5 = list(a = .5)
   , b_eq.5 = list(b = .5)
   , C_eq  = list(C = c("C_positive", "C_negative"))
@@ -731,11 +735,11 @@ baseline_restrictions <- list(
 
 hypothesis_restrictions_8b <- list(
   baseline = list()
-  , D_eq0  = list(D = .Machine$double.eps)
-  , Cpos_eq0  = list(C_positive = .Machine$double.eps)
-  , Cneg_eq0  = list(C_negative = .Machine$double.eps)
-  , dpos_eq0  = list(d_positive = .Machine$double.eps)
-  , dneg_eq0  = list(d_negative = .Machine$double.eps)
+  , D_eq0  = list(D = 0)
+  , Cpos_eq0  = list(C_positive = 0)
+  , Cneg_eq0  = list(C_negative = 0)
+  , dpos_eq0  = list(d_positive = 0)
+  , dneg_eq0  = list(d_negative = 0)
   , a_eq.5 = list(a = .5)
   , b_eq.5 = list(b = .5)
   , C_eq  = list(C = c("C_positive", "C_negative"))
@@ -761,9 +765,9 @@ baseline_restrictions <- list(
 
 hypothesis_restrictions <- list(
   baseline = list()
-  , D_eq0  = list(D = .Machine$double.eps)
-  , C_eq0  = list(C = .Machine$double.eps)
-  , d_eq0  = list(d = .Machine$double.eps)
+  , D_eq0  = list(D = 0)
+  , C_eq0  = list(C = 0)
+  , d_eq0  = list(d = 0)
   , a_eq.5 = list(a = .5)
   , b_eq.5 = list(b = .5)
 )
@@ -811,91 +815,14 @@ Specifically, the size of the parameter estimate indicates that participants sel
 ### Relationships between evaluative ratings and MPT parameters
 
 ```{r}
-
-exp1_trait_model_ec <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt-with-ec.rds"))
-#summary(exp1_trait_model_ec)
-
-exp1_trait_model <- readRDS(file.path(study_folders$wsw1, "model-objects", "trait-mpt.rds"))
-#summary(exp1_trait_model)
+model <- readRDS(file.path(study_folders$wsw1, "model-objects", "treestan.rds"))
 ```
 
-```{r}
-ratings_and_parameters_ec_long <- merge(
-  data_list_pilot$rating
-  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
-)
-
-ratings_and_parameters_long <- merge(
-  data_list_pilot$rating
-  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
-)
-
-contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
-contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
+```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9}
+par(mfrow = c(2, 3))
+plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 ```
 
-```{r}
-ratings_and_parameters_ec <- merge(
-  data_list_pilot$rating_wide
-  , get_theta(model = exp1_trait_model_ec, data = data_list_pilot$mpt_data_hierarchical)
-)
-
-ratings_and_parameters <- merge(
-  data_list_pilot$rating_wide
-  , get_theta(model = exp1_trait_model, data = data_list_pilot$mpt_data_hierarchical)
-)
-
-both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
-```
-
-```{r}
-model5_exp1 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_long,us_valence%in%c("positive","negative")))
-
-ap_model5_exp1 <- apa_print(model5_exp1)
-#ap_model5_exp1$full_result
-```
-
-```{r}
-#ggeffect(model5_exp1, terms = ~ D:us_valence) |> plot()
-```
-
-```{r}
-#summary(emtrends(model5_exp1,var= "D", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
-#ggeffect(model5_exp1, terms = ~ C:us_valence) |> plot()
-```
-
-```{r}
-#summary(emtrends(model5_exp1,var= "C", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
-#ggeffect(model5_exp1, terms = ~ d:us_valence) |> plot()
-```
-
-```{r}
-#summary(emtrends(model5_exp1,var= "d", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
-# ggeffect(model5_exp1, terms = ~ b:us_valence) |> plot()
-```
-
-```{r}
-# summary(emtrends(model5_exp1,var= "b", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
-# ggeffect(model5_exp1, terms = ~ a:us_valence) |> plot()
-
-```
-
-```{r}
-# summary(emtrends(model5_exp1,var= "a", specs= ~ us_valence),infer=TRUE)
-```
 
 ## Discussion
 
@@ -1060,12 +987,12 @@ hypothesis_restrictions <- list(
   # , dx2_equal = list(d = c("dpos_x2", "dneg_x2"))
   , a_equal = list(a = c("a_x1", "a_x2"))
   , b_equal = list(b = c("b_x1", "b_x2"))
-  , Deval0   = list(D_x1 = .Machine$double.eps)
-  , Dmem0   = list(D_x2 = .Machine$double.eps)
-  , Ceval0   = list(C_x1 = .Machine$double.eps)
-  , Cmem0   = list(C_x2 = .Machine$double.eps)
-  , deval0   = list(d_x1 = .Machine$double.eps)
-  , dmem0   = list(d_x2 = .Machine$double.eps)
+  , Deval0   = list(D_x1 = 0)
+  , Dmem0   = list(D_x2 = 0)
+  , Ceval0   = list(C_x1 = 0)
+  , Cmem0   = list(C_x2 = 0)
+  , deval0   = list(d_x1 = 0)
+  , dmem0   = list(d_x2 = 0)
   , beval5   = list(b_x1 = 0.5)
   , bmem5   = list(b_x2 = 0.5)
   , aeval5   = list(a_x1 = 0.5)
@@ -1119,12 +1046,12 @@ hypothesis_restrictions <- list(
   , d_equal = list(d = c("d_x1", "d_x2"))
   , a_equal = list(a = c("a_x1", "a_x2"))
   , b_equal = list(b = c("b_x1", "b_x2"))
-  , Dage0   = list(D_x1 = .Machine$double.eps)
-  , Dval0   = list(D_x2 = .Machine$double.eps)
-  , Cage0   = list(C_x1 = .Machine$double.eps)
-  , Cval0   = list(C_x2 = .Machine$double.eps)
-  , dage0   = list(d_x1 = .Machine$double.eps)
-  , dval0   = list(d_x2 = .Machine$double.eps)
+  , Dage0   = list(D_x1 = 0)
+  , Dval0   = list(D_x2 = 0)
+  , Cage0   = list(C_x1 = 0)
+  , Cval0   = list(C_x2 = 0)
+  , dage0   = list(d_x1 = 0)
+  , dval0   = list(d_x2 = 0)
   , bage5   = list(b_x1 = 0.5)
   , bval5   = list(b_x2 = 0.5)
   , aage5   = list(a_x1 = 0.5)
