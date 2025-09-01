@@ -386,8 +386,77 @@ dcor <- apa_print(cor.test(para_ratings$dneg,para_ratings$dpos))
 ```
 
 ```{r}
-#create table with bivariate correlations between MPT parameters (overall and split by task order)
+
+fuck <- pivot_longer(para_ratings, cols = c(Cneg, Cpos))
+fuck$us_valence <- ifelse(fuck$name == "Cneg", "negative","positive")
+fuck$C <- fuck$value
+fuck <- fuck[,c("url.srid","order","us_valence","Dn","C","b","a")]
+fuck2 <- pivot_longer(para_ratings, cols = c(dneg, dpos))
+fuck2$us_valence <- ifelse(fuck2$name == "dneg", "negative","positive")
+fuck2$d <- fuck2$value
+fuck2 <- fuck2[,c("url.srid","order","us_valence","d")]
+fuck3 <- merge(fuck,fuck2,by=c("url.srid","order","us_valence"))
+
+rating_cs <- subset(dat,us_valence %in% c("positive","negative"))
+ratings_cs <- rating_cs[,c("url.srid","order","us_valence","cs_rating","cs")]
+fuck4 <- merge(fuck3,rating_cs,by=c("url.srid","order","us_valence"))
+
 ```
+
+```{r}
+library(afex)
+fuck4$cs_rating <- as.numeric(fuck4$cs_rating)
+fuck4$order <- factor(fuck4$order)
+fuck4$us_valence <- factor(fuck4$us_valence)
+contrasts(fuck4$order) <- "contr.sum"
+contrasts(fuck4$us_valence) <- "contr.sum"
+
+cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) }
+
+model_all <- lmer(formula = cs_rating ~ (cntr(Dn)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*us_valence*order + (1|url.srid)
+     , data = fuck4)
+summary(model_all)
+vif(model_all)
+
+ggeffect(model_all, terms = ~ Dn:us_valence) |> plot()
+summary(emtrends(model_all,var= "Dn", specs= ~ us_valence),infer=TRUE)
+ggeffect(model_all, terms = ~ C:us_valence) |> plot()
+summary(emtrends(model_all,var= "C", specs= ~ us_valence),infer=TRUE)
+ggeffect(model_all, terms = ~ d:us_valence) |> plot()
+summary(emtrends(model_all,var= "d", specs= ~ us_valence),infer=TRUE)
+
+ggeffect(model_all, terms = ~ b) |> plot()
+ggeffect(model_all, terms = ~ b:order) |> plot()
+summary(emtrends(model_all,var= "b", specs= ~ order),infer=TRUE)
+
+ggeffect(model_all, terms = ~ Dn:order) |> plot()
+summary(emtrends(model_all,var= "Dn", specs= ~ order),infer=TRUE)
+```
+
+
+
+
+
+```{r}
+model_all2 <- lmer(formula = cs_rating ~ (cntr(Dn)*cntr(C)*cntr(d))*us_valence*order + (1|url.srid)
+     , data = fuck4)
+summary(model_all2)
+
+ggeffect(model_all, terms = ~ Dn:us_valence) |> plot()
+summary(emtrends(model_all,var= "Dn", specs= ~ us_valence),infer=TRUE)
+ggeffect(model_all, terms = ~ C:us_valence) |> plot()
+summary(emtrends(model_all,var= "C", specs= ~ us_valence),infer=TRUE)
+ggeffect(model_all, terms = ~ d:us_valence) |> plot()
+summary(emtrends(model_all,var= "d", specs= ~ us_valence),infer=TRUE)
+
+ggeffect(model_all, terms = ~ b) |> plot()
+ggeffect(model_all, terms = ~ b:order) |> plot()
+summary(emtrends(model_all,var= "b", specs= ~ order),infer=TRUE)
+
+ggeffect(model_all, terms = ~ Dn:order) |> plot()
+summary(emtrends(model_all,var= "Dn", specs= ~ order),infer=TRUE)
+```
+
 
 ### Evaluative Conditioning effects
 
@@ -425,7 +494,7 @@ para_ratings$a.c <- cntr(para_ratings$a)
 para_ratings$D.c <- cntr(para_ratings$Dn)
 
 model3 <- lm(
-  formula = ec ~ (D.c + Cpn.c + dpos.c + dneg.c + b.c + a.c)*order
+  formula = ec ~ (D.c + Cpn.c + dpn.c + b.c + a.c)*order
   , data = para_ratings
 )
 
@@ -449,7 +518,7 @@ apa_table(xxx,align = c("l","r","r","r","r","r","r"), escape = FALSE,caption = "
 ```{r}
 
 model3 <- lm(
-  formula = mean_eval ~ (D.c + Cpos.c + Cneg.c + dpos.c + dneg.c + b.c + a.c)*order
+  formula = ec ~ (D.c + Cpos.c + Cneg.c + dpos.c + dneg.c)
   , data = para_ratings
 )
 

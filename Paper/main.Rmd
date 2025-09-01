@@ -135,7 +135,8 @@ In this vein, the present research is aimed at providing a refined perspective o
 In the remainder of this article is structured as follows.
 Firstly, we identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC.
 Secondly, we introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory.
-Thirdly, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
+Thirdly, we present three experiments showing how the MPT model can be estimated in the context of standard EC procedures.
+Taken together, these experiments demonstrate the suitability and power of the proposed model for studying the cognitive foundations of EC.
 
 # Common measures of CS-US pairing memory and their shortcomings
 
@@ -148,16 +149,348 @@ The typical format for measuring US identity memory is thus forced-choice recogn
 Memory for the US valence is usually measured in one of two ways: either by recoding responses from the US identity memory task (in terms of their valence) or by implementing a separate procedure in which US valence memory is probed directly.
 In a typical example for such a procedure, participants are presented with individual CSs and asked to indicate, for a given CS, whether it had been paired with positive or negative stimuli during the learning phase.
 For cases in which such US valence memory is not available, participants may be instructed to guess the correct valence or be provided with an additional "I don't know" option.
-The chance level in a typical measure of US valence memory is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that in measures of US identity memory (assuming that more than two response options are presented).
+The chance level in a typical measure of US valence memory is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that in typical measures of US identity memory (assuming that more than two response options are presented).
 
-As explained by @pleyers_aware_2007, the relationships between EC and CS-US pairing memory may be analyzed at the level of participants or at the level of individual CSs.
-When discussing the problematic aspects of the previously introduced measures we will therefore distinguish between these two levels of analysis.
+Though widely used, the previous measures have been criticized before.
+Most importantly, Hütter et al. (2012) explained that standard measures of US valence memory may be affected by a phenomenon called affect-as-information.
+Affect-as-information happens when participants cannot remember the valence of the previously paired US and then rely on their affective reaction towards the CS to select a response in the US valence memory task.
+As shown by Hütter et al. (2021), affect-as-information may create artifactual correlations between measures of US valence memory and EC effects, resulting in a bias against empirical demonstrations of EC without memory for the CS-US pairings.
+In the next section, we will add to this critique by showing that affect-as-information (as a source of responding in measures of US identity and US valence memory) also interferes with separating the respective contributions of different types of pairing memory in the emergence of EC.
 
 ## Measures of US valence memory are likely affected by US identity memory
 
+```{r}
+IDs <- 100
+CSs <- 24
+val <- c(rep("positive",12),rep("negative",12))
+z_USid <- rnorm(IDs,0,1)
+z_USval <- rnorm(IDs,0,1)
+
+ID_vector <- rep(1:IDs,each = CSs)
+CS_vector <- rep(1:CSs,IDs)
+val_vector <- rep(val,IDs)
+USid_vector <- rep(z_USid,each = CSs)
+USval_vector <- rep(z_USval,each = CSs)
+
+sim_data <- data.frame(id = ID_vector
+                       , cs = CS_vector
+                       , us_valence = val_vector
+                       , p_USid = pnorm(USid_vector)
+                       , p_USval = 0
+                       )
+
+for(i in 1:nrow(sim_data)){
+  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
+  sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
+}
+
+sim_data$cs_rating <- NA
+sim_data$USid_guess <- NA
+sim_data$USval_guess <- NA
+sim_data$USid_resp <- NA
+sim_data$USval_resp <- NA
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$USid_mem[i]==0){
+    sim_data$USval_guess[i] <- rbinom(1,1,0)#rbinom(1,1,0.5)
+    if(sim_data$USval_guess[i]==1){
+      sim_data$USid_guess[i] <- rbinom(1,1,.25)
+    }
+    if(sim_data$USval_guess[i]==0){
+      sim_data$USid_guess[i] <- 0
+    }
+  }
+  if(sim_data$USid_mem[i]==1){
+    sim_data$USval_guess[i] <- 0
+    sim_data$USid_guess[i] <- 0
+  }
+}
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- 1
+    sim_data$USval_resp[i] <- 1
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- 1
+    sim_data$USval_resp[i] <- 1
+  }
+  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+}
+
+eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
+USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
+USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
+data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
+data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
+
+data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
+contrasts(data_agg3b$us_valence) <- "contr.sum"
+#summary(lm(data=data_agg3b, cs_rating ~ us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
+```
+
+A first shortcoming in current pairing measures is the fact that
+US valence is perfectly inferable from US identity.
+This implies that, in the presence of US identity memory, indicators of US valence memory may serve as manipulation checks (for interpreting the specific US as intended by the experimenter), but cannot be taken to measure an independent form of pairing memory.
+
+To illustrate this point, imagine a sample of participants who each formed US identity memory for the majority of CSs presented during the learning phase.
+In the CS evaluation measure, these participant then use their US identity memory to derive CS evaluations, resorting to unbiased guessing whenever they cannot remember the previously paired US.
+In the two measures of CS-US pairing memory, the participants give correct responses whenever US identity memory is present (using their recollection of the correct US to infer the correct valence) and resort to unbiased guessing whenever US identity memory is absent.
+As long as guessing processes are uncorrelated across measures (CS evaluation, US identity memory, US valence memory), such a sample will produce a strong (non-perfect) correlation between the two memory measures as well as comparably strong (non-perfect) correlations between either memory measure and the measure of CS evaluation.
+Importantly, the multicollinearity between the two memory measures will make it statistically impossible to reveal the underlying relationship between EC effects and US identity memory (e.g., in a linear regression predicting CS evaluation from US valence and the two memory measures).
+
+When guessing is performed independently across measures, the inferability of US valence from US identity will thus undermine evidence for the role of US identity memory in the emergence of EC.
+Matters are worse, however, when guessed responses are in fact correlated across measures (e.g., due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by evidence for a non-existing relationship between EC effects of US valence memory.
+To illustrate this point, imagine the same sample of participants now using affect-as-information to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
+
 ## Measures of US identity memory are likely affected by US valence memory
 
+```{r}
+IDs <- 100
+CSs <- 24
+val <- c(rep("positive",12),rep("negative",12))
+z_USid <- rnorm(IDs,0,1)
+z_USval <- rnorm(IDs,0,1)
+
+ID_vector <- rep(1:IDs,each = CSs)
+CS_vector <- rep(1:CSs,IDs)
+val_vector <- rep(val,IDs)
+USid_vector <- rep(z_USid,each = CSs)
+USval_vector <- rep(z_USval,each = CSs)
+
+sim_data <- data.frame(id = ID_vector
+                       , cs = CS_vector
+                       , us_valence = val_vector
+                       , p_USid = 0
+                       , p_USval = pnorm(USval_vector)
+                       )
+
+for(i in 1:nrow(sim_data)){
+  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
+  sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
+}
+
+sim_data$cs_rating <- NA
+sim_data$USid_guess <- NA
+sim_data$USval_guess <- NA
+sim_data$USid_resp <- NA
+sim_data$USval_resp <- NA
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$USval_mem[i]==0){
+    sim_data$USval_guess[i] <- rbinom(1,1,0.5)
+    if(sim_data$USval_guess[i]==1){
+      sim_data$USid_guess[i] <- rbinom(1,1,.25)
+    }
+    if(sim_data$USval_guess[i]==0){
+      sim_data$USid_guess[i] <- 0
+    }
+  }
+  if(sim_data$USval_mem[i]==1){
+    sim_data$USval_guess[i] <- 0
+    sim_data$USid_guess[i] <- rbinom(1,1,.25)
+  }
+}
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- 1
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- 1
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+}
+
+eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
+USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
+USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
+data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
+data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
+
+data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
+contrasts(data_agg3b$us_valence) <- "contr.sum"
+#summary(lm(data=data_agg3b, cs_rating ~ us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
+#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
+```
+
 ## Measures of US identity and US valence memory are likely affected by response biases
+
+```{r}
+IDs <- 100
+CSs <- 24
+val <- c(rep("positive",6),rep("negative",18))
+z_USid <- rnorm(IDs,0,1)
+z_USvalpos <- rnorm(IDs,0.5,1)
+z_USvalneg <- rnorm(IDs,-0.5,1)
+
+ID_vector <- rep(1:IDs,each = CSs)
+CS_vector <- rep(1:CSs,IDs)
+val_vector <- rep(val,IDs)
+USid_vector <- rep(z_USid,each = CSs)
+USvalpos_vector <- rep(z_USvalpos,each = CSs)
+USvalneg_vector <- rep(z_USvalneg,each = CSs)
+
+sim_data <- data.frame(id = ID_vector
+                       , cs = CS_vector
+                       , us_valence = val_vector
+                       , p_USid = 0
+                       , p_USvalpos = pnorm(USvalpos_vector)
+                       , p_USvalneg = pnorm(USvalneg_vector)
+                       )
+
+mean(sim_data$p_USvalpos)
+mean(sim_data$p_USvalneg)
+
+for(i in 1:nrow(sim_data)){
+  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
+  if(sim_data$us_valence[i]=="positive"){
+    sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USvalpos)
+  }
+  if(sim_data$us_valence[i]=="negative"){
+    sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USvalneg)
+  }
+}
+
+sim_data$cs_rating <- NA
+sim_data$USid_guess <- NA
+sim_data$USval_guess <- NA
+sim_data$USid_resp <- NA
+sim_data$USval_resp <- NA
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$USval_mem[i]==0){
+    if(sim_data$us_valence[i]=="positive"){
+      sim_data$USval_guess[i] <- rbinom(1,1,.2)
+    }
+    if(sim_data$us_valence[i]=="negative"){
+      sim_data$USval_guess[i] <- rbinom(1,1,.8)
+    }
+    if(sim_data$USval_guess[i]==1){
+      sim_data$USid_guess[i] <- rbinom(1,1,.25)
+    }
+    if(sim_data$USval_guess[i]==0){
+      sim_data$USid_guess[i] <- 0
+    }
+  }
+  if(sim_data$USval_mem[i]==1){
+    sim_data$USval_guess[i] <- 0
+    sim_data$USid_guess[i] <- rbinom(1,1,.25)
+  }
+}
+
+for(i in 1:nrow(sim_data)){
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- 1
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- 1
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
+    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+  
+  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
+    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+  }
+}
+
+eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
+USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
+USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
+data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
+data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
+
+data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
+
+# apa_barplot(data_agg3b
+#             , id = "id"
+#             , dv = "USid_resp"
+#             , factors = c("us_valence"))
+# 
+# apa_barplot(sim_data
+#             , id = "id"
+#             , dv = "USval_resp"
+#             , factors = c("us_valence"))
+# 
+# apa_barplot(sim_data
+#             , id = "id"
+#             , dv = "USval_mem"
+#             , factors = c("us_valence"))
+```
 
 ## Measures of US identity and US valence memory are likely affected by CS recognition memory
 
@@ -835,26 +1168,13 @@ model_comparisons
 ```{r}
 exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
 summary(exp2_trait_model)
-# 
-exp2_trait_model_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-with-ec.rds"))
-summary(exp2_trait_model_ec)
 
 exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
 summary(exp2_trait_model_8b)
 plotParam(exp2_trait_model_8b)
-
-exp2_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
-summary(exp2_trait_model_8b_ec)
-plotParam(exp2_trait_model_8b_ec)
 ```
 
-
 ```{r}
-ratings_and_parameters_ec_long <- merge(
-  data_list_exp2$rating
-  , get_theta(model = exp2_trait_model_ec, data = data_list_exp2$mpt_data_hierarchical)
-)
-
 ratings_and_parameters_long <- merge(
   data_list_exp2$rating
   , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
@@ -869,57 +1189,27 @@ ratings_and_parameters_8b_long <- merge(
     C <- ifelse(us_valence == "positive", C_positive, C_negative)
   })
 
-ratings_and_parameters_8b_long_ec <- merge(
-  data_list_exp2$rating
-  , get_theta(exp2_trait_model_8b_ec, data = data_list_exp2$mpt_data_hierarchical)
-  )|>
-  within({
-    d <- ifelse(us_valence == "positive", d_positive, d_negative)
-    C <- ifelse(us_valence == "positive", C_positive, C_negative)
-  })
-
-contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
 contrasts(ratings_and_parameters_8b_long$us_valence) <- "contr.sum"
-contrasts(ratings_and_parameters_8b_long_ec$us_valence) <- "contr.sum"
 
-contrasts(ratings_and_parameters_ec_long$task_order) <- "contr.sum"
 contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
 contrasts(ratings_and_parameters_8b_long$task_order) <- "contr.sum"
-contrasts(ratings_and_parameters_8b_long_ec$task_order) <- "contr.sum"
 ```
 
 ```{r}
-ratings_and_parameters_ec <- merge(
-  data_list_exp2$rating_wide
-  , get_theta(model = exp2_trait_model_ec, data = data_list_exp2$mpt_data_hierarchical)
-)
-
 ratings_and_parameters <- merge(
   data_list_exp2$rating_wide
   , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
 )
-
-both <- merge(ratings_and_parameters_ec,ratings_and_parameters, by = c("sid"))
-
-cor.test(both$D.x,both$D.y)
-# t.test(both$D.x,both$D.y)
-# 
-cor.test(both$C.x,both$C.y)
-# t.test(both$C.x,both$C.y)
-# 
-cor.test(both$d.x,both$d.y)
-# t.test(both$d.x,both$d.y)
-# 
-cor.test(both$b.x,both$b.y)
-# t.test(both$b.x,both$b.y)
-# 
-cor.test(both$a.x,both$a.y)
-# t.test(both$a.x,both$a.y)
 ```
 
 ```{r}
-model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_order + (1|sid)
+model1 <- stats::lm(ec_effect ~ (cntr(D) + cntr(C) + cntr(d) + cntr(b) + cntr(a))+task_order, data = ratings_and_parameters)
+summary(model1)
+```
+
+```{r}
+model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + task_order + (1|sid)
            , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
 
 ap_model5_exp2 <- apa_print(model5_exp2)
@@ -927,11 +1217,23 @@ ap_model5_exp2$full_result
 ```
 
 ```{r}
-ggeffect(model5_exp2, terms = ~ b:task_order) |> plot()
+model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + task_order + us_valence:task_order + (1|sid)
+           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
+
+ap_model5_exp2 <- apa_print(model5_exp2)
+ap_model5_exp2$full_result
 ```
 
 ```{r}
-summary(emtrends(model5_exp2,var= "b", specs= ~ task_order),infer=TRUE)
+model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
+           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
+
+ap_model5_exp2 <- apa_print(model5_exp2)
+ap_model5_exp2$full_result
+```
+
+```{r}
+ggeffect(model5_exp2, terms = ~ b) |> plot()
 ```
 
 ```{r}
@@ -939,23 +1241,11 @@ ggeffect(model5_exp2, terms = ~ D:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp2,var= "D", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
 ggeffect(model5_exp2, terms = ~ C:us_valence) |> plot()
 ```
 
 ```{r}
-summary(emtrends(model5_exp2,var= "C", specs= ~ us_valence),infer=TRUE)
-```
-
-```{r}
 ggeffect(model5_exp2, terms = ~ d:us_valence) |> plot()
-```
-
-```{r}
-summary(emtrends(model5_exp2,var= "d", specs= ~ us_valence),infer=TRUE)
 ```
 
 ## Discussion
