@@ -151,14 +151,14 @@ For each CS, participants are asked to select the correct (i.e., previously pair
 For cases in which US identity memory is absent, participants may be instructed to guess the correct option or be provided with an additional "I don't know" option.
 The typical format for measuring US identity memory is thus forced-choice recognition with a chance level equal to the inverse of the number of response options (USs).
 
-Memory for the US valence is usually measured in one of two ways: either by recoding responses from the US identity memory task (in terms of their valence) or by implementing a separate procedure in which US valence memory is probed directly.
+Memory for the US valence is usually measured in one of two ways: either by recoding responses from the US identity measure (in terms of their valence) or by implementing a separate procedure in which US valence memory is probed directly.
 In a typical example for such a procedure, participants are presented with individual CSs and asked to indicate, for a given CS, whether it had been paired with positive or negative stimuli during the learning phase.
 For cases in which such US valence memory is not available, participants may be instructed to guess the correct valence or be provided with an additional "I don't know" option.
-The chance level in a typical measure of US valence memory is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that in typical measures of US identity memory (assuming that more than two response options are presented).
+The chance level in a typical US valence measure is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that in typical US identity measures (assuming that more than two response options are presented).
 
 Though widely used, the previous measures have been criticized before.
 Most importantly, Hütter et al. (2012) explained that standard measures of US valence memory may be affected by a phenomenon called affect-as-information.
-Affect-as-information happens when participants cannot remember the valence of the previously paired US and then rely on their affective reaction towards the CS to select a response in the US valence memory task.
+Affect-as-information happens when participants cannot remember the valence of the previously paired US and then rely on their affective reaction towards the CS to select a response in the US valence measure.
 As shown by Hütter et al. (2021), affect-as-information may create artifactual correlations between measures of US valence memory and EC effects, resulting in a bias against empirical demonstrations of EC without memory for the CS-US pairings.
 In the next section, we will add to this critique by showing that affect-as-information (as a source of responding in measures of US identity and US valence memory) also interferes with separating the respective contributions of different types of pairing memory in the emergence of EC.
 
@@ -266,12 +266,20 @@ This implies that, in the presence of US identity memory, indicators of US valen
 To illustrate this point, imagine a sample of participants who each formed US identity memory for the majority of CSs presented during the learning phase.
 In the CS evaluation measure, these participant then use their US identity memory to derive CS evaluations, resorting to unbiased guessing whenever they cannot remember the previously paired US.
 In the two measures of CS-US pairing memory, the participants give correct responses whenever US identity memory is present (using their recollection of the correct US to infer the correct valence) and resort to unbiased guessing whenever US identity memory is absent.
-As long as guessing processes are uncorrelated across measures (CS evaluation, US identity memory, US valence memory), such a sample will produce a strong (non-perfect) correlation between the two memory measures as well as comparably strong (non-perfect) correlations between either memory measure and the measure of CS evaluation.
-Importantly, the multicollinearity between the two memory measures will make it statistically impossible to reveal the underlying relationship between EC effects and US identity memory (e.g., in a linear regression predicting CS evaluation from US valence and the two memory measures).
+As long as guessing processes are uncorrelated across measures (CS evaluation, US identity, US valence), such a sample will produce a strong (non-perfect) correlation between the two memory measures as well as comparably strong (non-perfect) correlations between either memory measure and the measure of CS evaluation.
+Importantly, the multicollinearity between the two memory measures will make it statistically impossible to reveal the underlying relationship between EC effects and US identity memory (e.g., in a linear regression predicting CS evaluations from US valence and the two memory measures).
 
-When guessing is performed independently across measures, the inferability of US valence from US identity will thus undermine evidence for the role of US identity memory in the emergence of EC.
-Matters are worse, however, when guessed responses are in fact correlated across measures (e.g., due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by evidence for a non-existing relationship between EC effects of US valence memory.
-To illustrate this point, imagine the same sample of participants now using affect-as-information to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
+When CS evaluation and memory measures are affected by independent guessing processes, the inferability of US valence from US identity thus undermines evidence for the role of US identity memory in the emergence of EC.
+Importantly, matters are even worse when guessing processes are correlated across measures (e.g., due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by artifactual evidence for a relationship between EC effects and US valence memory.
+To illustrate this point, imagine the sample of participants now using the same pre-existing attitudes (towards the CSs) to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
+In the measure of US valence memory, there is a one-to-one mapping of a pre-existing attitude onto a single response option in the measurement task, resulting in a strong correlation between CS evaluations and memory responses driven by affect-as-information.
+In the measure of US identity memory, however, the pre-existing attitude can be mapped onto several USs that match its valence, so that selecting the correct US (via guessing) is only possible when pre-existing attitude and US happen to have the same valence.
+As a consequence of this one-to-many mapping (of pre-existing attitude onto response options in the measurement task), the subset of CS without US identity memory will show a weaker correlation between CS evaluations and the US identity measure than between CS evaluations and the US valence measure.
+
+
+
+the difference between these two correlations (among CSs without US identity memory) will create an advantage for the US valence measure (in explaining EC effects), 
+
 
 ## Measures of US identity memory are likely affected by US valence memory
 
@@ -538,9 +546,9 @@ The images were taken from xxx.
 
 As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
 The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
-The positive and negative images differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
-For each participant, 12 randomly selected face images (50% female) served as positively paired CSs (i.e., they were paired with a positive US during the learning phase), 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images served as distractor stimuli in the test phase.
+For each participant, 12 randomly selected face images (50% female) served as positively paired CSs, 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face (50% female) images served as distractor stimuli in the test phase.
 
 For each participant, all 24 images served as USs during the learning phase. 
 The 24 images were randomly assigned to the 24 CSs.
@@ -1033,7 +1041,7 @@ wesanderson::wes_palette("Zissou1", n = 3, type = "c") |>
 
 ```{r}
 model_comparisons <- compare(models)
-model_comparisons
+#model_comparisons
 ```
 
 ```{r}
@@ -1090,95 +1098,10 @@ wesanderson::wes_palette("Zissou1", n = 3, type = "c") |>
 
 ```{r}
 model_comparisons <- compare(models)
-model_comparisons
+#model_comparisons
 ```
 
 ### Relationships between evaluative ratings and MPT parameters
-
-```{r}
-exp2_trait_model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
-summary(exp2_trait_model)
-
-exp2_trait_model_8b <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
-summary(exp2_trait_model_8b)
-plotParam(exp2_trait_model_8b)
-```
-
-```{r}
-ratings_and_parameters_long <- merge(
-  data_list_exp2$rating
-  , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
-)
-
-ratings_and_parameters_8b_long <- merge(
-  data_list_exp2$rating
-  , get_theta(exp2_trait_model_8b, data = data_list_exp2$mpt_data_hierarchical)
-  )|>
-  within({
-    d <- ifelse(us_valence == "positive", d_positive, d_negative)
-    C <- ifelse(us_valence == "positive", C_positive, C_negative)
-  })
-
-contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-contrasts(ratings_and_parameters_8b_long$us_valence) <- "contr.sum"
-
-contrasts(ratings_and_parameters_long$task_order) <- "contr.sum"
-contrasts(ratings_and_parameters_8b_long$task_order) <- "contr.sum"
-```
-
-```{r}
-ratings_and_parameters <- merge(
-  data_list_exp2$rating_wide
-  , get_theta(model = exp2_trait_model, data = data_list_exp2$mpt_data_hierarchical)
-)
-```
-
-```{r}
-model1 <- stats::lm(ec_effect ~ (cntr(D) + cntr(C) + cntr(d) + cntr(b) + cntr(a))+task_order, data = ratings_and_parameters)
-summary(model1)
-```
-
-```{r}
-model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + task_order + (1|sid)
-           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
-
-ap_model5_exp2 <- apa_print(model5_exp2)
-ap_model5_exp2$full_result
-```
-
-```{r}
-model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + task_order + us_valence:task_order + (1|sid)
-           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
-
-ap_model5_exp2 <- apa_print(model5_exp2)
-ap_model5_exp2$full_result
-```
-
-```{r}
-model5_exp2 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence + (1|sid)
-           , data = subset(ratings_and_parameters_8b_long,us_valence%in%c("positive","negative")))
-
-ap_model5_exp2 <- apa_print(model5_exp2)
-ap_model5_exp2$full_result
-```
-
-```{r}
-ggeffect(model5_exp2, terms = ~ b) |> plot()
-```
-
-```{r}
-ggeffect(model5_exp2, terms = ~ D:us_valence) |> plot()
-```
-
-```{r}
-ggeffect(model5_exp2, terms = ~ C:us_valence) |> plot()
-```
-
-```{r}
-ggeffect(model5_exp2, terms = ~ d:us_valence) |> plot()
-```
-
-### Stan model
 
 ```{r}
 model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "treestan.rds"))
@@ -1390,58 +1313,6 @@ Finally, participants were debriefed about the purpose of the study and then red
 ### Data processing and statistical analysis
 
 ## Results
-
-```{r}
-exp3_trait_model <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt.rds"))
-
-exp3_trait_model_8b <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b.rds"))
-
-exp3_trait_model_ec <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-with-ec.rds"))
-
-exp3_trait_model_8b_ec <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "trait-mpt-wsw-8b-with-ec.rds"))
-
-# exp3pilot_trait_model <- readRDS(file.path(study_folders$wsw3_p2, "model-objects", "trait-mpt.rds"))
-# 
-# exp3pilot_trait_model_8b <- readRDS(file.path(study_folders$wsw3_p2, "model-objects", "trait-mpt-wsw-8b.rds"))
-
-# exp3joint_trait_model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "trait-mpt.rds"))
-# exp3joint_trait_model_8b <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "trait-mpt-wsw-8b.rds"))
-```
-
-```{r}
-summary(exp3_trait_model)
-summary(exp3_trait_model_8b)
-```
-
-```{r}
-ratings_and_parameters_ec_long <- merge(
-  data_list$rating
-  , get_theta(model = exp3_trait_model_ec, data = data_list$mpt_data_hierarchical)
-)
-
-ratings_and_parameters_long <- merge(
-  data_list$rating
-  , get_theta(model = exp3_trait_model, data = data_list$mpt_data_hierarchical)
-)
-
-contrasts(ratings_and_parameters_ec_long$us_valence) <- "contr.sum"
-contrasts(ratings_and_parameters_long$us_valence) <- "contr.sum"
-contrasts(ratings_and_parameters_ec_long$task_focus) <- "contr.sum"
-contrasts(ratings_and_parameters_long$task_focus) <- "contr.sum"
-```
-
-```{r}
-model_exp3 <- afex::lmer(evaluative_rating ~ (cntr(D)+cntr(C)+cntr(d)+cntr(b)+cntr(a))*us_valence*task_focus + (1|sid)
-           , data = ratings_and_parameters_ec_long)
-ap_model_exp3 <- apa_print(model_exp3)
-ap_model_exp3$table
-```
-
-```{r}
-summary(emtrends(model_exp3,var= "C", specs= ~ us_valence),infer=TRUE)
-```
-
-## Stan model
 
 ```{r}
 model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
