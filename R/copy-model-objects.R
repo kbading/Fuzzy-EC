@@ -5,4 +5,4 @@ new_names <- paste0(
   "~/sciebo/most-amazing-woman-in-the-world/Fuzzy-EC/"
   , gsub(model_objects, pattern = "studies/|model-objects/", replacement = "")
 )
-file.copy(model_objects, new_names)
+file.copy(model_objects, new_names, overwrite = TRUE)
