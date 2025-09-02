@@ -162,7 +162,7 @@ Affect-as-information happens when participants cannot remember the valence of t
 As shown by Hütter et al. (2021), affect-as-information may create artifactual correlations between measures of US valence memory and EC effects, resulting in a bias against empirical demonstrations of EC without memory for the CS-US pairings.
 In the next section, we will add to this critique by showing that affect-as-information (as a source of responding in measures of US identity and US valence memory) also interferes with separating the respective contributions of different types of pairing memory in the emergence of EC.
 
-## Measures of US valence memory are likely affected by US identity memory
+## US valence can be inferred from US identity
 
 ```{r cache = TRUE}
 IDs <- 100
@@ -215,7 +215,7 @@ for(i in 1:nrow(sim_data)){
   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,0.5,1)
     sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1
+    sim_data$USval_resp[i] <- 1 #rbinom(1,1,.5)
   }
   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,0.5,1)
@@ -231,7 +231,7 @@ for(i in 1:nrow(sim_data)){
   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
     sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1
+    sim_data$USval_resp[i] <- 1 #rbinom(1,1,.5)
   }
   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
@@ -253,10 +253,10 @@ data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
 
 data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
 contrasts(data_agg3b$us_valence) <- "contr.sum"
-#summary(lm(data=data_agg3b, cs_rating ~ us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
+# summary(lm(data=data_agg3b, cs_rating ~ us_valence))
+# summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
+# summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
+# summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
 ```
 
 A first shortcoming in current pairing measures is the fact that
@@ -267,21 +267,19 @@ To illustrate this point, imagine a sample of participants who each formed US id
 In the CS evaluation measure, these participant then use their US identity memory to derive CS evaluations, resorting to unbiased guessing whenever they cannot remember the previously paired US.
 In the two measures of CS-US pairing memory, the participants give correct responses whenever US identity memory is present (using their recollection of the correct US to infer the correct valence) and resort to unbiased guessing whenever US identity memory is absent.
 As long as guessing processes are uncorrelated across measures (CS evaluation, US identity, US valence), such a sample will produce a strong (non-perfect) correlation between the two memory measures as well as comparably strong (non-perfect) correlations between either memory measure and the measure of CS evaluation.
-Importantly, the multicollinearity between the two memory measures will make it statistically impossible to reveal the underlying relationship between EC effects and US identity memory (e.g., in a linear regression predicting CS evaluations from US valence and the two memory measures).
+Importantly, the multicollinearity between the two memory measures will make it statistically impossible to separate the respective contributions of the two types of pairing memory (e.g., in a linear regression predicting CS evaluations from US valence and the two memory measures), thereby concealing the perfect association between genuine EC effects and memory for the US identity.
 
 When CS evaluation and memory measures are affected by independent guessing processes, the inferability of US valence from US identity thus undermines evidence for the role of US identity memory in the emergence of EC.
-Importantly, matters are even worse when guessing processes are correlated across measures (e.g., due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by artifactual evidence for a relationship between EC effects and US valence memory.
-To illustrate this point, imagine the sample of participants now using the same pre-existing attitudes (towards the CSs) to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
+Importantly, matters are even worse when guessing processes are correlated across measures (e.g., due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by artifactual evidence for an association between EC effects and US valence memory.
+To illustrate this point, imagine the sample of participants now using their pre-existing attitudes (towards the CSs) to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
 In the measure of US valence memory, there is a one-to-one mapping of a pre-existing attitude onto a single response option in the measurement task, resulting in a strong correlation between CS evaluations and memory responses driven by affect-as-information.
-In the measure of US identity memory, however, the pre-existing attitude can be mapped onto several USs that match its valence, so that selecting the correct US (via guessing) is only possible when pre-existing attitude and US happen to have the same valence.
+In the measure of US identity memory, however, the pre-existing attitude can be mapped onto several USs (those with the same valence as the pre-existing attitude), so that selecting the correct US involves an additional guessing process (on top of affect-as-information).
 As a consequence of this one-to-many mapping (of pre-existing attitude onto response options in the measurement task), the subset of CS without US identity memory will show a weaker correlation between CS evaluations and the US identity measure than between CS evaluations and the US valence measure.
+When mixed with CSs for which US identity memory is present, CSs without US identity memory will thus add variance in the dependent variable (CS evaluations) that is more strongly correlated with the US valence measure than with the US identity measure (whereas, among CS with US identity memory, variance in CS evaluations is equally correlated with both memory measures).
+In a linear regression including both memory measures as predictors, this data structure will result in a strong association between EC effects and the US valence measure, while nullifying the statistical relationship between EC effects and the CS identity measure.
+When combined with affect-as-information, the inferability of US valence from US identity thus poses a serious methodological problem: even if every genuinely conditioned CS evaluation is based on US identity memory, statistical analyses will suggest that US valence memory is the sole predictor of EC.
 
-
-
-the difference between these two correlations (among CSs without US identity memory) will create an advantage for the US valence measure (in explaining EC effects), 
-
-
-## Measures of US identity memory are likely affected by US valence memory
+## US valence memory can be used for guessing US identity
 
 ```{r cache = TRUE}
 IDs <- 100
@@ -405,8 +403,8 @@ sim_data <- data.frame(id = ID_vector
                        , p_USvalneg = pnorm(USvalneg_vector)
                        )
 
-mean(sim_data$p_USvalpos)
-mean(sim_data$p_USvalneg)
+#mean(sim_data$p_USvalpos)
+#mean(sim_data$p_USvalneg)
 
 for(i in 1:nrow(sim_data)){
   sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
@@ -724,16 +722,11 @@ sd_nop <- round(sd(exp1_ratings_agg2$`no pairing`),2)
 exp1_posdist <- apa_print(t.test(exp1_ratings_agg2$positive,exp1_ratings_agg2$`no pairing`,paired=TRUE,alternative="greater"))
 exp1_negdist <- apa_print(t.test(exp1_ratings_agg2$negative,exp1_ratings_agg2$`no pairing`,paired=TRUE,alternative="less"))
 
-#effectsize::cohens_d(exp1_ec)
+#effectsize::cohens_d(t.test(exp1_ratings_agg2$positive,exp1_ratings_agg2$negative,paired=TRUE,alternative="greater"))
 ```
 
-Evaluative ratings for CSs and distractor stimuli were analyzed using paired-samples *t*-tests.
 The mean rating for positively paired CSs was higher than the mean rating for negatively paired CSs ($M_{positive}=$ `r mean_pos`, $SD_{positive}=$ `r sd_pos`; $M_{negative}=$ `r mean_neg`, $SD_{negative}=$ `r sd_neg`).
-The mean difference (i.e., the mean EC effect) reached significance in a one-tailed test, `r exp1_posneg$full_result`.
-The mean rating for positively paired CSs was also higher than the mean rating for unpaired distractor stimuli ($M_{distractor}=$ `r mean_nop`, $SD_{distractor}=$ `r sd_nop`).
-However, the mean difference failed to reach significance even in a one-tailed test, `r exp1_posdist$full_result`.
-Finally, the mean rating for negatively paired CSs was lower than the mean rating for unpaired distractor stimuli.
-The mean difference was again non-significant even in a one-tailed test, `r exp1_negdist$full_result`.
+The mean difference (i.e., the mean EC effect) was small in size, $d_{Cohen}=.26$, and reached significance only in a one-tailed test, `r exp1_posneg$full_result`.
 
 ### MPT model analyses
 
@@ -890,9 +883,7 @@ The nonwords were taken from a previous EC study (Stahl & Bading, 2020).
 For each participant, 24 nonwords were randomly selected to serve as CSs during the learning phase.
 Another 24 nonwords were randomly selected to serve as distractor stimuli in the test phase.
 
-As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
-The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), 12 images were positive ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) were therefore used as positive USs, while 12 were negative ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$) and were thus used as negative USs. Positive and negative USs differed with regard valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
-For each participant, the 24 USs were combined one-to-one with the 24 CSs (via random assignment).
+As USs, we used the same 24 images as in Experiment 1.
 
 ### Measures and procedures
 We used JATOS [@lange_just_2015] to run the study online.
@@ -1315,12 +1306,12 @@ Finally, participants were debriefed about the purpose of the study and then red
 ## Results
 
 ```{r}
-model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
+#model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
 ```
 
 ```{r warning = FALSE, fig.cap = "Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
-par(mfrow = c(2, 3))
-plot_regression(model, pars = c("D", "C", "d", "a", "b"))
+# par(mfrow = c(2, 3))
+# plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 
 # bayes_factors(model)
 ```
