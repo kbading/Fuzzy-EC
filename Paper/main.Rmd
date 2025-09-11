@@ -92,7 +92,8 @@ study_folder_main <- file.path(
 )
 
 study_folders <- list(
-    wsw1 = file.path(project_root, "studies", "wsw1")
+  paper = file.path(project_root, "Paper")
+  , wsw1 = file.path(project_root, "studies", "wsw1")
   , wsw2_main = file.path(project_root, "studies", "wsw2-main")
   , wsw3_main = file.path(project_root, "studies", "wsw3-main")
   , wsw3_p2   = file.path(project_root, "studies", "wsw3-p2")
@@ -565,6 +566,15 @@ Similarly, the effects of experimental procedures that prevent conscious process
 However, since current memory measures do not distinguish between lack of CS recognition memory and lack of CS-US pairing memory, response data from these measures may erroneously suggest that evaluative judgment tasks, suppression of conscious processing and resource depletion (as well as many other manipulations) moderate EC effects via targeted changes in CS-US pairing memory.
 
 # A multinomial processing tree model for memory involved in evaluative conditioning
+
+```{r bla, out.width="100%"}
+knitr::include_graphics(file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2.pdf"))
+```
+
+```{r bla2, out.width="100%"}
+knitr::include_graphics(file.path(study_folders$paper,"dist.pdf"))
+```
+
 As explained above, current measures of CS-US pairing memory possess a number of shortcomings that have negative implications for investigating a wide range of research questions.
 To obtain conclusive answers to these questions, improved methods for measuring EC-related memory are therefore needed.
 Fortunately, the identified shortcomings are not unique to measures of CS-US pairing memory.
@@ -584,7 +594,7 @@ The memory task is administered after the learning phase and combines a CS recog
 On each trial of the memory task, participants are presented with a CS (from the learning phase) or with an unpaired distractor (not included in the learning phase) and are asked to indicate whether or not the presented stimulus was included in the previous learning phase.
 Whenever participants decide that a given stimulus was included in the learning phase, they are presented with a set of positive and negative USs and are asked to select the previously paired stimulus.
 
-As illustrated in Figure 1,
+As illustrated in Figures 1 and 2,
 
 <!-- As illustrated in Figure 1, the adapted MPT model consists of three model trees and includes five types of parameters ($D$, $C$, $d$, $a$ and $b$) all of which may, in principle, take different values in each of the three model trees -->
 
