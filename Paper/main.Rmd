@@ -753,6 +753,20 @@ We then compared this 7-parameter model with a more restrictive 5-parameter mode
 There was no significant difference in model fit between the two models, `r exp1$full_result$fiveparam`.
 We therefore decided to report the simpler 5-parameter model.
 
+Finally, we explored the relationships between MPT model parameters and individual EC effects (calculated as the difference between the mean evaluative rating for positively paired CSs and the mean evaluative rating for negatively paired CSs).
+Using the probabilistic programming language *Stan* [@carpenter_stan_2017], 
+we implemented a joint model of (1) participant-wise frequency distributions of the joint memory index and (2) individual EC effects.
+The first part of the joint model accounts for the memory data and is a hierarchical latent-trait version  [cf., @klauer_hierarchical_2010] of the 5-parameter MPT model described above. The second part of the model is a multiple linear regression model in which individual EC effects serve as the criterion variable and individual parameter estimates from the first part of the model serve as predictors.
+<!-- Compared with previous studies that used a two-step procedure where -->
+To the best of our knowledge, we are the first to use such a joint modeling approach in EC research.
+In previous studies, similar analyses were carried out using a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken__2020] in which point estimates (from the latent-trait model) are used to predict individual EC effects.
+Such an approach is potentially problematic, because
+using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each parameter,
+thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
+Using point estimates to predict EC effects may therefore lead to biased conclusions about the statistical relationships between MPT parameters and individual EC\ effects.
+To avoid such biases, we decided to use a joint-modeling approach which allows to account for uncertainty in MPT parameter estimates when quantifying the relationships between these MPT parameters and individual EC effects.
+
+
 ```{r}
 exp1_ratings <- data_list_pilot$rating
 exp1_ratings_sd <- aggregate(exp1_ratings,evaluative_rating ~ sid, FUN = sd) # 1 x sd = 0 --> sid = 43
