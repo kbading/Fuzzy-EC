@@ -29,6 +29,7 @@ model <- TreeStan::fit_mpt(
   , refresh = if(interactive()) 100 else 0
 )
 # shinystan::launch_shinystan(model)
+dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan.rds"))
 # par(mfrow = c(2, 3))
 # plot_regression(model, pt.col = "grey90", pt.bg = mpt_data_hierarchical$task_order)
