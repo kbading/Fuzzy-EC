@@ -3,7 +3,7 @@ title             : "Measuring memory involved in evaluative conditioning: a mul
 shorttitle        : "Memory in evaluative conditioning"
 
 author: 
-  - name          : "Karoline Bading"
+  - name          : "Karoline Corinna Bading"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
     address       : "Schleichstraße 4, 72074 Tübingen (Germany)"
@@ -38,7 +38,7 @@ affiliation:
 
 
 abstract: |
-  The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
+  The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC. The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
 
   <!-- https://tinyurl.com/ybremelq -->
   
@@ -129,10 +129,10 @@ As a tool for studying the cognitive processes involved in attitude formation, t
 Over the years, these two fields of research have produced a large and diverse set of EC accounts (e.g., Levey & Martin,
 1975; Baeyens, Eelen, Crombez, & Van den Bergh, 1992; Jones, Fazio, & Olson, 2009; Walther, Gawronski, Blank, &
 Langer, 2009; De Houwer, 2018; Gawronski & Bodenhausen, 2018; Stahl & Aust, 2018; Walther, Halbweisen & Blast, 2018).
-Despite their many differences, most of these accounts share a core idea: one way or another, they all give central importance to the formation and retrieval of memory for the CS-US pairings as the cognitive foundation for the emergence of EC.
+Despite their many differences, most of these accounts share a core idea: one way or another, they all view memory for the CS-US pairings as the cognitive foundation of EC.
 Based on a widely cited meta-analysis [@hofmann_evaluative_2010], this shared assumption seems to be well founded: pairing memory (as a proxy of contingency awareness) was found to be the strongest moderator of EC.
 
-In early research, pairing memory was mainly understood as associative memory for the specific US that had been paired with a given CS [e.g., @baeyens_contingency_1990; Walther & Nagengast, 2006].
+In early research, pairing memory was conceptualized as associative memory for the specific US that had been paired with a given CS [e.g., @baeyens_contingency_1990; Walther & Nagengast, 2006].
 However, as explained by @stahl_evaluative_2009, such US identity memory is not the only form of pairing memory that might be relevant for EC: instead of (or in addition to) being built on memory for the previously paired USs, EC effects may also stem from memory for the valence of these stimuli [@stahl_respective_2009-1].
 This seminal distinction between memory for the US identity and memory for the US valence is important in EC research for multiple reasons.
 On the methodological side, US valence memory is less specific and thus more exhaustive than US identity memory, making it the more suitable construct for testing the intriguing possibility of EC without memory for the CS-US pairings (Hütter et al., 2012; Stahl et al., 2009; Shanks and St. John, 1994).
@@ -200,7 +200,7 @@ sim_data$USval_resp <- NA
 
 for(i in 1:nrow(sim_data)){
   if(sim_data$USid_mem[i]==0){
-    sim_data$USval_guess[i] <- rbinom(1,1,0)#rbinom(1,1,0.5)
+    sim_data$USval_guess[i] <- rbinom(1,1,0.5) 
     if(sim_data$USval_guess[i]==1){
       sim_data$USid_guess[i] <- rbinom(1,1,.25)
     }
@@ -218,15 +218,15 @@ for(i in 1:nrow(sim_data)){
   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,0.5,1)
     sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1 #rbinom(1,1,.5)
+    sim_data$USval_resp[i] <- 1
   }
   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$cs_rating[i] <- rnorm(1,0,1) #rnorm(1,0.5,1) # 
     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
   }
   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,-0.5,1) #
     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
   }
@@ -234,15 +234,15 @@ for(i in 1:nrow(sim_data)){
   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
     sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1 #rbinom(1,1,.5)
+    sim_data$USval_resp[i] <- 1
   }
   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,-0.5,1) #
     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
   }
   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,0.5,1) #
     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
   }
@@ -254,12 +254,27 @@ USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
 data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
 data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
 
-data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
-contrasts(data_agg3b$us_valence) <- "contr.sum"
+# data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
+# contrasts(data_agg3b$us_valence) <- "contr.sum"
 # summary(lm(data=data_agg3b, cs_rating ~ us_valence))
 # summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
 # summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
 # summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
+# obj <- lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence)
+# car::vif(obj)
+```
+
+```{r}
+# cor.test(data_agg3b$USid_resp,data_agg3b$USval_resp)
+# pos <- subset(data_agg3b,us_valence=="positive")
+# cor.test(pos$cs_rating,pos$USid_resp)
+# cor.test(pos$cs_rating,pos$USval_resp)
+# 
+# pos <- subset(data_agg3b,us_valence=="negative")
+# cor.test(pos$cs_rating,pos$USid_resp)
+# cor.test(pos$cs_rating,pos$USval_resp)
+# 
+# ccc <- split(data_agg3b,data_agg3b$us_valence)
 ```
 
 A first shortcoming in current pairing memory measures is the fact that US valence is perfectly inferable from US identity.
@@ -268,7 +283,7 @@ This implies that, in the presence of US identity memory, indicators of US valen
 To illustrate this point, imagine a sample of participants who each formed US identity memory for the majority of CSs presented during the learning phase.
 In the CS evaluation measure, these participants then use their US identity memory to derive CS evaluations, resorting to unbiased guessing whenever they cannot remember the previously paired US.
 In the two measures of CS-US pairing memory, the participants give correct responses whenever US identity memory is present (using their recollection of the correct US to infer the correct valence) and resort to unbiased guessing whenever US identity memory is absent.
-As long as guessing processes are uncorrelated across measures (CS evaluation, US identity, US valence), such a sample will produce a positive correlation between the two memory measures as well as comparably strong (positive) correlations between either memory measure and the measure of CS evaluation.
+As long as guessing processes are uncorrelated across memory and evaluation measures, such a sample will produce a positive correlation between the two memory measures as well as comparably strong (positive) correlations between either memory measure and the measure of CS evaluation.
 Importantly, the multicollinearity between the two memory measures will make it statistically impossible to separate the respective contributions of the two types of pairing memory (e.g., in a linear regression predicting CS evaluations from US valence and the two memory measures), thereby concealing the perfect association between genuine EC effects and memory for the US identity.
 
 When CS evaluation and memory measures are affected by independent guessing processes, the inferability of US valence from US identity thus undermines evidence for the role of US identity memory in the emergence of EC effects.
@@ -572,29 +587,49 @@ knitr::include_graphics(file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2.pd
 ```
 
 ```{r bla2, out.width="100%"}
-knitr::include_graphics(file.path(study_folders$paper,"dist.pdf"))
+knitr::include_graphics(file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2bb.pdf"))
 ```
 
 As explained above, current measures of CS-US pairing memory possess a number of shortcomings that have negative implications for investigating a wide range of research questions.
 To obtain conclusive answers to these questions, improved methods for measuring EC-related memory are therefore needed.
 Fortunately, the identified shortcomings are not unique to measures of CS-US pairing memory.
 Instead, they show structural equivalence with the shortcomings of similar memory measures that have been overcome in previous research [e.g., @bayen_source_1996; @klauer_who_1998].
-
-@klauer_who_1998 proposed an MPT model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
+Most importantly, @klauer_who_1998 proposed an MPT model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
 In the "Who said what?" paradigm, participants listen to tape-recorded statements that are made by different individuals from two social groups (e.g., people with black vs. white skin).
 In the subsequent measure of social categorization, participants are presented with individual statements and have to select the correct speaker from a set of response options that include individuals from both groups. 
 In its structure, this memory measure bears obvious resemblance to US identity measures in which participants are presented with individual CSs and have to select the correct US from a set of positive and negative response options.
 Moreover, standard usage of this memory measure involves the recoding of the selected speakers in terms of their social group, thereby mirroring US valence measures that result from recoding the selected USs in terms of their valence.
 Finally, and in line with many US identity and US valence measures, the memory measure in the "Who said what?" paradigm does not include response options for indicating that a given statement or its speaker cannot be remembered (making it equally prone to confounding with recognition memory and to bias from response tendencies towards certain response options).
-
-Based on the structural similarities between measures, we considered the possibility that the problems involved in the measurement of CS-US pairing memory could be overcome with the same tool that was introduced to solve the problems connected to the measurement of social categorization (for further details, see Klauer & Wegener, 1998).
+Based on these structural similarities, we considered the possibility that the problems involved in the measurement of CS-US pairing memory can be overcome with the same tool that solves the problems connected to the measurement of social categorization (for further details, see Klauer & Wegener, 1998).
 We therefore decided to adapt the MPT model for the "Who said what?" paradigm to the purpose of measuring different forms of EC-related memory.
-To this aim, we designed a two-step memory task that provides the response data required for the estimation of the adapted MPT model.
-The memory task is administered after the learning phase and combines a CS recognition measure with a contingent measure of CS-US pairing memory.
-On each trial of the memory task, participants are presented with a CS (from the learning phase) or with an unpaired distractor (not included in the learning phase) and are asked to indicate whether or not the presented stimulus was included in the previous learning phase.
-Whenever participants decide that a given stimulus was included in the learning phase, they are presented with a set of positive and negative USs and are asked to select the previously paired stimulus.
 
-As illustrated in Figures 1 and 2,
+To estimate the (adapted) MPT model, we developed a two-step memory task that mirrors the measurement procedure used by @klauer_who_1998 to estimate the original model.
+The memory task is administered after the learning phase and combines a CS recognition measure with a contingent measure of CS-US pairing memory.
+On each trial of the memory task, participants are presented with a CS (from the learning phase) or with an unpaired distractor (not included in the learning phase) and are asked to indicate whether or not the presented stimulus was included in the previous learning phase (as part of a stimulus pair).
+In this CS recognition task, participants are presented with two response options: "old" for stimuli that had been included in the learning phase and "new" for stimuli that had not been included.
+Whenever participants select the "old" response (for a given CS or distractor),
+they perform an additional US memory task.
+In this task, participants are presented with a set of USs and are asked to select the previously paired stimulus (or to guess whenever they cannot remember the correct response option).
+Note that, on each trial the US memory task, positive and negative USs are shown in equal numbers (including the correct US whenever participants select the "old" response for an actual CS).
+
+As illustrated in Figures 1 and 2, the MPT model consists of three trees (one for positively paired CSs, one for negatively paired CSs and one for unpaired distractors) and explains response data from the two-step memory task (for the three stimulus types) through a total of six MPT parameters: $D$, $C$, $d$, $b$, $a$ and $g$.
+These MPT parameters represent the (conditional or unconditional) probabilities of the cognitive states that determine responses in the two-step memory task (see rectangles on the right-hand side of Figures 1 and 2).
+To illustrate the relationships between MPT parameters and cognitive states, Figures 1 and 2 show each MPT parameter next to the branch that leads to the cognitive state whose probability it represents (see ellipses in Figures 1 and 2).
+
+In the MPT model, CS recognition memory is measured by the $D$ parameter which represents the unconditional probability to recognize the CSs (as old) and to detect the distractors (as new). 
+By estimating this parameter, the MPT model de-confounds CS recognition and CS-US pairing memory, thereby overcoming the fourth of the previously discussed shortcomings in standard memory measures.
+To measure US identity memory, the MPT model includes the $C$ parameter which represents the conditional probability to remember the previously paired US given that the CS was recognized as old.
+Moreover, US valence memory is measured by the $d$ parameter which represents the conditional probability to remember the correct US valence given that (a) the CS was recognized as old and (b) the previously paired US could not be remembered.
+By estimating US valence memory in the subset of (recognized) CSs without US identity memory, the MPT model avoids the first of the previously discussed shortcomings (that US valence may be inferred from US identity) and thereby ensures that the $d$ parameter (as the model's measure of US valence memory) represents an independent form of CS-US pairing memory.
+The second shortcoming (that US valence may be used to guess US identity) is solved by the $g$ parameter, which represents the conditional probability of guessing the correct US when the US valence can be remembered.
+(Note that in a typical application, this probability is not treated as a freely estimated parameter but simply set equal to the inverse of the number of response options per US valence in the US memory task.)
+Finally, the MPT model also estimates response tendencies in the CS recognition and US memory tasks.
+For the CS recognition task, the MPT model includes the $b$ parameter which represents the conditional probability for guessing "old" given that a CS (distractor) was not recognized as old (detected as new).
+For the US memory task, the $a$ parameter measures the probability for guessing that a CS or distractor had been paired with a positive US.
+By estimating this parameter, the MPT model avoids bias from response tendencies towards positive (or negative) response options, thereby overcoming the third of the previously discussed shortcomings.
+(Note that for CSs recognized or guessed as old, the guessed valence may be identical to the correct US valence. For these cases, the probability of guessing the correct US is again represented by the $g$ parameter.)
+
+<!-- As indicated by different subscripts (e.g., $D_{pos}$ vs. $D_{neg}$), the MPT parameters may in principle take different numerical values in each of the three model trees, representing the idea that cognitive states may have different probabilities for different stimulus types. -->
 
 <!-- As illustrated in Figure 1, the adapted MPT model consists of three model trees and includes five types of parameters ($D$, $C$, $d$, $a$ and $b$) all of which may, in principle, take different values in each of the three model trees -->
 
@@ -756,9 +791,9 @@ exp1 <- apa_print(compare(models_8b))
 ```
 
 Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with the R package *HMMTreeC*.
-We implemented different versions of the MPT model 
+We implemented different versions of the MPT model.
 In all versions, the $g$ parameter was set to $.25$ (corresponding to the inverse of the number of response options per US valence in the US memory task).
-To allow for potential memory differences across US valence conditions, we first fitted a model variant that included separate $C$ and $d$ parameters for positively vs. negative paired CSs (next to joint $D$, $b$ and $a$ parameters).
+To allow for potential memory differences across US valence conditions, we first fitted a model variant that included separate $C$ and $d$ parameters for positively vs. negatively paired CSs (next to joint $D$, $b$ and $a$ parameters).
 We then compared this 7-parameter model with a more restrictive 5-parameter model in which $C$ and $d$ parameters were set equal across US valence conditions.
 There was no significant difference in model fit between the two models, `r exp1$full_result$fiveparam`.
 We therefore decided to report the simpler 5-parameter model.
@@ -767,15 +802,14 @@ Finally, we explored the relationships between MPT model parameters and individu
 Using the probabilistic programming language *Stan* [@carpenter_stan_2017], 
 we implemented a joint model of (1) participant-wise frequency distributions of the joint memory index and (2) individual EC effects.
 The first part of the joint model accounts for the memory data and is a hierarchical latent-trait version  [cf., @klauer_hierarchical_2010] of the 5-parameter MPT model described above. The second part of the model is a multiple linear regression model in which individual EC effects serve as the criterion variable and individual parameter estimates from the first part of the model serve as predictors.
-<!-- Compared with previous studies that used a two-step procedure where -->
-To the best of our knowledge, we are the first to use such a joint modeling approach in EC research.
-In previous studies, similar analyses were carried out using a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken__2020] in which point estimates (from the latent-trait model) are used to predict individual EC effects.
-Such an approach is potentially problematic, because
+
+To the best of our knowledge, we are the first to use such a joint-modeling approach in EC research.
+In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken__2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
+Such an approach is potentially problematic because
 using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each parameter,
 thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
 Using point estimates to predict EC effects may therefore lead to biased conclusions about the statistical relationships between MPT parameters and individual EC\ effects.
 To avoid such biases, we decided to use a joint-modeling approach which allows to account for uncertainty in MPT parameter estimates when quantifying the relationships between these MPT parameters and individual EC effects.
-
 
 ```{r}
 exp1_ratings <- data_list_pilot$rating
