@@ -27,6 +27,7 @@ model <- TreeStan::fit_mpt(
   , refresh = if(interactive()) 1e2L else 0L
 )
 # shinystan::launch_shinystan(model)
+dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan.rds"))
 # par(mfrow = c(2, 3))
 # plot_regression(model, pt.col = "grey90")

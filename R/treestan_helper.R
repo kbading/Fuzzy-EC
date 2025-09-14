@@ -86,12 +86,11 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   }
 }
 
-bayes_factors <- function(x, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...) {
-  pars <- match.arg(pars, choices = c("beta", "lm_beta"), several.ok = FALSE)
+bayes_factors <- function(x, y, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...) {
+  pars <- match.arg(pars, choices = c("beta", "lm_beta", "lm_zbeta"), several.ok = FALSE)
   # lm_beta: slopes (MPT parameter predicting EC)
   samples <- rstan::extract(x, pars = pars)[[1L]]
   
-
   log_dens_at_0 <- t(apply(
     samples
     , MARGIN = seq_along(dim(samples))[-1L]
@@ -100,12 +99,51 @@ bayes_factors <- function(x, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...
     }
     , simplify = TRUE
   ))
-  prior_dens_at_0 <- dnorm(0, mean = prior_mean, sd = prior_sd, log = TRUE)
   
-  data.frame(
-    parameter = names(sort(x@parameter_index))
-    , term    = rep(colnames(x@standata$X), each = length(x@parameter_index))
-    , BF_01   = as.numeric(exp(log_dens_at_0 - prior_dens_at_0))
-    , BF_10   = as.numeric(exp(prior_dens_at_0 - log_dens_at_0))
+  if(missing(y) || is.null(y)) {
+    prior_dens_at_0 <- dnorm(0, mean = prior_mean, sd = prior_sd, log = TRUE)
+  } else {
+    samples <- rstan::extract(y, pars = pars)[[1L]]
+    
+    prior_dens_at_0 <- t(apply(
+      samples
+      , MARGIN = seq_along(dim(samples))[-1L]
+      , FUN = function(x) {
+        logspline::dlogspline(logspline::logspline(x), q = 0, log = TRUE)
+      }
+      , simplify = TRUE
+    ))
+  }
+  
+  if(identical(pars, "beta")) {
+    term <- rep(colnames(x@standata$X), each = length(x@parameter_index))  
+  } else {
+    term <- "slope"
+  }
+  
+  
+  structure(
+    data.frame(
+      parameter = names(sort(x@parameter_index))
+      , term    = term
+      , BF_01   = as.numeric(exp(log_dens_at_0 - prior_dens_at_0))
+      , BF_10   = as.numeric(exp(prior_dens_at_0 - log_dens_at_0))
+      , log_BF_10 = as.numeric(prior_dens_at_0 - log_dens_at_0)
+    )
+    , class = c("treestan_bfs", "data.frame")
   )
 }
+
+
+apa_print.treestan_bfs <- function(x, ...) {
+  x$parameter <- factor(x$parameter, levels = unique(x$parameter))
+  split(x, x$parameter, lex.order = FALSE) |>
+    lapply(function(x){
+      label <- ifelse(x$log_BF_10 < 0, "\\mathit{BF}_{01}", "\\mathit{BF}_{10}")
+      statistic <- ifelse(x$log_BF_10 < 0, exp(-x$log_BF_10), exp(x$log_BF_10))
+      statistic <- ifelse(statistic > 1000, "> 1,000", apa_num(statistic, digits = 2L))
+      
+      paste0("$", label, " ", papaja::add_equals(statistic), "$")
+    })
+}
+ 

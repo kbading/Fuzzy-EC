@@ -8,6 +8,7 @@ models = $(patsubst %, studies/%/model-objects/trait-mpt.rds, $(studies))
 extended_models = $(patsubst %, studies/%/model-objects/trait-mpt-with-ec.rds, $(studies))
 wsw8b_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b.rds, $(studies))
 wsw8b_with_ec_models = $(patsubst %, studies/%/model-objects/trait-mpt-wsw-8b-with-ec.rds, $(studies))
+treestan_models = $(patsubst %, studies/%/model-objects/treestan.rds, $(studies))
 
 all:	$(results) README.md studies/wsw2-main/model-objects/waic-wsw-8b.rds
 
@@ -39,6 +40,10 @@ $(wsw8b_models): %model-objects/trait-mpt-wsw-8b.rds: %R/trait-mpt-wsw-8b.R %dat
 	
 $(wsw8b_with_ec_models): %model-objects/trait-mpt-wsw-8b-with-ec.rds: %R/trait-mpt-wsw-8b-with-ec.R %data/data.rds
 	@echo "Estimating latent-trait MPT model $@ from $^"
+	R -f '$<'
+
+$(treestan_models): %model-objects/treestan.rds: %R/treestan.R %data/data.rds
+	@echo "Estimating TreeStan model $@ from $^"
 	R -f '$<'
 
 # data files (reverse chronological order) ----

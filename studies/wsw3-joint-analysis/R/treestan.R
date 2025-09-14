@@ -21,4 +21,5 @@ model <- TreeStan::fit_mpt(
   , refresh = if(interactive()) 100 else 0
 )
 
+dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan.rds"))
