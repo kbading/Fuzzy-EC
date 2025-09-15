@@ -4,7 +4,8 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   if(missing(pars)) pars <- names(x@parameter_index)
   
   three_stats <- function(x, ...) {
-    quantile(x, probs = quantiles, names = FALSE)
+    qs <- quantile(x, probs = quantiles, names = FALSE)
+    c(qs[1L], mean(x), qs[3L])
   }
   
   y_marginalized <- rstan::extract(x, "y_marginalized")[[1L]] |>
