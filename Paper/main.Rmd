@@ -168,92 +168,92 @@ In the next section, we will add to this critique by showing that affect-as-info
 ## US valence may be inferred from US identity
 
 ```{r cache = TRUE}
-IDs <- 100
-CSs <- 24
-val <- c(rep("positive",12),rep("negative",12))
-z_USid <- rnorm(IDs,0,1)
-z_USval <- rnorm(IDs,0,1)
-
-ID_vector <- rep(1:IDs,each = CSs)
-CS_vector <- rep(1:CSs,IDs)
-val_vector <- rep(val,IDs)
-USid_vector <- rep(z_USid,each = CSs)
-USval_vector <- rep(z_USval,each = CSs)
-
-sim_data <- data.frame(id = ID_vector
-                       , cs = CS_vector
-                       , us_valence = val_vector
-                       , p_USid = pnorm(USid_vector)
-                       , p_USval = 0
-                       )
-
-for(i in 1:nrow(sim_data)){
-  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
-  sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
-}
-
-sim_data$cs_rating <- NA
-sim_data$USid_guess <- NA
-sim_data$USval_guess <- NA
-sim_data$USid_resp <- NA
-sim_data$USval_resp <- NA
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$USid_mem[i]==0){
-    sim_data$USval_guess[i] <- rbinom(1,1,0.5) 
-    if(sim_data$USval_guess[i]==1){
-      sim_data$USid_guess[i] <- rbinom(1,1,.25)
-    }
-    if(sim_data$USval_guess[i]==0){
-      sim_data$USid_guess[i] <- 0
-    }
-  }
-  if(sim_data$USid_mem[i]==1){
-    sim_data$USval_guess[i] <- 0
-    sim_data$USid_guess[i] <- 0
-  }
-}
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0,1) #rnorm(1,0.5,1) # 
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,-0.5,1) #
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- 1
-    sim_data$USval_resp[i] <- 1
-  }
-  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,-0.5,1) #
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,0,1)#rnorm(1,0.5,1) #
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-}
-
-eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
-USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
-USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
-data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
-data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
-
+# IDs <- 100
+# CSs <- 24
+# val <- c(rep("positive",12),rep("negative",12))
+# z_USid <- rnorm(IDs,0,1)
+# z_USval <- rnorm(IDs,0,1)
+# 
+# ID_vector <- rep(1:IDs,each = CSs)
+# CS_vector <- rep(1:CSs,IDs)
+# val_vector <- rep(val,IDs)
+# USid_vector <- rep(z_USid,each = CSs)
+# USval_vector <- rep(z_USval,each = CSs)
+# 
+# sim_data <- data.frame(id = ID_vector
+#                        , cs = CS_vector
+#                        , us_valence = val_vector
+#                        , p_USid = pnorm(USid_vector)
+#                        , p_USval = 0
+#                        )
+# 
+# for(i in 1:nrow(sim_data)){
+#   sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
+#   sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
+# }
+# 
+# sim_data$cs_rating <- NA
+# sim_data$USid_guess <- NA
+# sim_data$USval_guess <- NA
+# sim_data$USid_resp <- NA
+# sim_data$USval_resp <- NA
+# 
+# for(i in 1:nrow(sim_data)){
+#   if(sim_data$USid_mem[i]==0){
+#     sim_data$USval_guess[i] <- rbinom(1,1,0.5) 
+#     if(sim_data$USval_guess[i]==1){
+#       sim_data$USid_guess[i] <- rbinom(1,1,.25)
+#     }
+#     if(sim_data$USval_guess[i]==0){
+#       sim_data$USid_guess[i] <- 0
+#     }
+#   }
+#   if(sim_data$USid_mem[i]==1){
+#     sim_data$USval_guess[i] <- 0
+#     sim_data$USid_guess[i] <- 0
+#   }
+# }
+# 
+# for(i in 1:nrow(sim_data)){
+#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
+#     sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+#     sim_data$USid_resp[i] <- 1
+#     sim_data$USval_resp[i] <- rbinom(1,1,0.5)#1
+#   }
+#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
+#     sim_data$cs_rating[i] <- rnorm(1,0,1) #rnorm(1,0.5,1) # 
+#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+#   }
+#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
+#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)#rnorm(1,0,1)# #
+#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+#   }
+#   
+#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
+#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+#     sim_data$USid_resp[i] <- 1
+#     sim_data$USval_resp[i] <- rbinom(1,1,0.5)#1
+#   }
+#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
+#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)#rnorm(1,0,1)# #
+#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+#   }
+#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
+#     sim_data$cs_rating[i] <- rnorm(1,0.5,1)#rnorm(1,0,1)# #
+#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
+#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
+#   }
+# }
+# 
+# eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
+# USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
+# USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
+# data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
+# data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
+# 
 # data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
 # contrasts(data_agg3b$us_valence) <- "contr.sum"
 # summary(lm(data=data_agg3b, cs_rating ~ us_valence))
@@ -275,6 +275,222 @@ data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
 # cor.test(pos$cs_rating,pos$USval_resp)
 # 
 # ccc <- split(data_agg3b,data_agg3b$us_valence)
+```
+
+
+```{r cache = TRUE}
+# IDs <- 200
+# CSs <- 48
+# val <- c(rep("positive",12),rep("negative",12),rep("unpaired",24))
+# z_CSrec <- rnorm(IDs,.5,1)
+# z_USid <- rnorm(IDs,.5,1)
+# z_USval <- rnorm(IDs,.5,1)
+# z_ECwm <- rnorm(IDs,.5,1)
+# z_gold <- rnorm(IDs,0,.25)
+# z_gpos <- rnorm(IDs,0,.25)
+# 
+# ID_vector <- rep(1:IDs,each = CSs)
+# CS_vector <- rep(1:CSs,IDs)
+# val_vector <- rep(val,IDs)
+# USid_vector <- rep(z_USid,each = CSs)
+# USval_vector <- rep(z_USval,each = CSs)
+# CSrec_vector <- rep(z_CSrec,each = CSs)
+# ECwm_vector <- rep(z_ECwm,each = CSs)
+# gold_vector <- rep(z_gold,each = CSs)
+# gpos_vector <- rep(z_gpos,each = CSs)
+# 
+# sim_data <- data.frame(id = ID_vector
+#                        , cs = CS_vector
+#                        , us_valence = val_vector
+#                        , p_USid = pnorm(USid_vector)
+#                        , p_USval = 0
+#                        , p_CSrec = pnorm(CSrec_vector)
+#                        , p_ECwm = pnorm(ECwm_vector)
+#                        , p_gold = pnorm(gold_vector)
+#                        , p_gpos = pnorm(gpos_vector)
+#                        )
+# 
+# for(i in 1:nrow(sim_data)){
+#   sim_data$CSrec_mem[i] <- rbinom(1,1,sim_data$p_CSrec[i])
+#   sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
+#   sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
+#   sim_data$ECwm[i] <- rbinom(1,1,sim_data$p_ECwm[i])
+#   sim_data$gold[i] <- rbinom(1,1,sim_data$p_gold[i])
+#   sim_data$gpos[i] <- rbinom(1,1,sim_data$p_gpos[i])
+# }
+# 
+# sim_data$cs_rating <- NA
+# sim_data$USid_guess <- NA
+# sim_data$USval_guess <- NA
+# #sim_data$old_guess <- NA
+# #sim_data$pos_guess <- NA
+# sim_data$USid_resp <- NA
+# sim_data$USval_resp <- NA
+# sim_data$CSrec_resp <- NA
+# 
+# for(i in 1:nrow(sim_data)){
+#   if(sim_data$CSrec_mem[i]==0){
+#     if(sim_data$gold[i]==0){
+#       sim_data$CSrec_resp[i] <- "new"
+#       sim_data$USval_resp[i] <- ""
+#       sim_data$USid_resp[i]  <- ""
+#       sim_data$cs_rating[i] <- rnorm(1,0,1)
+#     }
+#     if(sim_data$gold[i]==1){
+#       if(sim_data$gpos[i]==1){
+#         if(sim_data$us_valence[i]=="positive"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "pos"
+#           tmp <- rbinom(1,1,0.25)
+#           sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#         if(sim_data$us_valence[i]=="negative"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "pos"
+#           sim_data$USid_resp[i]  <- "incor"
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#         if(sim_data$us_valence[i]=="unpaired"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "pos"
+#           sim_data$USid_resp[i]  <- "incor"
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#       }
+#       if(sim_data$gpos[i]==0){
+#         if(sim_data$us_valence[i]=="negative"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "neg"
+#           tmp <- rbinom(1,1,0.25)
+#           sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#         if(sim_data$us_valence[i]=="positive"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "neg"
+#           sim_data$USid_resp[i]  <- "incor"
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#         if(sim_data$us_valence[i]=="unpaired"){
+#           sim_data$CSrec_resp[i] <- "old"
+#           sim_data$USval_resp[i] <- "neg"
+#           sim_data$USid_resp[i]  <- "incor"
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#         }
+#       }
+#     }
+#   }
+#   if(sim_data$CSrec_mem[i]==1){
+#     if(sim_data$us_valence[i]=="unpaired"){
+#           sim_data$CSrec_resp[i] <- "new"
+#           sim_data$USval_resp[i] <- ""
+#           sim_data$USid_resp[i]  <- ""
+#           sim_data$cs_rating[i] <- rnorm(1,0,1)
+#     }
+#     if(sim_data$us_valence[i]=="positive"){
+#       sim_data$CSrec_resp[i] <- "old"
+#       if(sim_data$USid_mem[i]==1){
+#         sim_data$USval_resp[i] <- "pos"
+#         sim_data$USid_resp[i]  <- "cor"
+#         sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==1){
+#         sim_data$USval_resp[i] <- "pos"
+#         tmp <- rbinom(1,1,0.25)
+#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#         sim_data$cs_rating[i] <- rnorm(1,0.5,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==1){
+#         sim_data$USval_resp[i] <- "pos"
+#         tmp <- rbinom(1,1,0.25)
+#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#         sim_data$cs_rating[i] <- rnorm(1,0,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==0){
+#         sim_data$USval_resp[i] <- "neg"
+#         sim_data$USid_resp[i]  <- "incor"
+#         sim_data$cs_rating[i] <- rnorm(1,0,1)
+#       }
+#     }
+#     if(sim_data$us_valence[i]=="negative"){
+#       sim_data$CSrec_resp[i] <- "old"
+#       if(sim_data$USid_mem[i]==1){
+#         sim_data$USval_resp[i] <- "neg"
+#         sim_data$USid_resp[i]  <- "cor"
+#         sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==1){
+#         sim_data$USval_resp[i] <- "neg"
+#         tmp <- rbinom(1,1,0.25)
+#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#         sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==0){
+#         sim_data$USval_resp[i] <- "neg"
+#         tmp <- rbinom(1,1,0.25)
+#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
+#         sim_data$cs_rating[i] <- rnorm(1,0,1)
+#       }
+#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==1){
+#         sim_data$USval_resp[i] <- "pos"
+#         sim_data$USid_resp[i]  <- "incor"
+#         sim_data$cs_rating[i] <- rnorm(1,0,1)
+#       }
+#     }
+#   }
+# }
+# sim_data$us_val <- ifelse(sim_data$us_valence=="positive","PosUS",ifelse(sim_data$us_valence=="negative","NegUS","New"))
+# sim_data$CSrec_resp <- ifelse(sim_data$CSrec_resp=="old","",sim_data$CSrec_resp)
+# sim_data$mpt_resp <- paste0(sim_data$us_val,sim_data$CSrec_resp,sim_data$USval_resp,sim_data$USid_resp)
+# 
+# dataKB <- as.data.frame(unclass(table(sim_data$id,sim_data$mpt_resp)))
+# dataKB$id <-rownames(dataKB)
+# 
+# eval_agg3b <- aggregate(subset(sim_data,us_valence!="unpaired"),FUN=mean,cs_rating~id*us_valence)
+# eval_agg3b <- reshape2::dcast(eval_agg3b,value.var = "cs_rating",id ~ us_valence)
+# eval_agg3b$ec <- eval_agg3b$positive - eval_agg3b$negative
+# 
+# dataKB <- merge(dataKB,eval_agg3b,by=c("id"))
+```
+
+```{r}
+# mpt_data <- dataKB[,2:12]
+# 
+# MPTinR::check.mpt("WSW_pilot_hierarchical.eqn")
+# 
+# WSWpilot = traitMPT(
+#   eqnfile = "WSW_pilot_hierarchical.eqn"
+#   , data = mpt_data
+#   , n.iter   = 4e3
+#   , n.adapt  =  2e3
+#   , n.burnin = 2e3
+#   , n.thin   = 4e1
+#   , n.chains = 4
+#   , restrictions = list("G=0.25")
+#   , ppp = 5e3
+#   , IVprec = "dgamma(.5,.5)"
+#   #, predType = c("f")
+#   )
+# 
+# summary(WSWpilot)
+# TreeBUGS::plotFit(WSWpilot)
+# TreeBUGS::plotFreq(WSWpilot)
+# TreeBUGS::plotParam(WSWpilot)
+# 
+# individual_parameters <- as.data.frame(getParam(WSWpilot, parameter = "theta"))
+# parameter_names <- colnames(individual_parameters)
+# individual_parameters$id <- rownames(individual_parameters)
+# para_ratings_both <- merge(dataKB, individual_parameters, by = "id")
+# 
+# cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) }
+# 
+# model <- lm(
+#   formula = ec ~ cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b)
+#   , data = para_ratings_both
+# )
+# 
+# summary(model)
 ```
 
 A first shortcoming in current pairing memory measures is the fact that US valence is perfectly inferable from US identity.
@@ -1458,14 +1674,14 @@ Finally, participants were debriefed about the purpose of the study and then red
 ## Results
 
 ```{r}
-model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
+#model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
 ```
 
 ```{r warning = FALSE, fig.cap = "Experiment 3. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
-par(mfrow = c(2, 3))
-plot_regression(model, pars = c("D", "C", "d", "a", "b"))
+#par(mfrow = c(2, 3))
+#plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 
-BFs <- bayes_factors(model) |> apa_print()
+#BFs <- bayes_factors(model) |> apa_print()
     
 ```
 
