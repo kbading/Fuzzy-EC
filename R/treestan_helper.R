@@ -1,5 +1,5 @@
 
-plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, pt.bg = 1, ...) {
+plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = "black", ...) {
   
   if(missing(pars)) pars <- names(x@parameter_index)
   
@@ -41,8 +41,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
   
   
   
-  par(mfrow = c(2, 3), las = 1)
-  palette(wesanderson::wes_palette("Zissou1", n = 3, type = "c"))
+
   for(i in x@parameter_index[pars]) {
     plot.new()
     plot.window(xlim = c(0, 1), ylim = c(-2, 6))
@@ -54,7 +53,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
       , length = .02
       , code = 3
       , angle = 90
-      , col = "grey80"
+      , col = "grey70"
     )
     arrows(
       x0 = theta[1, , i]
@@ -64,7 +63,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
       , length = .02
       , code = 3
       , angle = 90
-      , col = "grey80"
+      , col = "grey70"
     )
     
     lines(
@@ -76,8 +75,14 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
     # points(x = theta[, i], y = y_predicted[, i], pch = 16, col = 1)
     
 
+    mf <- x@model_frame
+    if(ncol(mf) > 0) {
+      bg <- x@model_frame[[1L]]
+    } else {
+      bg <- 1
+    }
     
-    points(x = theta[2, , i], y = y_marginalized[2, , i], pch = 21, col = pt.col, bg = pt.bg)
+    points(x = theta[2, , i], y = y_marginalized[2, , i], pch = 21, col = pt.col, bg = bg)
     axis(side = 1)
     axis(side = 2)
     title(
@@ -88,7 +93,7 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = 1, 
 }
 
 bayes_factors <- function(x, y, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...) {
-  pars <- match.arg(pars, choices = c("beta", "lm_beta", "lm_zbeta"), several.ok = FALSE)
+  pars <- match.arg(pars, choices = c("beta", "lm_beta", "lm_zbeta", "lm_alpha_tilde"), several.ok = FALSE)
   # lm_beta: slopes (MPT parameter predicting EC)
   samples <- rstan::extract(x, pars = pars)[[1L]]
   
@@ -148,3 +153,57 @@ apa_print.treestan_bfs <- function(x, ...) {
     })
 }
  
+apa_print.treestanfit <- function(x, part = c("lm", "mpt"), ...) {
+  
+  part <- match.arg(part)
+  three_stats <- function(x, conf.int = .95) {
+    qs <- quantile(x, probs = .5 + c(-1, 1) * conf.int/2, names = FALSE)
+    c(qs[1L], mean(x), qs[2L])
+  }
+  
+  if(part == "lm") {
+    est_pars <-  "lm_beta_star"
+    bf_pars <- "lm_beta"
+    prior_sd <- 2
+    est_label <- "$b^*$"
+  }
+  if(part == "mpt") {
+    est_pars <-  "beta"
+    bf_pars <- "beta"
+    prior_sd <- 1
+    est_label <- "$\\delta$"
+  }
+  
+  lm_beta_star <- rstan::extract(x, pars = est_pars)[[1L]]
+  if(part == "lm") {
+    estimates <- apply(lm_beta_star, MARGIN = 2L, FUN = three_stats, simplify = FALSE)
+  } else {
+    estimates <- apply(lm_beta_star[, 2, ], MARGIN = 2L, FUN = three_stats, simplify = FALSE)
+  }
+
+  canonical_table <- data.frame(
+    term = paste0("$", names(x@parameter_index), "$")
+    , estimate = vapply(estimates, FUN = `[[`, i = 2, FUN.VALUE = numeric(1L))
+  )
+  canonical_table$conf.int <- lapply(estimates, function(x){x[c(1, 3)]})
+  bfs <- subset(bayes_factors(x, pars = bf_pars, prior_sd = prior_sd), term != "(Intercept)")
+  bfs$BF_10 <- ifelse(bfs$BF_10 > 1000, "> 1,000   ", apa_num(bfs$BF_10))
+  canonical_table <- cbind(canonical_table, statistic = bfs$BF_10)
+  tinylabels::variable_labels(canonical_table) <- list(
+    term = "Parameter"
+    , estimate = est_label
+    , conf.int = "$95\\% CI$"
+    , statistic = "$\\mathit{BF}_{10}$"
+  )
+  beautiful_table <- papaja:::beautify(canonical_table, use_math = TRUE)
+  beautiful_table$term[] <- canonical_table$term
+  beautiful_table <- subset(beautiful_table, term != "$G$")
+  
+  lm_part <- papaja::glue_apa_results(
+    beautiful_table
+    , term_names = papaja:::strip_math_tags(beautiful_table$term)
+    , est_glue = papaja:::est_glue(beautiful_table)
+    , stat_glue = papaja:::stat_glue(beautiful_table)
+  )
+  return(lm_part)
+}

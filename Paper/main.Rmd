@@ -1,8 +1,14 @@
 ---
 title             : "Measuring memory involved in evaluative conditioning: a multinomial modeling approach"
 shorttitle        : "Memory in evaluative conditioning"
-
 author: 
+    #   - "Conceptualization"
+    #   - "Writing - Original Draft Preparation"
+    #   - "Writing - Review & Editing"
+    #   - "Writing - Review & Editing"
+    #   - "Supervision"
+    #   - "Writing - Review & Editing"
+    #   - "Supervision"
   - name          : "Karoline Corinna Bading"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
@@ -11,21 +17,15 @@ author:
   - name          : "Jérémy Béna"
     affiliation   : "2"
     # role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
-    #   - "Conceptualization"
-    #   - "Writing - Original Draft Preparation"
-    #   - "Writing - Review & Editing"
   - name          : "Marius Barth"
     affiliation   : "3"
     # role:
-    #   - "Writing - Review & Editing"
-    #   - "Supervision"
   - name          : "Klaus Rothermund"
     affiliation   : "4"
     # role:
-    #   - "Writing - Review & Editing"
-    #   - "Supervision"
       
 affiliation:
+    
   - id            : "1"
     institution   : "University of Tübingen"
   - id            : "2"
@@ -34,34 +34,28 @@ affiliation:
     institution   : "University of Cologne"
   - id            : "4"
     institution   : "Friedrich Schiller University Jena"
-    
-
-
 abstract: |
   The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC. The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
-
+  
+  
   <!-- https://tinyurl.com/ybremelq -->
-  
-  
 authornote: |
   Karoline Bading and Jérémy Béna share first authorship.
   
 keywords          : "keywords"
 wordcount         : "X"
-
 bibliography      : '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
 floatsintext      : yes
-figsintext      : yes
 linenumbers       : no
 draft             : no
 mask              : no
-
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-
 classoption       : jou
 output            : papaja::apa6_pdf
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -114,9 +108,17 @@ knitr::opts_chunk$set(
   # , fig.width  = 15
   # , fig.height =  9
 )
+knitr::opts_knit$set(global.par = TRUE)
 
 cntr <- function(x, ...){x - mean(x, ...)}
 ```
+
+```{r global-par}
+par(las = 1)
+palette(wesanderson::wes_palette("Zissou1", n = 3, type = "c"))
+```
+
+
 
 ```{r analysis-preferences}
 # Seed for random number generation
@@ -799,11 +801,13 @@ However, since current memory measures do not distinguish between lack of CS rec
 # A multinomial processing tree model for memory involved in evaluative conditioning
 
 ```{r bla, out.width="100%"}
-knitr::include_graphics(file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2.pdf"))
+file_name <- file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2.pdf")
+if(file.exists(file_name)) knitr::include_graphics(file_name)
 ```
 
 ```{r bla2, out.width="100%"}
-knitr::include_graphics(file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2bb.pdf"))
+file_name <- file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2bb.pdf")
+if(file.exists(file_name)) knitr::include_graphics(file_name)
 ```
 
 As explained above, current measures of CS-US pairing memory possess a number of shortcomings that have negative implications for investigating a wide range of research questions.
@@ -1040,7 +1044,7 @@ The first part of the joint model accounts for the memory data and is a hierarch
 To the best of our knowledge, we are the first to use such a joint-modeling approach in EC research.
 In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken__2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
 Such an approach is potentially problematic because
-using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each parameter,
+using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each MPT parameter,
 thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
 Using point estimates to predict EC effects may therefore lead to biased conclusions about the statistical relationships between MPT parameters and individual EC effects.
 To avoid such biases, we decided to use a joint-modeling approach which allows to account for uncertainty in MPT parameter estimates when used as predictors in a linear regression.
@@ -1191,15 +1195,21 @@ Specifically, the size of the parameter estimate indicates that participants sel
 model <- readRDS(file.path(study_folders$wsw1, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Experiment 1. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+(ref:exp1-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+
+```{r exp1-regression, fig.cap = "(ref:exp1-regression-label)", fig.width = 12, fig.height = 9, out.width="100%"}
 par(mfrow = c(2, 3))
 plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 
-# bayes_factors(model)
+BFs <- apa_print(bayes_factors(model, prior_mean = 0, prior_sd = 2))
 ```
+
+Figure\ \@ref(fig:exp1-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
 
 
 ## Discussion
+
+blabla
 
 # Experiment 2
 
@@ -1465,7 +1475,9 @@ model_comparisons <- compare(models)
 model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "treestan.rds"))
 ```
 
-```{r warning = FALSE, fig.cap = "Experiment 2. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
+(ref:exp2-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 2. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+
+```{r exp2-regression, fig.cap = "(ref:exp2-regression-label)", fig.width = 12, fig.height = 9, out.width="100%"}
 par(mfrow = c(2, 3))
 plot_regression(
   model, pars = c("D", "C", "d", "a", "b")
@@ -1475,6 +1487,7 @@ plot_regression(
 # bayes_factors(model)
 ```
 
+Figure\ \@ref(fig:exp2-regression) shows...
 
 ## Discussion
 
@@ -1559,10 +1572,11 @@ Based on the available data, we then fitted the pre-registered MPT model (see be
 The data collection was discontinued at this point because the first stopping criteria was met: the Bayes factor in favor of the baseline model exceeded 10 (i.e., we found strong evidence for the presence of a learning task focus effect on the $d$ parameter).
 
 ### Design
-The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (US age: young vs. old) $\times$ 2 (task focus: valence focus vs. age focus) mixed design.
+The experiment followed a 2 (*US valence*: positive vs. negative) $\times$ 2 (*US age*: young vs. old) $\times$ 2 (*task focus*: valence focus vs. age focus) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
+
 The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 48 colored images of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
@@ -1578,12 +1592,14 @@ The 24 adjectives were randomly assigned to the 24 CSs.
 Six CSs (50% female) were paired with positive and "younger" USs, six CSs (50% female) were paired with positive and "older" USs, six CSs (50% female) were paired with negative and "younger" USs, and six CSs (50%) were paired with negative and "older" USs.
 
 ### Measures and procedures
+
 All verbal materials were presented in English.
 After providing informed consent and being asked to focus on the study,
 participants were thanked for their participation and asked to carefully read all instructions and perform the tasks.
 Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
+
 All participants read the following instructions:
 "In the first part of the experiment you will be presented with photographs of faces (called 'faces' below) shown together with adjectives that denote human traits (called 'traits' below).
 Each face will be paired with a single trait.
@@ -1627,6 +1643,7 @@ After the learning phase, the following text was displayed: "The first part of t
 Press the spacebar to continue."
 
 #### Test phase
+
 After the learning phase, participants entered the test phase. 
 In the test phase, participants performed two measurement tasks: an evaluation task followed by a memory task. 
 The order of the two tasks (evaluation task first) was the same for all participants.
@@ -1656,6 +1673,7 @@ For new faces (erroneously classified as "shown"), the buttons will be filled wi
 After clicking on one of the 16 USs, participants were presented with a blank screen (500 ms) followed by the next trial (i.e., they were presented with a screen showing another face, the recognition task question, and the two response options).
 
 #### Control measures and debriefing
+
 After the test phase, participants were presented with a total of three control measures (all of which were used were as exclusion criteria).
 First, participants were presented with a screen showing four long sentences in a single paragraph.
 The first three sentences referred to attitude research and through length and writing style was meant to discourage participants from reading the whole text. 
@@ -1673,6 +1691,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ## Results
 
+<<<<<<< HEAD
 ```{r}
 #model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
 ```
@@ -1683,7 +1702,97 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 #BFs <- bayes_factors(model) |> apa_print()
     
+=======
+### Relationships between evaluative ratings and MPT parameters
+
+(ref:exp3-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 3. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+
+```{r exp3-regression, fig.cap = "(ref:exp3-regression-label)", fig.width = 12, fig.height = 9, out.width="100%"}
+model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
+
+
+par(mfrow = c(2, 3))
+plot_regression(model, pars = c("D", "C", "d", "a", "b"))
+
+# Bayes factors for slope parameters
+BFs <- apa_print(bayes_factors(model, pars = "lm_beta", prior_mean = 0, prior_sd = 2))
+>>>>>>> 76be6ca52786b1e39c53ae808d77d4c0b6efa071
 ```
+
+Figure\ \@ref(fig:exp3-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
+We found moderate support against a relationship between CS discrimination (parameter $D$) and EC effects,
+`r BFs$D`.
+The Bayes Factor quantifying evidence for or against a relationship between US identity memory (parameter $C$) and EC effects was inconclusive,
+`r BFs$C`.
+By contrast, we found very strong support for a positive relationship between US Valence memory (parameter $d$) and EC effects,
+`r BFs$d`.
+The Bayes Factor quantifying evidence for or against a relationship between guessing positive (parameter $a$) and EC effects was inconclusive,
+`r BFs$a`.
+We found strong support against a relationship between guessing old (parameter $b$) and EC effects,
+`r BFs$b`.
+
+```{r}
+BF_a <- subset(bayes_factors(model, pars = "beta", prior_sd = 1), subset = term == "task_focus1")
+BF_b <- bayes_factors(model, pars = "lm_beta", prior_sd = 2)
+nm <- BF_b$parameter
+
+source(file.path(project_root, "R", "liu_et_al_2022.R"))
+indirect_effects <- mapply(
+  BF.a   = setNames(BF_a$BF_10, nm)
+  , BF.b = setNames(BF_b$BF_10, nm)
+  , FUN = pathb.a
+  , MoreArgs = list(PriorOdds.a = 1, PriorOdds.b = 1)
+  , SIMPLIFY = FALSE
+) |>
+  lapply(function(x){
+    BF_10 <- x["Mediation", "Bayes Factor"]
+    
+    BF    <- ifelse(BF_10 > 1, BF_10, 1 / BF_10)
+    label <- ifelse(BF_10 > 1, "\\mathit{BF}_{10}", "\\mathit{BF}_{01}")
+    
+    BF <- ifelse(
+      BF > 1000
+      , "> 1,000"
+      , papaja::apa_num(BF, add_equals = TRUE)
+    )
+    paste0("$", label, BF, "$")
+  })
+
+direct_effects <- paste0(
+  "$\\mathit{BF}_{01} = "
+  , apa_num(bayes_factors(model, pars = "lm_alpha_tilde", prior_sd = 1)$BF_01[2])
+  , "$"
+)
+
+# rstan::extract(model, pars = "lm_beta_star")[[1]] |> apply(MARGIN = 2, quantile, probs = c(.025, .975))
+```
+
+Given the positive relationship between US valence memory and EC effects, 
+we also explored whether the effect of the task focus manipulation on EC was (at least partially) mediated by US valence.
+To this aim,
+we calculated Bayes Factors for such indirect effects using the independent-paths method proposed by @liu_bayesian_2023.
+We found strong support for an indirect effect of *task focus* through US valence memory (parameter $d$)  on EC,
+
+
+
+Moreover, we found weak support against a direct effect of *task focus*, 
+`r direct_effects`.
+Taken together,
+these analyses indicate that the effect of the task focus manipulation is mediated by US valence memory.
+Yet, it remains an open question whether differences in US valence memory may fully account for differences in EC between task focus conditions.
+
+```{r}
+apa_table(
+  list(
+    "Effects of task focus manipulation on MPT parameters" = apa_print(model, "mpt")$table
+    , "Standardized regression coefficients" = apa_print(model, "lm")$table
+  )
+  , escape = FALSE
+)
+
+```
+
+
 
 ## Discussion 
 
