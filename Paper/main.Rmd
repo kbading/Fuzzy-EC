@@ -35,7 +35,7 @@ affiliation:
   - id            : "4"
     institution   : "Friedrich Schiller University Jena"
 abstract: |
-  The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC. The present research is aimed at introducing a refined perspective on different forms of pairing memory, on the one hand, and introducing improved tools for measuring US identity, US valence and other forms of EC-related memory, on the other hand. We identify several shortcomings in common measures of CS-US pairing memory and explain their problematic implications for testing hypotheses about the role of US identity and US valence memory in the emergence of EC. We then introduce a multinomial processing tree (MPT) model that solves the previously identified problems and may therefore bring methodological progress in measuring different forms of EC-related memory. Finally, we present three experiments demonstrating the suitability and power of the proposed model for studying the relationship between memory and EC.
+  Evaluative Conditioning (EC) is a change in the evaluation of a conditioned stimulus (CS) after its pairing with a valent unconditioned stimulus (US). Accounts of EC typically assume some form of CS-US pairing memory and distinguish between US identity (memory for the specific US paired with a given CS) and US valence (memory for the valence of the US paired with a given CS) memory. Valid measures of memory involved in EC are therefore critical for advancing the understanding of EC. We present several shortcomings in common measures of CS-US pairing memory that hinder the testing of hypotheses about the role of US identity and US valence memory in EC. We then introduce a multinomial processing tree (MPT) model that solves these shortcomings. This model allows estimating CS recognition, US identity memory, US valence memory, and several guessing biases. We report three experiments showing that the proposed MPT model (1) fits the data well and (2) delivers insights into the relationships between EC, US valence memory, and US identity memory. 
   
   
   <!-- https://tinyurl.com/ybremelq -->
@@ -630,7 +630,7 @@ In principle, the second shortcoming is thus less problematic than the first (in
 However, it is important to note that such analyses will produce results that are indistinguishable from those obtained in the earlier thought experiment (where genuine EC effects were based on US identity memory).
 This implies that, unfortunately, common measures of pairing memory may not even deliver strong conclusions (about the respective contributions of US identity and US valence memory) when they reflect the true state of affairs.
 
-## US identity and and US valence measures may be biased by response tendencies
+## US identity and US valence measures may be biased by response tendencies
 
 ```{r cache = TRUE}
 IDs <- 300
@@ -782,7 +782,7 @@ As a consequence, the US valence and US identity measures will show a relatively
 Note that the imagined sample will also show larger mean EC effects for positively paired CSs (than for negatively paired CSs), despite the fact that genuinely conditioned attitudes are relatively more common among negatively paired CSs (than among positively paired CSs).
 Taken together, uncontrolled bias from response tendencies (towards positive or negative response options) may thus lead to erroneous conclusions not only about CS-US pairing memory but also about EC effects themselves.
 
-## US identity and and US valence measures may confound CS-US pairing and CS recognition memory
+## US identity and US valence measures may confound CS-US pairing and CS recognition memory
 As a fourth and final shortcoming, we address the fact that common pairing memory measures may confound CS-US pairing memory (the ability to remember the correct US or US valence for a given CS) and CS recognition memory (the ability to remember the CS itself).
 Empirically, this confound occurs when participants possess less-than-perfect CS recognition memory and thus resort to guessing in the US identity and US valence measures.
 Since lack of CS recognition memory and lack of CS-US pairing memory (for remembered CSs) have the same consequence (response generation based on guessing or affect-as-information), distinguishing between these two types of memory may seem inconsequential at first sight.
