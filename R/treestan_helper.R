@@ -1,6 +1,24 @@
 
 plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = "black", ...) {
   
+  parameter_labels <- list(
+    D   = expression(paste("Parameter"~italic(D), ""))
+    , C = expression(paste("Parameter"~italic(C), ""))
+    , d = expression(paste("Parameter"~italic(d), ""))
+    , a = expression(paste("Parameter"~italic(a), ""))
+    , b = expression(paste("Parameter"~italic(b), ""))
+    , G = expression(paste("Parameter"~italic(g), ""))
+  )
+  
+  parameter_meanings <- list(
+    D   = "CS recognition memory"
+    , C = "US identity memory"
+    , d = "US valence memory"
+    , a = "Guessing positive"
+    , b = "Guessing old"
+    , G = "Guessing correct US identity"
+  )
+  
   if(missing(pars)) pars <- names(x@parameter_index)
   
   three_stats <- function(x, ...) {
@@ -85,9 +103,16 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = "bl
     points(x = theta[2, , i], y = y_marginalized[2, , i], pch = 21, col = pt.col, bg = bg)
     axis(side = 1)
     axis(side = 2)
+    p <- names(x@parameter_index)[[i]]
+    
     title(
-      xlab = paste("Parameter", names(x@parameter_index)[[i]])
+      # main   = parameter_meanings[[p]]# paste("Parameter", names(x@parameter_index)[[i]])
+      xlab = parameter_labels[[p]]
       , ylab = "Marginal EC effect"
+    )
+    title(
+      main   = parameter_meanings[[p]]# paste("Parameter", names(x@parameter_index)[[i]])
+      , line = 0
     )
   }
 }
