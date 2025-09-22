@@ -1691,18 +1691,6 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ## Results
 
-<<<<<<< HEAD
-```{r}
-#model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
-```
-
-```{r warning = FALSE, fig.cap = "Experiment 3. Marginal EC effects as predicted by MPT parameters.", fig.width=12, fig.height = 9, out.width = "100%"}
-#par(mfrow = c(2, 3))
-#plot_regression(model, pars = c("D", "C", "d", "a", "b"))
-
-#BFs <- bayes_factors(model) |> apa_print()
-    
-=======
 ### Relationships between evaluative ratings and MPT parameters
 
 (ref:exp3-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 3. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
@@ -1716,7 +1704,6 @@ plot_regression(model, pars = c("D", "C", "d", "a", "b"))
 
 # Bayes factors for slope parameters
 BFs <- apa_print(bayes_factors(model, pars = "lm_beta", prior_mean = 0, prior_sd = 2))
->>>>>>> 76be6ca52786b1e39c53ae808d77d4c0b6efa071
 ```
 
 Figure\ \@ref(fig:exp3-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
