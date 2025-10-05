@@ -1532,6 +1532,19 @@ We again tested the relationships between individual-level parameter estimates a
 For all other MPT parameters, the Bayes factors quantifying evidence for similar relationships with EC effects were inconclusive, all `r BF_summary`.
 
 
+```{r}
+apa_table(
+  list(
+    "Effects of task order manipulation on MPT parameters" = apa_print(model, "mpt")$table
+    , "Standardized regression coefficients" = apa_print(model, "lm")$table
+  )
+  , escape = FALSE
+)
+
+```
+
+
+
 ## Discussion
 
 # Experiment 3
