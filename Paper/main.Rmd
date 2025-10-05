@@ -1220,10 +1220,19 @@ BF_summary <- paste0("$",
 paste(apa_num(range(BFs$BF_10)), collapse = " \\geq \\mathit{BF}_{10} \\geq ")
 , "$")
 apa_BFs <- apa_print(BFs)
+apa_model_lm <- apa_print(model, part = "lm")
 ```
 
 Figure\ \@ref(fig:exp1-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
 The Bayes Factors quantifying evidence for or against relationships between MPT parameters and EC were inconclusive, all `r BF_summary`.
+
+If you want more detail, we can of course also provide standardized regression coefficients and Bayes factors.
+For instance, for parameter D, the standardized regression coefficent for $D$ was
+`r apa_model_lm$estimate$D`,
+and the corresponding Bayes Factor was
+`r apa_model_lm$statistic$D`.
+If you want to report both together, you can use
+`r apa_model_lm$full_result$D`.
 
 
 
