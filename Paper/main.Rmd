@@ -1420,60 +1420,63 @@ Moreover, the mean EC effect was significant in the "memory first" condition, `r
 (ref:exp2-TBmodel-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
 ```{r exp1-param}
-# # MPT parameter estimates ----
-# df <- apa_print(summary(models$model7p), parameters = "mean", estimate = "Median")
-# 
-# # Create some beautiful parameter labels
-# parameter_labels <- c(
-#   A = "$a$"
-#   , B = "$b$"
-#   , a = "$a$"
-#   , b = "$b$"
-#   , Cpos = "$C_{\\mathrm{pos}}$"
-#   , Cneg = "$C_{\\mathrm{neg}}$"
-#   , Dpos = "$d_{\\mathrm{pos}}$"
-#   , Dneg = "$d_{\\mathrm{neg}}$"
-#   , dpos = "$d_{\\mathrm{pos}}$"
-#   , dneg = "$d_{\\mathrm{neg}}$"
-#   , Dn   = "$D$"
-# )
-# df$parameter <- parameter_labels[df$term]
-# df <- subset(df, select = c("parameter", "estimate", "conf.int"))
-# 
-# group_means <- getGroupMeans(models$model7p, probit = FALSE)
-# apa_groups <- data.frame(
-#   full_term = rownames(group_means)
-#   , estimate = apa_num(group_means[, "50%", drop = TRUE], gt1 = TRUE, digits = 3L)
-#   , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = TRUE, digits = 3L) |> unlist()
-#   , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
-#   , row.names = NULL
-# )
-# apa_groups$term <- gsub(apa_groups$full_term, pattern = "_order.*$", replacement = "")
-# apa_groups$parameter <- parameter_labels[apa_groups$term]
-# apa_groups$group <- gsub(apa_groups$full_term, pattern = ".*order\\[|\\]$", replacement = "")
-# groups_wide <- tidyr::pivot_wider(apa_groups, names_from = "group", values_from = c("estimate", "conf.int", "p.value"), id_cols = "parameter")
-# groups_wide <- groups_wide[, c("parameter", "estimate_Rating first", "conf.int_Rating first", "estimate_Memory first", "conf.int_Memory first", "p.value_Rating first")]
-# df <- merge(df, groups_wide, by = "parameter", sort = FALSE)
-# 
-# variable_labels(df) <- list(
-#   parameter = "Parameter"
-#   , estimate = "$M$"
-#   , conf.int = "95\\% CI"
-#   , estimate_eval_first = "$M$"
-#   , conf.int_eval_first = "95\\% CI"
-#   , estimate_mem_first  = "$M$"
-#   , conf.int_mem_first  = "95\\% CI"
-#   , p.value_eval_first = "$\\:p$"
-# )
-# 
-# apa_table(
-#   df[c(5, 4, 3, 7, 6, 2, 1), ]
-#   , caption = "Parameter estimates (posterior medians with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
-#   , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
-#   , escape = FALSE
-#   , align = c("l", rep("c", ncol(df) - 2), "r")
-#   , note = "One-sided $p$ values"
-# )
+# MPT parameter estimates ----
+df <- apa_print(summary(models$model7p), parameters = "mean", estimate = "Median")
+
+# Create some beautiful parameter labels
+parameter_labels <- c(
+  A = "$a$"
+  , B = "$b$"
+  , a = "$a$"
+  , b = "$b$"
+  , "C positive" = "$C_{\\mathrm{pos}}$"
+  , "C negative" = "$C_{\\mathrm{neg}}$"
+  , "D positive" = "$d_{\\mathrm{pos}}$"
+  , "D negative" = "$d_{\\mathrm{neg}}$"
+  , "C_positive" = "$C_{\\mathrm{pos}}$"
+  , "C_negative" = "$C_{\\mathrm{neg}}$"
+  , "D" = "$D$"
+  , d_positive = "$d_{\\mathrm{pos}}$"
+  , d_negative = "$d_{\\mathrm{neg}}$"
+  , Dn   = "$D$"
+)
+df$parameter <- parameter_labels[df$term]
+df <- subset(df, select = c("parameter", "estimate", "conf.int"))
+
+group_means <- getGroupMeans(models$model7p, probit = FALSE)
+apa_groups <- data.frame(
+  full_term = rownames(group_means)
+  , estimate = apa_num(group_means[, "50%", drop = TRUE], gt1 = TRUE, digits = 3L)
+  , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = TRUE, digits = 3L) |> unlist()
+  , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
+  , row.names = NULL
+)
+apa_groups$term <- gsub(apa_groups$full_term, pattern = "_task_order.*$", replacement = "")
+apa_groups$parameter <- parameter_labels[apa_groups$term]
+apa_groups$group <- gsub(apa_groups$full_term, pattern = ".*order\\[|\\]$", replacement = "")
+groups_wide <- tidyr::pivot_wider(apa_groups, names_from = "group", values_from = c("estimate", "conf.int", "p.value"), id_cols = "parameter")
+groups_wide <- groups_wide[, c("parameter", "estimate_Rating first", "conf.int_Rating first", "estimate_Memory first", "conf.int_Memory first", "p.value_Rating first")]
+df <- merge(df, groups_wide, by = "parameter", sort = FALSE)
+
+variable_labels(df) <- list(
+  parameter = "Parameter"
+  , estimate = "$M$"
+  , conf.int = "95\\% CI"
+  , "estimate_Rating first" = "$M$"
+  , "conf.int_Rating first" = "95\\% CI"
+  , "estimate_Memory first"  = "$M$"
+  , "conf.int_Memory first"  = "95\\% CI"
+  , "p.value_Rating first" = "$\\:p$"
+)
+
+apa_table(
+  df[c(5, 4, 3, 7, 6, 2, 1), ]
+  , caption = "Parameter estimates (posterior medians with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
+  , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
+  , escape = FALSE
+  , align = c("l", rep("c", ncol(df) - 2), "r")
+  , note = "One-sided $p$ values"
+)
 
 ```
 

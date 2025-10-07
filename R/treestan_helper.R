@@ -212,15 +212,15 @@ apa_print.treestanfit <- function(x, part = c("lm", "mpt"), ...) {
   )
   canonical_table$conf.int <- lapply(estimates, function(x){x[c(1, 3)]})
   bfs <- subset(bayes_factors(x, pars = bf_pars, prior_sd = prior_sd), term != "(Intercept)")
-  bfs$BF_10 <- ifelse(bfs$BF_10 > 1000, "> 1,000   ", apa_num(bfs$BF_10))
+  bfs$BF_10 <- ifelse(bfs$BF_10 > 1000, "> 1,000", apa_num(bfs$BF_10))
   canonical_table <- cbind(canonical_table, statistic = bfs$BF_10)
   tinylabels::variable_labels(canonical_table) <- list(
     term = "Parameter"
     , estimate = est_label
-    , conf.int = "$95\\% CI$"
+    , conf.int = "95\\% CI"
     , statistic = "$\\mathit{BF}_{10}$"
   )
-  beautiful_table <- papaja:::beautify(canonical_table, use_math = TRUE)
+  beautiful_table <- papaja:::beautify(canonical_table)
   beautiful_table$term[] <- canonical_table$term
   beautiful_table <- subset(beautiful_table, term != "$G$")
   
