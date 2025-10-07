@@ -1419,6 +1419,84 @@ Moreover, the mean EC effect was significant in the "memory first" condition, `r
 
 (ref:exp2-TBmodel-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
+
+```{r model-performance}
+# prepare_table <- function(x) {
+#   data.frame(as.list(x$summary$fitStatistics$overall))
+# }
+# 
+# fit_stats <- lapply(models, prepare_table) |> do.call(what = "rbind")
+# 
+# waics <- readRDS(file.path(study_folder, "waic.rds"))[names(models)]
+# 
+# waic_stats <- lapply(waics, FUN = function(x){
+#   data.frame(
+#     waic = sum(x$waic)
+#     , se_waic = sqrt(length(x$waic)) * sd(x$waic)
+#   )
+# }) |> do.call(what = "rbind")
+# table_data <- cbind(fit_stats, waic_stats)
+# table_data <- within(
+#   table_data
+#   , {
+#     p.T1 <- apa_p(p.T1)
+#     p.T2 <- apa_p(p.T2)
+#   }
+# )
+# table_data <- apa_num(table_data)
+# table_data <- t(table_data)
+# table_data <- data.frame(
+#   " " = c(
+#     "$T_1^{\\mathrm{observed}}$", "$T_1^{\\mathrm{expected}}$", "$p$"
+#     , "$T_2^{\\mathrm{observed}}$", "$T_2^{\\mathrm{expected}}$", "$p$"
+#     , "$\\mathrm{WAIC}$"
+#     , "$\\mathit{SE}$" # _{\\mathrm{WAIC}}$"
+#   )
+#   , table_data
+#   , check.names = F
+# )
+# rownames(table_data) <- NULL
+# colnames(table_data) <- gsub(colnames(table_data), pattern = "_", replacement = "")
+# 
+# save(table_data, file ="waid_table.rdata")
+
+study_folder2 <- file.path(
+  rprojroot::find_rstudio_root_file()
+  , "Paper"
+  , "mpt analyses"
+)
+
+#load("waid_table.rdata")
+load(file.path(study_folder2, "waid_table.rdata"))
+colnames(table_data)[2] <- "unrestricted"
+colnames(table_data) <- gsub(colnames(table_data), pattern = "^both|HQ$", replacement = "")
+variable_labels(table_data) <- list(
+  "unrestricted" = "Unrestricted"
+  , a5 = "$a = .5$"
+  , b5 = "$b = .5$"
+  , Cneg0 = "$C_{\\mathrm{neg}} = 0$"
+  , Cpos0 = "$C_{\\mathrm{pos}} = 0$"
+  , D0    = "$D = 0$"
+  , dpos0 = "$d_{\\mathrm{pos}} = 0$"
+  , dneg0 = "$d_{\\mathrm{neg}} = 0$"
+)
+table_data <- table_data[, c(" ", "unrestricted", "D0", "Cpos0", "Cneg0", "dpos0", "dneg0", "b5", "a5")]
+
+apa_table(
+  table_data
+  , caption = "Experiment 2: Absolute fit and WAIC for the hierarchical extensions of unrestricted and restricted variants of the who-said-what model."
+  , escape = FALSE
+  , landscape = FALSE
+  , font_size = "scriptsize"
+  , stub_indents = list(
+    "Goodness of fit: Means" = 1:3
+    , "Goodness of fit: Covariances" = 4:6
+    , "Relative predictive accuracy" = 7:8
+  )
+  , align = c("l", rep("r", ncol(table_data) - 1L))
+)
+```
+
 ```{r exp1-param}
 # MPT parameter estimates ----
 df <- apa_print(summary(models$model7p), parameters = "mean", estimate = "Median")
@@ -1479,7 +1557,6 @@ apa_table(
 )
 
 ```
-
 
 ### Relationships between EC effects and MPT parameters
 
