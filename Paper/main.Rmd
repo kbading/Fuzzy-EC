@@ -878,7 +878,7 @@ demo <- read.csv(file.path(study_folders$wsw1, "data-raw", "demox1.csv"))
 ```
 
 
-Experiment 1 was conducted to explore whether the MPT model adapted from @klauer_who_1998 can be used to measure CS-US pairing memory in the context of a standard EC procedure.
+In Experiment 1, we explored whether the MPT model adapted from @klauer_who_1998 can be used to measure CS-US pairing memory in the context of a standard EC procedure.
 To boost similarity with the "Who said what?" paradigm, we used images of human faces as CSs.
 As in previous EC studies [e.g., @stahl_subliminal_2016], the depicted faces had neutral expressions and were paired with various images showing clearly valenced contents (positive vs. negative).
 After the learning phase, participants performed the two-step memory task followed by a CS evaluation task.
@@ -916,13 +916,14 @@ We interpreted this response behavior as an indicator of non-compliance and deci
 Taken together, this resulted in a final sample size of 48 participants.
 
 ### Materials
-The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
+The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 48 colored images of human faces with neutral expressions (24 female faces, 24 male faces).
-The images were taken from xxx.
+The face images have been used as CSs in previous EC research (e.g., Waroquier, Labadie, & Dienes, 2020).
 
 As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
-The images were taken from the Open Affective Standardized Image Set (OASIS; Kurdi et al., 2017). Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
+The images were taken from the Open Affective Standardized Image Set [OASIS\; @kurdi_introducing_2017]. 
+Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
 The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
 For each participant, 12 randomly selected face images (50% female) served as positively paired CSs, 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face (50% female) images served as distractor stimuli in the test phase.
@@ -996,7 +997,7 @@ After pressing the spacebar, participants were redirected to Prolific and reimbu
 
 ### Data processing and statistical analysis
 The responses from the CS evaluation task were analyzed (without further processing) using the R package *stats*.
-For the MPT model analyses, the responses from the memory task were first recoded into a joint memory index according to the following scheme:
+For the MPT model analyses, the responses from the two-step memory task were first recoded into a joint memory index according to the following scheme:
 
 - If a positively (negatively) paired CS was incorrectly classified as "new", the response was recoded as "PosUSnew" ("NegUSnew"). 
 
@@ -1034,15 +1035,13 @@ models_8b <- lapply(
   , FUN = function(x) {
     fit_mpt(
       model = file.path(project_root, "model-equations", "wsw-8b.eqn")
-      , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
+      , data = data_list_pilot$mpt_data_hierarchical
       , restrictions = c(baseline_restrictions, x)
     )
   }
 )
 
 exp1 <- apa_print(compare(models_8b))
-#models_8b$baseline$goodness_of_fit
-#models_8b$baseline
 ```
 
 Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with the R package *HMMTreeC*.
@@ -1054,12 +1053,12 @@ There was no significant difference in model fit between the two models, `r exp1
 We therefore decided to report the simpler 5-parameter model.
 
 We also explored the relationships between MPT parameters and individual EC effects (calculated as the difference between the mean evaluative rating for positively paired CSs and the mean evaluative rating for negatively paired CSs).
-Using the probabilistic programming language *Stan* [@carpenter_stan_2017], 
+Using the probabilistic programming language *Stan* [@carpenter_stan_2016], 
 we implemented a joint model of (1) participant-wise frequency distributions of the joint memory index and (2) individual EC effects.
 The first part of the joint model accounts for the memory data and is a hierarchical latent-trait version  [cf., @klauer_hierarchical_2010] of the 5-parameter MPT model described above. The second part of the model is a multiple linear regression model in which individual EC effects serve as the criterion variable and individual parameter estimates from the first part of the model serve as predictors.
 
 To the best of our knowledge, we are the first to use such a joint-modeling approach in EC research.
-In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken__2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
+In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken_are_2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
 Such an approach is potentially problematic because
 using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each MPT parameter,
 thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
@@ -1068,23 +1067,14 @@ To avoid such biases, we decided to use a joint-modeling approach which allows t
 
 ```{r}
 exp1_ratings <- data_list_pilot$rating
-exp1_ratings_sd <- aggregate(exp1_ratings,evaluative_rating ~ sid, FUN = sd) # 1 x sd = 0 --> sid = 43
-exp1_ratings <- subset(exp1_ratings,sid != 43)
-exp1_ratings_wide <- subset(data_list_pilot$rating_wide,sid != 43)
-
-data_list_pilot$rating <- subset(data_list_pilot$rating,sid != 43)
-data_list_pilot$rating_wide <- subset(data_list_pilot$rating_wide,sid != 43)
+exp1_ratings_sd <- aggregate(exp1_ratings,evaluative_rating ~ sid, FUN = sd)
+exp1_ratings_wide <- data_list_pilot$rating_wide
 ```
 
 ```{r}
 rrr <- data_list_pilot$memory
-#table(rrr$sid)
 rrr$reco_resp_num <- ifelse(rrr$reco_resp=="old",1,0)
-rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd) # 0 x sd = 0
-```
-
-```{r}
-#table(rrr$sid,rrr$source_mem) # 0 x sd = 0
+rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd)
 ```
 
 ## Results
@@ -1127,36 +1117,6 @@ baseline_restrictions <- list(
   G = .25
 )
 
-hypothesis_restrictions_8b <- list(
-  baseline = list()
-  , D_eq0  = list(D = 0)
-  , Cpos_eq0  = list(C_positive = 0)
-  , Cneg_eq0  = list(C_negative = 0)
-  , dpos_eq0  = list(d_positive = 0)
-  , dneg_eq0  = list(d_negative = 0)
-  , a_eq.5 = list(a = .5)
-  , b_eq.5 = list(b = .5)
-  , C_eq  = list(C = c("C_positive", "C_negative"))
-  , d_eq  = list(d = c("d_positive", "d_negative"))
-)
-
-models_8b <- lapply(
-  hypothesis_restrictions_8b
-  , FUN = function(x) {
-    fit_mpt(
-      model = file.path(project_root, "model-equations", "wsw-8b.eqn")
-      , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
-      , restrictions = c(baseline_restrictions, x)
-    )
-  }
-)
-```
-
-```{r}
-baseline_restrictions <- list(
-  G = .25
-)
-
 hypothesis_restrictions <- list(
   baseline = list()
   , D_eq0  = list(D = 0)
@@ -1171,7 +1131,7 @@ models <- lapply(
   , FUN = function(x) {
     fit_mpt(
       model = file.path(study_folders$wsw1, "WSW_pilot_hierarchical.eqn")
-      , data = subset(data_list_pilot$mpt_data_hierarchical,sid!=43)
+      , data = data_list_pilot$mpt_data_hierarchical
       , restrictions = c(baseline_restrictions, x)
     )
   }
@@ -1188,25 +1148,31 @@ apa_wsw8b_comps <- apa_print(compare(models_8b))
 The 5-parameter model fit the data well, `r apa_wsw6$statistic$modelfit`.
 Parameter estimates and confidence intervals are reported in Table 1.
 
-The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as "old" (and distractor stimuli as "new") in $45.6$% of trials.
-By implication, participants did not recognize CSs as "old" (and distractor stimuli as "new") in $54.4$% of trials.
+(ref:exp1-model-label) Experiment 1: Parameter estimates and 95% confidence intervals from the unrestricted 5-parameter model.
 
-The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as "old".
-This implies that US identity was absent for $32.6$% of CSs recognized as "old" (hereafter also referred to as "recognized" CSs).
+```{r exp1-model, fig.cap = "(ref:exp1-model-label)"}
+apa_table(apa_wsw6,caption="Experiment 1: Parameter estimates and 95% confidence intervals from the unrestricted 5-parameter model.")
+```
 
-The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of "recognized" CSs without US identity memory, participants possessed US valence memory in approx. $19.9$% of trials.
-By implication, participants did not possess US valence memory for approx. $80.1$% of "recognized" CSs without US identity memory.
+The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as old (and detected distractor stimuli as new) in $45.6$% of trials.
+By implication, participants did not recognize CSs as old (and detect distractor stimuli as new) in $54.4$% of trials.
+
+The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as old.
+This implies that US identity was absent for $32.6$% of CSs recognized as old (hereafter also referred to as recognized CSs).
+
+The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of recognized CSs without US identity memory, participants possessed US valence memory in approx. $19.9$% of trials.
+By implication, participants did not possess US valence memory for approx. $80.1$% of recognized CSs without US identity memory.
 
 The $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`.
-This suggests that, for CSs not recognized as "old" (as distractor stimuli not recognized as "new"), participants had an overall tendency towards selecting the "new" response.
-Specifically, the size of the parameter estimate indicates that $14.8$% of CSs not recognized as "old" (and distractor stimuli not recognized as "new") were guessed as "old".
-By implication, participants guessed "new" for $85.2$% of CSs not recognized as "old" (and distractor stimuli not recognized as "new").
+This suggests that, for CSs not recognized as old (and distractor stimuli not detected as new), participants had an overall tendency towards selecting the "new" response.
+Specifically, the size of the parameter estimate indicates that $14.8$% of CSs not recognized as old (and distractor stimuli not detected as new) were guessed as old.
+By implication, participants guessed "new" for $85.2$% of CSs not recognized as old (and distractor stimuli not detected as new).
 
 The $a$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$a_eq_5`.
 This suggests that, in the absence of both US identity and US valence memory, participants had an overall tendency towards selecting a negative image in the US memory task.
-Specifically, the size of the parameter estimate indicates that participants selected a positive (negative) US for $42.7$% ($57.3$%) of CSs and distractor stimuli guessed as "old" (and "recognized" CSs without US identity and US valence memory).
+Specifically, the size of the parameter estimate indicates that participants selected a positive (negative) US for $42.7$% ($57.3$%) of CSs and distractor stimuli guessed as old (and of recognized CSs without US identity and US valence memory).
 
-### Relationships between evaluative ratings and MPT parameters
+### Relationships between EC effects and MPT parameters
 
 (ref:exp1-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
@@ -1223,24 +1189,43 @@ apa_BFs <- apa_print(BFs)
 apa_model_lm <- apa_print(model, part = "lm")
 ```
 
-Figure\ \@ref(fig:exp1-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
-The Bayes Factors quantifying evidence for or against relationships between MPT parameters and EC were inconclusive, all `r BF_summary`.
+Figure\ \@ref(fig:exp1-regression) shows the relationships between individual-level MPT parameter estimates and marginal EC effects.
+We tested the relationships between individual-level parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
 
-If you want more detail, we can of course also provide standardized regression coefficients and Bayes factors.
-For instance, for parameter D, the standardized regression coefficent for $D$ was
-`r apa_model_lm$estimate$D`,
-and the corresponding Bayes Factor was
-`r apa_model_lm$statistic$D`.
-If you want to report both together, you can use
-`r apa_model_lm$full_result$D`.
+The linear regression model revealed anecdotal evidence for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
+For participant-level $D$ parameter estimates, we found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$D`.
+Similarly, for participant-level $C$ parameter estimates, we also found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$C`.
+For participant-level $a$ parameter estimates, the linear regression model showed inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$a`.
+Finally, for participant-level $b$ parameter estimates, we also found inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$b`.
 
-
+<!-- The Bayes Factors quantifying evidence for or against relationships between MPT parameters and EC were inconclusive, all `r BF_summary`. -->
+<!-- If you want more detail, we can of course also provide standardized regression coefficients and Bayes factors. -->
+<!-- For instance, for parameter D, the standardized regression coefficent for $D$ was -->
+<!-- `r apa_model_lm$estimate$D`, -->
+<!-- and the corresponding Bayes Factor was -->
+<!-- `r apa_model_lm$statistic$D`. -->
+<!-- If you want to report both together, you can use -->
+<!-- `r apa_model_lm$full_result$D`. -->
 
 ## Discussion
+In Experiment 1, we used the MPT model to estimate EC-related memory in the context of a standard EC procedure.
+We found that responses from the two-step memory task were well described by the 5-parameter model (including joint $D$, $C$, $d$, $a$ and $b$ parameters).
+As expected, significant $D$ and $C$ parameters indicated that participants possessed robust CS recognition and US identity memory for a subset of CSs.
+Moreover, the significant $d$ parameter showed that participants possessed US valence memory (without concomitant US identity memory) for a subset of recognized CSs.
+To the best of our knowledge, this finding represents the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.
 
-blabla
+In line with previous research [e.g., @stahl_respective_2009-1], the results of Experiment 1 also
+suggested that EC effects are positively related to US valence memory (as measured by the $d$ parameter) but unrelated to US identity memory (as measured by the $C$ parameter).
+Unfortunately, statistical evidence for or against the relationships between EC effects and participant-level MPT parameters was generally weak, as was the size of the mean EC effect obtained in the present study.
+In the following experiment, we addressed both of these issues.
 
 # Experiment 2
+In Experiment 2, we sought to replicate the core findings from Experiment 1 (significant $D$, $C$ and $d$ parameters) while boosting (individual) EC effects and obtaining more informative estimates of their relationships with participant-level MPT parameters.
+To boost EC effects, we used pronounceable non-words as CSs (which might be more neutral and thus easier to condition than the human faces used in the first experiment).
+In addition, we collected a larger number of participants (to achieve more precise estimates of the mean EC effect and of the relationships between individual EC effects and MPT parameter estimates).
+Moreover, we also manipulated the order in which memory and CS evaluation tasks were performed after the learning phase.
+This task order manipulation was implemented to determine whether performance of the two-step memory task (prior to the CS evaluation task) undermines the measurement of EC effects (which might be another reason for the small effect size obtained in the previous experiment).
+Finally, implementing this manipulation also allowed us to compare the suitability of the two task order conditions for measuring different forms of EC-related memory with the MPT model.
 
 ```{r}
 data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
@@ -1261,7 +1246,7 @@ The pre-registration, materials and data are publicly available at: https://osf.
 The data collection was conducted online.
 
 ### Design and participants
-The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (task order: evaluation task first vs. memory task first) mixed design.
+The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (task order: evaluation first vs. memory first) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
 Participants were recruited through Prolific and received monetary compensation for their participation.
@@ -1270,9 +1255,9 @@ We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(soc
 Due an unknown technical error, the data from one participant was unavailable.
 As preregistered, we excluded all participants who declared that they did not pay attention or that they did not take their responses seriously ($N=5$).
 Though not preregistered, we decided to exclude four additional participants who gave the same response on all trials of the evaluation task.
-Taken together, this resulted in a final sample size of `r n_final` participants (`r n_conditions$rating_first` in the evaluation task first condition and `r n_conditions$memory_first` in the memory task first condition).
+Taken together, these exclusions resulted in a final sample size of `r n_final` participants (`r n_conditions$rating_first` in the "evaluation first" condition and `r n_conditions$memory_first` in the "memory first" condition).
 
-The number of recruited participants was based on a power analysis for an EC effect as small as Cohen's $d = 0.2$. 
+The number of recruited participants was based on a power analysis for an EC effect as small as $d_{Cohen} = 0.2$. 
 The power analysis was conducted with the R package *pwr* (version 1.3-0; Champely, 2020).
 The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
 We found that 156 participants were required to achieve a statistical power of $1-\beta = .8$ to detect a significant EC effect.
@@ -1280,7 +1265,7 @@ We also found that a sample size of $N = 156$ provided statistical power of $1-\
 To avoid a final sample size smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%).
 
 ### Materials
-The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
+The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 54 nonwords made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*).
 The nonwords were taken from a previous EC study (Stahl & Bading, 2020).
@@ -1307,8 +1292,8 @@ In each set (three in total), each of the 24 CS-US pairs was presented once.
 After the learning phase, participants entered the test phase. 
 In the test phase, participants performed two measurement tasks: an evaluation task and a memory task. 
 Participants were randomly assigned to one of two task order conditions. 
-In the "evaluation task first" condition, participants performed the evaluation task and then the memory task.
-The task order was reversed in the "memory task first" condition.
+In the "evaluation first" condition, participants performed the evaluation task and then the memory task.
+The task order was reversed in the "memory first" condition.
 The wording of the task instructions differed slightly between task order conditions (for details, see pre-registration).
 
 ##### Evaluation task
@@ -1344,7 +1329,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 
 ```{r}
 exp2_ratings <- data_list_exp2$rating
-exp2_ratings_sd <- aggregate(exp2_ratings,evaluative_rating ~ sid, FUN = sd) # 4 x sd = 0 --> sid = 49, 104, 138, 139
+exp2_ratings_sd <- aggregate(exp2_ratings,evaluative_rating ~ sid, FUN = sd)
 exp2_ratings_sd <- subset(exp2_ratings_sd, evaluative_rating > 0)
 exp2_ratings <- subset(exp2_ratings,sid %in% exp2_ratings_sd$sid)
 exp2_ratings_wide <- subset(data_list_exp2$rating_wide,sid %in% exp2_ratings_sd$sid)
@@ -1352,153 +1337,148 @@ exp2_ratings_wide <- subset(data_list_exp2$rating_wide,sid %in% exp2_ratings_sd$
 
 ```{r}
 rrr <- data_list_exp2$memory
-#table(rrr$sid)
 rrr$reco_resp_num <- ifelse(rrr$reco_resp=="old",1,0)
-rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd) # 1 x sd = 141 (always 'new')
-#table(rrr$sid,rrr$source_mem) # 0 x sd = 0
-
+rrr2 <- aggregate(rrr,reco_resp_num ~ sid, FUN = sd)
 ```
 
+#### CS evaluations
+We followed the preregistered protocol without exceptions.
+We first calculated individual EC effects (by substracting the mean evaluative rating of negatively paired CSs from the mean evaluative rating for positively paired CSs).
+These individual EC effects were then analyzed with a  between-subjects ANOVA that included task order as the only factor.
+In addition, the mean EC effects in the two task order conditions were tested against zero using one-tailed t-tests ($\alpha=.05$).
+As preregistered, we also performed complementary analyses on the evaluative ratings for "old" CSs and "new" distractors.
+However, to simplify the results sections, the results of these analyses are reported in an online supplement (see OSF repository).
+
+#### Memory data
+```{r}
+models <- list(
+  model7p    = readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt-wsw-8b.rds"))
+  , model5p = readRDS(file.path(study_folders$wsw2_main, "model-objects", "trait-mpt.rds"))
+)
+
+fit <- lapply(models, FUN = apa_fit)
+
+individual <- models |>
+  lapply(function(x) {
+    individual_fits <- x$summary$fitStatistics$individual
+    individual_fits$T1.obs <- colMeans(individual_fits$T1.obs)
+    individual_fits$T1.pred <- colMeans(individual_fits$T1.pred)
+    cross_table <- table(individual_fits$T1.p <= .05)
+    cross_table
+  })
+```
+
+The responses from the two-step memory task were recoded into a joint memory index according to the same scheme as used in the first experiment (see above).
+The participant-level frequency distributions of the joint memory index were then analyzed with the R package *TreeBUGS* [@heck_treebugs_2018].
+In *TreeBUGS*, MPT model estimation is based on the latent-trait approach which allows for heterogeneity in parameter values between participants [@klauer_hierarchical_2010].
+As preregistered, we fitted a hierarchical extension of the 7-parameter model estimating the following parameters: $D$, $C_{pos}$, $C_{neg}$, $d_{pos}$, $d_{neg}$, $a$ and $b$ (with $g$ fixed at $.25$).
+By including task order as a categorical predictor of individual MPT parameter estimates, the population means of all seven MPT parameters were allowed to differ between the two task order conditions.
+For each MPT parameter, this implementation provided us with individual parameter estimates, the grand mean and the task order effect (i.e., the difference between the grand mean and the group-specific mean of a given MPT parameter).
+To estimate the MPT parameters, we ran four Markov chains with 200,000 iterations each (100,000 were discarded as burn-in iterations).
+Moreoever, we used 20,000 adaptation iterations and a thinning rate of 40.
+Convergence was monitored by means of the Gelman-Rubin statistic (Gelman & Rubin, 1992) using a criterion of $\hat{R}<1.02$ for all parameters.
+Model fit was assessed by means of posterior predictive model checks $T_1$ and $T_2$ as proposed by [@klauer_hierarchical_2010].
+The 7-parameter model provided an adequate account of the memory data according to both criteria: `r fit$model7p$T1`; `r fit$model7p$T2`.
+As preregistered, we then tested all seven parameters against their neutral value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters). 
+To this aim, we fitted seven restricted models (each of which included a different parameter restriction) and compared them to the unrestricted 7-parameter model based on the WAIC (Watanabe, 2010).
+Based on convention, a WAIC difference greater than 10 was taken as strong evidence in favor of the model with the smaller WAIC.
+
+As an additional (non-preregistered) test for the presence of US valence memory (without concomitant US identity memory), we also fitted the 5-parameter model (used in Experiment 1) and compared it to a restricted 4-parameter variant in which the joint $d$ parameter was fixed at zero.
+Because the memory data was also well described by the 5-parameter model (`r fit$model5p$T1`; `r fit$model5p$T2`), we decide to use this simpler model variant also for the preregistered regression analyses (in which we sought to predict individual EC effects from participant-level parameter estimates).
+Note that using the parameter estimates from the 5-parameter model (instead of from the 7-parameter model) also served to avoid multicollinearity between predictors.
+In yet another departure from the preregistered protocol, we used the joint modeling approach introduced in the first experiment (see above) instead of the preregistered (but potentially problematic) two-step procedure.
+As preregistered, we implemented different linear regression models of varying complexity (e.g., with or without higher-order interactions between MPT parameters).
+However, to simplify the results section, we decided to report only the relatively simple main effects model that was mentioned in the preregistration (which also produced the most straightforward results).
+Note that this linear regression model was estimated as part of a joint model that included task order as a categorical predictor of individual MPT parameter estimates and EC effects.
+As in the first experiment, we used the probabilistic programming language *Stan* [@carpenter_stan_2016] to implement the joint-modeling approach.
+
 ## Results
-### Evaluative ratings
+
+### EC effects
+
 ```{r}
 exp2_ratings <- subset(exp2_ratings,sid!=141)
 exp2_ratings_wide <- subset(exp2_ratings_wide,sid!=141)
 
-exp2_ratings_anova <- aov_ez(data = subset(exp2_ratings, us_valence %in% c("positive","negative")), id = "sid", dv = "evaluative_rating", within = c("us_valence"),between=c("task_order"))
+exp2_ec_anova <- apa_print(aov_ez(data = exp2_ratings_wide, id = "sid", dv = "ec_effect", between=c("task_order"),anova_table = list(intercept=TRUE)),intercept=TRUE,estimate="ges")
+mean_ec <- paste0("$M_{EC}=",round(mean(exp2_ratings_wide$ec_effect),2),"$")
+sd_ec <- paste0("$SD_{EC}=",round(sd(exp2_ratings_wide$ec_effect),2),"$")
 
-exp2_ec <- t.test(exp2_ratings_wide$positive,exp2_ratings_wide$negative,paired=TRUE,alternative="greater")
+memfirst <- subset(exp2_ratings_wide,task_order=="Memory first")
+evalfirst <- subset(exp2_ratings_wide,task_order=="Rating first")
+t.memfirst <- apa_print(t.test(memfirst$ec_effect,mu=0,alternative="greater"))
+t.evalfirst <- apa_print(t.test(evalfirst$ec_effect,mu=0,alternative="greater"))
 
-effectsize::cohens_d(exp2_ec)
 ```
 
-### MPT model
+The between-subjects ANOVA revealed a significant intercept, `r exp2_ec_anova$full_result$Intercept`, and a non-significant main effect of task order, `r exp2_ec_anova$full_result$task_order`.
+The significant intercept indicated robust EC across task order conditions (`r mean_ec`, `r sd_ec`).
+Moreover, the mean EC effect was significant in the "memory first" condition, `r t.memfirst$full_result`, as well as in the "evaluation first" condition, `r t.evalfirst$full_result`. 
 
-```{r}
-baseline_restrictions <- list(
-  G_x1 = .25
-  , G_x2 = .25
-  , C_x1 = "Cpos_x1=Cneg_x1"
-  , C_x2 = "Cpos_x2=Cneg_x2"
-  , d_x1 = "dpos_x1=dneg_x1"
-  , d_x2 = "dpos_x2=dneg_x2"
-)
+### MPT model analyses
 
-hypothesis_restrictions <- list(
-  baseline = list()
-  , D_equal = list(D = c("D_x1", "D_x2"))
-  , C_equal = list(C = c("C_x1", "C_x2"))
-  , d_equal = list(d = c("d_x1", "d_x2"))
-  # , Cx1_equal = list(C = c("Cpos_x1", "Cneg_x1"))
-  # , Cx2_equal = list(C = c("Cpos_x2", "Cneg_x2"))
-  # , dx1_equal = list(d = c("dpos_x1", "dneg_x1"))
-  # , dx2_equal = list(d = c("dpos_x2", "dneg_x2"))
-  , a_equal = list(a = c("a_x1", "a_x2"))
-  , b_equal = list(b = c("b_x1", "b_x2"))
-  , Deval0   = list(D_x1 = 0)
-  , Dmem0   = list(D_x2 = 0)
-  , Ceval0   = list(C_x1 = 0)
-  , Cmem0   = list(C_x2 = 0)
-  , deval0   = list(d_x1 = 0)
-  , dmem0   = list(d_x2 = 0)
-  , beval5   = list(b_x1 = 0.5)
-  , bmem5   = list(b_x2 = 0.5)
-  , aeval5   = list(a_x1 = 0.5)
-  , amem5   = list(a_x2 = 0.5)
-)
+(ref:exp2-TBmodel-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
-models <- lapply(
-  hypothesis_restrictions
-  , FUN = function(x) {
-    fit_mpt(
-      data = data_list_exp2$mpt_data
-      , model = file.path(study_folders$wsw2_main, "WSW_8b_exp2.eqn")
-      , restrictions = c(baseline_restrictions, x)
-    )
-  }
-)
-wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
-  palette()
-
-# plot(
-#   models$baseline
-#   , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-#   , parameters = c(
-#     D   = expression(italic(D))
-#     , Cpos = expression(italic(Cpos))
-#     , Cneg = expression(italic(Cneg))
-#     , dpos = expression(italic(dpos))
-#     , dneg = expression(italic(dneg))
-#     , a = expression(italic(a))
-#     , b = expression(italic(b))
-#   )
+```{r exp1-param}
+# # MPT parameter estimates ----
+# df <- apa_print(summary(models$model7p), parameters = "mean", estimate = "Median")
+# 
+# # Create some beautiful parameter labels
+# parameter_labels <- c(
+#   A = "$a$"
+#   , B = "$b$"
+#   , a = "$a$"
+#   , b = "$b$"
+#   , Cpos = "$C_{\\mathrm{pos}}$"
+#   , Cneg = "$C_{\\mathrm{neg}}$"
+#   , Dpos = "$d_{\\mathrm{pos}}$"
+#   , Dneg = "$d_{\\mathrm{neg}}$"
+#   , dpos = "$d_{\\mathrm{pos}}$"
+#   , dneg = "$d_{\\mathrm{neg}}$"
+#   , Dn   = "$D$"
+# )
+# df$parameter <- parameter_labels[df$term]
+# df <- subset(df, select = c("parameter", "estimate", "conf.int"))
+# 
+# group_means <- getGroupMeans(models$model7p, probit = FALSE)
+# apa_groups <- data.frame(
+#   full_term = rownames(group_means)
+#   , estimate = apa_num(group_means[, "50%", drop = TRUE], gt1 = TRUE, digits = 3L)
+#   , conf.int = apa_interval(group_means[, c("2.5%", "97.5%")], gt1 = TRUE, digits = 3L) |> unlist()
+#   , p.value = apa_p(group_means[, "p(one-sided vs. overall)"])
+#   , row.names = NULL
+# )
+# apa_groups$term <- gsub(apa_groups$full_term, pattern = "_order.*$", replacement = "")
+# apa_groups$parameter <- parameter_labels[apa_groups$term]
+# apa_groups$group <- gsub(apa_groups$full_term, pattern = ".*order\\[|\\]$", replacement = "")
+# groups_wide <- tidyr::pivot_wider(apa_groups, names_from = "group", values_from = c("estimate", "conf.int", "p.value"), id_cols = "parameter")
+# groups_wide <- groups_wide[, c("parameter", "estimate_Rating first", "conf.int_Rating first", "estimate_Memory first", "conf.int_Memory first", "p.value_Rating first")]
+# df <- merge(df, groups_wide, by = "parameter", sort = FALSE)
+# 
+# variable_labels(df) <- list(
+#   parameter = "Parameter"
+#   , estimate = "$M$"
+#   , conf.int = "95\\% CI"
+#   , estimate_eval_first = "$M$"
+#   , conf.int_eval_first = "95\\% CI"
+#   , estimate_mem_first  = "$M$"
+#   , conf.int_mem_first  = "95\\% CI"
+#   , p.value_eval_first = "$\\:p$"
+# )
+# 
+# apa_table(
+#   df[c(5, 4, 3, 7, 6, 2, 1), ]
+#   , caption = "Parameter estimates (posterior medians with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
+#   , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
+#   , escape = FALSE
+#   , align = c("l", rep("c", ncol(df) - 2), "r")
+#   , note = "One-sided $p$ values"
 # )
 
 ```
 
-```{r}
-model_comparisons <- compare(models)
-#model_comparisons
-```
 
-```{r}
-baseline_restrictions <- list(
-  G_x1 = .25
-  , G_x2 = .25
-)
-
-hypothesis_restrictions <- list(
-  baseline = list()
-  , D_equal = list(D = c("D_x1", "D_x2"))
-  , C_equal = list(C = c("C_x1", "C_x2"))
-  , d_equal = list(d = c("d_x1", "d_x2"))
-  , a_equal = list(a = c("a_x1", "a_x2"))
-  , b_equal = list(b = c("b_x1", "b_x2"))
-  , Dage0   = list(D_x1 = 0)
-  , Dval0   = list(D_x2 = 0)
-  , Cage0   = list(C_x1 = 0)
-  , Cval0   = list(C_x2 = 0)
-  , dage0   = list(d_x1 = 0)
-  , dval0   = list(d_x2 = 0)
-  , bage5   = list(b_x1 = 0.5)
-  , bval5   = list(b_x2 = 0.5)
-  , aage5   = list(a_x1 = 0.5)
-  , aval5   = list(a_x2 = 0.5)
-)
-
-models <- lapply(
-  hypothesis_restrictions
-  , FUN = function(x) {
-    fit_mpt(
-      data = data_list_exp2$mpt_data
-      , model = file.path(study_folders$wsw2_main, "WSW_exp2.eqn")
-      , restrictions = c(baseline_restrictions, x)
-    )
-  }
-)
-wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
-  palette()
-
-# plot(
-#   models$baseline
-#   , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-#   , parameters = c(
-#     D   = expression(italic(D))
-#     , C = expression(italic(C))
-#     , d = expression(italic(d))
-#     , a = expression(italic(a))
-#     , b = expression(italic(b))
-#   )
-# )
-
-```
-
-```{r}
-model_comparisons <- compare(models)
-#model_comparisons
-```
-
-### Relationships between evaluative ratings and MPT parameters
+### Relationships between EC effects and MPT parameters
 
 (ref:exp2-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 2. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
@@ -1511,7 +1491,7 @@ plot_regression(model, pars = c("D"))
 legend(
   x = .02
   , y = 5.98
-  , legend = c("Rating first", "Memory first")
+  , legend = c("Evaluation first", "Memory first")
   , pch = 21
   , col = "black"
   , pt.bg = 1:2
@@ -1524,13 +1504,17 @@ BF_summary <- paste0("$",
 paste(apa_num(range(subset(BFs, parameter != "d")$BF_10)), collapse = " \\geq \\mathit{BF}_{10} \\geq ")
 , "$")
 BFs <- apa_print(BFs)
+apa_model_lm <- apa_print(model, part = "lm")
 ```
 
 Figure\ \@ref(fig:exp3-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
-We again tested the relationships between individual-level parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model. We found very strong support for a relationship between US valence memry (parameter $d$) and EC,
-`r BFs$d`.
-For all other MPT parameters, the Bayes factors quantifying evidence for similar relationships with EC effects were inconclusive, all `r BF_summary`.
+We again tested the relationships between participant-level parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
 
+The linear regression model revealed strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
+For participant-level $D$ parameter estimates, we found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$D`.
+Similarly, for participant-level $C$ parameter estimates, we also found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$C`.
+For participant-level $a$ parameter estimates, the linear regression model showed inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$a`.
+Finally, for participant-level $b$ parameter estimates, we again found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$b`.
 
 ```{r}
 apa_table(
@@ -1540,10 +1524,7 @@ apa_table(
   )
   , escape = FALSE
 )
-
 ```
-
-
 
 ## Discussion
 
@@ -1552,7 +1533,7 @@ apa_table(
 ```{r}
 # from MB:
 data_list <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
-data_list$excluded_participants                       # Participant IDs
+#data_list$excluded_participants                       # Participant IDs
 #lapply(data_list$excluded_participants, FUN = length) # How many?
 
 # data_list_pilot <- readRDS(file.path(study_folders$wsw3_p2, "data", "data.rds"))
@@ -1632,8 +1613,7 @@ The experiment followed a 2 (*US valence*: positive vs. negative) $\times$ 2 (*U
 The first factor varied within participants and the second factor varied between participants.
 
 ### Materials
-
-The experiment was programmed with *lab.js* [@henninger_labjs_2022] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
+The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 48 colored images of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
 The images were taken from the FACES database (Ebner, Riediger, & Lindenberger, 2010) and optimized with an AI image optimization tool.
@@ -1648,14 +1628,12 @@ The 24 adjectives were randomly assigned to the 24 CSs.
 Six CSs (50% female) were paired with positive and "younger" USs, six CSs (50% female) were paired with positive and "older" USs, six CSs (50% female) were paired with negative and "younger" USs, and six CSs (50%) were paired with negative and "older" USs.
 
 ### Measures and procedures
-
 All verbal materials were presented in English.
 After providing informed consent and being asked to focus on the study,
 participants were thanked for their participation and asked to carefully read all instructions and perform the tasks.
 Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
-
 All participants read the following instructions:
 "In the first part of the experiment you will be presented with photographs of faces (called 'faces' below) shown together with adjectives that denote human traits (called 'traits' below).
 Each face will be paired with a single trait.
@@ -1699,7 +1677,6 @@ After the learning phase, the following text was displayed: "The first part of t
 Press the spacebar to continue."
 
 #### Test phase
-
 After the learning phase, participants entered the test phase. 
 In the test phase, participants performed two measurement tasks: an evaluation task followed by a memory task. 
 The order of the two tasks (evaluation task first) was the same for all participants.
@@ -1729,7 +1706,6 @@ For new faces (erroneously classified as "shown"), the buttons will be filled wi
 After clicking on one of the 16 USs, participants were presented with a blank screen (500 ms) followed by the next trial (i.e., they were presented with a screen showing another face, the recognition task question, and the two response options).
 
 #### Control measures and debriefing
-
 After the test phase, participants were presented with a total of three control measures (all of which were used were as exclusion criteria).
 First, participants were presented with a screen showing four long sentences in a single paragraph.
 The first three sentences referred to attitude research and through length and writing style was meant to discourage participants from reading the whole text. 
