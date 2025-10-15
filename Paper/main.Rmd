@@ -126,7 +126,9 @@ palette(wesanderson::wes_palette("Zissou1", n = 3, type = "c"))
 # knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-Evaluative conditioning (EC) refers to a change in the evaluation of an initially neutral "conditioned" stimulus (CS) after its pairing with a positive or negative "unconditioned" stimulus (US). In a typical EC procedure, CSs (e.g., an unfamiliar brand) are repeatedly paired with positive (e.g., a kitten) or negative (e.g., a spider) USs in a learning phase. After the learning phase, CSs are presented without the USs with the task to evaluate them (Moran et al., 2023). 
+Evaluative conditioning (EC) refers to a change in the evaluation of an initially neutral "conditioned" stimulus (CS) after its pairing with a positive or negative "unconditioned" stimulus (US). 
+In a typical EC procedure, CSs (e.g., an unfamiliar brand) are repeatedly paired with positive (e.g., a kitten) or negative (e.g., a spider) USs in a learning phase. 
+After the learning phase, CSs are presented without the USs with the task to evaluate them (Moran et al., 2023). 
 As a tool for studying the cognitive processes involved in attitude formation, the EC procedure is widely used in social psychology and in research on evaluative learning.
 Over the years, these two fields of research have produced a large and diverse set of EC accounts [e.g., @baeyens_content_1992; @de_houwer_propositional_2018; @gawronski_evaluative_2018; @jones_implicit_2009-1; @levey_classical_1975; @stahl_evaluative_2018; @walther_changing_2009].
 Despite their many differences, most of these accounts share a core idea: EC involves retrieving some form of memory for the previously paired US upon evaluating the CSs (whether this memory is conscious or not). 
@@ -134,17 +136,19 @@ This assumption is well-supported by meta-analytical evidence showing that CS-US
 
 In early research, CS-US pairing memory was measured as US identity memory, that is, memory for the specific US that had been paired with a given CS [e.g., @baeyens_contingency_1990].
 However, as explained by @stahl_evaluative_2009, such US identity memory is not the only form of pairing memory that might be relevant for EC: instead of (or in addition to) being built on memory for the identity of the previously paired USs, EC may also stem from memory for the valence of these stimuli [@stahl_respective_2009-1].
-This seminal distinction between memory for the US identity and memory for the US valence is important in EC research. Conceptually, US valence memory is less specific than US identity memory, making it the more suitable construct for testing the memory underpinnings of EC (Hütter et al., 2012; Stahl et al., 2009; Shanks and St. John, 1994). Theoretically, the distinction between US identity and US valence memory is crucial because different accounts of EC draw on different types of pairing memory as its cognitive foundation (e.g., Walther, Gawronski, Blank, & Langer, 2009; Gast & Rothermund, 2011). As a consequence, conceptualizing US identity and US valence memory as distinct constructs that can be measured separately is an important step towards a better understanding of EC. 
+This seminal distinction between memory for the US identity and memory for the US valence is important in EC research. 
+Conceptually, US valence memory is less specific than US identity memory, making it the more suitable construct for testing whether CS-US pairing memory is necessary for the emergence of EC (Hütter et al., 2012; Stahl et al., 2009; Shanks and St. John, 1994). 
+Theoretically, the distinction between US identity and US valence memory is crucial because different accounts of EC draw on different types of pairing memory as its cognitive foundation (e.g., Walther, Gawronski, Blank, & Langer, 2009; Gast & Rothermund, 2011). 
+As a consequence, conceptualizing US identity and US valence memory as distinct constructs that can be measured separately is an important step towards a better understanding of EC. 
 
-The present study aims to introduce a measurement model that can provide more informative estimates of CS-US memory (than those obtained in previous studies) and new insights into the relationships between CS-US pairing memory and EC as a result. In the remainder of the introduction, we briefly present common practices in assessing CS-US pairing memory and discuss four important shortcomings of the typical US identity and US valence memory measures. We then introduce a multinomial processing tree (MPT) model that solves these shortcomings and is, as a result, well positioned to provide new and arguably improved estimates of US valence and US identity memory, among other estimates that it allows. 
-
-<!--Thirdly, we present three experiments showing how the MPT model can be estimated in the context of a standard EC procedure.
-Taken together, these experiments demonstrate the suitability and power of the proposed model for studying the cognitive foundations of EC.-->
+The present study aims to introduce a measurement model that provides more informative estimates of US identity and US valence memory (than those obtained in previous studies) and may thus deliver new insights into the relationships between CS-US pairing memory and EC effects.
+In the remainder of the introduction, we briefly present common practices in assessing CS-US pairing memory and discuss four important shortcomings of the currently used memory measures.
+We then introduce a multinomial processing tree (MPT) model that solves these shortcomings and is, as a result, well positioned to provide improved estimates of US valence and US identity memory (among other estimates that it allows). 
 
 # Common measures of CS-US pairing memory and their shortcomings
-In a typical EC procedure for measuring CS-US pairing memory, the CS-US pairing memory task is administered after the evaluation task or in the same block. 
-To measure US identity memory, each of the CS presented in the learning phase is displayed again, together with a fixed number of USs including the correct one. The presented USs may all share the same valence (identical to that of the previously paired US; e.g., Stahl & Bading, 2020) or be partly positive and partly negative (typically in equal numbers; e.g., Gast & Rothermund, 2011). 
-
+In a typical EC procedure, the measures of CS-US pairing memory are performed after the CS evaluation task. 
+To measure US identity memory, each CS from the learning phase is displayed again, together with a fixed number of USs including the correct one. 
+The presented USs may all share the same valence (identical to that of the previously paired US; e.g., Stahl & Bading, 2020) or be partly positive and partly negative (typically in equal numbers; e.g., Gast & Rothermund, 2011). 
 For each CS, participants are asked to select the correct (i.e., previously paired) option from the set of available USs.
 For cases in which US identity memory is absent, participants may be instructed to guess the correct option or be provided with an additional "I don't know" option (e.g., Stahl & Bading, 2020).
 The typical format for measuring US identity memory is thus forced-choice recognition with a chance level equal to the inverse of the number of response options (USs).
@@ -152,633 +156,57 @@ The typical format for measuring US identity memory is thus forced-choice recogn
 Memory for the US valence is usually measured in one of two ways: either by recoding responses from the US identity measure in terms of their valence (e.g., Gast & Rothermund, 2011) or by implementing a separate procedure in which US valence memory is probed directly (e.g., Stahl & Bading, 2020).
 In a typical example for such a procedure, participants are presented with individual CSs and asked to indicate, for a given CS, whether it had been paired with positive or negative stimuli during the learning phase.
 For cases in which such US valence memory is not available, participants may be instructed to guess the correct valence or be provided with an additional "I don't know" option.
-The chance level in a typical US valence measure is thus $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that of typical US identity measures (assuming that more than two USs are included as response options).
+The chance level in a typical US valence measure is $.5$ (corresponding to the inverse of the two US valences represented in the measure) and therefore higher than that of typical US identity measures (assuming that more than two USs are included as response options).
 
-Though widely used, these pairing measures have been criticized before.
-For instance, Hütter et al. (2012) reasoned that standard measures of US valence memory may be affected by a phenomenon called affect-as-information.
-Affect-as-information happens when participants rely on their affective reaction towards the CS to select a response in the US valence memory measure, possibly in the absence of any CS-US pairing memory.
-As shown by Hütter et al. (2021), affect-as-information may create artifactual correlations between measures of US valence memory and EC effects, resulting in a bias against empirical demonstrations of EC without memory for the CS-US pairings.
-In the next section, we will add to this critique by showing that affect-as-information (as a source of responding in measures of US identity and US valence memory) also interferes with separating the respective contributions of different types of pairing memory in the emergence of EC. While we only briefly touch on affect-as-information in the introduction, we will return to this point in more detail in the general discussion
+Though widely used, these measurement procedures have been criticized on various grounds (e.g., Walther & Nagengast, 2006; Hütter et al., 2012; Stahl et al., 2024; see also, Lovibond and Shanks, 2002).
+An important point of criticism is focused on a phenomenon called affect-as-information (Schwarz & Clore, 1983).
+As shown by Bar-Anan et al. (2010), standard measures of US valence memory may be contaminated by affect-as-information because participants sometimes rely on pre-existing attitudes towards the CSs, rather than on explicit US valence memory, for selecting a response in the memory task.
+Relatedly, Hütter et al. (2012) argued that participants may also rely on their conditioned attitudes (as developed during the learning phase) for response selection in the US valence measure.
+Importantly, Hütter er al. (2012) also presented simulated data showing that either type of affect-as-information (based on pre-existing vs. conditioned attitudes) leads to artifactual correlations between US valence memory and EC effects, making empirical demonstrations of EC without CS-US pairing memory practically impossible.
+In the next section, we will add to this critique by showing that, when combined with another shortcoming of standard US valence measures, affect-as-information also interferes with separating the respective contributions of US identity and US valence memory to the emergence of EC effects.
 
 ## Shortcoming 1: US valence may be inferred from US identity
+As a first shortcoming of the currently used memory measures, we address the fact that correct responses in the US valence measure may be inferred from memory for the previously paired US instead of being based on separate memory for the US valence.
+When US identity memory is present, above-chance performance on a standard US valence measure can thus not demonstrate that participants stored and retrieved US valence as an independent form of CS-US pairing memory.
+Aside from leading to (potentially) erroneous conclusions about the presence of US valence memory, the first shortcoming also implies that positive (and potentially causal) relationships between US identity memory and EC effects are difficult, if not impossible, to detect.
+Moreover, when combined with affect-as-information, the first shortcoming will also boost artifactual evidence for a positive association between EC effects and (possibly non-existent) memory for the US valence.
 
-```{r cache = TRUE}
-# IDs <- 100
-# CSs <- 24
-# val <- c(rep("positive",12),rep("negative",12))
-# z_USid <- rnorm(IDs,0,1)
-# z_USval <- rnorm(IDs,0,1)
-# 
-# ID_vector <- rep(1:IDs,each = CSs)
-# CS_vector <- rep(1:CSs,IDs)
-# val_vector <- rep(val,IDs)
-# USid_vector <- rep(z_USid,each = CSs)
-# USval_vector <- rep(z_USval,each = CSs)
-# 
-# sim_data <- data.frame(id = ID_vector
-#                        , cs = CS_vector
-#                        , us_valence = val_vector
-#                        , p_USid = pnorm(USid_vector)
-#                        , p_USval = 0
-#                        )
-# 
-# for(i in 1:nrow(sim_data)){
-#   sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
-#   sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
-# }
-# 
-# sim_data$cs_rating <- NA
-# sim_data$USid_guess <- NA
-# sim_data$USval_guess <- NA
-# sim_data$USid_resp <- NA
-# sim_data$USval_resp <- NA
-# 
-# for(i in 1:nrow(sim_data)){
-#   if(sim_data$USid_mem[i]==0){
-#     sim_data$USval_guess[i] <- rbinom(1,1,0.5) 
-#     if(sim_data$USval_guess[i]==1){
-#       sim_data$USid_guess[i] <- rbinom(1,1,.25)
-#     }
-#     if(sim_data$USval_guess[i]==0){
-#       sim_data$USid_guess[i] <- 0
-#     }
-#   }
-#   if(sim_data$USid_mem[i]==1){
-#     sim_data$USval_guess[i] <- 0
-#     sim_data$USid_guess[i] <- 0
-#   }
-# }
-# 
-# for(i in 1:nrow(sim_data)){
-#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==1){
-#     sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-#     sim_data$USid_resp[i] <- 1
-#     sim_data$USval_resp[i] <- rbinom(1,1,0.5)#1
-#   }
-#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-#     sim_data$cs_rating[i] <- rnorm(1,0,1) #rnorm(1,0.5,1) # 
-#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-#   }
-#   if(sim_data$us_valence[i]=="positive" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)#rnorm(1,0,1)# #
-#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-#   }
-#   
-#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==1){
-#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-#     sim_data$USid_resp[i] <- 1
-#     sim_data$USval_resp[i] <- rbinom(1,1,0.5)#1
-#   }
-#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==1){
-#     sim_data$cs_rating[i] <- rnorm(1,-0.5,1)#rnorm(1,0,1)# #
-#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-#   }
-#   if(sim_data$us_valence[i]=="negative" & sim_data$USid_mem[i]==0 & sim_data$USval_guess[i]==0){
-#     sim_data$cs_rating[i] <- rnorm(1,0.5,1)#rnorm(1,0,1)# #
-#     sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-#     sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-#   }
-# }
-# 
-# eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
-# USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
-# USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
-# data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
-# data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
-# 
-# data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
-# contrasts(data_agg3b$us_valence) <- "contr.sum"
-# summary(lm(data=data_agg3b, cs_rating ~ us_valence))
-# summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
-# summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
-# summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
-# obj <- lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence)
-# car::vif(obj)
-```
-
-```{r}
-# cor.test(data_agg3b$USid_resp,data_agg3b$USval_resp)
-# pos <- subset(data_agg3b,us_valence=="positive")
-# cor.test(pos$cs_rating,pos$USid_resp)
-# cor.test(pos$cs_rating,pos$USval_resp)
-# 
-# pos <- subset(data_agg3b,us_valence=="negative")
-# cor.test(pos$cs_rating,pos$USid_resp)
-# cor.test(pos$cs_rating,pos$USval_resp)
-# 
-# ccc <- split(data_agg3b,data_agg3b$us_valence)
-```
-
-
-```{r cache = TRUE}
-# IDs <- 200
-# CSs <- 48
-# val <- c(rep("positive",12),rep("negative",12),rep("unpaired",24))
-# z_CSrec <- rnorm(IDs,.5,1)
-# z_USid <- rnorm(IDs,.5,1)
-# z_USval <- rnorm(IDs,.5,1)
-# z_ECwm <- rnorm(IDs,.5,1)
-# z_gold <- rnorm(IDs,0,.25)
-# z_gpos <- rnorm(IDs,0,.25)
-# 
-# ID_vector <- rep(1:IDs,each = CSs)
-# CS_vector <- rep(1:CSs,IDs)
-# val_vector <- rep(val,IDs)
-# USid_vector <- rep(z_USid,each = CSs)
-# USval_vector <- rep(z_USval,each = CSs)
-# CSrec_vector <- rep(z_CSrec,each = CSs)
-# ECwm_vector <- rep(z_ECwm,each = CSs)
-# gold_vector <- rep(z_gold,each = CSs)
-# gpos_vector <- rep(z_gpos,each = CSs)
-# 
-# sim_data <- data.frame(id = ID_vector
-#                        , cs = CS_vector
-#                        , us_valence = val_vector
-#                        , p_USid = pnorm(USid_vector)
-#                        , p_USval = 0
-#                        , p_CSrec = pnorm(CSrec_vector)
-#                        , p_ECwm = pnorm(ECwm_vector)
-#                        , p_gold = pnorm(gold_vector)
-#                        , p_gpos = pnorm(gpos_vector)
-#                        )
-# 
-# for(i in 1:nrow(sim_data)){
-#   sim_data$CSrec_mem[i] <- rbinom(1,1,sim_data$p_CSrec[i])
-#   sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
-#   sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
-#   sim_data$ECwm[i] <- rbinom(1,1,sim_data$p_ECwm[i])
-#   sim_data$gold[i] <- rbinom(1,1,sim_data$p_gold[i])
-#   sim_data$gpos[i] <- rbinom(1,1,sim_data$p_gpos[i])
-# }
-# 
-# sim_data$cs_rating <- NA
-# sim_data$USid_guess <- NA
-# sim_data$USval_guess <- NA
-# #sim_data$old_guess <- NA
-# #sim_data$pos_guess <- NA
-# sim_data$USid_resp <- NA
-# sim_data$USval_resp <- NA
-# sim_data$CSrec_resp <- NA
-# 
-# for(i in 1:nrow(sim_data)){
-#   if(sim_data$CSrec_mem[i]==0){
-#     if(sim_data$gold[i]==0){
-#       sim_data$CSrec_resp[i] <- "new"
-#       sim_data$USval_resp[i] <- ""
-#       sim_data$USid_resp[i]  <- ""
-#       sim_data$cs_rating[i] <- rnorm(1,0,1)
-#     }
-#     if(sim_data$gold[i]==1){
-#       if(sim_data$gpos[i]==1){
-#         if(sim_data$us_valence[i]=="positive"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "pos"
-#           tmp <- rbinom(1,1,0.25)
-#           sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#         if(sim_data$us_valence[i]=="negative"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "pos"
-#           sim_data$USid_resp[i]  <- "incor"
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#         if(sim_data$us_valence[i]=="unpaired"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "pos"
-#           sim_data$USid_resp[i]  <- "incor"
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#       }
-#       if(sim_data$gpos[i]==0){
-#         if(sim_data$us_valence[i]=="negative"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "neg"
-#           tmp <- rbinom(1,1,0.25)
-#           sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#         if(sim_data$us_valence[i]=="positive"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "neg"
-#           sim_data$USid_resp[i]  <- "incor"
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#         if(sim_data$us_valence[i]=="unpaired"){
-#           sim_data$CSrec_resp[i] <- "old"
-#           sim_data$USval_resp[i] <- "neg"
-#           sim_data$USid_resp[i]  <- "incor"
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#         }
-#       }
-#     }
-#   }
-#   if(sim_data$CSrec_mem[i]==1){
-#     if(sim_data$us_valence[i]=="unpaired"){
-#           sim_data$CSrec_resp[i] <- "new"
-#           sim_data$USval_resp[i] <- ""
-#           sim_data$USid_resp[i]  <- ""
-#           sim_data$cs_rating[i] <- rnorm(1,0,1)
-#     }
-#     if(sim_data$us_valence[i]=="positive"){
-#       sim_data$CSrec_resp[i] <- "old"
-#       if(sim_data$USid_mem[i]==1){
-#         sim_data$USval_resp[i] <- "pos"
-#         sim_data$USid_resp[i]  <- "cor"
-#         sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==1){
-#         sim_data$USval_resp[i] <- "pos"
-#         tmp <- rbinom(1,1,0.25)
-#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#         sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==1){
-#         sim_data$USval_resp[i] <- "pos"
-#         tmp <- rbinom(1,1,0.25)
-#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#         sim_data$cs_rating[i] <- rnorm(1,0,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==0){
-#         sim_data$USval_resp[i] <- "neg"
-#         sim_data$USid_resp[i]  <- "incor"
-#         sim_data$cs_rating[i] <- rnorm(1,0,1)
-#       }
-#     }
-#     if(sim_data$us_valence[i]=="negative"){
-#       sim_data$CSrec_resp[i] <- "old"
-#       if(sim_data$USid_mem[i]==1){
-#         sim_data$USval_resp[i] <- "neg"
-#         sim_data$USid_resp[i]  <- "cor"
-#         sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==1){
-#         sim_data$USval_resp[i] <- "neg"
-#         tmp <- rbinom(1,1,0.25)
-#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#         sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==0){
-#         sim_data$USval_resp[i] <- "neg"
-#         tmp <- rbinom(1,1,0.25)
-#         sim_data$USid_resp[i]  <- ifelse(tmp==1,"cor","incor")
-#         sim_data$cs_rating[i] <- rnorm(1,0,1)
-#       }
-#       if(sim_data$USid_mem[i]==0 & sim_data$ECwm[i]==0 & sim_data$gpos[i]==1){
-#         sim_data$USval_resp[i] <- "pos"
-#         sim_data$USid_resp[i]  <- "incor"
-#         sim_data$cs_rating[i] <- rnorm(1,0,1)
-#       }
-#     }
-#   }
-# }
-# sim_data$us_val <- ifelse(sim_data$us_valence=="positive","PosUS",ifelse(sim_data$us_valence=="negative","NegUS","New"))
-# sim_data$CSrec_resp <- ifelse(sim_data$CSrec_resp=="old","",sim_data$CSrec_resp)
-# sim_data$mpt_resp <- paste0(sim_data$us_val,sim_data$CSrec_resp,sim_data$USval_resp,sim_data$USid_resp)
-# 
-# dataKB <- as.data.frame(unclass(table(sim_data$id,sim_data$mpt_resp)))
-# dataKB$id <-rownames(dataKB)
-# 
-# eval_agg3b <- aggregate(subset(sim_data,us_valence!="unpaired"),FUN=mean,cs_rating~id*us_valence)
-# eval_agg3b <- reshape2::dcast(eval_agg3b,value.var = "cs_rating",id ~ us_valence)
-# eval_agg3b$ec <- eval_agg3b$positive - eval_agg3b$negative
-# 
-# dataKB <- merge(dataKB,eval_agg3b,by=c("id"))
-```
-
-```{r}
-# mpt_data <- dataKB[,2:12]
-# 
-# MPTinR::check.mpt("WSW_pilot_hierarchical.eqn")
-# 
-# WSWpilot = traitMPT(
-#   eqnfile = "WSW_pilot_hierarchical.eqn"
-#   , data = mpt_data
-#   , n.iter   = 4e3
-#   , n.adapt  =  2e3
-#   , n.burnin = 2e3
-#   , n.thin   = 4e1
-#   , n.chains = 4
-#   , restrictions = list("G=0.25")
-#   , ppp = 5e3
-#   , IVprec = "dgamma(.5,.5)"
-#   #, predType = c("f")
-#   )
-# 
-# summary(WSWpilot)
-# TreeBUGS::plotFit(WSWpilot)
-# TreeBUGS::plotFreq(WSWpilot)
-# TreeBUGS::plotParam(WSWpilot)
-# 
-# individual_parameters <- as.data.frame(getParam(WSWpilot, parameter = "theta"))
-# parameter_names <- colnames(individual_parameters)
-# individual_parameters$id <- rownames(individual_parameters)
-# para_ratings_both <- merge(dataKB, individual_parameters, by = "id")
-# 
-# cntr <- center <- function(x) { x - mean(x, na.rm = TRUE) }
-# 
-# model <- lm(
-#   formula = ec ~ cntr(D) + cntr(C) + cntr(d) + cntr(a) + cntr(b)
-#   , data = para_ratings_both
-# )
-# 
-# summary(model)
-```
-
-A first shortcoming in current CS-US pairing memory measures is that US valence is perfectly inferable from US identity. When participants recall the specific identity of USs paired with CSs, US valence memory is not independent from US identity memory. 
-
-To illustrate this point, imagine a sample of participants who each formed US identity memory for the majority of CSs presented during the learning phase.
+To illustrate the previous points, imagine a sample of participants who each formed US identity memory for the majority of CSs presented during the learning phase.
 In the CS evaluation measure, these participants then use their US identity memory to derive CS evaluations, resorting to unbiased guessing whenever they cannot remember the previously paired US.
 In the two measures of CS-US pairing memory, the participants give correct responses whenever US identity memory is present (using their recollection of the correct US to infer the correct valence) and resort to unbiased guessing whenever US identity memory is absent.
-As long as guessing processes are uncorrelated across memory and evaluation measures, such a sample will produce a positive correlation between the two memory measures as well as comparably strong (positive) correlations between either memory measure and the measure of CS evaluation.
+When guessing processes are uncorrelated across memory and evaluation measures, such a sample will produce comparably strong (positive) correlations between either memory measure and the measure of CS evaluation (as well as a positive correlation between the two measures of CS-US pairing memory).
 Importantly, the multicollinearity between the two memory measures will make it impossible to separate the respective contributions of the two types of pairing memory (e.g., in a linear regression predicting CS evaluations from US valence and the two memory measures), thereby concealing the perfect association between genuine EC effects and memory for the US identity.
 
-When CS evaluation and memory measures are affected by independent guessing processes, the inferability of US valence from US identity thus undermines evidence for the role of US identity memory in the emergence of EC effects.
+When CS evaluation and memory measures are affected by independent guessing processes, the inferability of US valence from US identity memory thus undermines evidence for the role of US identity memory in the emergence of EC effects.
 Importantly, matters are even worse when guessing processes are correlated across measures (due to affect-as-information): in this case, evidence for the relationship between EC effects and US identity memory will be nullified and replaced by artifactual evidence for an association between EC effects and US valence memory.
-To illustrate this point, imagine the sample of participants now using their pre-existing attitudes (towards the CSs) to generate responses in the CS evaluation and memory measures whenever they cannot remember the previously paired US.
-In the measure of US valence memory, there is a one-to-one mapping of a pre-existing attitude onto a single response option in the measurement task, resulting in a strong (positive) correlation between CS evaluations and memory responses driven by affect-as-information.
-In the US identity measure, however, the pre-existing attitude can be mapped onto several USs (those with the same valence as the pre-existing attitude), so that selecting the correct US involves an additional guessing process (on top of affect-as-information).
+To illustrate the underlying mechanism, now imagine that the sample of participants used their (pre-existing or conditioned) attitudes towards the CSs to select responses in the CS evaluation and memory measures (whenever they cannot remember the previously paired US).
+In the US valence measure, there is a one-to-one mapping of a pre-existing or conditioned attitude onto a single response option, resulting in a strong (positive) correlation between CS evaluations and memory responses driven by affect-as-information.
+In the US identity measure, however, a pre-existing or conditioned attitude can be mapped onto several USs (those that share the valence of the attitude), so that selecting the correct US involves an additional guessing process (on top of affect-as-information).
 As a consequence of this one-to-many mapping, the subset of CSs without US identity memory will show a weaker (positive) correlation between CS evaluations and the US identity measure than between CS evaluations and the US valence measure.
 When mixed with CSs for which US identity memory is present, CSs without US identity memory will thus add variance in the dependent variable (CS evaluations) that is more strongly associated with the US valence measure than with the US identity measure (whereas, among CS with US identity memory, variance in the dependent variable is equally associated with both memory measures).
 In a linear regression including both memory measures as predictors, this data structure will result in a strong association between EC effects and the US valence measure, while nullifying the statistical relationship between EC effects and the US identity measure.
-When combined with affect-as-information, the inferability of US valence from US identity thus poses a serious methodological problem: even if every genuinely conditioned CS evaluation is based on US identity memory, statistical analyses will suggest that US valence memory is the sole predictor of EC.
+When combined with affect-as-information, the inferability of US valence from US identity memory thus poses a serious methodological problem: even if proper US valence memory is entirely absent and every genuinely conditioned CS evaluation is in fact based on US identity memory, statistical analyses will suggest that US valence memory is the sole predictor of EC.
 
-## Shortcoming 2: US valence may be used to guess US identity
+## Shortcoming 2: US valence memory and affect-as-information may be used to guess US identity
+As a second shortcoming of the currently used memory measures, we address the fact that standard US identity measures with mixed response options (including both positive and negative USs) may be contaminated by informed guessing based on US valence memory or affect-as-information.
+Specifically, participants may use US valence memory and conditioned or pre-existing attitudes to restrict the number of possibly correct response options (to those that share the remembered or presumed US valence), resulting in above-chance task performance even when not a single US could be correctly remembered.
+In addition to producing artifactual evidence for the presence of US identity memory, the second shortcoming may also lead to erroneous conclusions about its relationship with EC effects.
+To illustrate this point, imagine a sample of participants who did not form any US identity memory but remember the correct US valence for the majority of CSs presented during the learning phase.
+In the CS evaluation measure, these participant then use their US valence memory to derive CS evaluations, resorting to affect-as-information (or unbiased guessing) whenever they cannot remember the valence of the previously paired US.
+In a subsequent US identity measure with mixed response options, the participants perform informed guessing based on US valence memory and affect-as-information, resorting to unbiased guessing whenever both sources of informed guessing are absent.
+Regardless of whether guessing processes are independent or correlated across measures, such a sample will show a positive correlation between CS evaluations and performance in the US identity measure, resulting in artifactual evidence for a relationship between EC effects and (non-existent) US identity memory.
 
-```{r cache = TRUE}
-IDs <- 100
-CSs <- 24
-val <- c(rep("positive",12),rep("negative",12))
-z_USid <- rnorm(IDs,0,1)
-z_USval <- rnorm(IDs,0,1)
+While the first shortcoming (inferability of US valence from US identity memory) cannot be solved using standard memory measures, the second shortcoming (and its negative implications) can be easily overcome by using a US identity task that shows only USs of the correct valence.
+In such a single-valence US identity task, memory for the US valence or affect-as-information cannot be used for informed guessing of the previously paired US.
+Since differences in task performance can thus be driven only by differences in US identity memory, statistically significant relationships between memory task performance and EC effects may now deliver unequivocal support for the importance of explicit memory for the previously paired USs (as proposed, for example, by S-S models of EC; e.g., Baeyens, Eelen, Van den Bergh, & Crombez, 1992; Hammerl & Grabitz, 1996; Walther, Gawronski, Blank, & Langer, 2009).
+However, since the use of single-valence US identity tasks does nothing to resolve the first shortcoming, the statistical relationships between US identity memory and EC effects will still be nullified in linear regression analyses that include both memory measures as predictors.
+Taken together, these points show that full testability of competing EC accounts remains unattainable even when US identity memory is measured without contamination from informed guessing based on US valence memory or affect-as-information.
 
-ID_vector <- rep(1:IDs,each = CSs)
-CS_vector <- rep(1:CSs,IDs)
-val_vector <- rep(val,IDs)
-USid_vector <- rep(z_USid,each = CSs)
-USval_vector <- rep(z_USval,each = CSs)
-
-sim_data <- data.frame(id = ID_vector
-                       , cs = CS_vector
-                       , us_valence = val_vector
-                       , p_USid = 0
-                       , p_USval = pnorm(USval_vector)
-                       )
-
-for(i in 1:nrow(sim_data)){
-  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
-  sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USval[i])
-}
-
-sim_data$cs_rating <- NA
-sim_data$USid_guess <- NA
-sim_data$USval_guess <- NA
-sim_data$USid_resp <- NA
-sim_data$USval_resp <- NA
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$USval_mem[i]==0){
-    sim_data$USval_guess[i] <- rbinom(1,1,0.5)
-    if(sim_data$USval_guess[i]==1){
-      sim_data$USid_guess[i] <- rbinom(1,1,.25)
-    }
-    if(sim_data$USval_guess[i]==0){
-      sim_data$USid_guess[i] <- 0
-    }
-  }
-  if(sim_data$USval_mem[i]==1){
-    sim_data$USval_guess[i] <- 0
-    sim_data$USid_guess[i] <- rbinom(1,1,.25)
-  }
-}
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- 1
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- 1
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-}
-
-eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
-USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
-USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
-data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
-data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
-
-data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
-contrasts(data_agg3b$us_valence) <- "contr.sum"
-#summary(lm(data=data_agg3b, cs_rating ~ us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
-```
-
-A second shortcoming in current measures of CS-US pairing memory is the fact that memory for the US valence can be used to help guess the previously paired US (by restricting the number of possibly correct USs to those that have the correct US valence).
-Fortunately, this shortcoming can be avoided by using measures that include only USs that have the correct US valence (e.g., Stahl & Bading, 2020).
-However, in US identity measures that include positive and negative USs, this shortcoming can lead to erroneous conclusions about the relationship between EC and US identity memory (when US valence memory is not controlled for).
-
-To illustrate this point, imagine now a sample of participants who did not form any US identity memory but can remember the correct US valence for the majority of CSs presented during the learning phase.
-In the CS evaluation measure, these participant then use their US valence memory to derive CS evaluations, resorting to unbiased guessing or pre-existing attitudes whenever they cannot remember the US valence.
-In the US valence measure, the participants give correct responses whenever US valence memory is present and resort to unbiased guessing or pre-existing attitudes whenever US valence memory is absent.
-In the US identity measure (showing both positive and negative USs), the participants perform informed guessing when US valence memory is present (by considering only USs that have the correct valence) and resort to unbiased guessing (or informed guessing based on pre-existing attitudes) whenever US valence memory is absent.
-
-Regardless of whether guessing processes (across measures) are independent or correlated due to affect-as-information, such a sample will produce a positive correlation between the two memory measures as well as positive correlations between either memory measure and the measure of CS evaluation.
-This implies that analyses that do not control for US valence memory will erroneously suggest that EC effects were somehow related to US identity memory (when, in fact, no such memory was present in the sample of participants).
-However, since the US identity measure will not explain any additional variance in the CS evaluations (over and above to what is already explained by the US valence measure), a linear regression that includes both memory measures as predictors will rightfully reveal US valence memory as the sole predictor of EC effects.
-
-In principle, the second shortcoming is thus less problematic than the first (inferability of US valence from US identity): as long as US valence memory is controlled for, the true relationships between EC effects and the two types of pairing memory may be revealed by standard statistical analyses.
-However, it is important to note that such analyses will produce results that are indistinguishable from those obtained in the earlier thought experiment (where genuine EC effects were based on US identity memory).
-This implies that common measures of pairing memory may not deliver strong conclusions (about the respective contributions of US identity and US valence memory) when they reflect the true state of affairs.
-
-## Shortcoming 3: US identity and US valence measures may be biased by response tendencies
-
-```{r cache = TRUE}
-IDs <- 300
-CSs <- 100
-val <- c(rep("positive",50),rep("negative",50))
-z_USid <- rnorm(IDs,0,1)
-z_USvalpos <- rnorm(IDs,-1,1)
-z_USvalneg <- rnorm(IDs,-.5,1)
-
-ID_vector <- rep(1:IDs,each = CSs)
-CS_vector <- rep(1:CSs,IDs)
-val_vector <- rep(val,IDs)
-USid_vector <- rep(z_USid,each = CSs)
-USvalpos_vector <- rep(z_USvalpos,each = CSs)
-USvalneg_vector <- rep(z_USvalneg,each = CSs)
-
-sim_data <- data.frame(id = ID_vector
-                       , cs = CS_vector
-                       , us_valence = val_vector
-                       , p_USid = 0
-                       , p_USvalpos = pnorm(USvalpos_vector)
-                       , p_USvalneg = pnorm(USvalneg_vector)
-                       )
-
-for(i in 1:nrow(sim_data)){
-  sim_data$USid_mem[i] <- rbinom(1,1,sim_data$p_USid[i])
-  if(sim_data$us_valence[i]=="positive"){
-    sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USvalpos)
-  }
-  if(sim_data$us_valence[i]=="negative"){
-    sim_data$USval_mem[i] <- rbinom(1,1,sim_data$p_USvalneg)
-  }
-}
-
-sim_data$cs_rating <- NA
-sim_data$USid_guess <- NA
-sim_data$USval_guess <- NA
-sim_data$USid_resp <- NA
-sim_data$USval_resp <- NA
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$USval_mem[i]==0){
-    if(sim_data$us_valence[i]=="positive"){
-      sim_data$USval_guess[i] <- rbinom(1,1,.8)
-    }
-    if(sim_data$us_valence[i]=="negative"){
-      sim_data$USval_guess[i] <- rbinom(1,1,.2)
-    }
-    if(sim_data$USval_guess[i]==1){
-      sim_data$USid_guess[i] <- rbinom(1,1,.25)
-    }
-    if(sim_data$USval_guess[i]==0){
-      sim_data$USid_guess[i] <- 0
-    }
-  }
-  if(sim_data$USval_mem[i]==1){
-    sim_data$USval_guess[i] <- 0
-    sim_data$USid_guess[i] <- rbinom(1,1,.25)
-  }
-}
-
-for(i in 1:nrow(sim_data)){
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- 1
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  if(sim_data$us_valence[i]=="positive" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- 1
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==1){
-    sim_data$cs_rating[i] <- rnorm(1,-0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-  
-  if(sim_data$us_valence[i]=="negative" & sim_data$USval_mem[i]==0 & sim_data$USval_guess[i]==0){
-    sim_data$cs_rating[i] <- rnorm(1,0.5,1)
-    sim_data$USid_resp[i] <- sim_data$USid_guess[i]
-    sim_data$USval_resp[i] <- sim_data$USval_guess[i]
-  }
-}
-
-eval_agg3b <- aggregate(sim_data,FUN=mean,cs_rating~id*us_valence)
-USid_agg3b <- aggregate(sim_data,FUN=mean,USid_resp~id*us_valence)
-USval_agg3b <- aggregate(sim_data,FUN=mean,USval_resp~id*us_valence)
-data_agg3b <- merge(eval_agg3b,USid_agg3b,by = c("id","us_valence"))
-data_agg3b <- merge(data_agg3b,USval_agg3b,by = c("id","us_valence"))
-
-data_agg3b$us_valence <- factor(data_agg3b$us_valence, levels = c("positive","negative"))
-
-# apa_barplot(data_agg3b
-#             , id = "id"
-#             , dv = "USid_resp"
-#             , factors = c("us_valence"))
-# 
-# apa_barplot(sim_data
-#             , id = "id"
-#             , dv = "USval_resp"
-#             , factors = c("us_valence"))
-
-# apa_barplot(sim_data
-#             , id = "id"
-#             , dv = "USval_mem"
-#             , factors = c("us_valence"))
-
-contrasts(data_agg3b$us_valence) <- "contr.sum"
-#summary(lm(data=data_agg3b, cs_rating ~ us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USval_resp * us_valence))
-#summary(lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence))
-#mod4 <- lm(data=data_agg3b, cs_rating ~ USid_resp * USval_resp * us_valence)
-```
-
-```{r}
-#library(emmeans)
-#emtrends(mod4, specs = ~ us_valence, var = "USval_resp",infer=TRUE)
-```
-
-A third shortcoming in common pairing memory measures is the fact that their forced-choice format requires guessing (when the probed memory is absent), making them susceptible to bias from response tendencies towards positive (or negative) response options.
-When pairing memory is strong (e.g., because the learning phase included only a small number of distinct CS-US pairings), this shortcoming will be of little consequence (since guessing will be required only rarely).
-However, when pairing memory is rather low (e.g., because many different CS-US pairings were presented during the learning phase) and response tendencies are strong (e.g., due to a skewed US valence distribution during learning), biased guessing can cause severe problems in the estimation of CS-US pairing memory.
-
-To illustrate this point, imagine a sample of participants who worked through a learning phase that showed many different CSs of which a majority was paired with positive USs (while the remaining CSs were paired with negative USs).
-Due to the overall large number of presented stimuli, participants did not form any US identity memory but managed to develop US valence memory for a subset of CSs.
-Imagine, further, that the rarity of negative stimuli (in the learning phase) produced a processing advantage for CS-US pairings containing negative USs (Sperlich & Unkelbach, 2025), so that participants possessed relatively better US valence memory among negatively paired CSs than among positively paired CSs.
-Finally, imagine that, due to the skewed US valence distribution during learning, a majority of participants developed a strong tendency towards positive response options (since many more CS-US pairings included positive USs).
-
-In the CS evaluation measure, participants then use whatever US valence memory they developed (to derive CS evaluations), resorting to guessing whenever they cannot remember the US valence for a given CS.
-Similarly, in the US valence measure, participants give correct responses whenever US valence memory is present and resort to guessing whenever US valence memory is absent.
-Finally, in the US identity measure (including equal numbers of positive and negative USs), participants select responses based on a guessing process that is informed by US valence memory whenever present.
-Because of the response tendency developed by the majority of participants, the guessing processes will be correlated across measures and, most importantly, strongly biased towards positive response options.
-As a consequence, the US valence and US identity measures will show a relatively smaller share of correct responses among negatively paired CSs than among positively paired CSs, despite the fact that participants formed better US valence memory for the former than for the latter.
-
-Note that the imagined sample will also show larger mean EC effects for positively paired CSs (than for negatively paired CSs), despite the fact that genuinely conditioned attitudes are relatively more common among negatively paired CSs (than among positively paired CSs).
-Taken together, uncontrolled bias from response tendencies (towards positive or negative response options) may thus lead to erroneous conclusions not only about CS-US pairing memory but also about EC effects themselves.
-
-## Shortcoming 4: US identity and US valence measures may confound CS-US pairing and CS recognition memory
-As a fourth and final shortcoming, we address the fact that common pairing memory measures may confound CS-US pairing memory (the ability to remember the correct US or US valence for a given CS) and CS recognition memory (the ability to remember the CS itself).
+## Shortcoming 3: US identity and US valence measures may confound CS-US pairing and CS recognition memory
+As a third shortcoming, we address the fact that the currently used memory measures may confound CS-US pairing memory (the ability to remember the correct US or US valence for a given CS) and CS recognition memory (the ability to remember the CS itself).
 Empirically, this confound occurs when participants possess less-than-perfect CS recognition memory and thus resort to guessing in the US identity and US valence measures.
 Since lack of CS recognition memory and lack of CS-US pairing memory (for remembered CSs) have the same consequence (response generation based on guessing or affect-as-information), distinguishing between these two types of memory may seem inconsequential at first sight.
-However, there are a number of questions in EC research that do require a clear distinction between CS recognition and CS-US pairing memory.
+However, there are in a number of questions in EC research that do require a clear distinction between CS recognition and CS-US pairing memory.
 
 For example, in a widely cited study, Gast and Rothermund (2011) tested whether EC effects depend on a so-called valence focus, that is, a "tendency to attend to valent features ... and to evaluate objects" (p. 90) while observing the CS-US pairings.
 To investigate this possibility, Gast and Rothermund (2011) compared "valence task" conditions (where participants performed an evaluative judgment task during the learning phase) with control conditions (where participants performed a non-evaluative judgment task).
@@ -790,7 +218,7 @@ In this vein, it seems at least possible that different judgment tasks affect pa
 Similarly, the effects of experimental procedures that prevent conscious processing or reduce cognitive resources during learning may also be mediated primarily by reductions in CS recognition memory  (e.g., Stahl, Haaf, & Corneille, 2016; Mierop, Hütter, & Corneille, 2017).
 However, since current memory measures do not distinguish between lack of CS recognition memory and lack of CS-US pairing memory, response data from these measures may erroneously suggest that evaluative judgment tasks, suppression of conscious processing and resource depletion (as well as many other manipulations) moderate EC effects via targeted changes in CS-US pairing memory.
 
-# A solution to the identified measurement shortcomings: A multinomial processing tree model for memory involved in evaluative conditioning
+# A solution to the identified shortcomings: A multinomial processing tree model for memory involved in evaluative conditioning
 
 ```{r bla, out.width="100%"}
 file_name <- file.path(study_folders$paper,"mpt_wsw_model_exp3_KB2.pdf")
@@ -811,7 +239,6 @@ In the "Who said what?" paradigm, participants listen to tape-recorded statement
 In the subsequent measure of social categorization, participants are presented with individual statements and have to select the correct speaker from a set of response options that include individuals from both groups. 
 In its structure, this memory measure bears obvious resemblance to US identity measures in which participants are presented with individual CSs and have to select the correct US from a set of positive and negative response options.
 Moreover, standard usage of this memory measure involves the recoding of the selected speakers in terms of their social group, thereby mirroring US valence measures that result from recoding the selected USs in terms of their valence.
-<!--Finally, and in line with many US identity and US valence measures, the memory measure in the "Who said what?" paradigm does not include response options for indicating that a given statement or its speaker cannot be remembered (making it equally prone to confounding with recognition memory and to bias from response tendencies towards certain response options).-->
 Based on these structural similarities, we considered the possibility that the problems involved in the measurement of CS-US pairing memory can be overcome with the same tool that solves the problems connected to the measurement of social categorization [for further details, see @klauer_who_1998].
 We therefore decided to adapt the MPT model for the "Who said what?" paradigm to the purpose of measuring different forms of EC-related memory.
 
@@ -829,7 +256,7 @@ These MPT parameters represent the (conditional or unconditional) probabilities 
 To illustrate the relationships between MPT parameters and cognitive states, Figures 1 and 2 show each MPT parameter next to the branch that leads to the cognitive state whose probability it represents (see ellipses in Figures 1 and 2).
 
 In the MPT model, CS recognition memory is measured by the $D$ parameter which represents the unconditional probability to recognize the CSs (as old) and to detect the distractors (as new). 
-By estimating this parameter, the MPT model de-confounds CS recognition and CS-US pairing memory, thereby overcoming the fourth of the previously discussed shortcomings in standard memory measures.
+By estimating this parameter, the MPT model de-confounds CS recognition and CS-US pairing memory, thereby overcoming the third of the previously discussed shortcomings of the currently used memory measures.
 To measure US identity memory, the MPT model includes the $C$ parameter which represents the conditional probability to remember the previously paired US given that the CS was recognized as old.
 US valence memory is, in turn, measured by the $d$ parameter which represents the conditional probability to remember the correct US valence given that (a) the CS was recognized as old and (b) the previously paired US could not be remembered.
 By estimating US valence memory in the subset of (recognized) CSs without US identity memory, the MPT model avoids the first of the previously discussed shortcomings (that US valence may be inferred from US identity) and thereby ensures that the $d$ parameter (as the model's measure of US valence memory) represents a conceptually independent form of CS-US pairing memory.
@@ -838,11 +265,11 @@ The second shortcoming (that US valence may be used to guess US identity) is the
 Finally, the MPT model also estimates response tendencies in the CS recognition and US memory tasks.
 For the CS recognition task, the MPT model includes the $b$ parameter which represents the conditional probability for guessing "old" given that a CS (distractor) was not recognized as old (detected as new).
 For the US memory task, the $a$ parameter measures the probability for guessing that a CS or distractor had been paired with a positive US.
-By estimating this parameter, the MPT model avoids bias from response tendencies towards positive or negative response options (in its measures of CS-US pairing memory), thereby overcoming the third of the previously discussed shortcomings.
+By estimating this parameter, the MPT model avoids bias from response tendencies towards positive or negative response options in its measures of US identity and US valence memory.
 (Note that for CSs recognized or guessed as old, the guessed valence may be identical to the correct US valence. For these cases, the probability of guessing the correct US is again represented by the $g$ parameter.)
 
 In Figures 1 and 2, the six parameters have different subscripts in the three model trees (e.g., $D_{pos}$, $D_{neg}$ and $D_{new}$).
-These subscripts are meant to convey that, in principle, an MPT parameter may take different numerical values for different stimulus types, representing the idea that cognitive states may be more (or less) likely for some stimuli than for others (as in the earlier example in which US valence memory was stronger among negatively paired CSs than among positively paired CSs).
+These subscripts are meant to convey that, in principle, an MPT parameter may take different numerical values for different stimulus types, representing the idea that cognitive states may be more (or less) likely for some stimuli than for others.
 However, in concrete applications, the cognitive states may also have very similar probabilities for different stimulus types, so that the MPT parameters can be set equal across model trees without compromising the model's ability to explain the response data from the two-step memory task.
 Importantly, setting certain MPT parameters equal across model trees is also necessary for estimating the model in practical applications.
 As illustrated in Figures 1 and 2, the MPT model contains a total of 15 parameters, while the two-step memory task provides only eight independent response categories.
@@ -855,7 +282,7 @@ Note that, generally speaking, the 5-parameter model achieves more precise param
 Despite being more restrictive, the 5-parameter variant may thus be preferable to the 7-parameter model in empirical applications (given that the two model variants show similar ability to explain response data from the two-step memory task).
 
 # The present research
-To test the suitability of the MPT model we introduced as a solution to four shortcomings of common CS-US pairing memory measures on the one hand, and provide new insights into the relationships between EC, US valence memory, and US identity memory on the other hand, we report three experiments.
+To demonstrate the suitability of the proposed MPT model, on the one hand, and to provide new insights into the relationships between EC effects, US valence memory, and US identity memory on the other hand, we report three experiments.
 In the first experiment, we implemented an EC procedure (with images of human faces as CSs) that was followed by a two-step memory task and a CS evaluation task (in that order).
 We found that responses from the memory task were well explained by the 5-parameter model, demonstrating that EC-related memory can be measured with the MPT model adapted from @klauer_who_1998.
 In the second experiment, we implemented a similar EC procedure (with nonwords as CSs) and manipulated the order in which memory and evaluation tasks were administered after the learning phase.
@@ -945,45 +372,43 @@ After pressing the spacebar, participants worked through the learning task, cons
 The trials were separated by blank screens presented for 1,000 ms.
 On each trial, a CS (face image, center-left position) was presented together with a US (positive or negative image, center-right position).
 CS and US appeared at the same time and remained on screen for 1,000 ms.
-For each participant, trial order was randomized in sets of 24 trials.
-In each set (three in total), each of the 24 CS-US pairs was presented once.
-
+For each participant, trial order was randomized in three sets of 24 trials.
+In all three trial sets, each CS-US pair was presented once.
 After the last trial of the learning task, participants read the following instruction slide: "The first part of the experiment is now finished. You have now seen all image pairs and may continue with the second part of the experiment. Press the spacebar to continue."
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed two measurement tasks: a memory task followed by a CS evaluation task. 
-The order of the two tasks (memory task first) was the same for all participants.
+In the test phase, participants performed the two-step memory task followed by a CS evaluation task. 
+The task order was the same for all participants.
 
 ##### Memory task
 First, participants were presented with the following instruction slide: "In the second part of the experiment you will be presented with individual faces. Some of these faces were part of the previously presented image pairs. Other faces will be new: they were not part of the image pairs you saw in the previous task. For each face, please indicate whether it is 'old' (i.e., part of the previously presented image pairs) or 'new' (i.e., not part of the previously presented image pairs). Press the spacebar to continue."
 
 Next, participants read the following instruction slide: "Whenever you classify a face as 'old', you will be asked to perform a second task. In this second task, you will be presented with eight pictures. Your task will be to select the picture with which the face was previously paired with. If you can remember the paired picture, click on it and then click on the 'continue' button at the bottom of the screen. If you cannot remember the previously paired picture, try to guess the correct one. Again, click on the image corresponding to your guess and then on the "continue" button at the bottom of the screen. Ready? Then press the spacebar to continue."
 
-After pressing the spacebar, participants performed the memory task, consisting of 48 trials.
+After pressing the spacebar, participants performed the two-step memory task, consisting of 48 trials.
 In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 Each trial began with the CS recognition task: participants were asked whether the presented face image had been part of the image pairs presented in the learning phase.
 To indicate their response, participants were presented with two buttons labeled "Yes (old)" and "No (new)".
-If participants responded "No (new)", they proceeded to the next recognition memory trial.
+If participants responded "No (new)", they proceeded to the next trial of the CS recognition task.
 If participants responded "Yes (old)", they proceeded to the US memory task (in which they were asked to identify the previously paired US).
 In this task, the CS was presented together with eight USs from the learning phase.
 The eight US images were displayed in two rows of four images (with random assignment of images to positions).
-For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). 
-For distractor stimuli incorrectly classified as "old", eight randomly selected images (4 $\times$ positive, 4 $\times$ negative) were presented.
-
+For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractor stimuli (three images of the same valence as the correct US and four images of the opposite valence). 
+For distractor stimuli incorrectly classified as "old", eight randomly selected images (50% positive and 50% negative) were presented.
 After the last trial of the memory task, participants read the following instruction slide: "The second part of the experiment is now finished. Press the spacebar to continue with the third part."
 
 ##### CS evaluation task
 First, participants read the following instruction slide: "In the third part of the experiment, you will again be presented with the face images. This time you will be asked to indicate your impression of the persons depicted in the images. To indicate your impression of a given person, you will be presented with an 11-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your impression of the person depicted in a given image. Then click on the 'continue' button to proceed to the next face. Ready? Then press the spacebar to continue."
 
-After pressing the spacebar, particpants worked through the CS evaluation task, consisting of 48 trials.
-In the CS evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
-Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). (Note that participants responses were stored as numerical values ranging from 1 to 11.)
+After pressing the spacebar, participants worked through the CS evaluation task, consisting of 48 trials.
+In the CS evaluation task, the 24 CSs and the 24 distractor stimuli were again displayed individually and without time limit. 
+Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). 
+(Note that participants responses were stored as numerical values ranging from 1 to 11.)
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
-
 After the last trial of the CS evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 #### Control measures and debriefing
@@ -991,11 +416,11 @@ After pressing the spacebar, participants were asked whether they paid attention
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously." vs. "I have just clicked through, please discard my data.") were again presented as two buttons.
-Subsequently, participants were given the chance to comment on the study.
-Finally, participants were presented with the following text (debriefing them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
+Subsequently, participants had the chance to comment on the study.
+Finally, participants were presented with the following text (which debriefed them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
 After pressing the spacebar, participants were redirected to Prolific and reimbursed for their participation.
 
-### Data processing and statistical analysis
+### Data processing and statistical analyses
 The responses from the CS evaluation task were analyzed (without further processing) using the R package *stats*.
 For the MPT model analyses, the responses from the two-step memory task were first recoded into a joint memory index according to the following scheme:
 
@@ -1174,7 +599,7 @@ Specifically, the size of the parameter estimate indicates that participants sel
 
 ### Relationships between EC effects and MPT parameters
 
-(ref:exp1-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+(ref:exp1-regression-label) Experiment 1: Relationships between marginal EC effects and participant-level MPT parameters estimates from the unrestricted 5-parameter model. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
 ```{r exp1-regression, fig.cap = "(ref:exp1-regression-label)", fig.width = 11, fig.height = 8, out.width="100%"}
 model <- readRDS(file.path(study_folders$wsw1, "model-objects", "treestan.rds"))
@@ -1198,18 +623,9 @@ Similarly, for participant-level $C$ parameter estimates, we also found inconclu
 For participant-level $a$ parameter estimates, the linear regression model showed inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$a`.
 Finally, for participant-level $b$ parameter estimates, we also found inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$b`.
 
-<!-- The Bayes Factors quantifying evidence for or against relationships between MPT parameters and EC were inconclusive, all `r BF_summary`. -->
-<!-- If you want more detail, we can of course also provide standardized regression coefficients and Bayes factors. -->
-<!-- For instance, for parameter D, the standardized regression coefficent for $D$ was -->
-<!-- `r apa_model_lm$estimate$D`, -->
-<!-- and the corresponding Bayes Factor was -->
-<!-- `r apa_model_lm$statistic$D`. -->
-<!-- If you want to report both together, you can use -->
-<!-- `r apa_model_lm$full_result$D`. -->
-
 ## Discussion
 In Experiment 1, we used the MPT model to estimate EC-related memory in the context of a standard EC procedure.
-We found that responses from the two-step memory task were well described by the 5-parameter model (including joint $D$, $C$, $d$, $a$ and $b$ parameters).
+We found that responses from the two-step memory task were well described by the 5-parameters model (including joint $D$, $C$, $d$, $a$ and $b$ parameters).
 As expected, significant $D$ and $C$ parameters indicated that participants possessed robust CS recognition and US identity memory for a subset of CSs.
 Moreover, the significant $d$ parameter showed that participants possessed US valence memory (without concomitant US identity memory) for a subset of recognized CSs.
 To the best of our knowledge, this finding represents the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.
@@ -1222,7 +638,7 @@ In the following experiment, we addressed both of these issues.
 # Experiment 2
 In Experiment 2, we sought to replicate the core findings from Experiment 1 (significant $D$, $C$ and $d$ parameters) while boosting (individual) EC effects and obtaining more informative estimates of their relationships with participant-level MPT parameters.
 To boost EC effects, we used pronounceable non-words as CSs (which might be more neutral and thus easier to condition than the human faces used in the first experiment).
-In addition, we collected a larger number of participants (to achieve more precise estimates of the mean EC effect and of the relationships between individual EC effects and MPT parameter estimates).
+In addition, we collected data from a larger number of participants (to achieve more precise estimates of the mean EC effect and of the relationships between individual EC effects and MPT parameter estimates).
 Moreover, we also manipulated the order in which memory and CS evaluation tasks were performed after the learning phase.
 This task order manipulation was implemented to determine whether performance of the two-step memory task (prior to the CS evaluation task) undermines the measurement of EC effects (which might be another reason for the small effect size obtained in the previous experiment).
 Finally, implementing this manipulation also allowed us to compare the suitability of the two task order conditions for measuring different forms of EC-related memory with the MPT model.
@@ -1267,65 +683,66 @@ To avoid a final sample size smaller than $N = 156$ after applying the pre-regis
 ### Materials
 The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
-The CS pool comprised 54 nonwords made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*).
-The nonwords were taken from a previous EC study (Stahl & Bading, 2020).
-For each participant, 12 randomly selected nonwords served as positively paired CSs, 12 randomly selected nonwords served as negatively paired CSs, and another 24 randomly selected nonwords served as distractor stimuli in the test phase.
-
+The CS pool comprised 54 non-words made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*).
+The non-words were taken from a previous EC study (Stahl & Bading, 2020).
+For each participant, 12 randomly selected non-words served as positively paired CSs, 12 randomly selected non-words served as negatively paired CSs, and another 24 randomly selected non-words served as distractor stimuli in the test phase.
 As USs, we used the same 24 images as in Experiment 1.
 For each participant, the 24 images were randomly assigned to the 24 CSs.
 
 ### Measures and procedures
-We used JATOS [@lange_just_2015] to run the study online.
 All verbal materials were presented in English.
-The task instructions were similar to those provided in the first experiment (for details, see pre-registration).
+After providing informed consent and being asked to focus on the study, participants were thanked for their participation and asked to pay close attention to all instructions and tasks.
+Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
-Participants were told that they would see pairs of nonwords and images and were instructed to pay close attention to each pair.
-The learning phase consisted of 72 trials.
+First, participants read the following instruction slide: "In the first part of the experiment you will be presented with nonword-image pairs. The nonword will always be presented on the left, and the image will always be presented on the right. Your task is simply to pay close attention to each nonword-image pair. Press the spacebar to continue with the instructions."
+Subsequently, participants read the following instruction slide: "Next you will be presented with the nonword-image pairs. Please pay close attention to each pair. This part of the experiment will take about 2.5 minutes. Press the spacebar to start the task."
+
+After pressing the spacebar, participants worked through the learning task, consisting of 72 trials.
 The trials were separated by blank screens presented for 1,000 ms.
-On each trial, a nonword (CS, center-left position) was presented together with a valenced image (US, center-right position).
+On each trial, a CS (nonword, center-left position) was presented together with a US (positive or negative image, center-right position).
 CS and US appeared at the same time and remained on screen for 1,000 ms.
-For each participant, trial order was randomized in sets of 24 trials.
-In each set (three in total), each of the 24 CS-US pairs was presented once.
+For each participant, trial order was randomized in three sets of 24 trials.
+In all three trial sets, each CS-US pair was presented once.
+After the last trial of the learning task, participants read the following instruction slide: "The first part of the experiment is now finished. You have now seen all nonword-image pairs and may continue with the second part of the experiment. Press the spacebar to continue."
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed two measurement tasks: an evaluation task and a memory task. 
+In the test phase, participants performed the CS evaluation task and the two-step memory task. 
 Participants were randomly assigned to one of two task order conditions. 
-In the "evaluation first" condition, participants performed the evaluation task and then the memory task.
-The task order was reversed in the "memory first" condition.
-The wording of the task instructions differed slightly between task order conditions (for details, see pre-registration).
+In the "evaluation first" ("memory first") condition, participants performed the CS evaluation task (two-step memory task) followed by the two-step memory task (CS evaluation task).
+The task instructions were largely identical to those used in the first experiment but differed slightly between task order conditions (for details, see pre-registration).
 
 ##### Evaluation task
 In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
-Participants rated how positive or negative they found each nonword on a 8-point Likert scale ranging from "very negative" (1) to "very positive" (8).
+Participants rated how positive or negative they found each non-word on a 8-point Likert scale ranging from "very negative" (1) to "very positive" (8).
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
 ##### Memory task
-In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
-The 48 trials were separated by blank screens presented for 500 ms.
+In the two-step memory task, the 24 CSs and the 24 distractor stimuli were also displayed individually and without time limit.
+The 48 trials were again separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
-Each trial began with with the recognition memory task: participants were asked whether the nonword had been part of the nonword-image pairs presented in the learning phase.
+Each trial began with with the CS recognition task: participants were presented with a non-word and asked to indicate whether the non-word had been part of the nonword-image pairs displayed in the learning phase.
 To indicate their response, participants were presented with two buttons labeled "Yes (old)" and "No (new)".
-If participants responded "No (new)", they proceeded to the next recognition memory trial.
-If participants responded "Yes (old)", they proceeded to the associative memory task (in which they were asked to identify the previously paired US).
-In this task, the nonword was presented together with eight images (all of which had been shown as USs during the learning phase).
+If participants responded "No (new)", they proceeded to the next trial of the CS recognition task.
+If participants responded "Yes (old)", they proceeded to the US memory task.
+In this task, the non-word was presented together with eight images (all of which had been shown as USs during the learning phase).
 The eight images were displayed in two rows of four images (with random assignment of images to positions).
-For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (3 images of the same valence as the correct US; 4 images of the opposite valence). 
-For distractor stimuli incorrectly classified as "old", eight randomly selected images (4 $\times$ positive, 4 $\times$ negative) were presented.
+For CSs that were correctly recognized as "old", the correct US was presented together with seven randomly selected distractors (three images of the same valence as the correct US and four images of the opposite valence). 
+For distractor stimuli incorrectly classified as "old", eight randomly selected images (four positive and four negative) were presented.
 Participants were instructed to guess the correct option if they could not remember the previously paired US.
 
 #### Control measures and debriefing
-After the test phase, participants were asked whether they paid attention to the nonwords and images presented throughout the experiment.
+After the test phase, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
-Subsequently, participants were given the chance to comment on the study.
+Subsequently, participants had the chance to comment on the study.
 Finally, participants were debriefed about the purpose of the study and then redirected to Prolific.
 
-### Data processing and statistical analysis
+### Data processing and statistical analyses
 
 ```{r}
 exp2_ratings <- data_list_exp2$rating
@@ -1347,7 +764,7 @@ We first calculated individual EC effects (by substracting the mean evaluative r
 These individual EC effects were then analyzed with a  between-subjects ANOVA that included task order as the only factor.
 In addition, the mean EC effects in the two task order conditions were tested against zero using one-tailed t-tests ($\alpha=.05$).
 As preregistered, we also performed complementary analyses on the evaluative ratings for "old" CSs and "new" distractors.
-However, to simplify the results sections, the results of these analyses are reported in an online supplement (see OSF repository).
+To simplify the results section, the results of these analyses are reported in an online supplement (see OSF repository).
 
 #### Memory data
 ```{r}
@@ -1411,14 +828,16 @@ t.evalfirst <- apa_print(t.test(evalfirst$ec_effect,mu=0,alternative="greater"))
 
 ```
 
+```{r}
+# par(mfrow=c(1,1))
+# apa_beeplot(data= exp2_ratings_wide,id = "sid", dv = "ec_effect", factors = c("task_order"))
+```
+
 The between-subjects ANOVA revealed a significant intercept, `r exp2_ec_anova$full_result$Intercept`, and a non-significant main effect of task order, `r exp2_ec_anova$full_result$task_order`.
 The significant intercept indicated robust EC across task order conditions (`r mean_ec`, `r sd_ec`).
 Moreover, the mean EC effect was significant in the "memory first" condition, `r t.memfirst$full_result`, as well as in the "evaluation first" condition, `r t.evalfirst$full_result`. 
 
 ### MPT model analyses
-
-(ref:exp2-TBmodel-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment 1. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
-
 
 ```{r model-performance}
 # prepare_table <- function(x) {
@@ -1549,8 +968,8 @@ variable_labels(df) <- list(
 
 apa_table(
   df[c(5, 4, 3, 7, 6, 2, 1), ]
-  , caption = "Parameter estimates (posterior medians with 95\\% credible intervals) based on a hierarchical extension of the unrestricted who-said-what model with task order as categorical predictor of individual parameter estimates."
-  , col_spanners = list("overall" = 2:3, "evaluation first" = c(4, 5),"memory first" = c(6, 7))
+  , caption = "Experiment 2: Parameter estimates (posterior medians with 95\\% credible intervals) based on the hierarchical extension of the unrestricted 7-parameter model with task order as categorical predictor of individual parameter estimates."
+  , col_spanners = list("Overall" = 2:3, "Evaluation first" = c(4, 5),"Memory first" = c(6, 7))
   , escape = FALSE
   , align = c("l", rep("c", ncol(df) - 2), "r")
   , note = "One-sided $p$ values"
@@ -1558,9 +977,29 @@ apa_table(
 
 ```
 
+Measures of (absolute and relative) model fit for the unrestricted 7-parameters model and the restricted model variants are reported in Table\ \@ref(tab:model-performance).
+Parameter estimates and credible intervals from the unrestricted 7-parameters model (as a function of task order) can be found in Table\ \@ref(tab:exp1-param).
+
+For $D$, $C$ and $b$ parameters, the results were similar to those obtained in the first experiment.
+As reported in Table\ \@ref(tab:model-performance), setting $D$, $C_{pos}$ or $C_{neg}$ to zero led to inadequate fit and substantial increases in the WAIC.
+These results imply that, as in Experiment 1, participants possessed robust CS recognition and US identity memory for a subset of CSs.
+Moreover, setting $b$ parameters to $.5$ also resulted in inadequate model fit and a substantial increase in the WAIC.
+This result shows that, as in the previous experiment, participants had a tendency towards guessing "new" whenever they did not recognize a CS as old (or detect a distractor as new).
+For the $d$ parameters, the present results differed from those obtained in the first experiment.
+As reported in Table\ \@ref(tab:model-performance), setting $d_{pos}$ or $d_{neg}$ to zero resulted in adequate model fit and negligible changes in the WAIC.
+<!-- Also report test from 5-parameters model. -->
+Taken together, these results imply that, in the present experiment, we did not find robust evidence for US valence memory in the absence of US identity memory.
+Finally, setting the $a$ parameter to $.5$ also resulted in adequate model fit and a negligible change in the WAIC (see Table\ \@ref(tab:model-performance)).
+In the present experiment, we therefore did not obtain evidence for a response tendency towards images of a certain valence (positive vs. negative) in the US memory task.
+
+To compare MPT parameter estimates across task order conditions, we calculated the posterior differences between group means and their associated Bayesian $p$\ values (see Table\ \@ref(tab:exp1-param)).
+For the $D$ parameter, the group mean in the "memory first" condition was substantially higher than the group mean in the "evaluation first" condition.
+For the $b$ parameter, the effect of task order was reversed: the group mean was substantially higher in the "evaluation first" condition than in the "memory first" condition.
+For the remaining MPT parameters, the posterior differences between group mean were insubstantial.
+
 ### Relationships between EC effects and MPT parameters
 
-(ref:exp2-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 2. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+(ref:exp2-regression-label) Experiment 2: Relationships between marginal EC effects and participant-level MPT parameters estimates from the unrestricted 5-parameters model. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
 ```{r exp2-regression, fig.cap = "(ref:exp2-regression-label)", fig.width = 11, fig.height = 8, out.width="100%"}
 model <- readRDS(file.path(study_folders$wsw2_main, "model-objects", "treestan.rds"))
@@ -1587,9 +1026,8 @@ BFs <- apa_print(BFs)
 apa_model_lm <- apa_print(model, part = "lm")
 ```
 
-Figure\ \@ref(fig:exp3-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
-We again tested the relationships between participant-level parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
-
+Figure\ \@ref(fig:exp3-regression) shows the relationships between participant-level MPT parameter estimates and marginal EC effects.
+As in Experiment 1, we calculated the Bayes Factors for the slopes in the linear-regression part of the joint model (to test the relationships between participant-level parameter estimates and EC effects).
 The linear regression model revealed strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
 For participant-level $D$ parameter estimates, we found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$D`.
 Similarly, for participant-level $C$ parameter estimates, we also found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$C`.
@@ -1607,8 +1045,48 @@ apa_table(
 ```
 
 ## Discussion
+In the present experiment, the mean EC effect was clearly significant and unaffected by task order which suggests that the two-step memory task can be administered prior to the CS evaluation task without detriment to the measurement of EC effects.
+Moreover, responses from the memory task were well described by the MPT model in both task order conditions, suggesting that both implementations ("memory first" vs. "evaluation first") may be principally suitable for estimating CS-US pairing memory with the adapted MPT model.
+This interpretation received additional support from the fact that, at the group level, $C$ and $d$ parameters were unaffected by task order (suggesting that CS-US pairing memory remained unaltered by prior performance of the CS evaluation task).
+
+At the same time, we found that both MPT parameters related to the CS recognition task were moderated by task order: while participant-level $D$ parameters were overall larger in the "memory first" condition, participant-level $b$ parameters were overall larger in the "evaluation first" condition.
+These task order effects on $D$ and $b$ parameters are well explained by differences in task difficulty (unpaired distractors are harder to detect if they are already familiar from the CS evaluation task) and suggest that a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required.
+
+Although participant-level $D$ parameters were reduced in the "evaluation first" condition, both task order conditions showed CS recognition and US identity memory for a substantial number of CSs, thereby replicating the significant $D$ and $C$ parameters from the first experiment.
+By contrast, the significant $d$ parameter (from Experiment 2) was not replicated in the present experiment.
+This implies that, at the group level, Experiment 2 did not provide robust evidence for US valence memory in the absence of US identity memory.
+However, we also found strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects.
+Taken together, these results suggest that the significant (group-level) EC effect was driven by a subset of participants that developed US valence memory (without concomitant US identity memory) during the learning phase.
+
+Based on the present findings, we can only speculate why the majority of participants did not possess much US valence memory (in the subset of CSs without US identity memory).
+A possible explanation comes from previous research conducted by Gast and Rothermund (2011).
+As explained above, Gast and Rothermund (2011) showed that EC effects and CS-US pairing memory were boosted by a valence focus (which was induced through an evaluative judgment task performed during the learning phase).
+In the present experiment, participants did not perform such a judgment task nor were they otherwise alerted to stimulus valence as a relevant factor (e.g., by mentioning valence in the instructions presented prior to the learning phase).
+As a consequence, a majority of participants may have observed the CS-US pairings without processing the USs in terms of their valence (resulting in low levels of US valence memory and small EC effects), while only a minority of participants operated under a spontaneous or otherwise activated valence focus (thus developing higher levels of US valence memory and larger EC effects).
+To probe this "valence focus" explanation for the emergence and size of the $d$ parameter, we decided to conduct a third and final experiment.
 
 # Experiment 3
+The present experiment had several inter-connected aims.
+First of all, we wanted to replicate Gast and Rothermund's (2011) valence focus effect on evaluative conditioning.
+To this aim, we used similar materials as in Gast and Rothermund's (2011) Experiment 2 and compared EC effects between two groups that performed different judgment tasks while observing the CS-US pairings.
+In the "valence focus" condition, participants performed an evaluative judgment task by indicating whether they had a positive or negative impression of the CS-US pairings presented in the learning phase.
+In the "age focus" condition, participants performed a non-evaluative judgment task by indicating whether the presented CS-US pairings appeared to them as typically young or typically old.
+In both of these task focus conditions, EC effects were measured directly after the learning phase (in a CS evaluation task similar to the one used in the original experiment).
+In line with Gast and Rothermund (2011), we expected to find larger EC effects in the "valence focus" condition than in the "age focus" condition.
+
+As our second aim, we sought to replicate Gast and Rothermund's (2011) valence focus effects on US identity and US valence memory, using the newly introduced MPT model.
+In Gast and Rothermund's (2011) Experiments 1 and 3, US identity memory was measured with a standard US identity task showing a mixed set of response options (50% positive USs and 50% negative USs), while US valence memory was measured by recoding the selected USs (from the US identity task) in terms of their valence.
+For both measures and experiments, Gast and Rothermund (2011) found significant valence focus effects (i.e., better task performance in the "valence focus" condition than in the respective control condition).
+As explained above, the memory measures used by Gast and Rothermund (2011) suffer from a number of shortcomings that make it impossible to disentangle the respective contributions of US identity memory, US valence memory and CS recognition memory (to the reported increases in task performance in the two memory measures).
+In the present experiment, we overcame these shortcomings by implementing the two-step memory task and quantifying EC-related memory with the newly proposed MPT model (instead of with the standard memory measures used by Gast and Rothermund [2011]).
+Aside from disentangling (potential) changes in CS recognition and CS-US pairing memory, this MPT modeling approach also allowed us to test whether the formation of US valence memory (without concomitant US identity memory) requires a focus on valence while observing the CS-US pairings.
+In line with this "valence focus" explanation of US valence memory, we expected a larger $d$ parameter in the "valence focus" condition than in the "age focus" condition.
+
+As a third and final aim, we sought to re-examine the roles of US identity and US valence memory in the mediation of the valence focus effect on evaluative conditioning.
+In Experiment 3, Gast and Rothermund (2011) reported a multiple mediation analysis suggesting a mediation (of the valence focus effect on evaluative conditioning) by increased levels of US valence memory but not by changes in US identity memory.
+However, as explained earlier, multiple regression analyses (and, by implication, multiple mediation analyses) that include non-independent measures of US identity and US valence memory as competing predictors (of individual EC effects) cannot produce unequivocal evidence for (against) a relationship between US valence memory (US identity memory) and evaluation conditioning.
+In the present experiments, these limitations were overcome by conducting a multiple mediation analysis with participant-level MPT parameters as competing predictors of individual EC effects.
+By including independent measures of CS recognition, US identity and US valence memory as potential mediators (while controlling for response tendencies in the underlying measurement task), we sought to attain a clearer understanding of the valence focus effect reported by Gast and Rothermund (2011).
 
 ```{r}
 # from MB:
@@ -1633,7 +1111,7 @@ The experiment was pre-registered on the OSF.
 The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
 The data collection was conducted online.
 
-### Participants
+### Design and participants
 
 ```{r}
 
@@ -1668,144 +1146,157 @@ n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_co
 
 ```
 
+The experiment followed a 2 (*US valence*: positive vs. negative) $\times$ 2 (*US age*: young vs. old) $\times$ 2 (*task focus*: valence focus vs. age focus) mixed design.
+The first factor varied within participants and the second factor varied between participants.
+
 Participants were recruited through Prolific and received monetary compensation for their participation.
 We collected a quota sample with approximately equal shares of male and female participants.
 The sampling pool was restricted to Prolific users (1) whose first language is English, (2) who live in the USA or in the United Kingdom, and (3) who have at least 20 previous submissions and a Prolific approval rate of at least 90%.
-Prolific users who participated in previous pretests and experiments (conducted by the members of the current team of authors) using the same materials were excluded from the sampling pool.
+As before, Prolific users who had participated in previous pretests and experiments were excluded from the sampling pool.
 
 We recruited 142 participants (`r prop_sex$Female` female; `r age`).
-As pre-registered,
-we excluded `r length(unique(unlist(data_list$excluded_participants)))` participants
-who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data").
-Taken together, this resulted in a final sample size of `r sum(n_sex)` participants (`r n_conditions$valence` in the valence focus condition and `r n_conditions$age` in the age focus condition).
+As pre-registered, we excluded all participants who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data"), resulting in a sample of 105 non-excluded participants (52 in the "valence focus" condition and 53 in the "age focus" condition).
 
 The number of recruited participants was based on a pre-registered sampling plan (see OSF repository).
-We pre-registered a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of data collection within the pre-registered sample size range).
-The minimum sample size ($N=52$ participants per learning task focus condition) was based on a power analyses for the two-way interaction between US valence and learning task focus.
-In this power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting our directional prediction about the interaction pattern).
-The effect size of the US valence $\times$ task focus interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in a pilot study).
+We pre-registered a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of the data collection within the pre-registered sample size range).
+The minimum sample size ($N=52$ participants per task focus condition) was based on a power analyses for the two-way interaction between US valence and task focus.
+As mentioned above, we expected larger EC effects in the "valence focus" condition than in the "age focus" condition.
+In the power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting our directional prediction about the interaction pattern).
+Based on the results of a pilot study, the effect size of the US valence $\times$ task focus interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).
 In a first round of data collection, we recruited participants until the minimum sample size (after applying exclusion criteria) was reached.
-Based on the available data, we then fitted the pre-registered MPT model (see below) and calculated Bayes factors comparing a nested version of the model with $d_\textrm{valence-focus}=d_\textrm{age-focus}$ to the baseline model with free $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ (for details, see section "Data processing and statistical analyses").
-The data collection was discontinued at this point because the first stopping criteria was met: the Bayes factor in favor of the baseline model exceeded 10 (i.e., we found strong evidence for the presence of a learning task focus effect on the $d$ parameter).
-
-### Design
-The experiment followed a 2 (*US valence*: positive vs. negative) $\times$ 2 (*US age*: young vs. old) $\times$ 2 (*task focus*: valence focus vs. age focus) mixed design.
-The first factor varied within participants and the second factor varied between participants.
+Based on the available data, we fitted the pre-registered 10-parameter model (estimating joint $D$, $C$, $d$, $a$ and $b$ parameters separately for the two task focus conditions).
+Using Bayes factors, we then compared the unrestricted 10-parameter model with a restricted 9-parameter model in which $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ were set equal (for details, see section "Data processing, statistical analyses and predictions").
+The data collection was discontinued at this point because the first stopping criteria was met: the Bayes factor in favor of the unrestricted 10-parameter model exceeded 10 (i.e., we found strong evidence for the presence of an effect of task focus on the $d$ parameter).
+The full list of stopping criteria can be found in the preregistration (see OSF repository).
 
 ### Materials
 The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
 The CS pool comprised 48 colored images of middle-aged human faces with neutral expressions (24 female faces, 24 male faces).
 The images were taken from the FACES database (Ebner, Riediger, & Lindenberger, 2010) and optimized with an AI image optimization tool.
+For each participant, 12 randomly selected face images (50% female) served as positively paired CSs (i.e., they were paired with a positive US during the learning phase), 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images served as distractor stimuli in the test phase.
 
 The US pool comprised 24 adjectives describing human traits, with six adjectives in each US valence $\times$ US age condition.
 Based on a pilot study, we selected six adjectives describing traits that are positive and more typical for younger (than for older) people (*energetic*, *flexible*, *lively*, *open-minded*, *optimistic*, *strong* ), six adjectives describing traits that are positive and more typical for older (than for younger) people (*calm*, *dignified*, *nurturing*, *patient*, *realistic*, *wise*), six adjectives describing traits that are negative and more typical for younger (than for older) people (*careless*, *impulsive*, *naive*, *selfish*, *spoilt*, *self-absorbed*), and six adjectives describing traits that are negative and more typical for older (than for younger) people (*demented*, *feeble*, *frail*, *rigid*, *stubborn*, *self-weak*). 
-
-For each participant, 12 randomly selected face images (50% female) served as positively paired CSs (i.e., they were paired with a positive US during the learning phase), 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images served as distractor stimuli in the test phase.
-
 For each participant, all 24 adjectives served as USs during the learning phase. 
 The 24 adjectives were randomly assigned to the 24 CSs.
 Six CSs (50% female) were paired with positive and "younger" USs, six CSs (50% female) were paired with positive and "older" USs, six CSs (50% female) were paired with negative and "younger" USs, and six CSs (50%) were paired with negative and "older" USs.
 
 ### Measures and procedures
 All verbal materials were presented in English.
-After providing informed consent and being asked to focus on the study,
-participants were thanked for their participation and asked to carefully read all instructions and perform the tasks.
+After providing informed consent and being asked to focus on the study, participants were thanked for their participation and asked to pay close attention to all instructions and tasks.
 Subsequently, participants were presented with the instructions for the learning phase.
 
 #### Learning phase
-All participants read the following instructions:
-"In the first part of the experiment you will be presented with photographs of faces (called 'faces' below) shown together with adjectives that denote human traits (called 'traits' below).
-Each face will be paired with a single trait.
-For each face-trait pair, the trait will be presented first. 
-After a brief delay, the face will appear underneath.
-Please pay close attention to all traits and faces.
-Each face-trait pair will be presented for a limited time.
-Your task will be to form an impression of each face-trait pair."
+First, all participants read the following instruction slide: "In the first part of the experiment you will be presented with photographs of faces (called 'faces' below) shown together with adjectives that denote human traits (called 'traits' below). Each face will be paired with a single trait. For each face-trait pair, the trait will be presented first. After a brief delay, the face will appear underneath. Please pay close attention to all traits and faces. Each face-trait pair will be presented for a limited time. Your task will be to form an impression of each face-trait pair."
 
-Next, depending on the learning task focus condition (valence focus or age focus), participants read:
-"Specifically, you will have to indicate whether you think each face-trait pair is rather 'negative' ['typically old'] or rather 'positive' ['typically young'].
-Press the spacebar to continue with the instructions."
+The wording of the second instruction slide differed between task focus conditions.
+Participants in the "valence focus" condition saw the following instruction slide: "Specifically, you will have to indicate whether you think each face-trait pair is rather 'positive' or rather 'negative'. Press the spacebar to continue with the instructions."
+Participants in the "age focus" condition saw a modified version of the slide: "Specifically, you will have to indicate whether you think each face-trait pair is rather 'typically old' or rather 'typically young'. Press the spacebar to continue with the instructions."
+For each participant, the positions of the two category labels ('positive' vs. 'negative'; 'typically old' vs. 'typically young') were randomly determined.
 
-The ordering of the two category labels in the presented sentence was randomly determined for each participant anew (valence focus condition: "positive first" vs. "negative first"; age focus condition: "typically old first" vs. "typically young first").
-Note that the key assignment in the learning phase matched the ordering of the category labels in the instructions (e.g., when the "positive" label was mentioned first [i.e., further to the left in the sentence], the "positive" response was assigned to the left-hand key [A]).
+The wording of the third instruction slide also differed between task focus conditions.
+Participants in the "valence focus" condition saw the following instruction slide: "Next, you will be presented with the face-trait pairs. Again, your task is to form an impression of each face-trait pair. You need to carefully look at both the faces and traits being presented. Please indicate whether you think each pair is rather 'positive' or rather 'negative'. If you think the pair is rather 'positive', press 'A' on your keyboard. If you think the pair is rather 'negative', press 'L' on your keyboard. Although the presentation time is limited, please try your best to provide a response on each face-trait pair. This part of the experiment will take about 8 minutes. When you are ready, press the spacebar to start the task. (This may take a few seconds.)"
+Participants in the "age focus" condition saw a modified version of this slide: "Next, you will be presented with the face-trait pairs. Again, your task is to form an impression of each face-trait pair. You need to carefully look at both the faces and traits being presented. Please indicate whether you think each pair is rather 'typically old' or rather 'typically young'. If you think the pair is rather 'typically old', press 'A' on your keyboard. If you think the pair is rather 'typically young', press 'L' on your keyboard. Although the presentation time is limited, please try your best to provide a response on each face-trait pair. This part of the experiment will take about 8 minutes. When you are ready, press the spacebar to start the task. (This may take a few seconds.)"
+The positions of the two category labels were consistent across sentences and matched those from the second instruction slide.
+Note that key assignment in the learning phase also matched the ordering of the category labels in the two instruction slides (e.g., when the 'positive' label was mentioned first [i.e., further to the left in the sentence], the 'positive' response was assigned to the left-hand key [A]).
 
-The instructions continued as follows: 
-"Next, you will be presented with the face-trait pairs.
-Again, your task is to form an impression of each face-trait pair. You need to carefully look at both the faces and traits being presented.
-Please indicate whether you think each pair is rather 'negative' ['typically old'] or rather 'positive' ['typically old'].
-If you think the pair is rather 'negative' ['typically old'], press 'A' on your keyboard.
-If you think the pair is rather 'positive' [typically young'], press 'L' on your keyboard. 
-Although the presentation time is limited, 
-please try your best to provide a response on each face-trait pair.
-This part of the experiment will take about 8 minutes.
-When you are ready, press the spacebar to start the task.
-(This may take a few seconds.)"
-
-Subsequently, participants worked through the learning task, consisting of 72 trials.
-Each trial started with a US presented alone in green lower-case letters against a black background at the top of the screen. After 1,000 ms, the CS appeared right below the US. 
+After pressing the spacebar, participants worked through the learning task, consisting of 72 trials.
+Each trial started with a US shown at a central position in the top half of the screen. 
+The US was presented in green letters (against a black background).
+After 1,000 ms, the CS appeared right below the US (in a central position in the middle of the screen). 
 The CS-US pair remained on screen for 4,000 ms.
-Participants had to respond within 3,000 ms after the onset of the US (by pressing the "A" or "L" key).
-If participants responded in time, three hyphens appeared below the CS-US pair right after participants had entered a response (to indicate that the response was recorded).
-If participants did not respond in time (i.e., within the 3,000 ms), the text "no response" appeared in red below the CS-US pair for 1,000 ms.
-The CS-US pair then disappeared and the message "No response. Press the spacebar to continue." was displayed (in red) at the bottom of the screen (without time limit).
-The trials were separated by empty screens presented for 2500 ms.
-For each participant, trial order was randomized in sets of 24 trials.
-In each set (three in total), each of the 24 CS-US pairs was presented once.
-
-After the learning phase, the following text was displayed: "The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. 
-Press the spacebar to continue."
+On each trial, the judgment task had to be performed within 3,000 ms after the onset of the US (by pressing the "A" or "L" key).
+If participants responded in time, three hyphens appeared below the CS-US pair right after participants had entered a response (to indicate that the response was being recorded).
+After 1,000 ms, the CS-US pair and the three hyphens were replaced by an empty screen.
+After 2,500 ms, the next trial started with the appearance of another US.
+If participants did not respond in time (i.e., within 3,000 ms after US onset), the text "no response" appeared below the CS-US pair.
+The text was presented in red letters and remained on screen for 1,000 ms.
+Next, the CS-US pair and the "no response" text were replaced by the following text: "No response. Press the spacebar to continue." 
+The text was presented in red letters and without time limit (in the lower half of the screen).
+After pressing the spacebar, participants saw an empty screen before the next trial started with the appearance of another US (after 2,500 ms).
+For each participant, trial order was randomized in three sets of 24 trials.
+In all three trial sets, each 24 CS-US pair was presented once.
+After the last trial of the learning phase, participants in both task focus conditions saw the following instruction slide: "The first part of the experiment is now finished! You have now seen all face-trait pairs and may continue with the second part of the experiment. Press the spacebar to continue."
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed two measurement tasks: an evaluation task followed by a memory task. 
-The order of the two tasks (evaluation task first) was the same for all participants.
-The task instructions can be found in the pre-registration (see OSF repository).
+In the test phase, participants performed two measurement tasks: the CS evaluation task followed by the two-step memory task. 
+Task order and instructions were identical for all participants.
 
-##### Evaluation task
-In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
-Participants rated how positive or negative they found each face on a 8-point Likert scale ranging from "very negative" (1) to "very positive" (8).
+##### CS evaluation task
+First, participants were presented with the following instruction slide: "In the second part of the experiment, you will be presented with individual faces. Please indicate your personal evaluation of the presented faces. To do so, you will be presented with an 8-point scale ranging from very negative (left) to very positive (right). Please click on the scale point that best represents your evaluation of a given face. When you are ready, press the spacebar to start the task."
+After pressing the spacebar, participants started with the CS evaluation task, consisting of 48 trials.
+As in the previous experiments, the 24 CSs and the 24 distractor stimuli were displayed individually and without time limit. 
+Participants rated how positive or negative they found each face on a 8-point rating scale ranging from "very negative" (1) to "very positive" (8).
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
 ##### Memory task
-In the memory task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit.
+First, participants read the following two instruction slides: (1) "In the third part of the experiment, you will again be presented with faces. Some of these faces were part of the face-trait pairs you saw in the first part of this experiment. Other faces were not shown in the first part of this experiment: these faces were not part of the face-trait pairs you saw in the first part of this experiment.mFor each face, please indicate whether it is ”shown” (i.e., part of the face-trait pairs you saw) or “not shown” (i.e., NOT part of the face-trait pairs you saw). Press the spacebar to continue with the instructions."; (2) "Whenever you classify a face as ‘shown’, you will be asked to perform a second task. In this second task, you will be presented with 16 traits. Your task will be to select the trait with which the face was paired in the first part of this experiment. If you remember the paired trait, click on it. If you cannot remember the previously paired trait, try to guess the correct one. Click on the trait corresponding to your guess. When you are ready, press the spacebar to start the task."
+
+After pressing the spacebar, participants started with the two-step memory task, consisting of 48 trials.
+The 24 CSs and the 24 distractor stimuli were again displayed individually and without time limit.
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
-
-Each trial began with with the recognition memory task: participants were asked whether the face had been shown as part of the face-image pairs presented in the learning phase.
+Each trial began with with the CS recognition task.
 To indicate their response, participants were presented with two buttons labeled "Shown" and "Not shown".
-(Note that we used these response labels [instead of "old" and "new"] to avoid confusion with the response labels in the age focus task.)
-If participants responded "Not shown", they proceeded to the next recognition memory trial.
-If participants responded "Shown", they proceeded to the associative memory task (in which they were asked to identify the previously paired US).
+We used these response labels (instead of "old" and "new" as in the previous experiments) to avoid confusion with the response labels that were used in the non-evaluative judgment task ('typically old' vs. 'typically young').
+If participants responded "Not shown", they proceeded to the next trial of the CS recognition task.
+If participants responded "Shown", they proceeded to the US memory task.
 In this task, the face image was presented together with 16 adjectives (four adjectives per US valence $\times$ US age condition).
 Note that all presented adjectives had been shown as USs during the learning phase.
 The 16 adjectives were displayed as buttons organized in three rows (with six buttons in the upper two rows and four buttons in the bottom row).
-For truly "shown" faces, the correct US was presented on a randomly selected button, while the remaining buttons were filled with 15 randomly selected USs that have been paired with other CSs.
-For new faces (erroneously classified as "shown"), the buttons will be filled with 16 randomly selected USs. 
-After clicking on one of the 16 USs, participants were presented with a blank screen (500 ms) followed by the next trial (i.e., they were presented with a screen showing another face, the recognition task question, and the two response options).
+For CSs correctly classified as "shown", the previously paired US was presented on a randomly selected button, while the remaining buttons were filled with 15 randomly selected USs that had been paired with other CSs.
+For distractors stimuli (erroneously classified as "shown"), the buttons were filled with 16 randomly selected USs. 
+After clicking on one of the 16 USs, participants were presented with a blank screen (500 ms) followed by the next trial of the CS recognition task.
 
 #### Control measures and debriefing
-After the test phase, participants were presented with a total of three control measures (all of which were used were as exclusion criteria).
+After the test phase, participants were presented with a total of three control measures (all of which were used as exclusion criteria).
 First, participants were presented with a screen showing four long sentences in a single paragraph.
-The first three sentences referred to attitude research and through length and writing style was meant to discourage participants from reading the whole text. 
+The first three sentences were long and convoluted (including general statements about attitude research).
+Through length and writing style, these sentences were meant to discourage participants from reading the whole text. 
 In the very last sentence of the text, participants were instructed to ignore the upcoming question about their exercise habits (in order to demonstrate that they had read the entire passage). 
 On the next screen, participants were presented with a list of seven physical activities and were asked to indicate which of these activities they perform regularly (by ticking a small box next to the respective activity). 
 After having ticked all relevant boxes (or none at all), participants proceeded to the next screen by clicking on the "Continue" button displayed at the bottom of the screen.
-Subsequently, participants were asked whether they paid attention to the nonwords and images presented throughout the experiment.
+Subsequently, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
-Next, participants were asked whether they took the requested responses seriously [based on @aust_seriousness_2013].
+Next, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
-Afterwards, participants were given the chance to comment on the study.
+Afterwards, participants had the chance to comment on the study.
 Finally, participants were debriefed about the purpose of the study and then redirected to Prolific.
 
-### Data processing and statistical analysis
+### Data processing, statistical analyses and predictions
+#### CS evaluations
+We followed the preregistered protocol without exceptions.
+We first calculated individual EC effects (by substracting the mean evaluative rating of negatively paired CSs from the mean evaluative rating for positively paired CSs).
+Next, we compared the mean EC effect in the "valence focus" condition to the mean EC effect in the "task focus" condition, using a t-test for independent samples ($\alpha=.05$).
+As predicted, the mean EC effect was larger in the "valence focus" condition than in the "age focus" condition; we therefore conducted a one-sided test.
+Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sided t-tests ($\alpha=.05$).
+As preregistered, we also performed a 2 (US valence: positive vs. negative) $\times$ 2 (task focus: valence focus vs. age focus) mixed ANOVA on the CS evaluations.
+To simplify the results section, the results of this analysis are reported in an online supplement (see OSF repository).
+
+#### Memory data
+As before, we implemented the preregistered protocol without exceptions.
+The responses from the two-step memory task were recoded into a joint memory index according to the same scheme that was used in the previous experiments (see above).
+Next, the frequency distribution of the joint memory index (aggregated across participants)
+was analyzed with a Bayesian implementation of the MPT model, which is available in
+the R packages TreeBUGS (Heck, Arnold, & Arnold, 2018) and MPTmultiverse (Singmann,
+Heck, Barth, & Aust, 2020; see also Singmann et al., 2024). 
+For each MPT parameter and, we used (default) Beta priors with α = β = 1, resulting in a uniform prior distribution in the unit interval. 
+We used these default priors for the unrestricted 10-parameter model and for all nested model variants.
+<!-- We first fitted the preregistered 10-parameter model in which joint $D$, $C$, $d$, $a$ and $b$ parameters were estimated separately for the two task focus conditions. -->
+
 
 ## Results
 
+### CS evaluations
+
+### MPT model analyses
+
 ### Relationships between evaluative ratings and MPT parameters
 
-(ref:exp3-regression-label) Relationships between individual-level MPT model parameters and marginal EC effects in Experiment\ 3. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+(ref:exp3-regression-label) Experiment 3: Relationships between marginal EC effects and participant-level MPT parameters estimates from the unrestricted 5-parameter model. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
 ```{r exp3-regression, fig.cap = "(ref:exp3-regression-label)", fig.width = 11, fig.height = 8, out.width="100%"}
 model <- readRDS(file.path(study_folders$wsw3_joint, "model-objects", "treestan.rds"))
@@ -1903,6 +1394,33 @@ apa_table(
 ## Discussion 
 
 # General discussion
+
+- no evidence for S-S models of EC, but testability of EC accounts: trait-multicollinearity between C and d --> no evidence for S-S models?
+
+- possible sources of the d parameter: semantic confusions (arguments against: re-analysis X1; positive stimuli more similar but dpos = dneg in all experiments; X3: confusability constant across conditions bur no small d parameter in age-focus condition), affect-as-information based on pre-existing attitudes (controlled by the model), US valence memory vs. affect-as-information based on conditioned attitudes --> hard to distinguish, future research needed
+
+- possible applications: testing effects of US distribution on memory and EC effects (Sperlich & Unkelbach)
+
+
+
+<!-- ## Shortcoming 4: US identity and US valence measures may be biased by response tendencies -->
+<!-- As a final shortcoming of the currently used memory measures, we address the fact that their forced-choice format requires guessing (when the probed memory is absent), making them susceptible to bias from response tendencies towards positive or negative response options. -->
+<!-- When pairing memory is strong (e.g., because the learning phase included only a small number of distinct CS-US pairings), this shortcoming will be of little consequence (since guessing will be required only rarely). -->
+<!-- However, when pairing memory is rather low (e.g., because many different CS-US pairings were presented during the learning phase) and response tendencies are strong (e.g., due to a skewed US valence distribution during learning), biased guessing can cause severe problems in the estimation of CS-US pairing memory. -->
+
+<!-- To illustrate this point, imagine a sample of participants who worked through a learning phase that showed many different CSs of which a majority was paired with positive USs (while the remaining CSs were paired with negative USs). -->
+<!-- Due to the overall large number of presented stimuli, participants did not form any US identity memory but managed to develop US valence memory for a subset of CSs. -->
+<!-- Imagine, further, that the rarity of negative stimuli (in the learning phase) produced a processing advantage for CS-US pairings containing negative USs (Sperlich & Unkelbach, 2025), so that participants possessed relatively better US valence memory among negatively paired CSs than among positively paired CSs. -->
+<!-- Finally, imagine that, due to the skewed US valence distribution during learning, a majority of participants developed a strong tendency towards positive response options (since many more CS-US pairings included positive USs). -->
+
+<!-- In the CS evaluation measure, participants then use whatever US valence memory they developed (to derive CS evaluations), resorting to guessing whenever they cannot remember the US valence for a given CS. -->
+<!-- Similarly, in the US valence measure, participants give correct responses whenever US valence memory is present and resort to guessing whenever US valence memory is absent. -->
+<!-- Finally, in the US identity measure (including equal numbers of positive and negative USs), participants select responses based on a guessing process that is informed by US valence memory whenever present. -->
+<!-- Because of the response tendency developed by the majority of participants, the guessing processes will be correlated across measures and, most importantly, strongly biased towards positive response options. -->
+<!-- As a consequence, the US valence and US identity measures will show a relatively smaller share of correct responses among negatively paired CSs than among positively paired CSs, despite the fact that participants formed better US valence memory for the former than for the latter. -->
+
+<!-- Note that the imagined sample will also show larger mean EC effects for positively paired CSs (than for negatively paired CSs), despite the fact that genuinely conditioned attitudes are relatively more common among negatively paired CSs (than among positively paired CSs). -->
+<!-- Taken together, uncontrolled bias from response tendencies (towards positive or negative response options) may thus lead to erroneous conclusions not only about CS-US pairing memory but also about EC effects themselves. -->
 
 # References
 
