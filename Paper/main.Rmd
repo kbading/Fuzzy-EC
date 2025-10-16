@@ -71,7 +71,7 @@ library(HMMTreeC)
 if(!requireNamespace("magick", quietly = FALSE)) install.packages("magick")
 set_sum_contrasts()
 
-r_refs("r-references.bib")
+#r_refs("r-references.bib")
 
 project_root <- rprojroot::find_rstudio_root_file()
 
@@ -828,11 +828,6 @@ t.evalfirst <- apa_print(t.test(evalfirst$ec_effect,mu=0,alternative="greater"))
 
 ```
 
-```{r}
-# par(mfrow=c(1,1))
-# apa_beeplot(data= exp2_ratings_wide,id = "sid", dv = "ec_effect", factors = c("task_order"))
-```
-
 The between-subjects ANOVA revealed a significant intercept, `r exp2_ec_anova$full_result$Intercept`, and a non-significant main effect of task order, `r exp2_ec_anova$full_result$task_order`.
 The significant intercept indicated robust EC across task order conditions (`r mean_ec`, `r sd_ec`).
 Moreover, the mean EC effect was significant in the "memory first" condition, `r t.memfirst$full_result`, as well as in the "evaluation first" condition, `r t.evalfirst$full_result`. 
@@ -1066,6 +1061,10 @@ As a consequence, a majority of participants may have observed the CS-US pairing
 To probe this "valence focus" explanation for the emergence and size of the $d$ parameter, we decided to conduct a third and final experiment.
 
 # Experiment 3
+```{r}
+data_list_exp3 <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
+```
+
 The present experiment had several inter-connected aims.
 First of all, we wanted to replicate Gast and Rothermund's (2011) valence focus effect on evaluative conditioning.
 To this aim, we used similar materials as in Gast and Rothermund's (2011) Experiment 2 and compared EC effects between two groups that performed different judgment tasks while observing the CS-US pairings.
@@ -1272,7 +1271,9 @@ We followed the preregistered protocol without exceptions.
 We first calculated individual EC effects (by substracting the mean evaluative rating of negatively paired CSs from the mean evaluative rating for positively paired CSs).
 Next, we compared the mean EC effect in the "valence focus" condition to the mean EC effect in the "task focus" condition, using a t-test for independent samples ($\alpha=.05$).
 As predicted, the mean EC effect was larger in the "valence focus" condition than in the "age focus" condition; we therefore conducted a one-sided test.
-Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sided t-tests ($\alpha=.05$).
+Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sample t-tests ($\alpha=.05$).
+In the "valence focus" condition, we performed a one-sided test because the mean EC effect larger than zero (as predicted).
+In the "age focus" condition, the mean EC effect was below zero; we therefore conducted a two-sided test.
 As preregistered, we also performed a 2 (US valence: positive vs. negative) $\times$ 2 (task focus: valence focus vs. age focus) mixed ANOVA on the CS evaluations.
 To simplify the results section, the results of this analysis are reported in an online supplement (see OSF repository).
 Note that, as preregistered, participants who gave the same response on each trial of the CS evaluation task ($N=2$) were excluded from all analyses.
@@ -1307,10 +1308,46 @@ As in Experiments 1 and 2, we tested the relationships between participant-level
 To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the indirect effects of the five MPT parameters ($D$, $C$, $d$, $a$ and $b$) and the direct effect of task focus, using the independent-paths method proposed by @liu_bayesian_2023.
 
 ## Results
+### EC effects
+```{r}
+exp3_ratings <- data_list_exp3$rating
+exp3_ratings_sd <- aggregate(exp3_ratings,evaluative_rating ~ sid, FUN = sd)
+exp3_ratings_sd <- subset(exp3_ratings_sd, evaluative_rating > 0)
+exp3_ratings <- subset(exp3_ratings,sid %in% exp3_ratings_sd$sid)
+exp3_ratings_wide <- subset(data_list_exp3$rating_wide,sid %in% exp3_ratings_sd$sid)
+```
 
-### CS evaluations
+```{r}
+exp3_ec_anova <- apa_print(aov_ez(data = exp3_ratings_wide, id = "sid", dv = "ec_effect", between=c("task_focus"),anova_table = list(intercept=TRUE)),intercept=TRUE,estimate="ges")
+
+mean_ec <- paste0("$M_{EC}=",round(mean(exp3_ratings_wide$ec_effect),2),"$")
+sd_ec <- paste0("$SD_{EC}=",round(sd(exp3_ratings_wide$ec_effect),2),"$")
+
+exp3_ec_t <- apa_print(t.test(data = exp3_ratings_wide, ec_effect ~ task_focus,alternative="less"))
+
+valfocus <- subset(exp3_ratings_wide,task_focus=="valence")
+agefocus <- subset(exp3_ratings_wide,task_focus=="age")
+t.val <- apa_print(t.test(valfocus$ec_effect,mu=0,alternative="greater"))
+t.age <- apa_print(t.test(agefocus$ec_effect,mu=0))
+
+mean_val <- paste0("$M_{EC}=",round(mean(valfocus$ec_effect),2),"$")
+sd_val <- paste0("$SD_{EC}=",round(sd(valfocus$ec_effect),2),"$")
+
+mean_age <- paste0("$M_{EC}=",round(mean(agefocus$ec_effect),2),"$")
+sd_age <- paste0("$SD_{EC}=",round(sd(agefocus$ec_effect),2),"$")
+
+```
+
+The mean EC effect in the "valence focus" condition (`r mean_val`, `r sd_val`) was significantly larger than zero, `r t.val$full_result`, while the mean EC effect in the "age focus" condition (`r mean_age`, `r sd_age`) did not differ from zero, `r t.age$full_result`.
+As expected, the mean EC effect in the "valence focus" condition was significantly larger than the mean EC effect in the "age focus" condition, `r exp3_ec_t$full_result`.
 
 ### MPT model analyses
+```{r exp3-param}
+
+```
+
+Parameter estimates and credible intervals from the unrestricted 10-parameters model can be found in Table\ \@ref(tab:exp3-param).
+
 
 ### Relationships between evaluative ratings and MPT parameters
 
