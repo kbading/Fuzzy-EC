@@ -42,6 +42,24 @@ apa_print.summary.traitMPT <- function(
 }
 
 
+apa_print.simpleMPT <- function(x, ...) {
+  apa_print(summary(x), ...)
+}
+
+apa_print.summary.simpleMPT <- function(
+    x
+    , estimate = c("Mean", "Median", "50%")
+    , estimate_label = NULL
+    , ...) {
+  
+  apa_print.summary.traitMPT(
+    x, parameter = "mean", estimate = estimate, estimate_label = estimate_label
+  )
+}
+
+
+
+
 apa_fit <- function(x) {
   with(
     as.list(x$summary$fitStatistics$overall)

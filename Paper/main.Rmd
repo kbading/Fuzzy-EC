@@ -1061,6 +1061,7 @@ As a consequence, a majority of participants may have observed the CS-US pairing
 To probe this "valence focus" explanation for the emergence and size of the $d$ parameter, we decided to conduct a third and final experiment.
 
 # Experiment 3
+
 ```{r}
 data_list_exp3 <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
 ```
@@ -1342,8 +1343,72 @@ The mean EC effect in the "valence focus" condition was significantly larger tha
 As expected, the mean EC effect in the "valence focus" condition was significantly larger than the mean EC effect in the "age focus" condition, `r exp3_ec_t$full_result`.
 
 ### MPT model analyses
-```{r exp3-param}
 
+```{r exp3-param}
+models <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "simple-mpt.rds"))
+BFs    <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "simple-mpt-BFs.rds"))
+
+df <- apa_print(models$baseline)
+
+parameter_labels <- c(
+  a = "$a$"
+  , b = "$b$"
+  , C = "$C$"
+  , D = "$D$"
+  , d = "$d$"
+)
+group_labels <- c(
+  x1   = "Age"
+  , x2 = "Valence"
+)
+
+df$parameter <- parameter_labels[gsub(attr(df, "sanitized_term_names"), pattern = "_.*$", replacement = "")]
+df$group <- group_labels[gsub(attr(df, "sanitized_term_names"), pattern = ".*_", replacement = "")]
+df$term <- NULL
+df_wide <- tidyr::pivot_wider(
+  df
+  , values_from = c("estimate", "conf.int")
+  , names_from = "group"
+  , names_vary = "slowest"
+) |>
+  label_variables(parameter = "Parameter")
+df_wide <- df_wide[c(5, 3, 4, 1, 2), ]
+
+# Compare baseline model with other models
+BFs_print <- data.frame(
+  model = names(BFs$posterior[-1L])
+  , logBF =  log(BFs$posterior[[1L]]) - log(BFs$posterior[-1L])
+  , row.names = NULL
+) |> within({
+  strong_evidence <- ifelse(abs(logBF) > log(10), "yes", "no")
+  BF_01 <- exp(-logBF)
+  BF_10 <- exp( logBF)
+  BF_01 <- ifelse(BF_01 > 1000, "> 1,000", apa_num(BF_01, digits = 2L))
+  BF_10 <- ifelse(BF_10 > 1000, "> 1,000", apa_num(BF_10, digits = 2L))
+})
+
+BF_10 <- split(BFs_print, BFs_print$model) |>
+  lapply(function(x) {
+    paste0("$\\mathit{BF}_{10} ", papaja::add_equals(x$BF_10), "$")
+  })
+BF_01 <- split(BFs_print, BFs_print$model) |>
+  lapply(function(x) {
+    paste0("$\\mathit{BF}_{01} ", papaja::add_equals(x$BF_01), "$")
+  })
+
+
+
+apa_table(
+  cbind(df_wide, BF_10 = BFs_print[1:5, "BF_10"]) |>
+    label_variables(BF_10 = "$\\mathit{BF}_{10}$")
+  , col_spanners = list(
+    "Age focus"       = c(2, 3)
+    , "Valence focus" = c(4, 5)
+  )
+  , caption = "Parameter estimates from Experiment 3. Posterior means and 95\\% credible intervals. Bayes Factors for difference"
+  , escape = FALSE
+  , align = "c"
+)
 ```
 
 Parameter estimates and credible intervals from the unrestricted 10-parameters model can be found in Table\ \@ref(tab:exp3-param).

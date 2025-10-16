@@ -149,16 +149,16 @@ hypothesis_restrictions <- list(
   , d_equal = list(d = c("d_x1", "d_x2"))
   , a_equal = list(a = c("a_x1", "a_x2"))
   , b_equal = list(b = c("b_x1", "b_x2"))
-  # , Dage0   = list("D_x1=0")
-  # , Dval0   = list("D_x2=0")
-  # , Cage0   = list("C_x1=0")
-  # , Cval0   = list("C_x2=0")
-  # , dage0   = list("d_x1=0")
-  # , dval0   = list("d_x2=0")
-  # , bage5   = list("b_x1=0.5")
-  # , bval5   = list("b_x2=0.5")
-  # , aage5   = list("a_x1=0.5")
-  # , aval5   = list("a_x2=0.5")
+  , D_age_0   = list(D_x1=0)
+  , D_val_0   = list(D_x2=0)
+  , C_age_0   = list(C_x1=0)
+  , C_val_0   = list(C_x2=0)
+  , d_age_0   = list(d_x1=0)
+  , d_val_0   = list(d_x2=0)
+  , b_age_5   = list(b_x1=0.5)
+  , b_val_5   = list(b_x2=0.5)
+  , a_age_5   = list(a_x1=0.5)
+  , a_val_5   = list(a_x2=0.5)
 )
 
 models <- lapply(
@@ -208,7 +208,7 @@ simple_mpt <- lapply(
     simpleMPT(
       eqnfile = file.path(study_folder, "WSW_exp3.eqn")
       , data = colSums(mpt_data)
-      , restrictions = lapply(c(baseline_restrictions, x), FUN = paste, collapse = " = ")
+      , restrictions = legacy_restrictions(c(baseline_restrictions, x))
       , n.iter   = 2e5L
       , n.burnin = 1e5L
       , n.thin   = 2e1L
@@ -218,7 +218,10 @@ simple_mpt <- lapply(
     )
   }
 )
-BFs <- BayesFactorMPT(simple_mpt, cores = 4L)
+saveRDS(simple_mpt, file = file.path(study_folder, "model-objects", "simple-mpt.rds"))
+
+BFs <- BayesFactorMPT(simple_mpt, cores = parallel::detectCores())
+saveRDS(BFs, file = file.path(study_folder, "model-objects", "simple-mpt-BFs.rds"))
 
 # Compare baseline model with other models
 data.frame(
