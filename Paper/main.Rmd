@@ -1301,7 +1301,10 @@ We used these default priors for the unrestricted 10-parameter model and for all
 
 ```{r}
 models <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "simple-mpt.rds"))
-BFs    <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "simple-mpt-BFs.rds"))
+BFs    <- readRDS(file.path(study_folders$wsw3_main, "model-objects", "simple-mpt-BFs.rds")) |>
+  within({
+    posterior <- pmax(posterior, .Machine$double.eps)
+  })
 
 df <- apa_print(models$baseline)
 
@@ -1351,13 +1354,14 @@ BF_01 <- split(BFs_print, BFs_print$model) |>
     paste0("$\\mathit{BF}_{01} ", papaja::add_equals(x$BF_01), "$")
   })
 
+model_fit <- apa_fit(models$baseline)
 
 
 ```
 
 We first fitted the preregistered 10-parameter model in which joint $D$, $C$, $d$, $a$ and $b$ parameters were estimated separately for the two task focus conditions.
 To assess model fit, we calculated the posterior-predictive fit statistic T1 (Klauer, 2010) together with its corresponding posterior-predictive p value. 
-The unrestricted 10-parameter model achieved adequate fit, xxx.
+The unrestricted 10-parameter model achieved adequate fit, `r model_fit$T1`.
 We then tested each MPT parameter against its neutral value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters).
 To this aim, we fitted ten 9-parameter models each of which included a different parameter restriction (e.g., $D_{valence}=0$)
 Each of these nested models was then compared to the unrestricted 10-parameter model, using the Bayes Factor.
