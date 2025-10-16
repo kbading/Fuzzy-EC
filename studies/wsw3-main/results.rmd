@@ -240,14 +240,14 @@ data.frame(
 
 ## Latent-trait MPT model
 
-```{r}
+```{r eval = FALSE}
 model <- readRDS(file.path(study_folder, "model-objects", "trait-mpt.rds"))
 summary(model)
 ```
 
 ## Mediation analysis
 
-```{r}
+```{r  eval = FALSE}
 individual_parameters <- as.data.frame(getParam(model, parameter = "theta"))
 # individual_parameters$sid <- rownames(individual_parameters)
 
@@ -270,7 +270,7 @@ data <- merge(data, as.data.frame(rating_wide), by = c("sid", "task_focus"))
 ```
 
 
-```{r}
+```{r  eval = FALSE}
 z <- function(x) {as.numeric(scale(x))}
 
 data <- within(data, {
@@ -310,7 +310,7 @@ sem(mediation_syntax, data = data) |>
   summary(standardized=TRUE)
 ```
 
-```{r}
+```{r eval = FALSE}
 ec_lm <- lm(formula = ec_effect ~ D * C * d, data = data)
 ec_lm |>
   marginaleffects::plot_predictions(condition = c("d", "C"))
@@ -325,7 +325,7 @@ emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
   summary(infer = TRUE)
 ```
 
-```{r three-way-interaction}
+```{r three-way-interaction,  eval = FALSE}
 ec_lm |>
   marginaleffects::plot_predictions(condition = c("d", "C", "D"))
 
@@ -341,7 +341,7 @@ emtrends(ec_lm, var = "d", specs = ~ C + D, at = conditions[2:3]) |>
 
 ```
 
-```{r}
+```{r eval = FALSE}
 par(mfrow = c(1, 3))
 plot(d ~ C, data = data, pch = 16)
 abline(a = 0, b = 1)
@@ -351,7 +351,7 @@ plot(C ~ D, data = data, pch = 16)
 
 
 
-```{r}
+```{r eval = FALSE}
 lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
   ggeffect(terms = ~ d:D) |>
   plot(show_data = TRUE)
@@ -362,7 +362,7 @@ lm(formula = ec_effect ~ D * C * d + task_focus, data = data) |>
 
 ### with unconditional probabilities of US-valence and US-identity memory as predictors
 
-```{r}
+```{r eval = FALSE}
 # hist(data$p_us_identity)
 # hist(data$p_us_valence)
 data$ln_us_identity <- qnorm(data$p_us_identity)
