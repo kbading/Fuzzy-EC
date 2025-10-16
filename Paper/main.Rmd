@@ -1338,7 +1338,7 @@ sd_age <- paste0("$SD_{EC}=",round(sd(agefocus$ec_effect),2),"$")
 
 ```
 
-The mean EC effect in the "valence focus" condition (`r mean_val`, `r sd_val`) was significantly larger than zero, `r t.val$full_result`, while the mean EC effect in the "age focus" condition (`r mean_age`, `r sd_age`) did not differ from zero, `r t.age$full_result`.
+The mean EC effect in the "valence focus" condition was significantly larger than zero, `r t.val$full_result`, while the mean EC effect in the "age focus" condition did not differ from zero, `r t.age$full_result`.
 As expected, the mean EC effect in the "valence focus" condition was significantly larger than the mean EC effect in the "age focus" condition, `r exp3_ec_t$full_result`.
 
 ### MPT model analyses
