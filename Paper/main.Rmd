@@ -1253,10 +1253,10 @@ After clicking on one of the 16 USs, participants were presented with a blank sc
 
 #### Control measures and debriefing
 After the test phase, participants were presented with a total of three control measures (all of which were used as exclusion criteria).
-First, participants were presented with a screen showing four long sentences in a single paragraph.
-The first three sentences were long and convoluted (including general statements about attitude research).
+First, participants saw a screen showing four sentences presented in a single paragraph.
+The first three sentences were long and convoluted, presenting general statements about attitude research.
 Through length and writing style, these sentences were meant to discourage participants from reading the whole text. 
-In the very last sentence of the text, participants were instructed to ignore the upcoming question about their exercise habits (in order to demonstrate that they had read the entire passage). 
+In the very last sentence of the text, participants were instructed to ignore the upcoming question about their exercise habits (by not selecting any of the presented options) in order to demonstrate that they had read the entire passage. 
 On the next screen, participants were presented with a list of seven physical activities and were asked to indicate which of these activities they perform regularly (by ticking a small box next to the respective activity). 
 After having ticked all relevant boxes (or none at all), participants proceeded to the next screen by clicking on the "Continue" button displayed at the bottom of the screen.
 Subsequently, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
@@ -1279,14 +1279,28 @@ To simplify the results section, the results of this analysis are reported in an
 #### Memory data
 As before, we implemented the preregistered protocol without exceptions.
 The responses from the two-step memory task were recoded into a joint memory index according to the same scheme that was used in the previous experiments (see above).
-Next, the frequency distribution of the joint memory index (aggregated across participants)
-was analyzed with a Bayesian implementation of the MPT model, which is available in
-the R packages TreeBUGS (Heck, Arnold, & Arnold, 2018) and MPTmultiverse (Singmann,
-Heck, Barth, & Aust, 2020; see also Singmann et al., 2024). 
-For each MPT parameter and, we used (default) Beta priors with α = β = 1, resulting in a uniform prior distribution in the unit interval. 
+Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with a Bayesian implementation of the MPT model, using
+the R packages TreeBUGS (Heck, Arnold, & Arnold, 2018) and MPTmultiverse (Singmann, Heck, Barth, & Aust, 2020; see also Singmann et al., 2024). 
+For each MPT parameter and, we used (default) Beta priors with $\alpha = \beta = 1$, resulting in a uniform prior distribution in the unit interval. 
 We used these default priors for the unrestricted 10-parameter model and for all nested model variants.
-<!-- We first fitted the preregistered 10-parameter model in which joint $D$, $C$, $d$, $a$ and $b$ parameters were estimated separately for the two task focus conditions. -->
 
+We first fitted the preregistered 10-parameter model in which joint $D$, $C$, $d$, $a$ and $b$ parameters were estimated separately for the two task focus conditions.
+To assess model fit, we calculated the posterior-predictive fit statistic T1 (Klauer, 2010) together with its corresponding posterior-predictive p value. 
+The unrestricted 10-parameter model achieved adequate fit, xxx.
+We then tested each MPT parameter against its neutral value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters).
+To this aim, we fitted ten 9-parameter models each of which included a different parameter restriction (e.g., $D_{valence}=0$)
+Each of these nested models was then compared to the unrestricted 10-parameter model, using the Bayes Factor.
+Next, we tested the effect of task focus on each MPT parameter ($D$, $C$, $d$, $a$ and $b$).
+To this aim, we fitted another five 9-parameter models each of which included a different parameter restriction: (1) $D_{valence}=D_{age}$, (2) $C_{valence}=C_{age}$, (3) $d_{valence}=d_{age}$, (4) $a_{valence}=a_{age}$, and (5) $b_{valence}=b_{age}$.
+As before, these nested models were compared to the unrestricted 10-parameter model, using the Bayes Factor.
+In line with the previously introduced "valence focus" explanation, we expected a larger $d$ parameter in the "valence focus" condition than in the "age focus" condition.
+Based on the findings of a pilot study (in which we assessed the suitability of the present materials and procedures), we also expected larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" as well as a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
+For the $a$ parameter, no effect of task focus was expected.
+
+As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in the probabilistic programming language *Stan* [@carpenter_stan_2016].
+To this aim, we estimated a joint model of [1] participant-wise frequency distributions of the joint memory index and [2] individual EC effects, including task focus as a categorical predictor in both model parts.
+As before, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
+To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the indirect effects of the five MPT parameters ($D$, $C$, $d$, $a$ and $b$) and the direct effect of task focus, using the independent-paths method proposed by @liu_bayesian_2023.
 
 ## Results
 
