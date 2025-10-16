@@ -71,7 +71,7 @@ excluded_participants <- list(
 
 data <- subset(
   data
-  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs & !(sid %in% unlist(excluded_participants))
+  , sports == 1 & pay_attention == 1 & serious == 1 & !url.srid %in% test_runs ##& !(sid %in% unlist(excluded_participants))
   , select = c("sid","sender","consent","duration","ended_on","pay_attention","serious","response","response_action","sports","comment_study","count_trial_learning","cs","us","us_valence","us_age","uss","resp_pos_learning","count_trial_memory","idtarg","reco_resp","idx_us","count_trial_ratings","evaluative_rating","task_focus")
 ) |>
   label_variables(
@@ -94,7 +94,8 @@ memory$source_mem_resp <- unlist(Map(x = memory$uss, i = memory$idx_us, f = `[`)
 
 USs <- list(
   positive = c("patient", "realistic", "optimistic", "strong", "dignified", "open-minded", "flexible", "wise", "lively", "calm", "nurturing", "energetic")
-)
+  ,old = c("patient", "realistic", "demented", "dignified", "feeble", "frail", "nurturing", "wise", "rigid", "calm", "stubborn", "weak")
+  )
 
 memory$mpt_response <- with(memory, {
   tree <- rep("New", length(us_valence))
@@ -105,21 +106,66 @@ memory$mpt_response <- with(memory, {
   
   chosen_valence <- rep("neg", length(source_mem_resp))
   chosen_valence[source_mem_resp %in% USs$positive] <- "pos"
-  
   correct_US <- ifelse(source_mem_resp==correct_us_source, "cor", "incor")
-  condition  <- 
   
   mpt_response <- paste0(tree, "new")
   idx <- reco_resp == "old"
   mpt_response[idx] <- paste0(tree[idx], chosen_valence[idx], correct_US[idx])
   mpt_response
+  # 
+  # mpt_response_age <- paste0(tree, "new")
+  # idx <- reco_resp == "old"
+  # mpt_response_age[idx] <- paste0(tree_age[idx], chosen_age[idx], correct_US[idx])
+  # mpt_response_age
+  
+  
+  #condition  <- 
 })
+
+memory$mpt_response_age <- with(memory, {
+  # tree <- rep("New", length(us_valence))
+  # us_valence <- as.character(us_valence)
+  # us_valence[is.na(us_valence)] <- "dist"
+  # tree[us_valence == "positive"] <- "PosUS"
+  # tree[us_valence == "negative"] <- "NegUS"
+  # 
+  # chosen_valence <- rep("neg", length(source_mem_resp))
+  # chosen_valence[source_mem_resp %in% USs$positive] <- "pos"
+  
+  tree_age <- rep("New", length(us_age))
+  us_age <- as.character(us_age)
+  us_age[is.na(us_age)] <- "dist"
+  tree_age[us_age == "old"] <- "OldUS"
+  tree_age[us_age == "young"] <- "YoungUS"
+  
+  chosen_age <- rep("young", length(source_mem_resp))
+  chosen_age[source_mem_resp %in% USs$old] <- "old"
+  correct_US <- ifelse(source_mem_resp==correct_us_source, "cor", "incor")
+  
+  mpt_response_age <- paste0(tree_age, "new")
+  idx <- reco_resp == "old"
+  mpt_response_age[idx] <- paste0(tree_age[idx], chosen_age[idx], correct_US[idx])
+  mpt_response_age
+  
+  
+  #condition  <- 
+})
+
+
+
+
 memory$mpt_response_condition <- paste0(memory$mpt_response, ifelse(memory$task_focus =="age", "_x1", "_x2"))
+memory$mpt_response_age_condition <- paste0(memory$mpt_response_age, ifelse(memory$task_focus =="age", "_x1", "_x2"))
 
 unique(memory$mpt_response)
+unique(memory$mpt_response_age)
 level_order <- MPTinR::check.mpt(file.path(study_folder, "WSW_exp3.eqn"))$eqn.order.categories
 
 memory$mpt_response_condition <- factor(memory$mpt_response_condition, levels = level_order)
+level_order_age <- MPTinR::check.mpt(file.path(study_folder, "WSW_exp3_age.eqn"))$eqn.order.categories
+
+memory$mpt_response_age_condition <- factor(memory$mpt_response_age_condition, levels = level_order_age)
+
 mpt_data <- unclass(table(memory$sid, memory$mpt_response_condition))
 mpt_data_hierarchical <- as.data.frame(unclass(table(memory$sid, memory$mpt_response)))
 mpt_data_hierarchical$sid <- as.integer(rownames(mpt_data_hierarchical))
@@ -129,6 +175,16 @@ mpt_data_hierarchical <- merge(
   , sort = FALSE
 )
 rownames(mpt_data_hierarchical) <- as.character(mpt_data_hierarchical$sid)
+
+mpt_data_age <- unclass(table(memory$sid, memory$mpt_response_age_condition))
+mpt_data_hierarchical_age <- as.data.frame(unclass(table(memory$sid, memory$mpt_response_age)))
+mpt_data_hierarchical_age$sid <- as.integer(rownames(mpt_data_hierarchical_age))
+mpt_data_hierarchical_age <- merge(
+  mpt_data_hierarchical_age
+  , subset(memory, !duplicated(sid), select = c("sid", "task_focus"))
+  , sort = FALSE
+)
+rownames(mpt_data_hierarchical_age) <- as.character(mpt_data_hierarchical_age$sid)
 
 # Evaluative ratings ----
 rating <- subset(
@@ -152,6 +208,8 @@ saveRDS(
     , memory = memory
     , mpt_data = mpt_data
     , mpt_data_hierarchical = mpt_data_hierarchical
+    , mpt_data_age = mpt_data_age
+    , mpt_data_hierarchical_age = mpt_data_hierarchical_age
     , excluded_participants = excluded_participants
   )
   , file = file.path(study_folder, "data", "data.rds")
