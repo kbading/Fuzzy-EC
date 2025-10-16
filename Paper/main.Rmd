@@ -1375,7 +1375,7 @@ For the $a$ parameter, no effect of task focus was expected.
 As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in the probabilistic programming language *Stan* [@carpenter_stan_2016].
 To this aim, we estimated a joint model of [1] participant-wise frequency distributions of the joint memory index and [2] individual EC effects, including task focus as a categorical predictor in both model parts.
 To increase statistical power, the joint model was estimated based on the data from the present experiment and from the pilot study (which used identical measures and procedures).
-The pooled data set included $xxx$ participants (none of which gave the same response on all trials of either measurement task.)
+The pooled data set included $161$ participants (none of which gave the same response on all trials of either measurement task.)
 Note that equivalent analyses, separated by study, are reported in the online supplement (see OSF repository).
 As in Experiments 1 and 2, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
 To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the indirect effects of the five MPT parameters ($D$, $C$, $d$, $a$ and $b$) and the direct effect of task focus, using the independent-paths method proposed by @liu_bayesian_2023.
@@ -1486,7 +1486,18 @@ apa_table(
 ```
 
 Parameter estimates and credible intervals from the unrestricted 10-parameters model are reported in Table\ \@ref(tab:exp3-param).
-Table\ \@ref(tab:exp3-param) also includes the Bayes Factors for the effect of task focus on the five MPT parameters.
+We found strong evidence
+
+
+Table\ \@ref(tab:exp3-param) also includes the Bayes Factors for the effects of task focus on the five MPT parameters.
+We found very strong support for task focus effects on the $D$, $C$, $d$ and $b$ parameters and against a task focus effect on the $a$ parameter.
+As expected, the $D$, $C$ and $d$ parameters were larger in the "valence focus" condition than in the "age focus" condition.
+Against our expectation (and in contrast to the pilot study), the $b$ parameter was also larger in the "valence focus" condition than in the "age focus" condition.
+
+
+
+
+
 
 
 ### Relationships between evaluative ratings and MPT parameters
@@ -1511,19 +1522,14 @@ plot_regression(model, pars = c("C", "d", "a", "b"))
 
 # Bayes factors for slope parameters
 BFs <- apa_print(bayes_factors(model, pars = "lm_beta", prior_mean = 0, prior_sd = 2))
+apa_model_lm <- apa_print(model, part = "lm")
 ```
 
-Figure\ \@ref(fig:exp3-regression) shows relationships between individual-level MPT parameter estimates and marginal EC effects.
-We found moderate support against a relationship between CS discrimination (parameter $D$) and EC effects,
-`r BFs$D`.
-The Bayes Factor quantifying evidence for or against a relationship between US identity memory (parameter $C$) and EC effects was inconclusive,
-`r BFs$C`.
-By contrast, we found very strong support for a positive relationship between US Valence memory (parameter $d$) and EC effects,
-`r BFs$d`.
-The Bayes Factor quantifying evidence for or against a relationship between guessing positive (parameter $a$) and EC effects was inconclusive,
-`r BFs$a`.
-We found strong support against a relationship between guessing old (parameter $b$) and EC effects,
-`r BFs$b`.
+Figure\ \@ref(fig:exp3-regression) shows the relationships between individual-level MPT parameter estimates and marginal EC effects.
+The linear regression model revealed very strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
+For participant-level $D$ and $b$ parameter estimates, we found moderate support against relationships with individual EC effects, ($D$ parameter: `r apa_model_lm$full_result$D`; $b$ parameter: `r apa_model_lm$full_result$b`).
+For participant-level $C$ parameter estimates, the evidence against a relationship with individual EC effects was inconclusive, $C$ parameter: `r apa_model_lm$full_result$C`.
+Finally, we found inconclusive support for a relationship between participant-level $a$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$a`.
 
 ```{r}
 BF_a <- subset(bayes_factors(model, pars = "beta", prior_sd = 1), subset = term == "task_focus1")
