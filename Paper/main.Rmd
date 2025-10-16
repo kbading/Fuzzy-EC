@@ -1275,6 +1275,7 @@ As predicted, the mean EC effect was larger in the "valence focus" condition tha
 Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sided t-tests ($\alpha=.05$).
 As preregistered, we also performed a 2 (US valence: positive vs. negative) $\times$ 2 (task focus: valence focus vs. age focus) mixed ANOVA on the CS evaluations.
 To simplify the results section, the results of this analysis are reported in an online supplement (see OSF repository).
+Note that, as preregistered, participants who gave the same response on each trial of the CS evaluation task ($N=2$) were excluded from all analyses.
 
 #### Memory data
 As before, we implemented the preregistered protocol without exceptions.
@@ -1299,7 +1300,10 @@ For the $a$ parameter, no effect of task focus was expected.
 
 As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in the probabilistic programming language *Stan* [@carpenter_stan_2016].
 To this aim, we estimated a joint model of [1] participant-wise frequency distributions of the joint memory index and [2] individual EC effects, including task focus as a categorical predictor in both model parts.
-As before, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
+To increase statistical power, the joint model was estimated based on the data from the present experiment and from the pilot study (which used identical measures and procedures).
+The pooled data set included $xxx$ participants (none of which gave the same response on all trials of either measurement task.)
+Note that equivalent analyses, separated by study, are reported in the online supplement (see OSF repository).
+As in Experiments 1 and 2, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
 To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the indirect effects of the five MPT parameters ($D$, $C$, $d$, $a$ and $b$) and the direct effect of task focus, using the independent-paths method proposed by @liu_bayesian_2023.
 
 ## Results
