@@ -1579,7 +1579,7 @@ apa_table(
 ## Discussion 
 In the present experiment, we replicated Gast and Rothermund's (2011) Experiment 2, comparing EC effects and CS-US pairing memory between participants who performed different judgment tasks during the learning phase.
 Replicating Gast and Rothermund's (2011) task focus effect on evaluative conditioning, we found that EC effects were substantial only among participants in the "valence focus" condition and not among participants in the "age focus" condition.
-Using the newly proposed MPT model, we also replicated Gast and Rothermund's (2011) task focus effect on US valence memory: the $d$ parameter (measuring US valence memory in the absence of US identity memory) was substantially larger in "valence focus" condition than in the "age focus" condition.
+Using the newly proposed MPT model, we also replicated Gast and Rothermund's (2011) task focus effect on US valence memory: the $d$ parameter (measuring US valence memory in the absence of US identity memory) was substantially larger in the "valence focus" condition than in the "age focus" condition.
 Going beyond the findings by Gast and Rothermund (2011), the MPT model also delivered strong evidence for the absence of US valence memory in the "age focus" condition (as indicated by the Bayes Factor for the test of $d_{age}$ against zero).
 Moreover, and again in line with the original findings, we also found strong support that the task focus effect on EC was mediated by US valence memory (while no such support was found for a mediation by US identity or CS recognition memory).
 Taken together, these findings provide strong support for the "valence focus" explanation of the $d$ parameter and of evaluative conditioning: US valence memory (without US identity memory) and conditioned CS evaluations are developed when the CS-US pairings are processed in terms of valence instead of in terms of other (non-evaluative) dimensions.
@@ -1587,11 +1587,11 @@ Taken together, these findings provide strong support for the "valence focus" ex
 The present experiment also revealed substantially larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" condition.
 Since we used the same materials (CSs and USs) in both conditions, these parameter differences can only be explained by the differences between the two judgment tasks.
 In line with prior speculations (see introduction), the present experiment thus demonstrates that different learning conditions may not only affect CS-US pairing memory but also CS recognition memory, underlining the need for separate and non-confounded measures of the different forms of memory that are involved in EC effects.
-Moreover, the joint direction of the task focus effects on $D$ and $C$ parameters points towards a possible explanation of these effects: given that both parameters were substantially lower in the "age focus" condition, it seems likely that the non-evaluative judgment task (focused on the age typicality of the CS-US pairs) is more difficult than the evaluative judgment task (resulting in less mental capacity for memorizing the details of the presented stimuli and, by implication, lower levels of CS recognition and US identity memory).
+Moreover, the joint direction of the task focus effects on $D$ and $C$ parameters points towards a possible explanation of these effects: given that both parameters were substantially lower in the "age focus" condition, it seems likely that the non-evaluative judgment task (focused on the age typicality of the CS-US pairs) was more difficult than the evaluative judgment task (resulting in less mental capacity for memorizing the details of the presented stimuli and, by implication, lower levels of CS recognition and US identity memory).
 
 Before we discuss the broader implications of the present findings (and those from the previous experiments), we want to address the inconsistent effects of task focus on the $b$ parameter.
 As explained above, the pilot study (in which we tested the present materials and procedures) showed a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
-We assumed that a stronger tendency towards guessing "old" may emerge as a compensation for lower levels of CS recognition memory (to assure that a plausible number of stimuli is classified as "old") and therefore expected to find a larger $b$ parameter in the "age focus" condition (than in the "valence focus" condition) also in the main experiment (in line with our expectation to find a smaller $D$ parameter in the "age focus" condition than in the "valence focus" condition).
+We assumed that a stronger tendency towards guessing "old" may emerge as a compensation for lower levels of CS recognition memory (to assure that a plausible number of stimuli is classified as "old") and therefore expected to find a larger $b$ parameter in the "age focus" condition (than in the "valence focus" condition) also in the main experiment (in line with our expectation of a smaller $D$ parameter in the "age focus" condition than in the "valence focus" condition).
 Against this background, we were somewhat surprised by the direction of the $b$ parameter difference ($b_{valence}>b_{age}$) obtained in the present experiment.
 Based on the fact that we used the same experimental software (including materials, instructions and procedures) in both studies, we considered the possibility that the $b$ parameter differences (obtained in the pilot study and in the present experiment) reflected statistical artifacts resulting from the aggregation of response frequencies across participants.
 To probe this possibility, we implemented separate joint models for the two studies and checked the task focus effect on the $b$ parameters: in line with the "aggregation artifact" explanation, these participant-level MPT analyses did not provide support for substantial $b$ parameter differences across task focus conditions.
@@ -1599,11 +1599,29 @@ Based on these findings (and for lack of a better explanation), we assume that t
 
 # General discussion
 
-- no evidence for S-S models of EC, but testability of EC accounts: trait-multicollinearity between C and d --> no evidence for S-S models?
+## Theoretical implications
+
+### US valence memory and its role in evaluative conditioning
 
 - possible sources of the d parameter: semantic confusions (arguments against: re-analysis X1; positive stimuli more similar but dpos = dneg in all experiments; X3: confusability constant across conditions bur no small d parameter in age-focus condition), affect-as-information based on pre-existing attitudes (controlled by the model), US valence memory vs. affect-as-information based on conditioned attitudes --> hard to distinguish, future research needed
 
+### US identity memory and its role in evaluative conditioning
+
+- no evidence for S-S models of EC, but testability of EC accounts: trait-multicollinearity between C and d --> no evidence for S-S models?
+
+## Limitations of the present MPT modeling approach
+
+- participant-level instead of item level
+
+- ...
+
+## Future applications and conclusions
+
 - possible applications: testing effects of US distribution on memory and EC effects (Sperlich & Unkelbach)
+
+
+
+
 
 
 
