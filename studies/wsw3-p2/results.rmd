@@ -200,23 +200,17 @@ models <- lapply(
       data = mpt_data
       , model = file.path(study_folder, "WSW_exp3.eqn")
       , restrictions = c(baseline_restrictions, x)
-    )
+    ) |>
+      add_condition("Task focus" = c("age" = "_x1", "valence" = "_x2")) |>
+      label_parameters(D = "$D$", C = "$C$", d = "d$", a = "$a$", b = "$b$")
   }
 )
-# wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
-#   palette()
-# 
-# plot(
-#   models$baseline
-#   , factors = list("Task focus" = c("age" = "_x1", "valence" = "_x2"))
-#   , parameters = c(
-#     D   = expression(italic(D))
-#     , C = expression(italic(C))
-#     , d = expression(italic(d))
-#     , a = expression(italic(a))
-#     , b = expression(italic(b))
-#   )
-# )
+
+wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+  palette()
+
+plot(models$baseline)
+
 
 ```
 
