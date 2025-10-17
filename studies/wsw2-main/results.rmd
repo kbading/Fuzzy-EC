@@ -165,24 +165,15 @@ models <- lapply(
       data = mpt_data
       , model = file.path(study_folder, "WSW_exp2.eqn")
       , restrictions = c(baseline_restrictions, x)
-    )
+    ) |>
+      add_condition("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2")) |>
+      label_parameters(D = "$D$", C = "$C$", d = "d$", a = "$a$", b = "$b$")
   }
 )
 wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
   palette()
 
-plot(
-  models$baseline
-  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-  , parameters = c(
-    D   = expression(italic(D))
-    , C = expression(italic(C))
-    , d = expression(italic(d))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
-
+plot(models$baseline)
 ```
 
 ```{r}
