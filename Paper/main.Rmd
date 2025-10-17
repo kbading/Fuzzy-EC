@@ -276,7 +276,7 @@ However, in concrete applications, the cognitive states may also have very simil
 Importantly, setting certain MPT parameters equal across model trees is also necessary for estimating the model in practical applications.
 As illustrated in Figures 1 and 2, the MPT model contains a total of 15 parameters, while the two-step memory task provides only eight independent response categories.
 In its unconstrained (15-parameter) version, the MPT model is therefore not identified and cannot be used to measure CS recognition and CS-US pairing memory.
-To apply the MPT model in EC research, we thus used constrained model variants including five or seven freely estimated parameters.
+To apply the MPT model in EC research, we thus used constrained model variants including five or seven freely estimated parameters (for a given between-subjects condition).
 The 7-parameter variant is equivalent to the standard model used by @klauer_who_1998 and includes a joint $D$ parameter ($D:=D_{pos}=D_{neg}=D_{new}$), a joint $b$ parameter ($b:=b_{pos}=b_{neg}=b_{new}$), a joint $a$ parameter ($a:=a_{pos}=a_{neg}=a_{new}$) and a joint $g$ parameter set equal to the inverse of the number of response options per US valence in the US memory task ($g:=g_{pos}=g_{neg}=1/n$). (Note that because it is not freely estimated, the joint $g$ parameter is not counted as a separate parameter in the titles of the two model variants.) 
 Moreover, the 7-parameter variant allows for differences in CS-US pairing memory between positively vs. negatively paired CSs, thus including separate $C$ and $d$ parameters for the two stimulus types ($C_{pos}$ vs. $C_{neg}$ and $d_{pos}$ vs. $d_{neg}$, respectively).
 The 5-parameter variant includes the same joint $D$, $b$, $a$ and $g$ parameters but also estimates joint $C$ and $d$ parameters, thereby assuming comparable US identity and US valence memory across levels of US valence.
@@ -1057,7 +1057,7 @@ Moreover, responses from the memory task were well described by the MPT model in
 This interpretation received additional support from the fact that, at the group level, $C$ and $d$ parameters were unaffected by task order (suggesting that CS-US pairing memory remained unaltered by prior performance of the CS evaluation task).
 
 At the same time, we found that both MPT parameters related to the CS recognition task were moderated by task order: while participant-level $D$ parameters were overall larger in the "memory first" condition, participant-level $b$ parameters were overall larger in the "evaluation first" condition.
-These task order effects on $D$ and $b$ parameters are well explained by differences in task difficulty (unpaired distractors are harder to detect if they are already familiar from the CS evaluation task) and suggest that a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required.
+These task order effects on $D$ and $b$ parameters are well explained by differences in task difficulty (unpaired distractors are harder to detect [as new] if they are already familiar from the CS evaluation task) and suggest that a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required.
 
 Although participant-level $D$ parameters were reduced in the "evaluation first" condition, both task order conditions showed CS recognition and US identity memory for a substantial number of CSs, thereby replicating the significant $D$ and $C$ parameters from the first experiment.
 By contrast, the significant $d$ parameter (from Experiment 2) was not replicated in the present experiment.
@@ -1097,7 +1097,7 @@ In line with this "valence focus" explanation of US valence memory, we expected 
 As a third and final aim, we sought to re-examine the roles of US identity and US valence memory in the mediation of the valence focus effect on evaluative conditioning.
 In Experiment 3, Gast and Rothermund (2011) reported a multiple mediation analysis suggesting a mediation (of the valence focus effect on evaluative conditioning) by increased levels of US valence memory but not by changes in US identity memory.
 However, as explained earlier, multiple regression analyses (and, by implication, multiple mediation analyses) that include non-independent measures of US identity and US valence memory as competing predictors (of individual EC effects) cannot produce unequivocal evidence for (against) a relationship between US valence memory (US identity memory) and evaluation conditioning.
-In the present experiments, these limitations were overcome by conducting a multiple mediation analysis with participant-level MPT parameters as competing predictors of individual EC effects.
+In the present experiment, these limitations were overcome by conducting a multiple mediation analysis with participant-level MPT parameters as competing predictors of individual EC effects.
 By including independent measures of CS recognition, US identity and US valence memory as potential mediators (while controlling for response tendencies in the underlying measurement task), we sought to attain a clearer understanding of the valence focus effect reported by Gast and Rothermund (2011).
 
 ```{r}
@@ -1285,7 +1285,7 @@ We first calculated individual EC effects (by substracting the mean evaluative r
 Next, we compared the mean EC effect in the "valence focus" condition to the mean EC effect in the "task focus" condition, using a t-test for independent samples ($\alpha=.05$).
 As predicted, the mean EC effect was larger in the "valence focus" condition than in the "age focus" condition; we therefore conducted a one-sided test.
 Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sample t-tests ($\alpha=.05$).
-In the "valence focus" condition, we performed a one-sided test because the mean EC effect larger than zero (as predicted).
+In the "valence focus" condition, we performed a one-sided test because the mean EC effect was larger than zero (as predicted).
 In the "age focus" condition, the mean EC effect was below zero; we therefore conducted a two-sided test.
 As preregistered, we also performed a 2 (US valence: positive vs. negative) $\times$ 2 (task focus: valence focus vs. age focus) mixed ANOVA on the CS evaluations.
 To simplify the results section, the results of this analysis are reported in an online supplement (see OSF repository).
@@ -1372,13 +1372,13 @@ In line with the previously introduced "valence focus" explanation, we expected 
 Based on the findings of a pilot study (in which we assessed the suitability of the present materials and procedures), we also expected larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" as well as a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
 For the $a$ parameter, no effect of task focus was expected.
 
-As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in the probabilistic programming language *Stan* [@carpenter_stan_2016].
+As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in *Stan* [@carpenter_stan_2016].
 To this aim, we estimated a joint model of [1] participant-wise frequency distributions of the joint memory index and [2] individual EC effects, including task focus as a categorical predictor in both model parts.
 To increase statistical power, the joint model was estimated based on the data from the present experiment and from the pilot study (which used identical measures and procedures).
 The pooled data set included $161$ participants (none of which gave the same response on all trials of either measurement task.)
 Note that equivalent analyses, separated by study, are reported in the online supplement (see OSF repository).
 As in Experiments 1 and 2, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
-To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the indirect effects of the five MPT parameters ($D$, $C$, $d$, $a$ and $b$) and the direct effect of task focus, using the independent-paths method proposed by @liu_bayesian_2023.
+To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the direct effect of task focus as well as for its indirect effects through the five MPT parameters ($D$, $C$, $d$, $a$ and $b$), using the independent-paths method proposed by @liu_bayesian_2023.
 
 ## Results
 ### EC effects
@@ -1486,19 +1486,14 @@ apa_table(
 ```
 
 Parameter estimates and credible intervals from the unrestricted 10-parameters model are reported in Table\ \@ref(tab:exp3-param).
-We found strong evidence
-
+We found strong support for non-zero $D$ and $C$ parameters in both task focus conditions, for a non-zero $d$ parameter in the "valence focus" condition, and for departure from $.5$ for the $b$ parameter in the "age focus" condition, all $BF_{10}>1,000$.
+Moreover, we found strong support against departure from zero for the $d$ parameter in the "age focus" condition, $BF_{10}=0.06$, and against departure from $.5$ for the $a$ parameter in both focus conditions, both $BF_{10}\leq0.08$.
+Finally, we found moderate support against departure from $.5$ for the $b$ parameter in the "valence focus" condition, $BF_{10}=0.17$.
 
 Table\ \@ref(tab:exp3-param) also includes the Bayes Factors for the effects of task focus on the five MPT parameters.
 We found very strong support for task focus effects on the $D$, $C$, $d$ and $b$ parameters and against a task focus effect on the $a$ parameter.
 As expected, the $D$, $C$ and $d$ parameters were larger in the "valence focus" condition than in the "age focus" condition.
 Against our expectation (and in contrast to the pilot study), the $b$ parameter was also larger in the "valence focus" condition than in the "age focus" condition.
-
-
-
-
-
-
 
 ### Relationships between evaluative ratings and MPT parameters
 
@@ -1525,11 +1520,10 @@ BFs <- apa_print(bayes_factors(model, pars = "lm_beta", prior_mean = 0, prior_sd
 apa_model_lm <- apa_print(model, part = "lm")
 ```
 
-Figure\ \@ref(fig:exp3-regression) shows the relationships between individual-level MPT parameter estimates and marginal EC effects.
+Figure\ \@ref(fig:exp3-regression) shows the relationships between participant-level MPT parameter estimates and marginal EC effects.
 The linear regression model revealed very strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
-For participant-level $D$ and $b$ parameter estimates, we found moderate support against relationships with individual EC effects, ($D$ parameter: `r apa_model_lm$full_result$D`; $b$ parameter: `r apa_model_lm$full_result$b`).
-For participant-level $C$ parameter estimates, the evidence against a relationship with individual EC effects was inconclusive, $C$ parameter: `r apa_model_lm$full_result$C`.
-Finally, we found inconclusive support for a relationship between participant-level $a$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$a`.
+For participant-level $D$ and $b$ parameter estimates, we found moderate support against relationships with individual EC effects ($D$ parameter: `r apa_model_lm$full_result$D`; $b$ parameter: `r apa_model_lm$full_result$b`).
+For participant-level $a$ and $C$ parameter estimates, the evidence for and against a relationship with individual EC effects was inconclusive ($C$ parameter: `r apa_model_lm$full_result$C`; $a$ parameter: `r apa_model_lm$full_result$a`) .
 
 ```{r}
 BF_a <- subset(bayes_factors(model, pars = "beta", prior_sd = 1), subset = term == "task_focus1")
@@ -1567,17 +1561,9 @@ direct_effects <- paste0(
 # rstan::extract(model, pars = "lm_beta_star")[[1]] |> apply(MARGIN = 2, quantile, probs = c(.025, .975))
 ```
 
-Given the positive relationship between US valence memory and EC effects, 
-we also explored whether the effect of the task focus manipulation on EC was (at least partially) mediated by US valence.
-To this aim,
-we calculated Bayes Factors for such indirect effects using the independent-paths method proposed by @liu_bayesian_2023.
-We found strong support for an indirect effect of *task focus* through US valence memory (parameter $d$)  on EC,
-`r indirect_effects$d`.
-Moreover, we found weak support against a direct effect of *task focus*, 
-`r direct_effects`.
-Taken together,
-these analyses indicate that the effect of the task focus manipulation is mediated by US valence memory.
-Yet, it remains an open question whether differences in US valence memory may *fully* account for differences in EC between task focus conditions.
+In the multiple mediation analysis, we found very strong support for an indirect effect of task focus on EC through the $d$ parameter, `r indirect_effects$d`, and moderate support against such an indirect effect through the $b$ parameter, `r indirect_effects$b`.
+For the indirect effects through the remaining MPT parameters, the Bayes Factors were inconclusive, $0.59\leq BF_{10}\leq2.26$.
+Finally, we found weak support against a direct effect of task focus on EC effects, `r direct_effects`.
 
 ```{r}
 apa_table(
@@ -1590,9 +1576,26 @@ apa_table(
 
 ```
 
-
-
 ## Discussion 
+In the present experiment, we replicated Gast and Rothermund's (2011) Experiment 2, comparing EC effects and CS-US pairing memory between participants who performed different judgment tasks during the learning phase.
+Replicating Gast and Rothermund's (2011) task focus effect on evaluative conditioning, we found that EC effects were substantial only among participants in the "valence focus" condition and not among participants in the "age focus" condition.
+Using the newly proposed MPT model, we also replicated Gast and Rothermund's (2011) task focus effect on US valence memory: the $d$ parameter (measuring US valence memory in the absence of US identity memory) was substantially larger in "valence focus" condition than in the "age focus" condition.
+Going beyond the findings by Gast and Rothermund (2011), the MPT model also delivered strong evidence for the absence of US valence memory in the "age focus" condition (as indicated by the Bayes Factor for the test of $d_{age}$ against zero).
+Moreover, and again in line with the original findings, we also found strong support that the task focus effect on EC was mediated by US valence memory (while no such support was found for a mediation by US identity or CS recognition memory).
+Taken together, these findings provide strong support for the "valence focus" explanation of the $d$ parameter and of evaluative conditioning: US valence memory (without US identity memory) and conditioned CS evaluations are developed when the CS-US pairings are processed in terms of valence instead of in terms of other (non-evaluative) dimensions.
+
+The present experiment also revealed substantially larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" condition.
+Since we used the same materials (CSs and USs) in both conditions, these parameter differences can only be explained by the differences between the two judgment tasks.
+In line with prior speculations (see introduction), the present experiment thus demonstrates that different learning conditions may not only affect CS-US pairing memory but also CS recognition memory, underlining the need for separate and non-confounded measures of the different forms of memory that are involved in EC effects.
+Moreover, the joint direction of the task focus effects on $D$ and $C$ parameters points towards a possible explanation of these effects: given that both parameters were substantially lower in the "age focus" condition, it seems likely that the non-evaluative judgment task (focused on the age typicality of the CS-US pairs) is more difficult than the evaluative judgment task (resulting in less mental capacity for memorizing the details of the presented stimuli and, by implication, lower levels of CS recognition and US identity memory).
+
+Before we discuss the broader implications of the present findings (and those from the previous experiments), we want to address the inconsistent effects of task focus on the $b$ parameter.
+As explained above, the pilot study (in which we tested the present materials and procedures) showed a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
+We assumed that a stronger tendency towards guessing "old" may emerge as a compensation for lower levels of CS recognition memory (to assure that a plausible number of stimuli is classified as "old") and therefore expected to find a larger $b$ parameter in the "age focus" condition (than in the "valence focus" condition) also in the main experiment (in line with our expectation to find a smaller $D$ parameter in the "age focus" condition than in the "valence focus" condition).
+Against this background, we were somewhat surprised by the direction of the $b$ parameter difference ($b_{valence}>b_{age}$) obtained in the present experiment.
+Based on the fact that we used the same experimental software (including materials, instructions and procedures) in both studies, we considered the possibility that the $b$ parameter differences (obtained in the pilot study and in the present experiment) reflected statistical artifacts resulting from the aggregation of response frequencies across participants.
+To probe this possibility, we implemented separate joint models for the two studies and checked the task focus effect on the $b$ parameters: in line with the "aggregation artifact" explanation, these participant-level MPT analyses did not provide support for substantial $b$ parameter differences across task focus conditions.
+Based on these findings (and for lack of a better explanation), we assume that the (inconsistent) $b$ parameter differences (in the MPT model analyses on aggregated response frequencies) constitute statistical artefacts that disappear when the MPT parameters are estimated at the level of individual participants.
 
 # General discussion
 
