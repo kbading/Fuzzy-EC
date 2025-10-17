@@ -41,11 +41,16 @@ mpt_data_hierarchical <- data$mpt_data_hierarchical
 mpt_aggregated <- colSums(mpt_data)
 ```
 
+```{r}
+mem_dat <- data$memory
+table(mem_dat$sid,mem_dat$reco_resp,mem_dat$task_order)
+```
+
 
 ## Evaluative rating
 
 ```{r}
-apa_beeplot(
+apa_barplot(
   data = subset(rating, !is.na(us_valence))
   , id = "sid"
   , dv = "evaluative_rating"
@@ -150,8 +155,8 @@ hypothesis_restrictions <- list(
   # , Dval0   = list("D_x2=0")
   # , Cage0   = list("C_x1=0")
   # , Cval0   = list("C_x2=0")
-  # , dage0   = list("d_x1=0")
-  # , dval0   = list("d_x2=0")
+   , dage0   = list("d_x1"=0)
+   , dval0   = list("d_x2"=0)
   # , bage5   = list("b_x1=0.5")
   # , bval5   = list("b_x2=0.5")
   # , aage5   = list("a_x1=0.5")
@@ -168,20 +173,20 @@ models <- lapply(
     )
   }
 )
-wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
-  palette()
-
-plot(
-  models$baseline
-  , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
-  , parameters = c(
-    D   = expression(italic(D))
-    , C = expression(italic(C))
-    , d = expression(italic(d))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
+# wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+#   palette()
+# 
+# plot(
+#   models$baseline
+#   , factors = list("Task order" = c("Rating first" = "_x1", "Memory first" = "_x2"))
+#   , parameters = c(
+#     D   = expression(italic(D))
+#     , C = expression(italic(C))
+#     , d = expression(italic(d))
+#     , a = expression(italic(a))
+#     , b = expression(italic(b))
+#   )
+# )
 
 ```
 
@@ -337,18 +342,18 @@ ec_lm |>
 ```
 
 ```{r}
-ec_lm <- lm(formula = ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data)
+ec_lm <- lm(formula = ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))+task_order, data = data)
 
 summary(ec_lm)
 
-
+#ec_lm <- lm(formula = ec_effect ~ task_order, data = data)
 
 lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data) |>
   ggpredict(terms = ~ cntr(D):task_order) |>
   plot(show_data = TRUE)
 
-lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data) |>
-  ggpredict(terms = ~ cntr(C):task_order) |>
+lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))+task_order, data = data) |>
+  ggpredict(terms = ~ task_order) |>
   plot(show_data = TRUE)
 
 ```
@@ -356,7 +361,7 @@ lm(ec_effect ~ (cntr(D)+cntr(C)+cntr(d)+cntr(a)+cntr(b))*task_order, data = data
 
 ```{r}
 
-ec_lm <- lm(formula = ec_effect ~ (cntr(D)*cntr(C)*cntr(d))+task_order, data = data)
+ec_lm <- lm(formula = ec_effect ~ (cntr(D)*cntr(C)*cntr(d))*task_order, data = data)
 
 summary(ec_lm)
 
@@ -366,8 +371,14 @@ emtrends(ec_lm, var = "d", specs = ~ D, at = list(D = c(0, .1, .2, .3, .8))) |>
 emtrends(ec_lm, var = "D", specs = ~ task_order) |>
   summary(infer = TRUE)
 
-# emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
-#   summary(infer = TRUE)
+emtrends(ec_lm, var = "C", specs = ~ task_order) |>
+  summary(infer = TRUE)
+
+emtrends(ec_lm, var = "d", specs = ~ task_order) |>
+  summary(infer = TRUE)
+
+emtrends(ec_lm, var = "C", specs = ~ d, at = list(d = ppoints(n = 10))) |>
+  summary(infer = TRUE)
 
 ```
 

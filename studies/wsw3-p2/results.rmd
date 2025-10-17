@@ -35,7 +35,6 @@ knitr::opts_chunk$set(
 source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
 ```
 
-
 ```{r}
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
 
@@ -47,18 +46,52 @@ mpt_data_hierarchical <- data_list$mpt_data_hierarchical
 mpt_aggregated <- colSums(mpt_data)
 ```
 
+```{r exp3-read-data}
+data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
+rating <- data_list$rating
+mpt_data <- data_list$mpt_data
+```
+
+```{r}
+data_mem <- data_list$memory
+table(data_mem$sid,data_mem$reco_resp)
+data_mem$reco_resp_num <- ifelse(data_mem$reco_resp == "old",1,0)
+
+data_mem_val <- subset(data_mem,task_focus=="valence")
+table(data_mem_val$sid,data_mem_val$reco_resp)
+data_mem_val_agg <- aggregate(data=data_mem_val,FUN=mean,reco_resp_num ~ sid)
+quantiles_val <- quantile(data_mem_val_agg$reco_resp_num)
+upborder_val <- quantiles_val[[3]] + 3 * (quantiles_val[[4]]-quantiles_val[[2]])
+lowborder_val <- quantiles_val[[3]] - 3 * (quantiles_val[[4]]-quantiles_val[[2]])
+
+data_mem_val_agg$outlier <- ifelse(data_mem_val_agg$reco_resp_num>upborder_val|data_mem_val_agg$reco_resp_num<lowborder_val,1,0)
+
+data_mem_age <- subset(data_mem,task_focus=="age")
+table(data_mem_age$sid,data_mem_age$reco_resp)
+data_mem_age_agg <- aggregate(data=data_mem_age,FUN=mean,reco_resp_num ~ sid)
+quantiles_age <- quantile(data_mem_age_agg$reco_resp_num)
+upborder_age <- quantiles_age[[3]] + 3 * (quantiles_age[[4]]-quantiles_age[[2]])
+lowborder_age <- quantiles_age[[3]] - 3 * (quantiles_age[[4]]-quantiles_age[[2]])
+
+data_mem_age_agg$outlier <- ifelse(data_mem_age_agg$reco_resp_num>upborder_age|data_mem_age_agg$reco_resp_num<lowborder_age,1,0)
+
+data_mem_age_agg <- subset(data_mem_age_agg,outlier == 0)
+data_mem_val_agg <- subset(data_mem_val_agg,outlier == 0)
+
+inlier.ids <- c(unique(data_mem_age_agg$sid),unique(data_mem_val_agg$sid))
+```
 
 ## Evaluative rating
 
 ```{r}
-apa_beeplot(
-  data = subset(rating, !is.na(us_valence))
-  , id = "sid"
-  , dv = "evaluative_rating"
-  , factors = c("task_focus", "us_valence")
-  , ylim = c(1, 8)
-  , args_legend = list(x = "topleft")
-)
+# apa_beeplot(
+#   data = subset(rating, !is.na(us_valence))
+#   , id = "sid"
+#   , dv = "evaluative_rating"
+#   , factors = c("task_focus", "us_valence")
+#   , ylim = c(1, 8)
+#   , args_legend = list(x = "topleft")
+# )
 
 anova_rating_model <- aov_4(
   formula = evaluative_rating ~ task_focus * (us_valence | sid)
@@ -92,13 +125,13 @@ two-way interaction *task focus* with *US valence*,
 `r anova_rating$full_result$task_focus_us_valence`.
 
 ```{r eval = FALSE}
-lme_model <- lmer(
-  formula = evaluative_rating ~ us_valence * task_focus + (us_valence | sid) + (1 | cs)
-  , data = subset(rating, !is.na(us_valence)) 
-)
-summary(lme_model)
-ggeffects::ggpredict(lme_model, terms = ~ task_focus + us_valence) |>
-  plot()
+# lme_model <- lmer(
+#   formula = evaluative_rating ~ us_valence * task_focus + (us_valence | sid) + (1 | cs)
+#   , data = subset(rating, !is.na(us_valence)) 
+# )
+# summary(lme_model)
+# ggeffects::ggpredict(lme_model, terms = ~ task_focus + us_valence) |>
+#   plot()
 ```
 
 
@@ -170,20 +203,20 @@ models <- lapply(
     )
   }
 )
-wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
-  palette()
-
-plot(
-  models$baseline
-  , factors = list("Task focus" = c("age" = "_x1", "valence" = "_x2"))
-  , parameters = c(
-    D   = expression(italic(D))
-    , C = expression(italic(C))
-    , d = expression(italic(d))
-    , a = expression(italic(a))
-    , b = expression(italic(b))
-  )
-)
+# wesanderson::wes_palette("Zissou1", n = 3, type = "c") |> 
+#   palette()
+# 
+# plot(
+#   models$baseline
+#   , factors = list("Task focus" = c("age" = "_x1", "valence" = "_x2"))
+#   , parameters = c(
+#     D   = expression(italic(D))
+#     , C = expression(italic(C))
+#     , d = expression(italic(d))
+#     , a = expression(italic(a))
+#     , b = expression(italic(b))
+#   )
+# )
 
 ```
 
@@ -191,6 +224,35 @@ plot(
 model_comparisons <- compare(models)
 model_comparisons
 ```
+
+
+```{r}
+#data_mem_sub <- subset(data_mem,sid %in% inlier.ids)
+data_mem_sub <- subset(data_mem,sid != 74 & sid != 51 & sid != 45)
+data_mem_sub$identity <- 1L
+mpt_dat <- as.data.frame(unclass(table(data_mem_sub$identity, data_mem_sub$mpt_response_condition)))
+
+models <- lapply(
+  hypothesis_restrictions
+  , FUN = function(x) {
+    fit_mpt(
+      data = mpt_dat
+      , model = file.path(study_folder, "WSW_exp3.eqn")
+      , restrictions = c(baseline_restrictions, x)
+    )
+  }
+)
+```
+
+```{r}
+models$baseline
+```
+
+```{r exp3-compare-ml-models}
+compare(models)
+```
+
+
 
 ## Bayesian MPT model
 
