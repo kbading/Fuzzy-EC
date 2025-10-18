@@ -399,3 +399,10 @@ lm(ec_effect ~ task_focus + p_us_valence * p_us_identity, data = data) |>
 ```
 
 
+## TreeStan model
+
+```{r}
+model <- readRDS(file.path(study_folder, "model-objects", "treestan.rds"))
+summary(model, pars = "beta")
+```
+

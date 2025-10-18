@@ -456,3 +456,9 @@ lm(ec_effect ~ task_focus + ln_us_identity * ln_us_valence, data = data) |>
   plot(show_data = TRUE)
 ```
 
+## TreeStan model
+
+```{r}
+model <- readRDS(file.path(study_folder, "model-objects", "treestan.rds"))
+summary(model, pars = "beta")
+```
