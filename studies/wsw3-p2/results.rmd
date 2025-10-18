@@ -32,11 +32,14 @@ knitr::opts_chunk$set(
   , comment = NA
 )
 
-source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
+
 ```
 
 ```{r}
-study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
+project_root <- rprojroot::find_rstudio_root_file()
+source(file.path(project_root, "R", "mptinr_helper.R"))
+
+study_folder <- file.path(project_root, "studies", "wsw3-p2")
 
 data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
 
