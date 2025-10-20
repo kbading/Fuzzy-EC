@@ -22,7 +22,8 @@ $(results): %results.html: %results.rmd %data/data.rds \
   %model-objects/trait-mpt.rds \
   %model-objects/trait-mpt-with-ec.rds \
   %model-objects/trait-mpt-wsw-8b.rds \
-  %model-objects/trait-mpt-wsw-8b-with-ec.rds
+  %model-objects/trait-mpt-wsw-8b-with-ec.rds \
+  %model-objects/treestan.rds
 	@echo "Knitting $@ from $^"
 	R -q -e 'rmarkdown::render("$<", knit_root_dir = rprojroot::find_rstudio_root_file())'
 
