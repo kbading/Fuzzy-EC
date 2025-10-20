@@ -5,7 +5,13 @@ treestan_options(refresh = 0)
 project_root <- rprojroot::find_rstudio_root_file()
 study_folder <- file.path(project_root, "studies", "wsw3-main")
 
-mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))$mpt_data_hierarchical
+data_list <- readRDS(file.path(study_folder, "data", "data.rds"))
+mpt_data_hierarchical <- merge(
+  data_list$mpt_data_hierarchical
+  , subset(data_list$rating_wide, select = c("sid", "ec_effect"))
+  , sort = FALSE
+  , by = "sid"
+)
 contrasts(mpt_data_hierarchical$task_focus) <- "contr.sum"
 
 model <- TreeStan::fit_mpt(
