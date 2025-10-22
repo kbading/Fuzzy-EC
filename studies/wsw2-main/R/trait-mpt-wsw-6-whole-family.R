@@ -1,7 +1,5 @@
 
 library(TreeBUGS)
-library(methexp)
-library(parallel)
 
 project_root <- rprojroot::find_rstudio_root_file()
 study_folder <- file.path(project_root, "studies", "wsw2-main")
@@ -9,7 +7,7 @@ study_folder <- file.path(project_root, "studies", "wsw2-main")
 mpt_data_hierarchical <- readRDS(file.path(study_folder, "data", "data.rds"))$mpt_data_hierarchical
 
 
-baseline_restrictions <- list("G = 0.25")
+baseline_restrictions <- list("G = 0.25") |> HMMTreeC::legacy_restrictions()
 
 hypothesis_restrictions <- list(
   baseline         = list()
@@ -18,23 +16,13 @@ hypothesis_restrictions <- list(
   , d_eq0          = list(d = 0)
   , C_eq0          = list(C = 0)
   , D_eq0          = list(D = 0)
-)
+) |> HMMTreeC::legacy_restrictions()
 
 model <- readLines(file.path(project_root, "model-equations", "wsw-6.eqn"))
 
-cl <- methexp_cluster(
-  master = "134.95.17.81"
-  , servants = paste0("134.95.17.", 62:65)
-  , user = "mariusbarth"
-  , cores = 1L
-)
-
-setDefaultCluster(cl)
-clusterExport(varlist = c("baseline_restrictions", "mpt_data_hierarchical", "model"))
-
-models <- clusterMap(
+models <- Map(
   x = hypothesis_restrictions
-  , fun = function(x) {
+  , f = function(x) {
     
     if(!requireNamespace("TreeBUGS", quietly = TRUE)) install.packages("TreeBUGS")
     
@@ -53,7 +41,7 @@ models <- clusterMap(
       , n.thin   = 6e1L
       , n.chains =   6L
       , ppp      = 5e3L
-      , restrictions = c(baseline_restrictions, as.list(paste0(names(x), "=", unname(x))))
+      , restrictions = c(baseline_restrictions, x)
       , covData = subset(mpt_data_hierarchical, select = "task_order")
       , predStructure = list(paste0(paste(setdiff(all_parameters, fixed_parameters), collapse = " "), " ; task_order"))
       , predType = "f"
@@ -62,6 +50,5 @@ models <- clusterMap(
     y
   }
 )
-stopCluster(cl)
 dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(models, file = file.path(study_folder, "model-objects", "trait-mpt-wsw-6-whole-family.rds"))
