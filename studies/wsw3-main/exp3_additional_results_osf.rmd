@@ -1,0 +1,176 @@
+---
+title: "Experiment 3: Additional analyses"
+author: ""
+date: "`r Sys.Date()`"
+output            : papaja::apa6_pdf
+header-includes:
+  - \usepackage{nicefrac}
+editor_options: 
+  chunk_output_type: console
+
+---
+
+```{r setup, include = FALSE}
+library(tidyr)
+library(afex)
+library(emmeans)
+library(papaja)
+#library(TreeBUGS)
+set_sum_contrasts()
+# knitr::opts_chunk$set(
+#   echo = TRUE
+#   , message = FALSE
+#   , comment = NA
+# )
+
+library(afex)
+library(emmeans)
+library(ggeffects)
+library(papaja)
+library(dplyr)
+library(MPTinR)
+library(TreeBUGS)
+library(HMMTreeC)
+
+if(!requireNamespace("magick", quietly = FALSE)) install.packages("magick")
+set_sum_contrasts()
+project_root <- rprojroot::find_rstudio_root_file()
+source(file.path(project_root, "R", "apa_print_treebugs.R"))
+source(file.path(project_root, "R", "mptinr_helper.R"))
+source(file.path(project_root, "R", "treestan_helper.R"))
+
+knitr::opts_chunk$set(
+  echo = FALSE
+  , warning = FALSE
+  , message = FALSE
+  , cache = FALSE
+  , fig.env = "figure*"
+  , fig.crop = TRUE
+  # , fig.width  = 15
+  # , fig.height =  9
+)
+knitr::opts_knit$set(global.par = TRUE)
+#source(file.path(rprojroot::find_rstudio_root_file(), "R", "mptinr_helper.R"))
+```
+
+```{r}
+study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
+study_folder_pilot <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
+
+data <- readRDS(file.path(study_folder, "data", "data_exp3.rds"))
+rating   <- data$rating
+```
+
+
+## Evaluative ratings
+
+```{r fig.cap="Evaluative ratings as a function of US valence. Error bars represent 95% confidence intervals."}
+
+rating$us_valence2 <- "unpaired"
+rating$us_valence2 <- ifelse(rating$us=="NA",rating$us_valence2,as.character(rating$us_valence))
+rating$`US valence` <- rating$us_valence2
+apa_barplot(
+  data = subset(rating,us_valence %in% c("positive","negative"))
+  , id = "sid"
+  , dv = "evaluative_rating"
+  , factors = c("task_focus", "us_valence")
+  , ylim = c(1, 8)
+  , args_legend = list(x = "topleft")
+)
+
+exp3_rating_anova <- apa_print(aov_ez(data = subset(rating,us_valence %in% c("positive","negative")), id = "sid", dv = "evaluative_rating", within = c("us_valence"),between=c("task_focus"),anova_table = list(intercept=TRUE)),intercept=TRUE,estimate="ges")
+```
+
+Evaluative ratings as function of US valence (positive vs. negative) are reported in Figure 1.
+In the preregistered 2 (US valence) $\times$ 2 (task focus) mixed ANOVA on evaluative ratings, we obtained a significant main effect of US valence, `r exp3_rating_anova$full_result$us_valence2`, and a significant two-way interaction between US valence and task focus, `r exp3_rating_anova$full_result$task_focus_us_valence`.
+As illustrated in Figure 1, the two-way interaction followed the expected result pattern: 
+$M_{positive,\ valence}-M_{negative,\ valence} > M_{positive,\ age}-M_{negative,\ age}$.
+The main effect of task focus did not reach significance, `r exp3_rating_anova$full_result$task_focus`.
+
+## Relationships between EC effects and MPT parameters
+
+### Pilot
+
+### Relationships between EC effects and MPT parameters
+
+(ref:exp3-regression-label) Pilot: Relationships between marginal EC effects and participant-level MPT parameters estimates from the unrestricted 5-parameter model. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
+
+```{r exp3-regression, fig.cap = "(ref:exp3-regression-label)", fig.width = 11, fig.height = 8, out.width="100%"}
+model <- readRDS(file.path(study_folder_pilot, "model-objects", "treestan.rds"))
+
+par(mfrow = c(2, 3))
+plot_regression(model, pars = c("D"))
+legend(
+  x = .02
+  , y = 5.98
+  , legend = c("Age focus", "Valence focus")
+  , pch = 21
+  , col = "black"
+  , pt.bg = 1:2
+  , bty = "n"
+)
+plot_regression(model, pars = c("C", "d", "a", "b"))
+
+# Bayes factors for slope parameters
+BFs <- apa_print(bayes_factors(model, pars = "lm_beta", prior_mean = 0, prior_sd = 2))
+apa_model_lm <- apa_print(model, part = "lm")
+```
+
+Figure\ \@ref(fig:exp3-regression) shows the relationships between participant-level MPT parameter estimates and marginal EC effects.
+The linear regression model revealed very strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
+For participant-level $D$, $C$ and $a$ parameter estimates, we found inconclusive support for a relationship with individual EC effects ($D$ parameter: `r apa_model_lm$full_result$D`; $C$ parameter: `r apa_model_lm$full_result$C`; $a$ parameter: `r apa_model_lm$full_result$a` ).
+For participant-level $b$ parameter estimates, the evidence against a relationship with individual EC effects was inconclusive ($b$ parameter: `r apa_model_lm$full_result$b`) .
+
+```{r}
+BF_a <- subset(bayes_factors(model, pars = "beta", prior_sd = 1), subset = term == "task_focus1")
+BF_b <- bayes_factors(model, pars = "lm_beta", prior_sd = 2)
+nm <- BF_b$parameter
+
+source(file.path(project_root, "R", "liu_et_al_2022.R"))
+indirect_effects <- mapply(
+  BF.a   = setNames(BF_a$BF_10, nm)
+  , BF.b = setNames(BF_b$BF_10, nm)
+  , FUN = pathb.a
+  , MoreArgs = list(PriorOdds.a = 1, PriorOdds.b = 1)
+  , SIMPLIFY = FALSE
+) |>
+  lapply(function(x){
+    BF_10 <- x["Mediation", "Bayes Factor"]
+    
+    BF    <- ifelse(BF_10 > 1, BF_10, 1 / BF_10)
+    label <- ifelse(BF_10 > 1, "\\mathit{BF}_{10} ", "\\mathit{BF}_{01} ")
+    
+    BF <- ifelse(
+      BF > 1000
+      , "> 1,000"
+      , papaja::apa_num(BF, add_equals = TRUE)
+    )
+    paste0("$", label, BF, "$")
+  })
+
+direct_effects <- paste0(
+  "$\\mathit{BF}_{01} = "
+  , apa_num(bayes_factors(model, pars = "lm_alpha_tilde", prior_sd = 1)$BF_01[2])
+  , "$"
+)
+
+# rstan::extract(model, pars = "lm_beta_star")[[1]] |> apply(MARGIN = 2, quantile, probs = c(.025, .975))
+```
+
+In the multiple mediation analysis, we found strong support for an indirect effect of task focus on EC through the $d$ parameter, `r indirect_effects$d`, and moderate support against such an indirect effect through the $b$ parameter, `r indirect_effects$b`.
+For the indirect effects through the remaining MPT parameters, the Bayes Factors were inconclusive, $0.59\leq BF_{10}\leq2.26$.
+Finally, we found weak support against a direct effect of task focus on EC effects, `r direct_effects`.
+
+```{r}
+apa_table(
+  list(
+    "Effects of task focus manipulation on MPT parameters" = apa_print(model, "mpt")$table
+    , "Standardized regression coefficients" = apa_print(model, "lm")$table
+  )
+  , escape = FALSE
+)
+
+```
+
+
+### Main experiment
