@@ -1,13 +1,42 @@
 ---
-title: "Experiment 3: Additional analyses"
-author: ""
-date: "`r Sys.Date()`"
+title             : "Experiment 3: Additional analyses"
+shorttitle        : "Experiment 3: Additional analyses"
+author: 
+  - name          : "Karoline Corinna Bading"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Schleichstraße 4, 72074 Tübingen (Germany)"
+    email         : "karoline.bading@uni-tuebingen.de"
+  - name          : "Jérémy Béna"
+    affiliation   : "2"
+  - name          : "Marius Barth"
+    affiliation   : "3"
+  - name          : "Klaus Rothermund"
+    affiliation   : "4"
+affiliation:
+  - id            : "1"
+    institution   : "University of Tübingen"
+  - id            : "2"
+    institution   : "Aix-Marseille University"
+  - id            : "3"
+    institution   : "University of Cologne"
+  - id            : "4"
+    institution   : "Friedrich Schiller University Jena"
+bibliography      : '`r file.path(rprojroot::find_rstudio_root_file(), "..", "methexp.bib")`'
+floatsintext      : yes
+linenumbers       : no
+draft             : no
+mask              : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+classoption       : doc
+lang              : en-US
 output            : papaja::apa6_pdf
 header-includes:
   - \usepackage{nicefrac}
 editor_options: 
   chunk_output_type: console
-
 ---
 
 ```{r setup, include = FALSE}
@@ -57,7 +86,7 @@ knitr::opts_knit$set(global.par = TRUE)
 study_folder <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-main")
 study_folder_pilot <- file.path(rprojroot::find_rstudio_root_file(), "studies", "wsw3-p2")
 
-data <- readRDS(file.path(study_folder, "data", "data_exp3.rds"))
+data <- readRDS(file.path(study_folder, "data", "data.rds"))
 rating   <- data$rating
 ```
 
