@@ -298,7 +298,7 @@ Taken together, these results demonstrate the power of the MPT model in explaini
 # Experiment 1
 
 ```{r}
-data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data.rds"))
+data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data_exp1.rds"))
 #data_list_pilot$excluded_participants
 ```
 
@@ -656,7 +656,7 @@ This task order manipulation was implemented to determine whether performance of
 Finally, implementing this manipulation also allowed us to compare the suitability of the two task order conditions for measuring different forms of EC-related memory with the MPT model.
 
 ```{r}
-data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data.rds"))
+data_list_exp2 <- readRDS(file.path(study_folders$wsw2_main, "data", "data_exp2.rds"))
 #data_list_exp2$excluded_participants
 
 n_final <- sum(length(unique(data_list_exp2$rating$sid)))
@@ -813,7 +813,7 @@ To this aim, we fitted seven restricted models (each of which included a differe
 Based on convention, a WAIC difference greater than 10 was taken as strong evidence in favor of the model with the smaller WAIC.
 
 As an additional (non-preregistered) test for the presence of US valence memory (without concomitant US identity memory), we also fitted the 5-parameter model (used in Experiment 1) and compared it to a restricted 4-parameter variant in which the joint $d$ parameter was fixed at zero.
-Because the memory data was also well described by the 5-parameter model (`r fit$model5p$T1`; `r fit$model5p$T2`), we decide to use this simpler model variant also for the preregistered regression analyses (in which we sought to predict individual EC effects from participant-level parameter estimates).
+Because the memory data was also well described by the 5-parameter model (`r fit$model5p$T1`; `r fit$model5p$T2`), we decided to use this simpler model variant also for the preregistered regression analyses (in which we sought to predict individual EC effects from participant-level parameter estimates).
 Note that using the parameter estimates from the 5-parameter model (instead of from the 7-parameter model) also served to avoid multicollinearity between predictors.
 In yet another departure from the preregistered protocol, we used the joint modeling approach introduced in the first experiment (see above) instead of the preregistered (but potentially problematic) two-step procedure.
 As preregistered, we implemented different linear regression models of varying complexity (e.g., with or without higher-order interactions between MPT parameters).
@@ -1075,7 +1075,7 @@ To probe this "valence focus" explanation for the emergence and size of the $d$ 
 # Experiment 3
 
 ```{r}
-data_list_exp3 <- readRDS(file.path(study_folders$wsw3_main, "data", "data.rds"))
+data_list_exp3 <- readRDS(file.path(study_folders$wsw3_main, "data", "data_exp3.rds"))
 ```
 
 The present experiment had several inter-connected aims.
@@ -1495,7 +1495,7 @@ We found very strong support for task focus effects on the $D$, $C$, $d$ and $b$
 As expected, the $D$, $C$ and $d$ parameters were larger in the "valence focus" condition than in the "age focus" condition.
 Against our expectation (and in contrast to the pilot study), the $b$ parameter was also larger in the "valence focus" condition than in the "age focus" condition.
 
-### Relationships between evaluative ratings and MPT parameters
+### Relationships between EC effects and MPT parameters
 
 (ref:exp3-regression-label) Experiment 3: Relationships between marginal EC effects and participant-level MPT parameters estimates from the unrestricted 5-parameter model. Points represent posterior means, error bars represent 95% credible intervals. Lines represent linear regression functions, dashed lines represent corresponding 95% credible bands.
 
