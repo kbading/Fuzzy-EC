@@ -223,6 +223,7 @@ apa_print.treestanfit <- function(x, part = c("lm", "mpt"), ...) {
   beautiful_table <- papaja:::beautify(canonical_table)
   beautiful_table$term[] <- canonical_table$term
   beautiful_table <- subset(beautiful_table, term != "$G$")
+  rownames(beautiful_table) <- NULL
   
   lm_part <- papaja::glue_apa_results(
     beautiful_table
