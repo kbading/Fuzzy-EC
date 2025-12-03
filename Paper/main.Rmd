@@ -1596,6 +1596,18 @@ Based on these findings (and for lack of a better explanation), we assume that t
 
 # General discussion
 
+Assessing memories individuals retrieve and use when evaluating stimuli is crucial to advancing our understanding of the mechanisms, processes, and representations involved in the Evaluative Conditioning (EC) effect. While all EC theories do not explicitly give memory a major role, the EC effect involves retrieving "something" about the CS-US parings from the learning episode when presented with the to-be-evaluated CS alone (i.e., item-item associative memory, whether retrieval is conscious or not, for instance). Some accounts of the EC effect (e.g., Stahl & Aust, 2018; Gast, 2018) distinguish between US valence memory and US identity memory and assume US valence is enough for the EC effect to emerge. 
+
+Past research supports the view the critical to-be-retrieved information is US valence rather than US identity (e.g., Stahl et al., 2009). However, as we noted in the introduction, evidence for this conclusion relies on measurement approaches that suffer from several shortcomings, mainly that past US valence and US identity measures are not independent, do not distinguish CS recognition memory from CS-US pairing, and do not distinguish memory processes from guessing tendencies. 
+
+To address current limitations in CS-US pairing memory measurement approaches, we adapted an existing measurement model (Klauer & Wegener, 1998) to assess (recognition and CS-US pairing) memory and guessing tendencies. This Multinomial Processing Tree (MPT) model assumes that individuals have a certain probability to retrieve the identity of US that were paired with correctly recognized CS have (estimated by the $C$ parameter, see Figure 1). Importantly, even in the absence of US identity memory ($1-C$), it could be the case that individuals sometimes retrieve only less detailed, valence information about the US (estimated by the $d$ parameter). Critically this model allows revisiting in stronger tests whether such US valence memory in the absence of identity memory (1) can be found, (2) predicts the EC effect, and (3) conceptually replicates previous results.
+
+In three experiments (Experiments 2 and 3 were preregistered while Experiment 1 was not), we modified the commonly used EC procedure to test the fit of the newly developed MPT model and derive parameter estimates. After the learning phase, the test phase featured new (distractor) neutral stimuli and included a memory task in addition to the CS evaluation task. The memory task consisted of two steps: first, participants had to indicate if a given stimulus was part of the learning phase (i.e., CS recognition task); second, in case of an affirmative response, participants had to select the US that was paired with the CS (i.e., contingent CS-US recognition task). We used the model across varied study settings: the CS were faces in Experiments 1 and 3 and non-words in Experiment 2; the US were images in Experiments 1 and 2 and trait adjectives in Experiment 3; the memory task was administered before the CS evaluation task in Experiment 1, in the opposite order in Experiment 3, and the order was counterbalanced in Experiment 2. **[Here: mention another valuable contribution, i.e., testing relationships between MPT parameters and the EC effect in a single model?]**
+
+Overall, **[summary of the findings -- one sentence could also be added about the main result/conclusion in the abstract]**.
+
+In the remainder of the General Discussion, we elaborate on how the present results clarify the role of US valence and identity memory in the EC effect in relation to Stimulus-Stimulus vs. Stimulus-Response learning theorizations. We then point out current limitations of the current approach (participant-level analyses; limited inferences regarding causality; the issue of assessing CS evaluation and memory at different times) and suggest how it can be built upon to better understand retrieval processes involved in the evaluative conditioning effect. 
+
 ## Theoretical implications
 
 ### US valence memory and its role in evaluative conditioning
@@ -1610,14 +1622,25 @@ Based on these findings (and for lack of a better explanation), we assume that t
 
 - participant-level instead of item level
 
-- ...
+- inferences regarding causality remain limited (i.e., difficult to know whether retrieval precedes evaluations)
 
-## Future applications and conclusions
+- US valence vs. identity memory: mute regarding specific memory processes and representations -- we only know the retrieved information differs in specificity, which is already useful but could be further developed
+
+- question of demands artifacts? regarding the EC effect in general, or its moderation by valence focus
+
+- independence between US valence and US identity memory not yet shown
+
+## Future applications 
 
 - possible applications: testing effects of US distribution on memory and EC effects (Sperlich & Unkelbach)
 
+- using a logic similar to the one adopted in the Two-Button Sets (TBS) task to jointly ask about memory and evaluations at a single point in time (Stahl et al., 2024; Ingendahl et al., 2025) and use the present MPT model on the data
 
+- Search for functional dissociations between US valence memory and US identity memory on the one hand (to lend support to the notion they are functionnally independent retrieved information) and between US valence and EC effect on the other hand (to try to falsify the hypothesis that the EC effect is based on US valence memory)
 
+# Conclusion
+
+A closing paragraph.
 
 
 
