@@ -293,7 +293,7 @@ Taken together, these findings demonstrate the suitability of the MPT model in d
 Finally, in the third experiment, we replicated Gast and Rothermund (2011), using the MPT model to investigate how evaluative jugdment tasks result in larger EC effects.
 In both judgment task conditions (evaluative vs. non-evaluative), we found that responses from the two-step memory task were well explained by the preregistered 5-parameter model.
 Moreover, we also found that CS recognition, US identity and US valence memory were all boosted by the evaluative judgment task, but only US valence memory was found to mediate the concomitant increase in EC effects.
-Taken together, these results demonstrate the suitability and power of the MPT model in explaining theoretically relevant moderations of EC.
+Taken together, these results provide evidence for the suitability and power of the MPT model in explaining theoretically relevant moderations of EC.
 
 # Experiment 1
 
@@ -321,10 +321,10 @@ First of all, we expected a significant EC effect (as indicated by more favorabl
 Moreover, we assumed that a significant EC effect requires recognizing at least some of the previously presented CSs.
 We thus expected a significant $D$ parameter in the MPT model analysis of the memory task responses.
 For the MPT model analysis, we also expected a significant $C$ parameter (indicating US identity memory for at least some of the CSs recognized as old).
-This expectation was based on prior research showing above-chance recollection performance in a US identity measure that included only USs of the correct valence (Stahl & Bading, 2020).
+This expectation was based on prior research showing above-chance performance in a US identity measure that included only USs of the correct valence (Stahl & Bading, 2020).
 Finally, we did not have a clear expectation for the $d$ parameter.
 As explained above, standard US valence measures cannot prevent that US valence is simply inferred from memory of the correct US.
-By implication, previous demonstrations of above-chance performance in these measures cannot serve as a basis for expecting US valence memory in the absence of US identity memory (as measured by the $d$ parameter).
+As a result, previous indications of above-chance performance on these measures provide only limited grounds for expecting US valence memory in the absence of US identity memory (as measured by the $d$ parameter).
 However, the results from @klauer_who_1998 clearly show that participants form abstract representations of concrete stimuli (e.g., by representing different speakers in terms of social categories) and associate them with other, co-occurring stimuli (e.g., tape-recored statements presented in the "Who said what?" procedure).
 Based on these findings, we were inclined to expect a significant $d$ parameter (which reflects an abstract representation of the previously paired USs in terms of their valences).
 
@@ -334,8 +334,8 @@ Materials and data are publicly available at: https://osf.io/rqkvy/.
 
 ### Design and participants
 The experiment followed a 2 (US valence: positive vs. negative) within-subjects design.
-Participants were recruited through Prolific and received monetary compensation for their participation.
-The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%.
+Participants were recruited through Prolific and received £2.25 for their participation (estimated duration: 15 minutes).
+The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%. Sex was balanced. 
 Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
 We recruited 50 participants (50$\%$ female; $M_{age} = 38.68$; $SD_{age} = 15.01$).
 The number of recruited participants was determined *ad hoc* and was not based on a power analysis.
@@ -347,13 +347,13 @@ Taken together, this resulted in a final sample size of 48 participants.
 ### Materials
 The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
-The CS pool comprised 48 colored images of human faces with neutral expressions (24 female faces, 24 male faces).
-The face images have been used as CSs in previous EC research (e.g., Waroquier, Labadie, & Dienes, 2020).
+The CS pool comprised 48 black and white images of human faces with neutral expressions (24 female faces, 24 male faces).
+The face images have been used as CSs in previous EC research (e.g., Waroquier, Abadie, & Dienes, 2020).
 
 As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
 The images were taken from the Open Affective Standardized Image Set [OASIS\; @kurdi_introducing_2017]. 
 Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
-The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but did not differ significantly regarding arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
 For each participant, 12 randomly selected face images (50% female) served as positively paired CSs, 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face (50% female) images served as distractor stimuli in the test phase.
 
@@ -380,7 +380,7 @@ After the last trial of the learning task, participants read the following instr
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed the two-step memory task followed by a CS evaluation task. 
+In the test phase, participants performed a two-step memory task and then a CS evaluation task. 
 The task order was the same for all participants.
 
 ##### Memory task
@@ -407,20 +407,19 @@ First, participants read the following instruction slide: "In the third part of 
 
 After pressing the spacebar, participants worked through the CS evaluation task, consisting of 48 trials.
 In the CS evaluation task, the 24 CSs and the 24 distractor stimuli were again displayed individually and without time limit. 
-Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). 
-(Note that participants responses were stored as numerical values ranging from 1 to 11.)
+Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). Responses were stored as numerical values ranging from 0 to 11. 
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 After the last trial of the CS evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 #### Control measures and debriefing
-After pressing the spacebar, participants were asked whether they paid attention to the images presented throughout the experiment.
+After the test phase, participants were asked whether they paid attention to the images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously." vs. "I have just clicked through, please discard my data.") were again presented as two buttons.
-Subsequently, participants had the chance to comment on the study.
+Subsequently, participants had the chance to comment on the study. Participants were told that their responses would not affect their payment.
 Finally, participants were presented with the following text (which debriefed them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
-After pressing the spacebar, participants were redirected to Prolific and reimbursed for their participation.
+After pressing the spacebar, participants were redirected to Prolific and compensated for their participation.
 
 ### Data processing and statistical analyses
 The responses from the CS evaluation task were analyzed (without further processing) using the R package *stats*.
@@ -430,13 +429,13 @@ For the MPT model analyses, the responses from the two-step memory task were fir
 
 - If a positively (negatively) paired CS was correctly classified as "old" and the correct positive (negative) US was selected, the responses were recoded as "PosUSposcor" ("NegUSnegcor").
 
-- If a positively (negatively) paired CS was correctly classified as "old" and an incorrect positive (negative) trait was selected, the responses were recoded as "PosUSposincor" ("NegUSnegincor").
+- If a positively (negatively) paired CS was correctly classified as "old" and an incorrect positive (negative) US was selected, the responses were recoded as "PosUSposincor" ("NegUSnegincor").
 
-- If a positively (negatively) paired CS was correctly classified as "old" and a negative (positive) trait was selected, the responses were recoded as "PosUSnegincor" ("NegUSposincor")
+- If a positively (negatively) paired CS was correctly classified as "old" and a negative (positive) US was selected, the responses were recoded as "PosUSnegincor" ("NegUSposincor")
 
-- If an (unpaired) new stimulus was correctly classified as "new", the response was recoded as "Newnew".
+- If an (unpaired) new image was correctly classified as "new", the response was recoded as "Newnew".
 
-- If an (unpaired) new stimulus was incorrectly classified as "old" and a positive (negative) trait was selected, the responses will be recoded as "Newposincor" ("Newnegincor").
+- If an (unpaired) new image was incorrectly classified as "old" and a positive (negative) US was selected, the responses was recoded as "Newposincor" ("Newnegincor").
 
 ```{r}
 baseline_restrictions <- list(
@@ -488,9 +487,10 @@ The first part of the joint model accounts for the memory data and is a hierarch
 To the best of our knowledge, we are the first to use such a joint-modeling approach in EC research.
 In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken_are_2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
 Such an approach is potentially problematic because
-using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each MPT parameter,
-thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
-Using point estimates to predict EC effects may therefore lead to biased conclusions about the statistical relationships between MPT parameters and individual EC effects.
+using point estimates as predictor values ignores the uncertainty associated with the estimation of each MPT parameter. Ignoring this uncertainty follows from the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998]. However, this assumption is unlikely to hold. 
+<!--thereby violating the assumption of linear regression analysis that predictor values are free of measurement error 
+JB: I was unsure how this wording, as it was as if treating MPT parameter estimates as free of measurement error was in itself a violation of the assumption. Because this is not the case (it exactly follows from the the assumption), I tried to revise this part but I am unsure this is clear enough. --> 
+As a result, using point estimates to predict EC effects may lead to biased conclusions about the statistical relationships between MPT parameters and individual EC effects.
 To avoid such biases, we decided to use a joint-modeling approach which allows to account for uncertainty in MPT parameter estimates when used as predictors in a linear regression.
 
 ```{r}
@@ -591,13 +591,13 @@ apa_table(
 ```
 
 
-The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as old (and detected distractor stimuli as new) in $45.6$% of trials.
-By implication, participants did not recognize CSs as old (and detect distractor stimuli as new) in $54.4$% of trials.
+The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`. This indicates that participants recognized CSs as old and detected distractor images as new in $45.6$% of trials.
+This implies that participants did not recognize CSs as old, and did not detect distractor stimuli as new, in $1-D = 54.4$% of trials.
 
 The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as old.
 This implies that US identity was absent for $32.6$% of CSs recognized as old (hereafter also referred to as recognized CSs).
 
-The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of recognized CSs without US identity memory, participants possessed US valence memory in approx. $19.9$% of trials.
+The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`. This estimate indicates that, in the subset of recognized CSs without US identity memory, participants possessed US valence memory in approximately $19.9$% of trials.
 By implication, participants did not possess US valence memory for approx. $80.1$% of recognized CSs without US identity memory.
 
 The $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`.
@@ -636,16 +636,15 @@ For participant-level $a$ parameter estimates, the linear regression model showe
 Finally, for participant-level $b$ parameter estimates, we also found inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$b`.
 
 ## Discussion
-In Experiment 1, we used the MPT model to estimate EC-related memory in the context of a standard EC procedure.
+In Experiment 1, we used the newly adapted MPT model we presented in the introduction to estimate EC-related memory in the context of an EC procedure augmented with a memory task.
 We found that responses from the two-step memory task were well described by the 5-parameters model (including joint $D$, $C$, $d$, $a$ and $b$ parameters).
-As expected, significant $D$ and $C$ parameters indicated that participants possessed robust CS recognition and US identity memory for a subset of CSs.
-Moreover, the significant $d$ parameter showed that participants possessed US valence memory (without concomitant US identity memory) for a subset of recognized CSs.
-To the best of our knowledge, this finding represents the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.
+As expected, the significant $D$ parameter indicated that participants did correctly recognize the CS as "old" and the distractor images as "new." The significant $C$ parameter indicated that participant correctly retrieved US identity from memory for a subset of CSs.
+Moreover, the significant $d$ parameter showed that participants occasionally retrieved US valence memory without retrieving US identity information for a subset of recognized CSs.
+Finding an above-0 $d$ parameter is a clear indication that US valence memory cannot be reduced to inferences based on US identity memory. Provided the shortcomings of previous US valence measures discussed in the introduction, the present result is, to our knowledge, new and strongest (than previous research) empirical evidence supporting the view that individuals may sometimes retrieve from memory the valence of a US a CS was previously paired with. 
+<!-- finding is the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.-->
+In line with previous research [e.g., @stahl_respective_2009-1], the results of Experiment 1 also tentatively suggested that EC effects are positively related to US valence memory (as measured by the $d$ parameter) but unrelated to US identity memory (as measured by the $C$ parameter).
 
-In line with previous research [e.g., @stahl_respective_2009-1], the results of Experiment 1 also
-suggested that EC effects are positively related to US valence memory (as measured by the $d$ parameter) but unrelated to US identity memory (as measured by the $C$ parameter).
-Unfortunately, statistical evidence for or against the relationships between EC effects and participant-level MPT parameters was generally weak, as was the size of the mean EC effect obtained in the present study.
-In the following experiment, we addressed both of these issues.
+However, despite finding support for (1) the MPT model we suggested, (2) above-0 US valence memory in the absence of US valence identity memory (i.e., the $d$ parameter), and (3) a positive association between US valence memory and the EC effect, insights one can derive from the current experiment remain limited. First, statistical evidence for or against the relationships between EC effects and participant-level MPT parameters was generally weak. Second, the EC effect was itself small in size and barely significant only in a one-sided test, while the EC effect is generally medium-sized and easily detected with the sample size we used [@hofmann_evaluative_2010]. A possibility is that statistical power was low to begin with to be able to document a potential moderation of the EC effect by US valence memory. In addition, using human faces as initially neutral stimuli to obtain the EC effect may have attenuated the EC effect (e.g., too much variability in initial evaluations of the faces). Experiment 2 addressed these issues.
 
 # Experiment 2
 In Experiment 2, we sought to replicate the core findings from Experiment 1 (significant $D$, $C$ and $d$ parameters) while boosting (individual) EC effects and obtaining more informative estimates of their relationships with participant-level MPT parameters.
