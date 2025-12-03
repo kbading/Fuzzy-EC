@@ -40,7 +40,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 authornote: |
-  Karoline Bading and Jérémy Béna share first authorship.
+  <!-- Karoline Bading and Jérémy Béna share first authorship. -->
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -164,7 +164,7 @@ Though widely used, these measurement procedures have been criticized on various
 An important point of criticism is focused on a phenomenon called affect-as-information (Schwarz & Clore, 1983).
 As shown by Bar-Anan et al. (2010), standard measures of US valence memory may be contaminated by affect-as-information because participants sometimes rely on pre-existing attitudes towards the CSs, rather than on explicit US valence memory, for selecting a response in the memory task.
 Relatedly, Hütter et al. (2012) argued that participants may also rely on their conditioned attitudes (as developed during the learning phase) for response selection in the US valence measure.
-Importantly, Hütter er al. (2012) also presented simulated data showing that either type of affect-as-information (based on pre-existing vs. conditioned attitudes) leads to artifactual correlations between US valence memory and EC effects, making empirical demonstrations of EC without CS-US pairing memory practically impossible.
+Importantly, Hütter et al. (2012) also presented simulated data showing that either type of affect-as-information (based on pre-existing vs. conditioned attitudes) leads to artifactual correlations between US valence memory and EC effects, making empirical demonstrations of EC without CS-US pairing memory highly difficult.
 In the next section, we will add to this critique by showing that, when combined with another shortcoming of standard US valence measures, affect-as-information also interferes with separating the respective contributions of US identity and US valence memory to the emergence of EC effects.
 
 ## Shortcoming 1: US valence may be inferred from US identity
@@ -201,7 +201,7 @@ Regardless of whether guessing processes are independent or correlated across me
 While the first shortcoming (inferability of US valence from US identity memory) cannot be solved using standard memory measures, the second shortcoming (and its negative implications) can be easily overcome by using a US identity task that shows only USs of the correct valence.
 In such a single-valence US identity task, memory for the US valence or affect-as-information cannot be used for informed guessing of the previously paired US.
 Since differences in task performance can thus be driven only by differences in US identity memory, statistically significant relationships between memory task performance and EC effects may now deliver unequivocal support for the importance of explicit memory for the previously paired USs (as proposed, for example, by S-S models of EC; e.g., Baeyens, Eelen, Van den Bergh, & Crombez, 1992; Hammerl & Grabitz, 1996; Walther, Gawronski, Blank, & Langer, 2009).
-However, since the use of single-valence US identity tasks does nothing to resolve the first shortcoming, the statistical relationships between US identity memory and EC effects will still be nullified in linear regression analyses that include both memory measures as predictors.
+However, since the use of single-valence US identity tasks does not resolve the first shortcoming (inferring US valence from US identity), the statistical relationships between US identity memory and EC effects will still be nullified in linear regression analyses that include both memory measures as predictors.
 Taken together, these points show that full testability of competing EC accounts remains unattainable even when US identity memory is measured without contamination from informed guessing based on US valence memory or affect-as-information.
 
 ## Shortcoming 3: US identity and US valence measures may confound CS-US pairing and CS recognition memory
@@ -236,7 +236,7 @@ As explained above, current measures of CS-US pairing memory possess a number of
 To obtain conclusive answers to these questions, improved methods for measuring EC-related memory are therefore needed.
 Fortunately, the identified shortcomings are not unique to measures of CS-US pairing memory.
 Instead, they show structural equivalence with the shortcomings of similar memory measures that have been overcome in previous research [e.g., @bayen_source_1996; @klauer_who_1998].
-Most importantly, @klauer_who_1998 proposed an MPT model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
+Most importantly, @klauer_who_1998 proposed a Multinomial Processing Tree (MPT) model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
 In the "Who said what?" paradigm, participants listen to tape-recorded statements that are made by different individuals from two social groups (e.g., people with black vs. white skin).
 In the subsequent measure of social categorization, participants are presented with individual statements and have to select the correct speaker from a set of response options that include individuals from both groups. 
 In its structure, this memory measure bears obvious resemblance to US identity measures in which participants are presented with individual CSs and have to select the correct US from a set of positive and negative response options.
@@ -277,11 +277,11 @@ Importantly, setting certain MPT parameters equal across model trees is also nec
 As illustrated in Figures 1 and 2, the MPT model contains a total of 15 parameters, while the two-step memory task provides only eight independent response categories.
 In its unconstrained (15-parameter) version, the MPT model is therefore not identified and cannot be used to measure CS recognition and CS-US pairing memory.
 To apply the MPT model in EC research, we thus used constrained model variants including five or seven freely estimated parameters (for a given between-subjects condition).
-The 7-parameter variant is equivalent to the standard model used by @klauer_who_1998 and includes a joint $D$ parameter ($D:=D_{pos}=D_{neg}=D_{new}$), a joint $b$ parameter ($b:=b_{pos}=b_{neg}=b_{new}$), a joint $a$ parameter ($a:=a_{pos}=a_{neg}=a_{new}$) and a joint $g$ parameter set equal to the inverse of the number of response options per US valence in the US memory task ($g:=g_{pos}=g_{neg}=1/n$). (Note that because it is not freely estimated, the joint $g$ parameter is not counted as a separate parameter in the titles of the two model variants.) 
+The 7-parameter variant is equivalent to the standard model used by @klauer_who_1998 and includes a joint $D$ parameter ($D:=D_{pos}=D_{neg}=D_{new}$), a joint $b$ parameter ($b:=b_{pos}=b_{neg}=b_{new}$), a joint $a$ parameter ($a:=a_{pos}=a_{neg}=a_{new}$) and a joint $g$ parameter set equal to the inverse of the number of response options per US valence ($n$) in the US memory task ($g:=g_{pos}=g_{neg}=1/n$). (Note that because it is not freely estimated, the joint $g$ parameter is not counted as a separate parameter in the titles of the two model variants.) 
 Moreover, the 7-parameter variant allows for differences in CS-US pairing memory between positively vs. negatively paired CSs, thus including separate $C$ and $d$ parameters for the two stimulus types ($C_{pos}$ vs. $C_{neg}$ and $d_{pos}$ vs. $d_{neg}$, respectively).
 The 5-parameter variant includes the same joint $D$, $b$, $a$ and $g$ parameters but also estimates joint $C$ and $d$ parameters, thereby assuming comparable US identity and US valence memory across levels of US valence.
 Note that, generally speaking, the 5-parameter model achieves more precise parameter estimates and higher power for comparing MPT parameter across experimental conditions.
-Despite being more restrictive, the 5-parameter variant may thus be preferable to the 7-parameter model in empirical applications (given that the two model variants show similar ability to explain response data from the two-step memory task).
+Despite being more restrictive, the 5-parameter variant may thus be preferable to the 7-parameter model in empirical applications (given that the two model variants show similar ability to explain response data from the two-step memory task, which is an open empirical question).
 
 # The present research
 To demonstrate the suitability of the proposed MPT model, on the one hand, and to provide new insights into the relationships between EC effects, US valence memory, and US identity memory on the other hand, we report three experiments.
@@ -292,8 +292,8 @@ In both task order conditions, we found that responses from the two-step memory 
 Taken together, these findings demonstrate the suitability of the MPT model in different procedural implementations.
 Finally, in the third experiment, we replicated Gast and Rothermund (2011), using the MPT model to investigate how evaluative jugdment tasks result in larger EC effects.
 In both judgment task conditions (evaluative vs. non-evaluative), we found that responses from the two-step memory task were well explained by the preregistered 5-parameter model.
-Moreover, we also found that CS recognition, US identity and US valence memory were all boosted by the evaluative judgment task, but that only US valence memory mediated the concomitant increase in EC effects.
-Taken together, these results demonstrate the power of the MPT model in explaining theoretically relevant moderations of EC.
+Moreover, we also found that CS recognition, US identity and US valence memory were all boosted by the evaluative judgment task, but only US valence memory was found to mediate the concomitant increase in EC effects.
+Taken together, these results demonstrate the suitability and power of the MPT model in explaining theoretically relevant moderations of EC.
 
 # Experiment 1
 
