@@ -29,7 +29,7 @@ affiliation:
   - id            : "1"
     institution   : "University of Tübingen"
   - id            : "2"
-    institution   : "Aix-Marseille University"
+    institution   : "CRPN, Aix-Marseille Université, CNRS, Marseille, France"
   - id            : "3"
     institution   : "University of Cologne"
   - id            : "4"
@@ -40,7 +40,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 authornote: |
-  Karoline Bading and Jérémy Béna share first authorship.
+  <!-- Karoline Bading and Jérémy Béna share first authorship. -->
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -164,7 +164,7 @@ Though widely used, these measurement procedures have been criticized on various
 An important point of criticism is focused on a phenomenon called affect-as-information (Schwarz & Clore, 1983).
 As shown by Bar-Anan et al. (2010), standard measures of US valence memory may be contaminated by affect-as-information because participants sometimes rely on pre-existing attitudes towards the CSs, rather than on explicit US valence memory, for selecting a response in the memory task.
 Relatedly, Hütter et al. (2012) argued that participants may also rely on their conditioned attitudes (as developed during the learning phase) for response selection in the US valence measure.
-Importantly, Hütter er al. (2012) also presented simulated data showing that either type of affect-as-information (based on pre-existing vs. conditioned attitudes) leads to artifactual correlations between US valence memory and EC effects, making empirical demonstrations of EC without CS-US pairing memory practically impossible.
+Importantly, Hütter et al. (2012) also presented simulated data showing that either type of affect-as-information (based on pre-existing vs. conditioned attitudes) leads to artifactual correlations between US valence memory and EC effects, making empirical demonstrations of EC without CS-US pairing memory highly difficult.
 In the next section, we will add to this critique by showing that, when combined with another shortcoming of standard US valence measures, affect-as-information also interferes with separating the respective contributions of US identity and US valence memory to the emergence of EC effects.
 
 ## Shortcoming 1: US valence may be inferred from US identity
@@ -201,7 +201,7 @@ Regardless of whether guessing processes are independent or correlated across me
 While the first shortcoming (inferability of US valence from US identity memory) cannot be solved using standard memory measures, the second shortcoming (and its negative implications) can be easily overcome by using a US identity task that shows only USs of the correct valence.
 In such a single-valence US identity task, memory for the US valence or affect-as-information cannot be used for informed guessing of the previously paired US.
 Since differences in task performance can thus be driven only by differences in US identity memory, statistically significant relationships between memory task performance and EC effects may now deliver unequivocal support for the importance of explicit memory for the previously paired USs (as proposed, for example, by S-S models of EC; e.g., Baeyens, Eelen, Van den Bergh, & Crombez, 1992; Hammerl & Grabitz, 1996; Walther, Gawronski, Blank, & Langer, 2009).
-However, since the use of single-valence US identity tasks does nothing to resolve the first shortcoming, the statistical relationships between US identity memory and EC effects will still be nullified in linear regression analyses that include both memory measures as predictors.
+However, since the use of single-valence US identity tasks does not resolve the first shortcoming (inferring US valence from US identity), the statistical relationships between US identity memory and EC effects will still be nullified in linear regression analyses that include both memory measures as predictors.
 Taken together, these points show that full testability of competing EC accounts remains unattainable even when US identity memory is measured without contamination from informed guessing based on US valence memory or affect-as-information.
 
 ## Shortcoming 3: US identity and US valence measures may confound CS-US pairing and CS recognition memory
@@ -236,7 +236,7 @@ As explained above, current measures of CS-US pairing memory possess a number of
 To obtain conclusive answers to these questions, improved methods for measuring EC-related memory are therefore needed.
 Fortunately, the identified shortcomings are not unique to measures of CS-US pairing memory.
 Instead, they show structural equivalence with the shortcomings of similar memory measures that have been overcome in previous research [e.g., @bayen_source_1996; @klauer_who_1998].
-Most importantly, @klauer_who_1998 proposed an MPT model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
+Most importantly, @klauer_who_1998 proposed a Multinomial Processing Tree (MPT) model that disentangles several confounds in the standard measure of social categorization in the "Who said what?" paradigm (Taylor, Fiske, Etcoff, & Ruderman, 1978).
 In the "Who said what?" paradigm, participants listen to tape-recorded statements that are made by different individuals from two social groups (e.g., people with black vs. white skin).
 In the subsequent measure of social categorization, participants are presented with individual statements and have to select the correct speaker from a set of response options that include individuals from both groups. 
 In its structure, this memory measure bears obvious resemblance to US identity measures in which participants are presented with individual CSs and have to select the correct US from a set of positive and negative response options.
@@ -277,11 +277,11 @@ Importantly, setting certain MPT parameters equal across model trees is also nec
 As illustrated in Figures 1 and 2, the MPT model contains a total of 15 parameters, while the two-step memory task provides only eight independent response categories.
 In its unconstrained (15-parameter) version, the MPT model is therefore not identified and cannot be used to measure CS recognition and CS-US pairing memory.
 To apply the MPT model in EC research, we thus used constrained model variants including five or seven freely estimated parameters (for a given between-subjects condition).
-The 7-parameter variant is equivalent to the standard model used by @klauer_who_1998 and includes a joint $D$ parameter ($D:=D_{pos}=D_{neg}=D_{new}$), a joint $b$ parameter ($b:=b_{pos}=b_{neg}=b_{new}$), a joint $a$ parameter ($a:=a_{pos}=a_{neg}=a_{new}$) and a joint $g$ parameter set equal to the inverse of the number of response options per US valence in the US memory task ($g:=g_{pos}=g_{neg}=1/n$). (Note that because it is not freely estimated, the joint $g$ parameter is not counted as a separate parameter in the titles of the two model variants.) 
+The 7-parameter variant is equivalent to the standard model used by @klauer_who_1998 and includes a joint $D$ parameter ($D:=D_{pos}=D_{neg}=D_{new}$), a joint $b$ parameter ($b:=b_{pos}=b_{neg}=b_{new}$), a joint $a$ parameter ($a:=a_{pos}=a_{neg}=a_{new}$) and a joint $g$ parameter set equal to the inverse of the number of response options per US valence ($n$) in the US memory task ($g:=g_{pos}=g_{neg}=1/n$). (Note that because it is not freely estimated, the joint $g$ parameter is not counted as a separate parameter in the titles of the two model variants.) 
 Moreover, the 7-parameter variant allows for differences in CS-US pairing memory between positively vs. negatively paired CSs, thus including separate $C$ and $d$ parameters for the two stimulus types ($C_{pos}$ vs. $C_{neg}$ and $d_{pos}$ vs. $d_{neg}$, respectively).
 The 5-parameter variant includes the same joint $D$, $b$, $a$ and $g$ parameters but also estimates joint $C$ and $d$ parameters, thereby assuming comparable US identity and US valence memory across levels of US valence.
 Note that, generally speaking, the 5-parameter model achieves more precise parameter estimates and higher power for comparing MPT parameter across experimental conditions.
-Despite being more restrictive, the 5-parameter variant may thus be preferable to the 7-parameter model in empirical applications (given that the two model variants show similar ability to explain response data from the two-step memory task).
+Despite being more restrictive, the 5-parameter variant may thus be preferable to the 7-parameter model in empirical applications (given that the two model variants show similar ability to explain response data from the two-step memory task, which is an open empirical question).
 
 # The present research
 To demonstrate the suitability of the proposed MPT model, on the one hand, and to provide new insights into the relationships between EC effects, US valence memory, and US identity memory on the other hand, we report three experiments.
@@ -292,8 +292,8 @@ In both task order conditions, we found that responses from the two-step memory 
 Taken together, these findings demonstrate the suitability of the MPT model in different procedural implementations.
 Finally, in the third experiment, we replicated Gast and Rothermund (2011), using the MPT model to investigate how evaluative jugdment tasks result in larger EC effects.
 In both judgment task conditions (evaluative vs. non-evaluative), we found that responses from the two-step memory task were well explained by the preregistered 5-parameter model.
-Moreover, we also found that CS recognition, US identity and US valence memory were all boosted by the evaluative judgment task, but that only US valence memory mediated the concomitant increase in EC effects.
-Taken together, these results demonstrate the power of the MPT model in explaining theoretically relevant moderations of EC.
+Moreover, we also found that CS recognition, US identity and US valence memory were all boosted by the evaluative judgment task, but only US valence memory was found to mediate the concomitant increase in EC effects.
+Taken together, these results provide evidence for the suitability and power of the MPT model in explaining theoretically relevant moderations of EC.
 
 # Experiment 1
 
@@ -314,16 +314,16 @@ We chose this task order for two reasons.
 Firstly, collecting memory task responses prior to CS evaluations ensured that the obtained $D$ parameter would provide a pure measure of CS recognition ability as developed during the learning phase.
 Secondly, the implemented task order also ensured that the $C$ and $d$ parameters would be unaffected by evaluative responding in the CS evaluation task.
 
-Due to its exploratory nature, Experiment 1 was not pre-registered.
+Due to its exploratory nature, Experiment 1 was not preregistered.
 However, we did hold certain expectations prior to data collection.
 First of all, we expected a significant EC effect (as indicated by more favorable evaluations of positively paired CSs than of negatively paired CSs).
 Moreover, we assumed that a significant EC effect requires recognizing at least some of the previously presented CSs.
 We thus expected a significant $D$ parameter in the MPT model analysis of the memory task responses.
 For the MPT model analysis, we also expected a significant $C$ parameter (indicating US identity memory for at least some of the CSs recognized as old).
-This expectation was based on prior research showing above-chance recollection performance in a US identity measure that included only USs of the correct valence (Stahl & Bading, 2020).
+This expectation was based on prior research showing above-chance performance in a US identity measure that included only USs of the correct valence (Stahl & Bading, 2020).
 Finally, we did not have a clear expectation for the $d$ parameter.
 As explained above, standard US valence measures cannot prevent that US valence is simply inferred from memory of the correct US.
-By implication, previous demonstrations of above-chance performance in these measures cannot serve as a basis for expecting US valence memory in the absence of US identity memory (as measured by the $d$ parameter).
+As a result, previous indications of above-chance performance on these measures provide only limited grounds for expecting US valence memory in the absence of US identity memory (as measured by the $d$ parameter).
 However, the results from @klauer_who_1998 clearly show that participants form abstract representations of concrete stimuli (e.g., by representing different speakers in terms of social categories) and associate them with other, co-occurring stimuli (e.g., tape-recored statements presented in the "Who said what?" procedure).
 Based on these findings, we were inclined to expect a significant $d$ parameter (which reflects an abstract representation of the previously paired USs in terms of their valences).
 
@@ -333,8 +333,9 @@ Materials and data are publicly available at: https://osf.io/rqkvy/.
 
 ### Design and participants
 The experiment followed a 2 (US valence: positive vs. negative) within-subjects design.
-Participants were recruited through Prolific and received monetary compensation for their participation.
-The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%.
+Participants were recruited through Prolific and received £2.25 for their participation (estimated study duration: 15 minutes).
+
+The sampling pool was restricted to English speakers with at least 100 previous submissions and an approval rating of at least 90%. Sex was balanced. 
 Prolific users who had participated in our previous evaluative conditioning studies were excluded from the sampling pool.
 We recruited 50 participants (50$\%$ female; $M_{age} = 38.68$; $SD_{age} = 15.01$).
 The number of recruited participants was determined *ad hoc* and was not based on a power analysis.
@@ -346,13 +347,13 @@ Taken together, this resulted in a final sample size of 48 participants.
 ### Materials
 The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
-The CS pool comprised 48 colored images of human faces with neutral expressions (24 female faces, 24 male faces).
-The face images have been used as CSs in previous EC research (e.g., Waroquier, Labadie, & Dienes, 2020).
+The CS pool comprised 48 black and white images of human faces with neutral expressions (24 female faces, 24 male faces).
+The face images have been used as CSs in previous EC research (e.g., Waroquier, Abadie, & Dienes, 2020).
 
 As USs, we used 24 colored images animals (e.g., a cockroach), scenes (e.g., a rainbow) and objects (e.g., a knife).
 The images were taken from the Open Affective Standardized Image Set [OASIS\; @kurdi_introducing_2017]. 
 Based on OASIS ratings (on a 7-point Likert scale), we selected 12 positive images ($M_{valence} = 5.88$; $SD_{valence}$ = 0.24; $M_{arousal} = 4.10$; $SD_{arousal} = 0.50$) and 12 negative images ($M_{valence} = 2.05$; $SD_{valence} = 0.32$; $M_{arousal} = 4.27$; $SD_{arousal} = 0.52$).
-The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but not with regard to arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
+The positive and negative images differed with regard to valence, Welch’s $t(20.23) = 33.36, p < .001$, but did not differ significantly regarding arousal, Welch’s $t(21.96) = 0.82, p = .419$. 
 
 For each participant, 12 randomly selected face images (50% female) served as positively paired CSs, 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face (50% female) images served as distractor stimuli in the test phase.
 
@@ -379,7 +380,7 @@ After the last trial of the learning task, participants read the following instr
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed the two-step memory task followed by a CS evaluation task. 
+In the test phase, participants performed a two-step memory task and then a CS evaluation task. 
 The task order was the same for all participants.
 
 ##### Memory task
@@ -406,20 +407,20 @@ First, participants read the following instruction slide: "In the third part of 
 
 After pressing the spacebar, participants worked through the CS evaluation task, consisting of 48 trials.
 In the CS evaluation task, the 24 CSs and the 24 distractor stimuli were again displayed individually and without time limit. 
-Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). 
-(Note that participants responses were stored as numerical values ranging from 1 to 11.)
+Participants rated how positive or negative they found each face on a 11-point rating scale ranging from "very negative" (-5) to "very positive" (+5). Responses were stored as numerical values ranging from 0 to 11. 
 The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 After the last trial of the CS evaluation task, participants read the following instruction slide: "The third and final part of the experiment is now finished. Now we have a few short questions about your experience performing the study. Press the spacebar to continue."
 
 #### Control measures and debriefing
-After pressing the spacebar, participants were asked whether they paid attention to the images presented throughout the experiment.
+After the test phase, participants were asked whether they paid attention to the images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously." vs. "I have just clicked through, please discard my data.") were again presented as two buttons.
-Subsequently, participants had the chance to comment on the study.
+In these two questions, participants were told that their responses would not affect their payment.
+Subsequently, participants had the chance to comment on the study. 
 Finally, participants were presented with the following text (which debriefed them about the purpose of the study): "The experiment is now over. Thank you very much for your participation. In this experiment, we wanted to see whether the valence of the paired scene (positive vs. negative) has an influence on your evaluation of the faces. In addition, we were also interested in your memory for the image pairs. If you have any question or comment, or if you would like to receive additional information on the present study, please do not hesitate to contact the person in charge of this research at the following e-mail address: [*e-mail address*]. Press the spacebar to be redirected to Prolific."
-After pressing the spacebar, participants were redirected to Prolific and reimbursed for their participation.
+After pressing the spacebar, participants were redirected to Prolific and compensated for their participation.
 
 ### Data processing and statistical analyses
 The responses from the CS evaluation task were analyzed (without further processing) using the R package *stats*.
@@ -429,13 +430,13 @@ For the MPT model analyses, the responses from the two-step memory task were fir
 
 - If a positively (negatively) paired CS was correctly classified as "old" and the correct positive (negative) US was selected, the responses were recoded as "PosUSposcor" ("NegUSnegcor").
 
-- If a positively (negatively) paired CS was correctly classified as "old" and an incorrect positive (negative) trait was selected, the responses were recoded as "PosUSposincor" ("NegUSnegincor").
+- If a positively (negatively) paired CS was correctly classified as "old" and an incorrect positive (negative) US was selected, the responses were recoded as "PosUSposincor" ("NegUSnegincor").
 
-- If a positively (negatively) paired CS was correctly classified as "old" and a negative (positive) trait was selected, the responses were recoded as "PosUSnegincor" ("NegUSposincor")
+- If a positively (negatively) paired CS was correctly classified as "old" and a negative (positive) US was selected, the responses were recoded as "PosUSnegincor" ("NegUSposincor")
 
-- If an (unpaired) new stimulus was correctly classified as "new", the response was recoded as "Newnew".
+- If an (unpaired) new image was correctly classified as "new", the response was recoded as "Newnew".
 
-- If an (unpaired) new stimulus was incorrectly classified as "old" and a positive (negative) trait was selected, the responses will be recoded as "Newposincor" ("Newnegincor").
+- If an (unpaired) new image was incorrectly classified as "old" and a positive (negative) US was selected, the responses was recoded as "Newposincor" ("Newnegincor").
 
 ```{r}
 baseline_restrictions <- list(
@@ -487,9 +488,10 @@ The first part of the joint model accounts for the memory data and is a hierarch
 To the best of our knowledge, we are the first to use such a joint-modeling approach in EC research.
 In previous studies, similar analyses were carried out with a two-step procedure in which the estimation of a latent-trait MPT model is followed by a separate linear regression analysis [e.g., @kukken_are_2020] that uses point estimates (from the latent-trait model) to predict individual EC effects.
 Such an approach is potentially problematic because
-using such point estimates (as predictor values) ignores the uncertainty that is associated with the estimation of each MPT parameter,
-thereby violating the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998].
-Using point estimates to predict EC effects may therefore lead to biased conclusions about the statistical relationships between MPT parameters and individual EC effects.
+using point estimates as predictor values ignores the uncertainty associated with the estimation of each MPT parameter. Ignoring this uncertainty follows from the assumption of linear regression analysis that predictor values are free of measurement error [cf., @klauer_unbiased_1998]. However, this assumption is unlikely to hold. 
+<!--thereby violating the assumption of linear regression analysis that predictor values are free of measurement error 
+JB: I was unsure how this wording, as it was as if treating MPT parameter estimates as free of measurement error was in itself a violation of the assumption. Because this is not the case (it exactly follows from the the assumption), I tried to revise this part but I am unsure this is clear enough. --> 
+As a result, using point estimates to predict EC effects may lead to biased conclusions about the statistical relationships between MPT parameters and individual EC effects.
 To avoid such biases, we decided to use a joint-modeling approach which allows to account for uncertainty in MPT parameter estimates when used as predictors in a linear regression.
 
 ```{r}
@@ -535,7 +537,7 @@ exp1_negdist <- apa_print(t.test(exp1_ratings_agg2$negative,exp1_ratings_agg2$`n
 ```
 
 The mean rating for positively paired CSs was higher than the mean rating for negatively paired CSs ($M_{positive}=$ `r mean_pos`, $SD_{positive}=$ `r sd_pos`; $M_{negative}=$ `r mean_neg`, $SD_{negative}=$ `r sd_neg`).
-The mean difference (i.e., the mean EC effect) was small in size, $d_{Cohen}=.26$, and reached significance only in a one-tailed test, `r exp1_posneg$full_result`.
+The mean difference (i.e., the mean EC effect) was small in size, $d_{Cohen}= 0.26$, and reached significance only in a one-tailed test, `r exp1_posneg$full_result`.
 
 ### MPT model analyses
 
@@ -590,13 +592,13 @@ apa_table(
 ```
 
 
-The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`, indicating that participants recognized CSs as old (and detected distractor stimuli as new) in $45.6$% of trials.
-By implication, participants did not recognize CSs as old (and detect distractor stimuli as new) in $54.4$% of trials.
+The $D$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$D_eq0`. This indicates that participants recognized CSs as old and detected distractor images as new in $45.6$% of trials.
+This implies that participants did not recognize CSs as old, and did not detect distractor stimuli as new, in $1-D = 54.4$% of trials.
 
 The $C$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$C_eq0`, indicating that participants had US identity memory for $67.4$% of CSs that had been recognized as old.
 This implies that US identity was absent for $32.6$% of CSs recognized as old (hereafter also referred to as recognized CSs).
 
-The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`, indicating that in the subset of recognized CSs without US identity memory, participants possessed US valence memory in approx. $19.9$% of trials.
+The $d$ parameter estimate was significantly larger than zero, `r apa_wsw_comps$full_result$d_eq0`. This estimate indicates that, in the subset of recognized CSs without US identity memory, participants possessed US valence memory in approximately $19.9$% of trials.
 By implication, participants did not possess US valence memory for approx. $80.1$% of recognized CSs without US identity memory.
 
 The $b$ parameter estimate was significantly lower than $.5$, `r apa_wsw_comps$full_result$b_eq_5`.
@@ -635,23 +637,22 @@ For participant-level $a$ parameter estimates, the linear regression model showe
 Finally, for participant-level $b$ parameter estimates, we also found inconclusive evidence for a negative relationship with individual EC effects, `r apa_model_lm$full_result$b`.
 
 ## Discussion
-In Experiment 1, we used the MPT model to estimate EC-related memory in the context of a standard EC procedure.
+In Experiment 1, we used the newly adapted MPT model we presented in the introduction to estimate EC-related memory in the context of an EC procedure augmented with a memory task.
 We found that responses from the two-step memory task were well described by the 5-parameters model (including joint $D$, $C$, $d$, $a$ and $b$ parameters).
-As expected, significant $D$ and $C$ parameters indicated that participants possessed robust CS recognition and US identity memory for a subset of CSs.
-Moreover, the significant $d$ parameter showed that participants possessed US valence memory (without concomitant US identity memory) for a subset of recognized CSs.
-To the best of our knowledge, this finding represents the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.
+As expected, the significant $D$ parameter indicated that participants did correctly recognize the CS as "old" and the distractor images as "new." The significant $C$ parameter indicated that participant correctly retrieved US identity from memory for a subset of CSs.
+Moreover, the significant $d$ parameter showed that participants occasionally retrieved US valence memory without retrieving US identity information for a subset of recognized CSs.
+Finding an above-0 $d$ parameter is a clear indication that US valence memory cannot be reduced to inferences based on US identity memory. Provided the shortcomings of previous US valence measures discussed in the introduction, the present result is, to our knowledge, new and strongest (than previous research) empirical evidence supporting the view that individuals may sometimes retrieve from memory the valence of a US a CS was previously paired with. 
+<!-- finding is the first unambiguous demonstration that US valence memory constitutes an independent form of CS-US pairing memory.-->
+In line with previous research [e.g., @stahl_respective_2009-1], the results of Experiment 1 also tentatively suggested that EC effects are positively related to US valence memory (as measured by the $d$ parameter) but unrelated to US identity memory (as measured by the $C$ parameter).
 
-In line with previous research [e.g., @stahl_respective_2009-1], the results of Experiment 1 also
-suggested that EC effects are positively related to US valence memory (as measured by the $d$ parameter) but unrelated to US identity memory (as measured by the $C$ parameter).
-Unfortunately, statistical evidence for or against the relationships between EC effects and participant-level MPT parameters was generally weak, as was the size of the mean EC effect obtained in the present study.
-In the following experiment, we addressed both of these issues.
+However, despite finding support for (1) the MPT model we suggested, (2) above-0 US valence memory in the absence of US identity memory (i.e., the $d$ parameter), and (3) a positive association between US valence memory and the EC effect, insights one can derive from the current experiment remain limited. First, statistical evidence for or against the relationships between EC effects and participant-level MPT parameters was generally weak. Second, the EC effect was itself small in size and barely significant only in a one-sided test, while the EC effect is generally medium-sized and easily detected with the sample size we used [@hofmann_evaluative_2010]. A possibility is that statistical power was low to begin with to be able to document a potential moderation of the EC effect by US valence memory. In addition, using human faces as initially neutral stimuli to obtain the EC effect may have attenuated the EC effect (e.g., too much variability in initial evaluations of the faces). Finally, we used a fixed task order in the test phase: we administered the memory task before the evaluation task. This was because we were mainly interested in memory responses to fit the MPT model and estimate the parameters, at the cost of possibly undermining the measurement of the EC effect. Experiment 2 addressed these limitations. 
 
 # Experiment 2
 In Experiment 2, we sought to replicate the core findings from Experiment 1 (significant $D$, $C$ and $d$ parameters) while boosting (individual) EC effects and obtaining more informative estimates of their relationships with participant-level MPT parameters.
-To boost EC effects, we used pronounceable non-words as CSs (which might be more neutral and thus easier to condition than the human faces used in the first experiment).
+To try to boost EC effects, we used pronounceable non-words as CSs (which might be more neutral and thus easier to condition than the human faces used in the first experiment).
 In addition, we collected data from a larger number of participants (to achieve more precise estimates of the mean EC effect and of the relationships between individual EC effects and MPT parameter estimates).
-Moreover, we also manipulated the order in which memory and CS evaluation tasks were performed after the learning phase.
-This task order manipulation was implemented to determine whether performance of the two-step memory task (prior to the CS evaluation task) undermines the measurement of EC effects (which might be another reason for the small effect size obtained in the previous experiment).
+Moreover, we also manipulated the order in which memory and CS evaluation tasks were performed in the test phase.
+This task order manipulation was implemented to determine whether administering the two-step memory task first influences the EC effect.
 Finally, implementing this manipulation also allowed us to compare the suitability of the two task order conditions for measuring different forms of EC-related memory with the MPT model.
 
 ```{r}
@@ -668,16 +669,16 @@ socio = socio %>% filter(Status != "RETURNED")
 ```
 
 ## Method
-Experiment 2 was pre-registered on the OSF.
-The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
+Experiment 2 was preregistered on the Open Science Framework (OSF).
+The preregistration, materials, and data are publicly available at: https://osf.io/rqkvy/.
 The data collection was conducted online.
 
 ### Design and participants
 The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (task order: evaluation first vs. memory first) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
-Participants were recruited through Prolific and received monetary compensation for their participation.
-As in the first experiment, the sampling pool was restricted to English speakers who had not participated in our previous EC studies with at least 100 previous submissions and an approval rating of at least 90%.
+Participants were recruited through Prolific and received £2.25 for their participation (estimated study duration: 15 minutes).
+As in the Experiment 1, the sampling pool was restricted to English speakers who had not participated in our previous EC studies with at least 100 previous submissions and an approval rating of at least 90%. Sex was balanced.
 We recruited 172 participants (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`).
 Due an unknown technical error, the data from one participant was unavailable.
 As preregistered, we excluded all participants who declared that they did not pay attention or that they did not take their responses seriously ($N=5$).
@@ -689,15 +690,15 @@ The power analysis was conducted with the R package *pwr* (version 1.3-0; Champe
 The test of the EC effect was implemented as a one-tailed paired-samples *t*-test with $\alpha=.05$ (IV: US valence; DV: evaluative ratings).
 We found that 156 participants were required to achieve a statistical power of $1-\beta = .8$ to detect a significant EC effect.
 We also found that a sample size of $N = 156$ provided statistical power of $1-\beta = .8$ to detect correlations $r\mathrm{s} \geq |.22|$ (e.g., between parameter estimates and evaluative ratings).
-To avoid a final sample size smaller than $N = 156$ after applying the pre-registered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%).
+To avoid a final sample size smaller than $N = 156$ after applying the preregistered exclusion criteria, we chose to recruit 172 participants (the required sample size increased by 10%).
 
 ### Materials
 The experiment was programmed with *lab.js* [@henninger_lab_2021] and exported to an HTTPS-protected website with JATOS [@lange_just_2015].
 
-The CS pool comprised 54 non-words made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*).
+The CS pool comprised 54 non-words made up of five to seven letters (e.g., *botsy*, *ikzunt*, *ampfong*; see the online study program for the complete list of non-words).
 The non-words were taken from a previous EC study (Stahl & Bading, 2020).
 For each participant, 12 randomly selected non-words served as positively paired CSs, 12 randomly selected non-words served as negatively paired CSs, and another 24 randomly selected non-words served as distractor stimuli in the test phase.
-As USs, we used the same 24 images as in Experiment 1.
+As USs, we used 24 OASIS pictures. Twenty-two (out of 24) of these pictures were identical to the ones we used in Experiment 1; 2 negative pictures were replaced by two other, less ambiguous images (see the online study program for the complete US pool).
 For each participant, the 24 images were randomly assigned to the 24 CSs.
 
 ### Measures and procedures
@@ -722,7 +723,7 @@ After the learning phase, participants entered the test phase.
 In the test phase, participants performed the CS evaluation task and the two-step memory task. 
 Participants were randomly assigned to one of two task order conditions. 
 In the "evaluation first" ("memory first") condition, participants performed the CS evaluation task (two-step memory task) followed by the two-step memory task (CS evaluation task).
-The task instructions were largely identical to those used in the first experiment but differed slightly between task order conditions (for details, see pre-registration).
+The task instructions were largely identical to those used in the first experiment but differed slightly between task order conditions (for details, see preregistration).
 
 ##### Evaluation task
 In the evaluation task, the 24 CSs and the 24 distractor stimuli were displayed individually without time limit. 
@@ -731,7 +732,7 @@ The 48 trials were separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
 ##### Memory task
-In the two-step memory task, the 24 CSs and the 24 distractor stimuli were also displayed individually and without time limit.
+In the two-step memory task, the 24 CSs and the 24 distractor stimuli were displayed individually and without time limit.
 The 48 trials were again separated by blank screens presented for 500 ms.
 Trial order was randomized for each participant anew.
 
@@ -746,10 +747,11 @@ For distractor stimuli incorrectly classified as "old", eight randomly selected 
 Participants were instructed to guess the correct option if they could not remember the previously paired US.
 
 #### Control measures and debriefing
-After the test phase, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
+Control measures and debrefing were highly similar to Experiment 1. After the test phase, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
 The response options ("Yes" vs. "No") were presented as two buttons.
 Subsequently, participants were asked whether they took the requested responses seriously.
 The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
+In these two questions, participants were told that their responses would not affect their payment.
 Subsequently, participants had the chance to comment on the study.
 Finally, participants were debriefed about the purpose of the study and then redirected to Prolific.
 
@@ -796,7 +798,7 @@ individual <- models |>
   })
 ```
 
-The responses from the two-step memory task were recoded into a joint memory index according to the same scheme as used in the first experiment (see above).
+The responses from the two-step memory task were recoded into a joint memory index according to the same scheme as used in Experiment 1 (see above).
 The participant-level frequency distributions of the joint memory index were then analyzed with the R package *TreeBUGS* [@heck_treebugs_2018].
 In *TreeBUGS*, MPT model estimation is based on the latent-trait approach which allows for heterogeneity in parameter values between participants [@klauer_hierarchical_2010].
 As preregistered, we fitted a hierarchical extension of the 7-parameter model estimating the following parameters: $D$, $C_{pos}$, $C_{neg}$, $d_{pos}$, $d_{neg}$, $a$ and $b$ (with $g$ fixed at $.25$).
@@ -807,18 +809,18 @@ Moreoever, we used 20,000 adaptation iterations and a thinning rate of 40.
 Convergence was monitored by means of the Gelman-Rubin statistic (Gelman & Rubin, 1992) using a criterion of $\hat{R}<1.02$ for all parameters.
 Model fit was assessed by means of posterior predictive model checks $T_1$ and $T_2$ as proposed by [@klauer_hierarchical_2010].
 The 7-parameter model provided an adequate account of the memory data according to both criteria: `r fit$model7p$T1`; `r fit$model7p$T2`.
-As preregistered, we then tested all seven parameters against their neutral value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters). 
+As preregistered, we then tested all seven parameters against their reference value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters). 
 To this aim, we fitted seven restricted models (each of which included a different parameter restriction) and compared them to the unrestricted 7-parameter model based on the WAIC (Watanabe, 2010).
 Based on convention, a WAIC difference greater than 10 was taken as strong evidence in favor of the model with the smaller WAIC.
 
-As an additional (non-preregistered) test for the presence of US valence memory (without concomitant US identity memory), we also fitted the 5-parameter model (used in Experiment 1) and compared it to a restricted 4-parameter variant in which the joint $d$ parameter was fixed at zero.
-Because the memory data was also well described by the 5-parameter model (`r fit$model5p$T1`; `r fit$model5p$T2`), we decided to use this simpler model variant also for the preregistered regression analyses (in which we sought to predict individual EC effects from participant-level parameter estimates).
+As an additional (non-preregistered) test for the presence of US valence memory without concomitant US identity memory (as estimated with the $d$ parameter), we also fitted the 5-parameter model (used in Experiment 1) and compared it to a restricted 4-parameter variant in which the joint $d$ parameter was fixed at zero.
+Because the memory data was well described by the 5-parameter model (`r fit$model5p$T1`; `r fit$model5p$T2`), we decided to use this simpler model variant to conduct the preregistered regression analyses aimed at predicting individual EC effects from participant-level parameter estimates.
 Note that using the parameter estimates from the 5-parameter model (instead of from the 7-parameter model) also served to avoid multicollinearity between predictors.
-In yet another departure from the preregistered protocol, we used the joint modeling approach introduced in the first experiment (see above) instead of the preregistered (but potentially problematic) two-step procedure.
+In yet another departure from the preregistered analyses, we used the joint modeling approach introduced in Experiment 1 (see above) instead of the preregistered (but less appropriate) two-step procedure.
 As preregistered, we implemented different linear regression models of varying complexity (e.g., with or without higher-order interactions between MPT parameters).
-However, to simplify the results section, we decided to report only the relatively simple main effects model that was mentioned in the preregistration (which also produced the most straightforward results).
+However, to simplify the results section, we decided to report only the main effects model that was mentioned in the preregistration (which, in addition to being simpler, also produced the most straightforward results).
 Note that this linear regression model was estimated as part of a joint model that included task order as a categorical predictor of individual MPT parameter estimates and EC effects.
-As in the first experiment, we used the probabilistic programming language *Stan* [@carpenter_stan_2016] to implement the joint-modeling approach.
+As in Experiment 1, we used the probabilistic programming language *Stan* [@carpenter_stan_2016] to implement the joint-modeling approach.
 
 ## Results
 
@@ -839,8 +841,8 @@ t.evalfirst <- apa_print(t.test(evalfirst$ec_effect,mu=0,alternative="greater"))
 
 ```
 
-The between-subjects ANOVA revealed a significant intercept, `r exp2_ec_anova$full_result$Intercept`, and a non-significant main effect of task order, `r exp2_ec_anova$full_result$task_order`.
-The significant intercept indicated robust EC across task order conditions (`r mean_ec`, `r sd_ec`).
+The between-subjects ANOVA showed a significant intercept, `r exp2_ec_anova$full_result$Intercept`, and a non-significant main effect of task order, `r exp2_ec_anova$full_result$task_order`.
+The significant intercept indicated a robust EC effect across task order conditions (`r mean_ec`, `r sd_ec`).
 Moreover, the mean EC effect was significant in the "memory first" condition, `r t.memfirst$full_result`, as well as in the "evaluation first" condition, `r t.evalfirst$full_result`. 
 
 ### MPT model analyses
@@ -990,8 +992,8 @@ For $D$, $C$ and $b$ parameters, the results were similar to those obtained in t
 As reported in Table\ \@ref(tab:model-performance), setting $D$, $C_{pos}$ or $C_{neg}$ to zero led to inadequate fit and substantial increases in the WAIC.
 These results imply that, as in Experiment 1, participants possessed robust CS recognition and US identity memory for a subset of CSs.
 Moreover, setting $b$ parameters to $.5$ also resulted in inadequate model fit and a substantial increase in the WAIC.
-This result shows that, as in the previous experiment, participants had a tendency towards guessing "new" whenever they did not recognize a CS as old (or detect a distractor as new).
-For the $d$ parameters, the present results differed from those obtained in the first experiment.
+This result shows that, as in Experiment 1, participants showed a bias towards guessing "new" whenever they did not recognize a CS as old (or detect a distractor as new).
+Turning to the $d$ parameters, the present results differed from those obtained in the first experiment.
 As reported in Table\ \@ref(tab:model-performance), setting $d_{pos}$ or $d_{neg}$ to zero resulted in adequate model fit and negligible changes in the WAIC.
 <!-- Also report test from 5-parameters model. -->
 Taken together, these results imply that, in the present experiment, we did not find robust evidence for US valence memory in the absence of US identity memory.
@@ -1001,7 +1003,7 @@ In the present experiment, we therefore did not obtain evidence for a response t
 To compare MPT parameter estimates across task order conditions, we calculated the posterior differences between group means and their associated Bayesian $p$\ values (see Table\ \@ref(tab:exp1-param)).
 For the $D$ parameter, the group mean in the "memory first" condition was substantially higher than the group mean in the "evaluation first" condition.
 For the $b$ parameter, the effect of task order was reversed: the group mean was substantially higher in the "evaluation first" condition than in the "memory first" condition.
-For the remaining MPT parameters, the posterior differences between group mean were insubstantial.
+For the remaining MPT parameters, the posterior differences between group mean were negligible.
 
 ### Relationships between EC effects and MPT parameters
 
@@ -1032,7 +1034,7 @@ BFs <- apa_print(BFs)
 apa_model_lm <- apa_print(model, part = "lm")
 ```
 
-Figure\ \@ref(fig:exp3-regression) shows the relationships between participant-level MPT parameter estimates and marginal EC effects.
+Figure\ \@ref(fig:exp2-regression) shows the relationships between participant-level MPT parameter estimates and marginal EC effects.
 As in Experiment 1, we calculated the Bayes Factors for the slopes in the linear-regression part of the joint model (to test the relationships between participant-level parameter estimates and EC effects).
 The linear regression model revealed strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects, `r apa_model_lm$full_result$d`.
 For participant-level $D$ parameter estimates, we found inconclusive evidence against a relationship with individual EC effects, `r apa_model_lm$full_result$D`.
@@ -1051,25 +1053,24 @@ apa_table(
 ```
 
 ## Discussion
-In the present experiment, the mean EC effect was clearly significant and unaffected by task order which suggests that the two-step memory task can be administered prior to the CS evaluation task without detriment to the measurement of EC effects.
-Moreover, responses from the memory task were well described by the MPT model in both task order conditions, suggesting that both implementations ("memory first" vs. "evaluation first") may be principally suitable for estimating CS-US pairing memory with the adapted MPT model.
-This interpretation received additional support from the fact that, at the group level, $C$ and $d$ parameters were unaffected by task order (suggesting that CS-US pairing memory remained unaltered by prior performance of the CS evaluation task).
+Experiment 2 aimed to increase the EC effect to again test the fit of the MPT model, estimate whether parameters differ from their reference value, and test the associations between MPT parameter estimates and the EC effect. To do so, in comparison with Experiment 1, preregistered Experiment 2 increased the sample size and used non-words rather than faces as CS. We additionally varied task order in the test phase to explore a possible task order effect (memory task first and evaluation task second, or vice-versa) on the EC effect and on MPT parameter estimates. 
 
-At the same time, we found that both MPT parameters related to the CS recognition task were moderated by task order: while participant-level $D$ parameters were overall larger in the "memory first" condition, participant-level $b$ parameters were overall larger in the "evaluation first" condition.
-These task order effects on $D$ and $b$ parameters are well explained by differences in task difficulty (unpaired distractors are harder to detect [as new] if they are already familiar from the CS evaluation task) and suggest that a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required.
+Importantly, we found that the mean EC effect was clearly significant. Task order did not significantly influence the EC effect. This result suggests that that the two-step memory task can be administered prior to the CS evaluation task without introducing any bias in estimating the EC effect. 
+
+Moreover, responses from the memory task were well described by the MPT model. This was the case for both the (preregistered) 7-parameter and (non-preregistered) 5-parameter versions of the MPT model. As the fit of the 5-parameter variant of the model was not worse than its 7-parameter counterpart, we decided to mainly use the simpler, 5-parameter version in our main analyses. Interestingly, the model fit was acceptable in both task order conditions, with no apparent discrepancies between the two. As a result, the specific implementation ("memory first" vs. "evaluation first") does not seem relevant when it comes to modeling pairing memory. This interpretation received additional support from the fact that, at the group level, $C$ and $d$ parameters were unaffected by task order, suggesting that CS-US pairing memory remained unaltered by prior performance of the CS evaluation task. $D$ (recognition memory) and $b$ (a bias toward "old" in the absence of recognition memory) parameters did differ as a function of task order (recognition memory was better and guessing "old" was smaller when the test phase began with the memory task than with the evaluation task). A possibility is that administering the evaluation task first introduced some source confusion (e.g., about the first presentation of a given "new" non-word, as the memory task may have acted as an additional encoding episode). We think this task order effect is mainly secondary when it comes to estimating US valence (with the $d$ parameter) and identity (with the $C$ parameter) retrieval. However, administering the evaluation task first is at risk of introducing more noise if the conditional parameter estimates. This is because estimates of the $C$ and $d$ parameters depends on entering the $D$ branch: less data entering this branch implies less data to accurately estimate the parameters. a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required. Whenever the primary goal lies in the interpretation of the $D$ parameter and in the precision of the MPT parameter estimates, a "memory first" implementation of the test phase may be preferable.
 
 Although participant-level $D$ parameters were reduced in the "evaluation first" condition, both task order conditions showed CS recognition and US identity memory for a substantial number of CSs, thereby replicating the significant $D$ and $C$ parameters from the first experiment.
-By contrast, the significant $d$ parameter (from Experiment 1) was not replicated in the present experiment.
-This implies that, at the group level, Experiment 2 did not provide robust evidence for US valence memory in the absence of US identity memory.
-However, we also found strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects.
+By contrast, the significant $d$ parameter we found in Experiment 1 was not replicated in the present experiment.
+As a result, at the group level, Experiment 2 did not provide robust evidence for US valence memory in the absence of US identity memory.
+However, this result should be qualified, as we found strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects.
 Taken together, these results suggest that the significant (group-level) EC effect was driven by a subset of participants that developed US valence memory (without concomitant US identity memory) during the learning phase.
 
-Based on the present findings, we can only speculate why the majority of participants did not possess much US valence memory (in the subset of CSs without US identity memory).
+Based on the present findings, we can only speculate why the majority of participants did not demonstrate much US valence memory (in the subset of CSs without US identity memory).
 A possible explanation comes from previous research conducted by Gast and Rothermund (2011).
-As explained above, Gast and Rothermund (2011) showed that EC effects and CS-US pairing memory were boosted by a valence focus (which was induced through an evaluative judgment task performed during the learning phase).
-In the present experiment, participants did not perform such a judgment task nor were they otherwise alerted to stimulus valence as a relevant factor (e.g., by mentioning valence in the instructions presented prior to the learning phase).
-As a consequence, a majority of participants may have observed the CS-US pairings without processing the USs in terms of their valence (resulting in low levels of US valence memory and small EC effects), while only a minority of participants operated under a spontaneous or otherwise activated valence focus (thus developing higher levels of US valence memory and larger EC effects).
-To probe this "valence focus" explanation for the emergence and size of the $d$ parameter, we decided to conduct a third and final experiment.
+As explained in the introduction, Gast and Rothermund (2011) showed that EC effects and CS-US pairing memory were boosted by a valence focus when exposed to the pairings. Such a valence focus can be induced through an evaluative judgment task performed during the learning phase.
+In the present experiment, participants did not perform such a judgment task nor were they otherwise told that stimulus valence was a relevant factor (e.g., by mentioning valence in the instructions presented prior to the learning phase).
+As a consequence, a majority of participants may have observed the CS-US pairings without processing the USs in terms of their valence. If so, it follows that we found low levels of US valence memory and small EC effects overall. A minority of participants may have processed the pairings under a spontaneous valence focus, thus developing higher levels of US valence memory and showing larger EC effects.
+To test this "valence focus" explanation and test our focal hypotheses again, we conducted Experiment 3.
 
 # Experiment 3
 
@@ -1078,26 +1079,25 @@ data_list_exp3 <- readRDS(file.path(study_folders$wsw3_main, "data", "data_exp3.
 ```
 
 The present experiment had several inter-connected aims.
-First of all, we wanted to replicate Gast and Rothermund's (2011) valence focus effect on evaluative conditioning.
+First, we wanted to replicate Gast and Rothermund's (2011) valence focus effect on evaluative conditioning (i.e., a larger EC effect for participants instructed to focus on valence vs. on another dimension).
 To this aim, we used similar materials as in Gast and Rothermund's (2011) Experiment 2 and compared EC effects between two groups that performed different judgment tasks while observing the CS-US pairings.
 In the "valence focus" condition, participants performed an evaluative judgment task by indicating whether they had a positive or negative impression of the CS-US pairings presented in the learning phase.
 In the "age focus" condition, participants performed a non-evaluative judgment task by indicating whether the presented CS-US pairings appeared to them as typically young or typically old.
 In both of these task focus conditions, EC effects were measured directly after the learning phase (in a CS evaluation task similar to the one used in the original experiment).
 In line with Gast and Rothermund (2011), we expected to find larger EC effects in the "valence focus" condition than in the "age focus" condition.
 
-As our second aim, we sought to replicate Gast and Rothermund's (2011) valence focus effects on US identity and US valence memory, using the newly introduced MPT model.
-In Gast and Rothermund's (2011) Experiments 1 and 3, US identity memory was measured with a standard US identity task showing a mixed set of response options (50% positive USs and 50% negative USs), while US valence memory was measured by recoding the selected USs (from the US identity task) in terms of their valence.
+Second, we sought to replicate Gast and Rothermund's (2011) valence focus effects on US identity and US valence memory, using the newly introduced MPT model.
+In Gast and Rothermund's (2011) Experiments 1 and 3, US identity memory was measured with a standard US identity task showing a mixed set of response options (50% positive USs and 50% negative USs). Gast and Rothermund measured US valence memory by recoding the selected USs (from the US identity task) in terms of their valence.
 For both measures and experiments, Gast and Rothermund (2011) found significant valence focus effects (i.e., better task performance in the "valence focus" condition than in the respective control condition).
-As explained above, the memory measures used by Gast and Rothermund (2011) suffer from a number of shortcomings that make it impossible to disentangle the respective contributions of US identity memory, US valence memory and CS recognition memory (to the reported increases in task performance in the two memory measures).
-In the present experiment, we overcame these shortcomings by implementing the two-step memory task and quantifying EC-related memory with the newly proposed MPT model (instead of with the standard memory measures used by Gast and Rothermund [2011]).
-Aside from disentangling (potential) changes in CS recognition and CS-US pairing memory, this MPT modeling approach also allowed us to test whether the formation of US valence memory (without concomitant US identity memory) requires a focus on valence while observing the CS-US pairings.
+As we reasoned in the introduction, the memory measures used by Gast and Rothermund (2011) suffer from a number of shortcomings that question their validity and challenge their capacity to disentangle the respective contributions of US identity memory, US valence memory, and CS recognition memory (to the reported increases in task performance in the two memory measures). In the present experiment, we overcame these shortcomings by implementing the two-step memory task and quantifying EC-related memory with the newly proposed MPT model (instead of with the standard memory measures used by Gast & Rothermund, 2011).
+In addition to disentangling (potential) changes in CS recognition and CS-US pairing memory, the present MPT modeling approach also allowed us to test whether retrieving US valence information from memory in the absence of US identity retrieval requires a focus on valence while observing the CS-US pairings.
 In line with this "valence focus" explanation of US valence memory, we expected a larger $d$ parameter in the "valence focus" condition than in the "age focus" condition.
 
-As a third and final aim, we sought to re-examine the roles of US identity and US valence memory in the mediation of the valence focus effect on evaluative conditioning.
+Third, we sought to re-examine the roles of US identity and US valence memory in the mediation of the valence focus effect on evaluative conditioning.
 In Experiment 3, Gast and Rothermund (2011) reported a multiple mediation analysis suggesting a mediation (of the valence focus effect on evaluative conditioning) by increased levels of US valence memory but not by changes in US identity memory.
-However, as explained earlier, multiple regression analyses (and, by implication, multiple mediation analyses) that include non-independent measures of US identity and US valence memory as competing predictors (of individual EC effects) cannot produce unequivocal evidence for (against) a relationship between US valence memory (US identity memory) and evaluation conditioning.
+However, as explained earlier, multiple regression analyses (and, by implication, multiple mediation analyses) that include non-independent measures of US identity and US valence memory as competing predictors (of individual EC effects) cannot produce strong evidence for (against) a relationship between US valence memory (US identity memory) and evaluative conditioning.
 In the present experiment, these limitations were overcome by conducting a multiple mediation analysis with participant-level MPT parameters as competing predictors of individual EC effects.
-By including independent measures of CS recognition, US identity and US valence memory as potential mediators (while controlling for response tendencies in the underlying measurement task), we sought to attain a clearer understanding of the valence focus effect reported by Gast and Rothermund (2011).
+By including independent measures of CS recognition, US identity and US valence memory as potential mediators (while controlling for response tendencies in the underlying measurement task), we sought to clarify the valence focus effect reported by Gast and Rothermund (2011).
 
 ```{r}
 # from MB:
@@ -1118,8 +1118,8 @@ data_list$rating_wide$study <- "main"
 ```
 
 ## Method
-The experiment was pre-registered on the OSF.
-The pre-registration, materials and data are publicly available at: https://osf.io/rqkvy/.
+The experiment was preregistered on the OSF.
+The preregistration, materials, and data are publicly available at: https://osf.io/rqkvy/.
 The data collection was conducted online.
 
 ### Design and participants
@@ -1160,22 +1160,21 @@ n_conditions <- setNames(n_conditions, papaja::sanitize_terms(tolower(names(n_co
 The experiment followed a 2 (*US valence*: positive vs. negative) $\times$ 2 (*US age*: young vs. old) $\times$ 2 (*task focus*: valence focus vs. age focus) mixed design.
 The first factor varied within participants and the second factor varied between participants.
 
-Participants were recruited through Prolific and received monetary compensation for their participation.
-We collected a quota sample with approximately equal shares of male and female participants.
+Participants were recruited through Prolific and received £3.00 for their participation (estimated study duration: 20 minutes).
 The sampling pool was restricted to Prolific users (1) whose first language is English, (2) who live in the USA or in the United Kingdom, and (3) who have at least 20 previous submissions and a Prolific approval rate of at least 90%.
-As before, Prolific users who had participated in previous pretests and experiments were excluded from the sampling pool.
+As before, Prolific users who had participated in previous pretests and experiments were excluded from the sampling pool. Sex was balanced.
 
 We recruited 142 participants (`r prop_sex$Female` female; `r age`).
-As pre-registered, we excluded all participants who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data"), resulting in a sample of 105 non-excluded participants (52 in the "valence focus" condition and 53 in the "age focus" condition).
+As preregistered, we excluded all participants who failed at least one control measure (by selecting at least one physical activity, by reporting a lack of attention or by responding with "I have just clicked through, please discard my data"), resulting in a sample of 105 non-excluded participants (52 in the "valence focus" condition and 53 in the "age focus" condition).
 
-The number of recruited participants was based on a pre-registered sampling plan (see OSF repository).
-We pre-registered a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of the data collection within the pre-registered sample size range).
+The number of recruited participants was based on a preregistered sampling plan (see OSF repository).
+We preregistered a minimum sample size (per task focus condition), a maximum sample size (across task focus conditions), and two stopping criteria (determining the [dis-]continuation of the data collection within the preregistered sample size range).
 The minimum sample size ($N=52$ participants per task focus condition) was based on a power analyses for the two-way interaction between US valence and task focus.
 As mentioned above, we expected larger EC effects in the "valence focus" condition than in the "age focus" condition.
 In the power analysis, we targeted a test power of $1-\beta=.9$ and used an $\alpha$-level of $.1$ to implement a one-tailed test of the two-way interaction (reflecting our directional prediction about the interaction pattern).
 Based on the results of a pilot study, the effect size of the US valence $\times$ task focus interaction was set to $\eta^2_{p}\approx.079$ (corresponding, approximately, to one half of the effect size obtained in the pilot study).
 In a first round of data collection, we recruited participants until the minimum sample size (after applying exclusion criteria) was reached.
-Based on the available data, we fitted the pre-registered 10-parameter model (estimating joint $D$, $C$, $d$, $a$ and $b$ parameters separately for the two task focus conditions).
+Based on the available data, we fitted the preregistered 10-parameter model (estimating joint $D$, $C$, $d$, $a$ and $b$ parameters separately for the two task focus conditions).
 Using Bayes factors, we then compared the unrestricted 10-parameter model with a restricted 9-parameter model in which $d_\textrm{valence-focus}$ and $d_\textrm{age-focus}$ were set equal (for details, see section "Data processing, statistical analyses and predictions").
 The data collection was discontinued at this point because the first stopping criteria was met: the Bayes factor in favor of the unrestricted 10-parameter model exceeded 10 (i.e., we found strong evidence for the presence of an effect of task focus on the $d$ parameter).
 The full list of stopping criteria can be found in the preregistration (see OSF repository).
@@ -1219,7 +1218,7 @@ After 1,000 ms, the CS appeared right below the US (in a central position in the
 The CS-US pair remained on screen for 4,000 ms.
 On each trial, the judgment task had to be performed within 3,000 ms after the onset of the US (by pressing the "A" or "L" key).
 If participants responded in time, three hyphens appeared below the CS-US pair right after participants had entered a response (to indicate that the response was being recorded).
-After 1,000 ms, the CS-US pair and the three hyphens were replaced by an empty screen.
+After a maximum of 1,000 ms, the CS-US pair and the three hyphens were replaced by an empty screen.
 After 2,500 ms, the next trial started with the appearance of another US.
 If participants did not respond in time (i.e., within 3,000 ms after US onset), the text "no response" appeared below the CS-US pair.
 The text was presented in red letters and remained on screen for 1,000 ms.
@@ -1232,7 +1231,7 @@ After the last trial of the learning phase, participants in both task focus cond
 
 #### Test phase
 After the learning phase, participants entered the test phase. 
-In the test phase, participants performed two measurement tasks: the CS evaluation task followed by the two-step memory task. 
+In the test phase, participants performed two  tasks: the CS evaluation task followed by the two-step memory task. 
 Task order and instructions were identical for all participants.
 
 ##### CS evaluation task
@@ -1270,10 +1269,7 @@ Through length and writing style, these sentences were meant to discourage parti
 In the very last sentence of the text, participants were instructed to ignore the upcoming question about their exercise habits (by not selecting any of the presented options) in order to demonstrate that they had read the entire passage. 
 On the next screen, participants were presented with a list of seven physical activities and were asked to indicate which of these activities they perform regularly (by ticking a small box next to the respective activity). 
 After having ticked all relevant boxes (or none at all), participants proceeded to the next screen by clicking on the "Continue" button displayed at the bottom of the screen.
-Subsequently, participants were asked whether they paid attention to the non-words and images presented throughout the experiment.
-The response options ("Yes" vs. "No") were presented as two buttons.
-Next, participants were asked whether they took the requested responses seriously.
-The response options ("I have taken the requested responses seriously" vs. "I have just clicked through, please discard my data") were again presented as two buttons.
+Subsequently, participants were asked whether they paid attention to the non-words and images presented throughout the experiment, and whether they took the requested responses seriously. These questions were identical to the ones used in Experiments 1-2.
 Afterwards, participants had the chance to comment on the study.
 Finally, participants were debriefed about the purpose of the study and then redirected to Prolific.
 
@@ -1282,7 +1278,7 @@ Finally, participants were debriefed about the purpose of the study and then red
 We followed the preregistered protocol without exceptions.
 We first calculated individual EC effects (by substracting the mean evaluative rating of negatively paired CSs from the mean evaluative rating for positively paired CSs).
 Next, we compared the mean EC effect in the "valence focus" condition to the mean EC effect in the "task focus" condition, using a t-test for independent samples ($\alpha=.05$).
-As predicted, the mean EC effect was larger in the "valence focus" condition than in the "age focus" condition; we therefore conducted a one-sided test.
+As predicted, the mean EC effect was larger in the "valence focus" condition than in the "age focus" condition (see below); we therefore conducted a one-sided test.
 Moreover, the mean EC effects in the two task focus conditions were tested against zero using one-sample t-tests ($\alpha=.05$).
 In the "valence focus" condition, we performed a one-sided test because the mean EC effect was larger than zero (as predicted).
 In the "age focus" condition, the mean EC effect was below zero; we therefore conducted a two-sided test.
@@ -1291,7 +1287,7 @@ To simplify the results section, the results of this analysis are reported in an
 Note that, as preregistered, participants who gave the same response on each trial of the CS evaluation task ($N=2$) were excluded from all analyses.
 
 #### Memory data
-As before, we implemented the preregistered protocol without exceptions.
+As before, we implemented the preregistered analyses without exceptions.
 The responses from the two-step memory task were recoded into a joint memory index according to the same scheme that was used in the previous experiments (see above).
 Next, the frequency distribution of the joint memory index (aggregated across participants) was analyzed with a Bayesian implementation of the MPT model, using
 the R packages TreeBUGS (Heck, Arnold, & Arnold, 2018) and MPTmultiverse (Singmann, Heck, Barth, & Aust, 2020; see also Singmann et al., 2024). 
@@ -1361,20 +1357,20 @@ model_fit <- apa_fit(models$baseline)
 We first fitted the preregistered 10-parameter model in which joint $D$, $C$, $d$, $a$ and $b$ parameters were estimated separately for the two task focus conditions.
 To assess model fit, we calculated the posterior-predictive fit statistic T1 (Klauer, 2010) together with its corresponding posterior-predictive p value. 
 The unrestricted 10-parameter model achieved adequate fit, `r model_fit$T1`.
-We then tested each MPT parameter against its neutral value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters).
+We then tested each MPT parameter against its reference value ($0$ for $D$, $C$ and $d$ parameters; $.5$ for $a$ and $b$ parameters).
 To this aim, we fitted ten 9-parameter models each of which included a different parameter restriction (e.g., $D_{valence}=0$)
-Each of these nested models was then compared to the unrestricted 10-parameter model, using the Bayes Factor.
+Each of these nested models was then compared to the unrestricted 10-parameter model, using Bayes Factors.
 Next, we tested the effect of task focus on each MPT parameter ($D$, $C$, $d$, $a$ and $b$).
-To this aim, we fitted another five 9-parameter models each of which included a different parameter restriction: (1) $D_{valence}=D_{age}$, (2) $C_{valence}=C_{age}$, (3) $d_{valence}=d_{age}$, (4) $a_{valence}=a_{age}$, and (5) $b_{valence}=b_{age}$.
-As before, these nested models were compared to the unrestricted 10-parameter model, using the Bayes Factor.
+To this aim, we fitted another five 9-parameter models each of which included a different parameter restriction: (1) $D_{valence}=D_{age}$, (2) $C_{valence}=C_{age}$, (3) $d_{valence}=d_{age}$, (4) $a_{valence}=a_{age}$, and (5) $b_{valence}=b_{age}$ (the subscripts indicate the task instruction condition: *valence* for the valence focus condition; *age* for the age focus condition).
+As before, these nested models were compared to the unrestricted 10-parameter model, using Bayes Factors.
 In line with the previously introduced "valence focus" explanation, we expected a larger $d$ parameter in the "valence focus" condition than in the "age focus" condition.
 Based on the findings of a pilot study (in which we assessed the suitability of the present materials and procedures), we also expected larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" as well as a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
 For the $a$ parameter, no effect of task focus was expected.
 
-As in the previous experiments, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in *Stan* [@carpenter_stan_2016].
+As in Experiments 1-2, we explored the relationships between MPT parameters and individual EC effects, using a joint-modeling approach implemented in *Stan* [@carpenter_stan_2016].
 To this aim, we estimated a joint model of [1] participant-wise frequency distributions of the joint memory index and [2] individual EC effects, including task focus as a categorical predictor in both model parts.
 To increase statistical power, the joint model was estimated based on the data from the present experiment and from the pilot study (which used identical measures and procedures).
-The pooled data set included $161$ participants (none of which gave the same response on all trials of either measurement task.)
+The pooled data set included $161$ participants (none of which gave the same response on all trials of either measurement task).
 Note that equivalent analyses, separated by study, are reported in the online supplement (see OSF repository).
 As in Experiments 1 and 2, we tested the relationships between participant-level MPT parameter estimates and EC effects by calculating Bayes Factors for the slopes in the linear-regression part of the joint model.
 To explore the mediation of the valence focus effect on evaluative conditioning, we also calculated Bayes Factors for the direct effect of task focus as well as for its indirect effects through the five MPT parameters ($D$, $C$, $d$, $a$ and $b$), using the independent-paths method proposed by @liu_bayesian_2023.
@@ -1410,7 +1406,7 @@ sd_age <- paste0("$SD_{EC}=",round(sd(agefocus$ec_effect),2),"$")
 
 ```
 
-The mean EC effect in the "valence focus" condition was significantly larger than zero, `r t.val$full_result`, while the mean EC effect in the "age focus" condition did not differ from zero, `r t.age$full_result`.
+The mean EC effect in the "valence focus" condition was significantly larger than zero, `r t.val$full_result`, while the mean EC effect in the "age focus" condition did not significantly differ from zero, `r t.age$full_result`.
 As expected, the mean EC effect in the "valence focus" condition was significantly larger than the mean EC effect in the "age focus" condition, `r exp3_ec_t$full_result`.
 
 ### MPT model analyses
@@ -1484,8 +1480,8 @@ apa_table(
 )
 ```
 
-Parameter estimates and credible intervals from the unrestricted 10-parameters model are reported in Table\ \@ref(tab:exp3-param).
-We found strong support for non-zero $D$ and $C$ parameters in both task focus conditions, for a non-zero $d$ parameter in the "valence focus" condition, and for departure from $.5$ for the $b$ parameter in the "age focus" condition, all $BF_{10}>1,000$.
+Parameter estimates and credible intervals from the unrestricted 10-parameter model are reported in Table\ \@ref(tab:exp3-param).
+We found strong support for above-zero $D$ and $C$ parameters in both task focus conditions, for an above-zero $d$ parameter in the "valence focus" condition, and for departure from $.5$ for the $b$ parameter in the "age focus" condition, all $BF_{10}>1,000$.
 Moreover, we found strong support against departure from zero for the $d$ parameter in the "age focus" condition, $BF_{10}=0.06$, and against departure from $.5$ for the $a$ parameter in both focus conditions, both $BF_{10}\leq0.08$.
 Finally, we found moderate support against departure from $.5$ for the $b$ parameter in the "valence focus" condition, $BF_{10}=0.17$.
 
@@ -1576,27 +1572,40 @@ apa_table(
 ```
 
 ## Discussion 
-In the present experiment, we replicated Gast and Rothermund's (2011) Experiment 2, comparing EC effects and CS-US pairing memory between participants who performed different judgment tasks during the learning phase.
-Replicating Gast and Rothermund's (2011) task focus effect on evaluative conditioning, we found that EC effects were substantial only among participants in the "valence focus" condition and not among participants in the "age focus" condition.
-Using the newly proposed MPT model, we also replicated Gast and Rothermund's (2011) task focus effect on US valence memory: the $d$ parameter (measuring US valence memory in the absence of US identity memory) was substantially larger in the "valence focus" condition than in the "age focus" condition.
-Going beyond the findings by Gast and Rothermund (2011), the MPT model also delivered strong evidence for the absence of US valence memory in the "age focus" condition (as indicated by the Bayes Factor for the test of $d_{age}$ against zero).
-Moreover, and again in line with the original findings, we also found strong support that the task focus effect on EC was mediated by US valence memory (while no such support was found for a mediation by US identity or CS recognition memory).
-Taken together, these findings provide strong support for the "valence focus" explanation of the $d$ parameter and of evaluative conditioning: US valence memory (without US identity memory) and conditioned CS evaluations are developed when the CS-US pairings are processed in terms of valence instead of in terms of other (non-evaluative) dimensions.
+In Experiment 3, we replicated Gast and Rothermund's (2011) Experiment 2 in which the authors found a larger EC effect and larger US valence memory for individuals who process valence in the learning than for individuals who process another, valence-unrelated dimension in the learning phase. In addition to testing their focal effects, we also tested the fit of the newly developed MPT model and compared parameter estimates as a function of valence focus. Finally, we investigated relationships between MPT parameter estimates and participant-level EC effects, including the mediation of the valence focus effect on EC by MPT memory Gast and Rothermund were interested in. 
+
+Replicating Gast and Rothermund's (2011) task focus effect on evaluative conditioning, we found that the EC effect was significant among participants in the "valence focus" condition, but not among participants in the "age focus" condition.
+Using the newly proposed MPT model, we also replicated Gast and Rothermund's task focus effect on US valence memory: the $d$ parameter (measuring US valence memory in the absence of US identity memory) was substantially larger in the "valence focus" condition than in the "age focus" condition.
+Importantly, going beyond the findings reported by Gast and Rothermund, the MPT model also delivered strong evidence for the absence of US valence memory in the "age focus" condition (as indicated by the Bayes Factor for the test of $d_{age}$ against zero).
+Moreover, and again in line with the original findings, we also found strong support that the task focus effect on EC was mediated by US valence memory. We found no such support for a mediation by US identity or CS recognition memory.
+Taken together, the present findings provide strong support for the "valence focus" explanation of the $d$ parameter and of evaluative conditioning: US valence memory (without US identity memory) and conditioned CS evaluations are developed when the CS-US pairings are processed in terms of valence instead of in terms of other (non-evaluative) dimensions.
 
 The present experiment also revealed substantially larger $D$ and $C$ parameters in the "valence focus" condition than in the "age focus" condition.
-Since we used the same materials (CSs and USs) in both conditions, these parameter differences can only be explained by the differences between the two judgment tasks.
-In line with prior speculations (see introduction), the present experiment thus demonstrates that different learning conditions may not only affect CS-US pairing memory but also CS recognition memory, underlining the need for separate and non-confounded measures of the different forms of memory that are involved in EC effects.
-Moreover, the joint direction of the task focus effects on $D$ and $C$ parameters points towards a possible explanation of these effects: given that both parameters were substantially lower in the "age focus" condition, it seems likely that the non-evaluative judgment task (focused on the age typicality of the CS-US pairs) was more difficult than the evaluative judgment task (resulting in less mental capacity for memorizing the details of the presented stimuli and, by implication, lower levels of CS recognition and US identity memory).
+Since we used the same materials (CSs and USs) in both conditions, we think these parameter differences should be explained by the differences between the two judgment tasks.
+In line with prior speculations (see introduction), the present experiment thus demonstrates that different learning conditions may not only affect different aspects of CS-US pairing memory but also CS recognition memory, underlining the need for separate and non-confounded measures of the different forms of memory that are involved in EC effects.
+Moreover, $D$ and $C$ parameters estimates were lower in the "age focus" than in the "valence focus" condition. A possible explanation of this result is that the non-evaluative judgment task (focused on the age typicality of the CS-US pairs) was more difficult than the evaluative judgment task (resulting in less mental capacity for memorizing the details of the presented stimuli and, by implication, lower levels of CS recognition and US identity memory). Another possibility is that the two tasks were not equated in terms of processing depth. While both tasks imply to process the meaning of the pairings, processing valence may involve deeper processing (more relevant for the self; echoing personal preferences and past experiences). If so, higher memory retrieval (whether for recognition memory or US identity memory) could be a level-of-processing effect (Craik, 2002; Craik & Lockhart, 1972). These possibilities could be tested in future research. 
 
-Before we discuss the broader implications of the present findings (and those from the previous experiments), we want to address the inconsistent effects of task focus on the $b$ parameter.
+Before we turn to discussing the broader implications of the present experiments in the General Discussion, we want to address the inconsistent effects of task focus on the $b$ parameter (i.e., a bias towards "old" responses without recognition memory).
 As explained above, the pilot study (in which we tested the present materials and procedures) showed a larger $b$ parameter in the "age focus" condition than in the "valence focus" condition.
-We assumed that a stronger tendency towards guessing "old" may emerge as a compensation for lower levels of CS recognition memory (to assure that a plausible number of stimuli is classified as "old") and therefore expected to find a larger $b$ parameter in the "age focus" condition (than in the "valence focus" condition) also in the main experiment (in line with our expectation of a smaller $D$ parameter in the "age focus" condition than in the "valence focus" condition).
-Against this background, we were somewhat surprised by the direction of the $b$ parameter difference ($b_{valence}>b_{age}$) obtained in the present experiment.
-Based on the fact that we used the same experimental software (including materials, instructions and procedures) in both studies, we considered the possibility that the $b$ parameter differences (obtained in the pilot study and in the present experiment) reflected statistical artifacts resulting from the aggregation of response frequencies across participants.
+We assumed that a stronger tendency towards guessing "old" may emerge as a compensation for lower levels of CS recognition memory. This is because participants may want to ensure that a plausible number of stimuli is classified as "old." As a result, as we expected recognition memory to be lower when processing age rather than valence, we also expected to find a larger $b$ parameter in the former than in the later.
+Against this rationale, we were somewhat surprised by the direction of the $b$ parameter difference ($b_{valence}>b_{age}$) obtained in the present experiment.
+Because we used the same experimental software (including materials, instructions and procedures) in both data collections, we considered the possibility that the $b$ parameter differences (obtained in the pilot study and in the present experiment) reflected statistical artifacts resulting from the aggregation of response frequencies across participants.
 To probe this possibility, we implemented separate joint models for the two studies and checked the task focus effect on the $b$ parameters: in line with the "aggregation artifact" explanation, these participant-level MPT analyses did not provide support for substantial $b$ parameter differences across task focus conditions.
-Based on these findings (and for lack of a better explanation), we assume that the (inconsistent) $b$ parameter differences (in the MPT model analyses on aggregated response frequencies) constitute statistical artefacts that disappear when the MPT parameters are estimated at the level of individual participants.
+Based on these findings (and for lack of a better explanation), we assume that the (inconsistent) $b$ parameter differences (in the MPT model analyses on aggregated response frequencies) are statistical artefacts that disappear when the MPT parameters are estimated at the level of individual participants. This tentative artifact-based explanation awaits dedicated tests.
 
 # General discussion
+
+Assessing memories individuals retrieve and use when evaluating stimuli is crucial to advancing our understanding of the mechanisms, processes, and representations involved in the Evaluative Conditioning (EC) effect. While all EC theories do not explicitly give memory a major role, the EC effect involves retrieving "something" about the CS-US parings from the learning episode when presented with the to-be-evaluated CS alone (i.e., item-item associative memory, whether retrieval is conscious or not, for instance). Some accounts of the EC effect (e.g., Stahl & Aust, 2018; Gast, 2018) distinguish between US valence memory and US identity memory and assume US valence is enough for the EC effect to emerge. 
+
+Past research supports the view the critical to-be-retrieved information is US valence rather than US identity (e.g., Stahl et al., 2009). However, as we noted in the introduction, evidence for this conclusion relies on measurement approaches that suffer from several shortcomings, mainly that past US valence and US identity measures are not independent, do not distinguish CS recognition memory from CS-US pairing, and do not distinguish memory processes from guessing tendencies. 
+
+To address current limitations in CS-US pairing memory measurement approaches, we adapted an existing measurement model (Klauer & Wegener, 1998) to assess (recognition and CS-US pairing) memory and guessing tendencies. This Multinomial Processing Tree (MPT) model assumes that individuals have a certain probability to retrieve the identity of US that were paired with correctly recognized CS have (estimated by the $C$ parameter, see Figure 1). Importantly, even in the absence of US identity memory ($1-C$), it could be the case that individuals sometimes retrieve only less detailed, valence information about the US (estimated by the $d$ parameter). Critically this model allows revisiting in stronger tests whether such US valence memory in the absence of identity memory (1) can be found, (2) predicts the EC effect, and (3) conceptually replicates previous results.
+
+In three experiments (Experiments 2 and 3 were preregistered while Experiment 1 was not), we modified the commonly used EC procedure to test the fit of the newly developed MPT model and derive parameter estimates. After the learning phase, the test phase featured new (distractor) neutral stimuli and included a memory task in addition to the CS evaluation task. The memory task consisted of two steps: first, participants had to indicate if a given stimulus was part of the learning phase (i.e., CS recognition task); second, in case of an affirmative response, participants had to select the US that was paired with the CS (i.e., contingent CS-US recognition task). We used the model across varied study settings: the CS were faces in Experiments 1 and 3 and non-words in Experiment 2; the US were images in Experiments 1 and 2 and trait adjectives in Experiment 3; the memory task was administered before the CS evaluation task in Experiment 1, in the opposite order in Experiment 3, and the order was counterbalanced in Experiment 2. **[Here: mention another valuable contribution, i.e., testing relationships between MPT parameters and the EC effect in a single model?]**
+
+Overall, **[summary of the findings -- one sentence could also be added about the main result/conclusion in the abstract]**.
+
+In the remainder of the General Discussion, we elaborate on how the present results clarify the role of US valence and identity memory in the EC effect in relation to Stimulus-Stimulus vs. Stimulus-Response learning theorizations. We then point out current limitations of the current approach (participant-level analyses; limited inferences regarding causality; the issue of assessing CS evaluation and memory at different times) and suggest how it can be built upon to better understand retrieval processes involved in the evaluative conditioning effect. 
 
 ## Theoretical implications
 
@@ -1612,14 +1621,25 @@ Based on these findings (and for lack of a better explanation), we assume that t
 
 - participant-level instead of item level
 
-- ...
+- inferences regarding causality remain limited (i.e., difficult to know whether retrieval precedes evaluations)
 
-## Future applications and conclusions
+- US valence vs. identity memory: mute regarding specific memory processes and representations -- we only know the retrieved information differs in specificity, which is already useful but could be further developed
+
+- question of demands artifacts? regarding the EC effect in general, or its moderation by valence focus
+
+- independence between US valence and US identity memory not yet shown
+
+## Future applications 
 
 - possible applications: testing effects of US distribution on memory and EC effects (Sperlich & Unkelbach)
 
+- using a logic similar to the one adopted in the Two-Button Sets (TBS) task to jointly ask about memory and evaluations at a single point in time (Stahl et al., 2024; Ingendahl et al., 2025) and use the present MPT model on the data
 
+- Search for functional dissociations between US valence memory and US identity memory on the one hand (to lend support to the notion they are functionnally independent retrieved information) and between US valence and EC effect on the other hand (to try to falsify the hypothesis that the EC effect is based on US valence memory)
 
+# Conclusion
+
+A closing paragraph.
 
 
 
