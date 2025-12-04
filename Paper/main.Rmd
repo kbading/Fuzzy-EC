@@ -306,10 +306,9 @@ data_list_pilot <- readRDS(file.path(study_folders$wsw1, "data", "data_exp1.rds"
 demo <- read.csv(file.path(study_folders$wsw1, "data-raw", "demox1.csv"))
 ```
 
-
 In Experiment 1, we explored whether the MPT model adapted from @klauer_who_1998 can be used to measure CS-US pairing memory in the context of a standard EC procedure.
-To boost similarity with the "Who said what?" paradigm, we used images of human faces as CSs.
-As in previous EC studies [e.g., @stahl_subliminal_2016], the depicted faces had neutral expressions and were paired with various images showing clearly valenced contents (positive vs. negative).
+To increase similarity with the "Who said what?" paradigm, we used images of human faces as CSs.
+As in previous EC studies [e.g., @stahl_subliminal_2016], the faces displayed neutral expressions and were paired with clearly valenced images (positive vs. negative) serving as USs.
 After the learning phase, participants performed the two-step memory task followed by a CS evaluation task.
 We chose this task order for two reasons.
 Firstly, collecting memory task responses prior to CS evaluations ensured that the obtained $D$ parameter would provide a pure measure of CS recognition ability as developed during the learning phase.
@@ -1060,7 +1059,7 @@ At the same time, we found that both MPT parameters related to the CS recognitio
 These task order effects on $D$ and $b$ parameters are well explained by differences in task difficulty (unpaired distractors are harder to detect [as new] if they are already familiar from the CS evaluation task) and suggest that a "memory first" implementation may be preferable whenever pure measures of CS recognition memory are required.
 
 Although participant-level $D$ parameters were reduced in the "evaluation first" condition, both task order conditions showed CS recognition and US identity memory for a substantial number of CSs, thereby replicating the significant $D$ and $C$ parameters from the first experiment.
-By contrast, the significant $d$ parameter (from Experiment 2) was not replicated in the present experiment.
+By contrast, the significant $d$ parameter (from Experiment 1) was not replicated in the present experiment.
 This implies that, at the group level, Experiment 2 did not provide robust evidence for US valence memory in the absence of US identity memory.
 However, we also found strong support for a positive relationship between participant-level $d$ parameter estimates and individual EC effects.
 Taken together, these results suggest that the significant (group-level) EC effect was driven by a subset of participants that developed US valence memory (without concomitant US identity memory) during the learning phase.
