@@ -184,12 +184,15 @@ sim_data$init_residuals <- unname(residuals(res_model))
 
 # Analysis proper
 model_all <- lm(
-  formula = init_residuals ~ valmem_correct * center(idmem_mean)
+  formula = init_residuals ~ valmem_correct + center(idmem_mean)
   , data = sim_data
 )
 # car::vif(model_all)
 apa_model_all <- papaja::apa_print(model_all)
 apa_model_all
+
+model_old <- afex::lmer(formula = CS_rating ~ US_valence * (valmem_correct + idmem_mean_cntr) + (0 + US_valence| sid), data = sim_data)
+
 ```
 
 ```{r}
