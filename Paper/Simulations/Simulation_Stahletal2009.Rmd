@@ -3,6 +3,8 @@ title: "Simulation_Stahletal2009"
 author: "Karoline Bading"
 date: "2026-01-14"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-n_participants <- 20
+n_participants <- 100
 n_posCS <- 5
 n_negCS <- 5
 n_USperCS <- 5
@@ -39,7 +41,10 @@ for(i in 1:nrow(sim_data)){
   sim_data$idmem_prop[i] <- sample(idmem_proportions,1)
   
 }
-sim_data$valmem_correct <- ifelse(sim_data$idmem_prop > 0,1,rbinom(1,1,0.5))
+sim_data$valmem_correct <- NA
+sim_data$valmem_correct[sim_data$idmem_prop > 1] <- 1
+sim_data$valmem_correct[sim_data$idmem_prop == 0] <- rbinom(n = sum(sim_data$idmem_prop == 0), size = 1, prob = .5)
+  
 sim_data$idmem_1_correct <- NA
 sim_data$idmem_2_correct <- NA
 sim_data$idmem_3_correct <- NA
@@ -120,6 +125,28 @@ for(i in 1:nrow(sim_data)){
 ```
 
 ```{r}
+# sim_data$CS_rating <- NA
+# for(i in 1:nrow(sim_data)){
+#   if(sim_data$idmem_prop[i]>0){
+#     if(sim_data$US_valence[i] == "positive"){
+#       sim_data$CS_rating[i] <- sim_data$idmem_prop[i]*rnorm(1,1,1)
+#     }
+#     if(sim_data$US_valence[i] == "negative"){
+#       sim_data$CS_rating[i] <- sim_data$idmem_prop[i]*rnorm(1,-1,1)
+#     }
+#   }
+#   if(sim_data$idmem_prop[i]==0){
+#     if(sim_data$US_valence[i] == "positive"){
+#       sim_data$CS_rating[i] <- rnorm(1,0,1)
+#     }
+#     if(sim_data$US_valence[i] == "negative"){
+#       sim_data$CS_rating[i] <- rnorm(1,0,1)
+#     }
+#   }
+# }
+```
+
+```{r}
 papaja::apa_barplot(data = sim_data, id = "sid", dv = "CS_rating", factors = c("idmem_prop","US_valence"))
 afex::aov_ez(data = sim_data, id = "sid", dv = "CS_rating", within = c("US_valence"))
 ```
@@ -145,27 +172,40 @@ contrasts(sim_data$valmem_correct) <- "contr.sum"
 cntr <- center <- function(x, na.rm = TRUE) { x - mean(x, na.rm = na.rm) }
 sim_data$idmem_mean_cntr <- cntr(sim_data$idmem_mean)
 
-# model_all <- afex::lmer(formula = CS_rating ~ US_valence * valmem_correct * idmem_mean_cntr + (0| sid)
-#      , data = sim_data
-#      )
+sim_data$ec <- ifelse(sim_data$US_valence == "positive", sim_data$CS_rating, -sim_data$CS_rating)
 
 # 'Initial analysis'
-agg <- aggregate(cbind(avg_rating = CS_rating) ~ sid, data = sim_data, FUN = mean)
+agg <- aggregate(cbind(avg_ec = ec) ~ sid, data = sim_data, FUN = mean)
 
 sim_data <- merge(sim_data, agg)
 
-res_model <- lm(CS_rating ~ avg_rating, data = sim_data)
-sim_data$init_residuals <- unname(residuals(res_model) * ifelse(sim_data$US_valence == "positive", 1, -1))
+res_model <- lm(ec ~ avg_ec, data = sim_data)
+sim_data$init_residuals <- unname(residuals(res_model))
 
 # Analysis proper
 model_all <- lm(
   formula = init_residuals ~ valmem_correct * idmem_mean_cntr
   , data = sim_data
 )
-
-
+# car::vif(model_all)
 apa_model_all <- papaja::apa_print(model_all)
 apa_model_all
+```
+
+```{r}
+ggeffects::ggeffect(model_all, terms = ~ valmem_correct:US_valence) |> plot()
+```
+
+```{r}
+ggeffects::ggeffect(model_all, terms = ~ idmem_mean_cntr:US_valence) |> plot()
+```
+
+```{r}
+ggeffects::ggeffect(model_all, terms = ~ idmem_mean_cntr:US_valence:valmem_correct) |> plot()
+```
+
+```{r}
+ggeffects::ggeffect(model_all, terms = ~ valmem_correct:US_valence:idmem_mean_cntr) |> plot()
 ```
 
 ```{r}
