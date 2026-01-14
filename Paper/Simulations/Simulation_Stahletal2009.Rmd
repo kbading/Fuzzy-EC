@@ -184,7 +184,7 @@ sim_data$init_residuals <- unname(residuals(res_model))
 
 # Analysis proper
 model_all <- lm(
-  formula = init_residuals ~ valmem_correct * center(idmem_mean)
+  formula = init_residuals ~ valmem_correct + center(idmem_mean)
   , data = sim_data
 )
 # car::vif(model_all)
@@ -194,6 +194,10 @@ apa_model_all
 
 ```{r}
 ggeffects::ggeffect(model_all, terms = ~ valmem_correct) |> plot()
+```
+
+```{r}
+ggeffects::ggeffect(model_all, terms = ~ idmem_mean) |> plot()
 ```
 
 ```{r}
