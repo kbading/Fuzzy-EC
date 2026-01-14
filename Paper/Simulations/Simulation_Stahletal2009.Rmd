@@ -20,21 +20,24 @@ n_negCS <- 5
 n_USperCS <- 5
 CS_names <- paste0("CS_",1:10)
 US_valences <- rep(c("positive","negative"),each=5)
-idmem_proportions <- c(0,0,0,.2,.4,.6,.8,1)
+idmem_proportions <- c(0, 0 ,0,.2,.4,.6,.8,1)
 
 sid <- rep(1:n_participants, each = n_posCS + n_negCS)
-CS_name <- rep(CS_names,n_participants)
+CS_name <- unlist(replicate(n = n_participants, sample(CS_names), simplify = FALSE))
 US_valence <- rep(US_valences, n_participants)
 
 sim_data <- data.frame(sid = sid
                        , CS_name = CS_name
                        , US_valence = US_valence)
+
+stopifnot(all(with(sim_data, table(sid, CS_name)) == 1L))
 ```
 
 ```{r}
 sim_data$idmem_prop <- NA
 for(i in 1:nrow(sim_data)){
   sim_data$idmem_prop[i] <- sample(idmem_proportions,1)
+  
 }
 sim_data$valmem_correct <- ifelse(sim_data$idmem_prop > 0,1,rbinom(1,1,0.5))
 sim_data$idmem_1_correct <- NA
@@ -142,9 +145,24 @@ contrasts(sim_data$valmem_correct) <- "contr.sum"
 cntr <- center <- function(x, na.rm = TRUE) { x - mean(x, na.rm = na.rm) }
 sim_data$idmem_mean_cntr <- cntr(sim_data$idmem_mean)
 
-model_all <- afex::lmer(formula = CS_rating ~ US_valence * valmem_correct * idmem_mean_cntr + (0 + US_valence| sid)
-     , data = sim_data
-     )
+# model_all <- afex::lmer(formula = CS_rating ~ US_valence * valmem_correct * idmem_mean_cntr + (0| sid)
+#      , data = sim_data
+#      )
+
+# 'Initial analysis'
+agg <- aggregate(cbind(avg_rating = CS_rating) ~ sid, data = sim_data, FUN = mean)
+
+sim_data <- merge(sim_data, agg)
+
+res_model <- lm(CS_rating ~ avg_rating, data = sim_data)
+sim_data$init_residuals <- unname(residuals(res_model) * ifelse(sim_data$US_valence == "positive", 1, -1))
+
+# Analysis proper
+model_all <- lm(
+  formula = init_residuals ~ valmem_correct * idmem_mean_cntr
+  , data = sim_data
+)
+
 
 apa_model_all <- papaja::apa_print(model_all)
 apa_model_all
