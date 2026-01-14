@@ -1,0 +1,157 @@
+---
+title: "Simulation_Stahletal2009"
+author: "Karoline Bading"
+date: "2026-01-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r pressure, echo=FALSE}
+#plot(pressure)
+```
+
+```{r}
+n_participants <- 20
+n_posCS <- 5
+n_negCS <- 5
+n_USperCS <- 5
+CS_names <- paste0("CS_",1:10)
+US_valences <- rep(c("positive","negative"),each=5)
+idmem_proportions <- c(0,0,0,.2,.4,.6,.8,1)
+
+sid <- rep(1:n_participants, each = n_posCS + n_negCS)
+CS_name <- rep(CS_names,n_participants)
+US_valence <- rep(US_valences, n_participants)
+
+sim_data <- data.frame(sid = sid
+                       , CS_name = CS_name
+                       , US_valence = US_valence)
+```
+
+```{r}
+sim_data$idmem_prop <- NA
+for(i in 1:nrow(sim_data)){
+  sim_data$idmem_prop[i] <- sample(idmem_proportions,1)
+}
+sim_data$valmem_correct <- ifelse(sim_data$idmem_prop > 0,1,rbinom(1,1,0.5))
+sim_data$idmem_1_correct <- NA
+sim_data$idmem_2_correct <- NA
+sim_data$idmem_3_correct <- NA
+sim_data$idmem_4_correct <- NA
+sim_data$idmem_5_correct <- NA
+for(i in 1:nrow(sim_data)){
+  if(sim_data$idmem_prop[i]==0){
+    responses <- sample(c(rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6)))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+  if(sim_data$idmem_prop[i]==.2){
+    responses <- sample(c(1,rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6)))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+  if(sim_data$idmem_prop[i]==.4){
+    responses <- sample(c(1,1,rbinom(1,1,1/6),rbinom(1,1,1/6),rbinom(1,1,1/6)))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+  if(sim_data$idmem_prop[i]==.6){
+    responses <- sample(c(1,1,1,rbinom(1,1,1/6),rbinom(1,1,1/6)))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+  if(sim_data$idmem_prop[i]==.8){
+    responses <- sample(c(1,1,1,1,rbinom(1,1,1/6)))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+  if(sim_data$idmem_prop[i]==1){
+    responses <- sample(c(1,1,1,1,1))
+    sim_data$idmem_1_correct[i] <- responses[1]
+    sim_data$idmem_2_correct[i] <- responses[2]
+    sim_data$idmem_3_correct[i] <- responses[3]
+    sim_data$idmem_4_correct[i] <- responses[4]
+    sim_data$idmem_5_correct[i] <- responses[5]
+  }
+}
+```
+
+```{r}
+sim_data$CS_rating <- NA
+for(i in 1:nrow(sim_data)){
+  if(sim_data$idmem_prop[i]>0){
+    if(sim_data$US_valence[i] == "positive"){
+      sim_data$CS_rating[i] <- rnorm(1,1,1)
+    }
+    if(sim_data$US_valence[i] == "negative"){
+      sim_data$CS_rating[i] <- rnorm(1,-1,1)
+    }
+  }
+  if(sim_data$idmem_prop[i]==0){
+    if(sim_data$US_valence[i] == "positive"){
+      sim_data$CS_rating[i] <- rnorm(1,0,1)
+    }
+    if(sim_data$US_valence[i] == "negative"){
+      sim_data$CS_rating[i] <- rnorm(1,0,1)
+    }
+  }
+}
+```
+
+```{r}
+papaja::apa_barplot(data = sim_data, id = "sid", dv = "CS_rating", factors = c("idmem_prop","US_valence"))
+afex::aov_ez(data = sim_data, id = "sid", dv = "CS_rating", within = c("US_valence"))
+```
+
+```{r}
+val_mem_agg <- aggregate(data = sim_data, FUN = mean, valmem_correct ~ sid)
+t.test(val_mem_agg$valmem_correct)
+```
+
+```{r}
+sim_data$idmem_mean <- (sim_data$idmem_1_correct + sim_data$idmem_2_correct + sim_data$idmem_3_correct + sim_data$idmem_4_correct + sim_data$idmem_5_correct)/5
+id_mem_agg <- aggregate(data = sim_data, FUN = mean, idmem_mean ~ sid)
+t.test(id_mem_agg$idmem_mean)
+
+```
+
+```{r}
+sim_data$US_valence <- factor(sim_data$US_valence)
+contrasts(sim_data$US_valence) <- "contr.sum"
+sim_data$valmem_correct <- factor(sim_data$valmem_correct)
+contrasts(sim_data$valmem_correct) <- "contr.sum"
+
+cntr <- center <- function(x, na.rm = TRUE) { x - mean(x, na.rm = na.rm) }
+sim_data$idmem_mean_cntr <- cntr(sim_data$idmem_mean)
+
+model_all <- afex::lmer(formula = CS_rating ~ US_valence * valmem_correct * idmem_mean_cntr + (0 + US_valence| sid)
+     , data = sim_data
+     )
+
+apa_model_all <- papaja::apa_print(model_all)
+apa_model_all
+```
+
+```{r}
+sim_data$idmem_mean <- factor(sim_data$idmem_mean)
+afex::aov_ez(data = sim_data, id = "sid", dv = "CS_rating", within = c("US_valence","valmem_correct","idmem_mean_cntr"))
+```
+
