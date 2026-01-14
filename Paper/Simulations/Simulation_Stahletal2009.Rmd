@@ -42,7 +42,7 @@ for(i in 1:nrow(sim_data)){
   
 }
 sim_data$valmem_correct <- NA
-sim_data$valmem_correct[sim_data$idmem_prop > 1] <- 1
+sim_data$valmem_correct[sim_data$idmem_prop > 0] <- 1
 sim_data$valmem_correct[sim_data$idmem_prop == 0] <- rbinom(n = sum(sim_data$idmem_prop == 0), size = 1, prob = .5)
   
 sim_data$idmem_1_correct <- NA
