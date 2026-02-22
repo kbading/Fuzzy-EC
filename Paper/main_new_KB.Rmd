@@ -1,5 +1,6 @@
 ---
-title             : "US identity and US valence memory in evaluative conditioning: A multinomial modeling approach"
+title             : "Memory for US valence without memory for US identity?
+Disentangling contingency memory in evaluative conditioning with a multinomial modeling approach"
 shorttitle        : "Memory in evaluative conditioning"
 author: 
     #   - "Conceptualization"
@@ -36,7 +37,6 @@ affiliation:
     institution   : "Friedrich Schiller University Jena"
 abstract: |
   Evaluative conditioning (EC) refers to a change in the evaluation of a conditioned stimulus (CS) following its pairing with a positive or negative unconditioned stimulus (US). Theories of EC commonly assume that such effects depend on memory for the CS--US pairings and distinguish between memory for the specific US identity and memory for its valence. However, standard measures of CS--US pairing memory confound these components with each other and with guessing processes, limiting the ability to test whether US valence memory constitutes an independent memory representation and hampering comparisons of the relative predictive roles of US identity and US valence memory for EC effects. We introduce an adapted multinomial processing tree (MPT) model that addresses these limitations by jointly estimating CS recognition, US identity memory, US valence memory independent of identity retrieval, and response biases. Across three experiments using different materials and procedures, the model provided good fits to the data and yielded theoretically interpretable parameter estimates. Crucially, US valence memory emerged as dissociable from US identity memory and as the only memory component consistently associated with individual differences in EC effects. By contrast, US identity memory was robust across conditions but did not reliably predict EC. The present findings support the view that memory for US valence is an independent form of contingency memory and demonstrate the utility of the proposed MPT approach for clarifying the memory processes underlying attitude formation.
-
   <!-- https://tinyurl.com/ybremelq -->
 authornote: |
   Karoline Bading and Jérémy Béna share first authorship.
@@ -419,7 +419,7 @@ exp1_negdist <- apa_print(t.test(exp1_ratings_agg2$negative,exp1_ratings_agg2$`n
 
 The mean evaluation of positively paired CSs was higher than that of negatively paired CSs (`r means$pos`, `r sds$pos`; `r means$neg`, `r sds$neg`). The resulting EC effect was small in magnitude, Cohen's\ $d = 0.26$, and reached statistical significance only in a one-tailed test, `r exp1_posneg$full_result`.
 
-The 2 (US valence) $\times$ 2 (recognition response) hierarchical linear model revealed no significant main effect of US valence, `r apa_lme_model_x1$full_result$us_valence1`, a marginally significant main effect of recognition response, `r apa_lme_model_x1$full_result$reco_resp1`, and a marginally significant two-way interaction between US valence and recognition response, `r apa_lme_model_x1$full_result$us_valence1_reco_resp1`. Follow-up analyses revealed that EC effects were reliable for CS classified as old, `r con_vec$full_result$old_sme`, but not for CSs classified as new, `r con_vec$full_result$new_sme`, consistent with the model’s focus on contingency memory conditional on CS recognition.
+In the 2 (US valence) $\times$ 2 (recognition response) hierarchical linear model, the main effect of US valence, `r apa_lme_model_x1$full_result$us_valence1`, the main effect of recognition response, `r apa_lme_model_x1$full_result$reco_resp1`, and the two-way interaction between US valence and recognition response, `r apa_lme_model_x1$full_result$us_valence1_reco_resp1`, approached conventional levels of significance. Follow-up analyses revealed that EC effects were reliable for CSs classified as old, `r con_vec$full_result$old_sme`, but not for CSs classified as new, `r con_vec$full_result$new_sme`, consistent with the model’s focus on contingency memory conditional on CS recognition.
 
 ### MPT model analyses
 
