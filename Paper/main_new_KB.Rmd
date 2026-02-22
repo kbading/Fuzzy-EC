@@ -1,6 +1,5 @@
 ---
-title             : "Memory for US valence without memory for US identity?
-Disentangling contingency memory in evaluative conditioning with a multinomial modeling approach"
+title             : "Memory for US valence without memory for US identity? Disentangling contingency memory in evaluative conditioning with a multinomial modeling approach"
 shorttitle        : "Memory in evaluative conditioning"
 author: 
     #   - "Conceptualization"
@@ -264,14 +263,14 @@ The experiment followed a 2 (US valence: positive vs. negative) within-subjects 
 
 Eligibility criteria restricted the sampling pool to native or fluent English speakers with at least 100 prior submissions and an approval rate of at least 90%. Participant sex was balanced. Prolific users who had taken part in any of our previous evaluative conditioning studies were excluded from recruitment.
 
-A total of 50 participants were recruited (50$\%$ female; $M_\\mathrm{age} = 38.68$; $SD_\\mathrm{age} = 15.01$). Sample size was determined ad hoc and was not based on an a priori power analysis. One participant was excluded for reporting that they did not pay attention to the images presented during the experiment. A second participant was excluded for providing the same response on all trials of the evaluation task, which we interpreted as non-compliance. The final sample thus comprised 48 participants.
+A total of 50 participants were recruited (25 female; $M_\mathrm{age} = 38.68$; $SD_\mathrm{age} = 15.01$). Sample size was determined ad hoc and was not based on an a priori power analysis. One participant was excluded for reporting that they did not pay attention to the images presented during the experiment. A second participant was excluded for providing the same response on all trials of the evaluation task, which we interpreted as non-compliance. The final sample thus comprised 48 participants.
 
 ### Materials
 The experiment was programmed using lab.js [@henninger_lab_2021] and deployed on an HTTPS-protected server via JATOS [@lange_just_2015].
 
 The CS pool comprised 48 black-and-white photographs of human faces with neutral expressions (24 female, 24 male). These face images have been used as conditioned stimuli in previous evaluative conditioning research [e.g., @waroquier_distinguishing_2020].
 
-As unconditioned stimuli (USs), we used 24 color images depicting animals (e.g., a cockroach), scenes (e.g., a rainbow), and objects (e.g., a knife). All US images were selected from the Open Affective Standardized Image Set [OASIS, @kurdi_introducing_2017]. Based on normative OASIS ratings on 7-point Likert scales, we selected 12 positive images ($M_\\mathrm{valence} = 5.88$; $SD_\\mathrm{valence}$ = 0.24; $M_\\mathrm{arousal} = 4.10$; $SD_\\mathrm{arousal} = 0.50$) and 12 negative images ($M_\\mathrm{valence} = 2.05$; $SD_\\mathrm{valence} = 0.32$; $M_\\mathrm{arousal} = 4.27$; $SD_\\mathrm{arousal} = 0.52$). The positive and negative image sets differed reliably in valence, $t(20.23) = 33.36, p < .001$, but did not differ significantly in arousal, $t(21.96) = 0.82, p = .419$.
+As unconditioned stimuli (USs), we used 24 color images depicting animals (e.g., a cockroach), scenes (e.g., a rainbow), and objects (e.g., a knife). All US images were selected from the Open Affective Standardized Image Set [OASIS, @kurdi_introducing_2017]. Based on normative OASIS ratings on 7-point Likert scales, we selected 12 positive images ($M_\mathrm{valence} = 5.88$; $SD_\mathrm{valence}$ = 0.24; $M_\mathrm{arousal} = 4.10$; $SD_\mathrm{arousal} = 0.50$) and 12 negative images ($M_\mathrm{valence} = 2.05$; $SD_\mathrm{valence} = 0.32$; $M_\mathrm{arousal} = 4.27$; $SD_\mathrm{arousal} = 0.52$). The positive and negative image sets differed reliably in valence, $t(20.23) = 33.36, p < .001$, but did not differ significantly in arousal, $t(21.96) = 0.82, p = .419$.
 
 For each participant, 12 randomly selected face images (50% female) served as positively paired CSs, 12 randomly selected face images (50% female) served as negatively paired CSs, and the remaining 24 face images (50% female) served as distractor stimuli in the test phase.
 
@@ -530,7 +529,7 @@ Experiment 2 was preregistered on the Open Science Framework (OSF). The preregis
 ### Design and participants
 The experiment followed a 2 (US valence: positive vs. negative) $\times$ 2 (task order: evaluation first vs. memory first) mixed design, with US valence manipulated within participants and task order manipulated between participants.
 
-Participants were recruited via Prolific and received \text{\pounds}2.25 for their participation (estimated duration: 15 minutes). As in Experiment 1, eligibility was restricted to English-speaking participants with at least 100 prior submissions and an approval rate of 90% or higher, who had not taken part in our previous evaluative conditioning studies. Sex was balanced. In total, 172 participants were recruited (50$\%$ female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`). Due to an unknown technical error, data from one participant were unavailable. As preregistered, we excluded participants who reported not paying attention or not taking the study seriously ($n=5$). In addition, and not preregistered, we excluded four participants who gave the same response on all trials of the evaluation task, which we interpreted as non-compliant responding. These exclusions resulted in a final sample of `r n_final` participants (`r n_conditions$rating_first` in the evaluation-first condition and `r n_conditions$memory_first` in the memory-first condition).
+Participants were recruited via Prolific and received \text{\pounds}2.25 for their participation (estimated duration: 15 minutes). As in Experiment 1, eligibility was restricted to English-speaking participants with at least 100 prior submissions and an approval rate of 90% or higher, who had not taken part in our previous evaluative conditioning studies. Sex was balanced. In total, 172 participants were recruited (50% female; $M_{age} =$ `r mean(as.numeric(socio$Age))`; $SD_{age} =$ `r sd(as.numeric(socio$Age))`). Due to an unknown technical error, data from one participant were unavailable. As preregistered, we excluded participants who reported not paying attention or not taking the study seriously ($n=5$). In addition, and not preregistered, we excluded four participants who gave the same response on all trials of the evaluation task, which we interpreted as non-compliant responding. These exclusions resulted in a final sample of `r n_final` participants (`r n_conditions$rating_first` in the evaluation-first condition and `r n_conditions$memory_first` in the memory-first condition).
 
 The target sample size was determined by an a priori power analysis for a small EC effect of Cohen's\ $d = 0.20$. Power analyses were conducted using the R package *pwr* [@R-pwr]. Assuming a one-tailed paired-samples $t$ test (US valence as the independent variable, evaluative ratings as the dependent variable) with $\alpha=.05$, a total of 156 participants were required to achieve power of $1-\beta = .80$. This sample size also provides power of $.80$ to detect correlations of $r\mathrm{s} \geq |.22|$ (e.g., between individual parameter estimates and EC effects). To ensure that the final sample would remain above this threshold after applying the preregistered exclusion criteria, we recruited 172 participants, corresponding to a 10% oversampling.
 
@@ -620,8 +619,8 @@ mpt_dat <- as.data.frame(unclass(table(dat_mem_1a$identity, dat_mem_1a$resp2)))
 mpt_data <- as.data.frame(unclass(table(dat_mem_1a$sid, dat_mem_1a$resp2)))
 
 baseline_restrictions <- list(
-  g = "G_x1=G_x2"
-  , g = .25
+  g_both = "G_x1=G_x2"
+  , g_both = .25
   #, d = "d_x1=d_x2"
 )
 
@@ -643,7 +642,7 @@ modelsb <- lapply(
       model = file.path(study_folders$wsw3_main, "WSW_exp3.eqn")
       , data = mpt_dat
       , restrictions = c(baseline_restrictions, x)
-    ) |> add_condition("Task order" = c("X1" = "_x1","X2" = "_x2")) |>
+    ) |> add_condition("Task order" = c("X1" = "_x1","X2" = "_x2", " " = "_both")) |>
        label_parameters(D = "$D$", C = "$C$", d = "$d$", a = "$a$", b = "$b$", g = "$g$")
   }
 )
@@ -1316,7 +1315,7 @@ apa_table(
 
 Parameter estimates and credible intervals from the 10-parameter model are reported in Table \@ref(tab:exp3-param). We found very strong evidence for above-zero $D$ and $C$ parameters in both task focus conditions, for an above-zero $d$ parameter in the valence-focus condition, and for a departure from $.5$ for the $b$ parameter in the age-focus condition (all $BF_{10}>1,000$). In contrast, there was strong evidence against an above-zero $d$ parameter in the age-focus condition ($BF_{10} = 0.06$) and against departures from $.5$ for the $a$ parameter in both task focus conditions (both $BF_{10}\leq0.08$). Finally, we found moderate evidence against a departure from $.5$ for the $b$ parameter in the valence-focus condition ($BF_{10} = 0.17$).
 
-Table \@ref(tab:exp3-param) also reports Bayes Factors for the effects of task focus on the five MPT parameters. We found very strong evidence for task focus effects on the $D$, $C$, $d$, and $b$ parameters, and strong evidence against a task focus effect on the $a$ parameter. As expected, the $D$, $C$, and $d$ parameters were larger in the valence-focus condition than in the age-focus condition. Contrary to our expectation---and in contrast to the pilot study---the $b$ parameter was also larger in the valence-focus condition than in the age-focus condition.
+Table\ \@ref(tab:exp3-param) also reports Bayes Factors for the effects of task focus on the five MPT parameters. We found very strong evidence for task focus effects on the $D$, $C$, $d$, and $b$ parameters, and strong evidence against a task focus effect on the $a$ parameter. As expected, the $D$, $C$, and $d$ parameters were larger in the valence-focus condition than in the age-focus condition. Contrary to our expectation---and in contrast to the pilot study---the $b$ parameter was also larger in the valence-focus condition than in the age-focus condition.
 
 ### Relationships between EC effects and MPT parameters
 
