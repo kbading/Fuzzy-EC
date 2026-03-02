@@ -78,7 +78,7 @@ mask              : no
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-classoption       : jou
+classoption       : man
 output            : papaja::apa6_pdf
 header-includes:
   - \usepackage{nicefrac}
