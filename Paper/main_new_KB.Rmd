@@ -65,7 +65,7 @@ affiliation:
 abstract: |
   Evaluative conditioning (EC) refers to a change in the evaluation of a conditioned stimulus (CS) following its pairing with a positive or negative unconditioned stimulus (US). Theories of EC commonly assume that such effects depend on memory for the CS--US pairings and distinguish between memory for the specific US identity and memory for its valence. However, standard measures of CS--US pairing memory confound these components with each other and with guessing processes, limiting the ability to test whether US valence memory constitutes an independent memory representation and hampering comparisons of the relative predictive roles of US identity and US valence memory for EC effects. We introduce an adapted multinomial processing tree (MPT) model that addresses these limitations by jointly estimating CS recognition, US identity memory, US valence memory independent of identity retrieval, and response biases. Across three experiments using different materials and procedures, the model provided good fits to the data and yielded theoretically interpretable parameter estimates. Crucially, US valence memory emerged as dissociable from US identity memory and as the only memory component consistently associated with individual differences in EC effects. By contrast, US identity memory was robust across conditions but did not predict EC. The present findings support the view that memory for US valence is an independent form of contingency memory and demonstrate the utility of the proposed MPT approach for clarifying the memory processes underlying attitude formation.
   
-  Public significance statement
+  \begin{center}Public significance statement\end{center}
   
   This research clarifies how people form likes and dislikes by separating different kinds of memory involved in evaluative learning. Using a new modeling approach, we show that remembering whether something was positive or negative can matter even when people do not remember the specific event that caused the evaluation. These findings help explain why attitudes sometimes feel intuitive or hard to justify and provide researchers with improved tools for studying how preferences develop in everyday life. Understanding these memory processes may ultimately inform applications in areas such as health communication, education, and persuasive messaging.
   <!-- https://tinyurl.com/ybremelq -->
@@ -84,7 +84,7 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 classoption       : man,10pt
-output            : papaja::apa6_docx
+output            : papaja::apa6_pdf
 header-includes:
   - \usepackage{nicefrac}
 editor_options: 
@@ -141,6 +141,7 @@ knitr::opts_chunk$set(
   , cache = FALSE
   # , fig.env = "figure*"
   , fig.crop = TRUE
+  , fig.path = ""
   # , fig.width  = 15
   # , fig.height =  9
 )
