@@ -10,7 +10,7 @@ contrasts(mpt_data_hierarchical$task_focus) <- "contr.sum"
 contrasts(mpt_data_hierarchical$study     ) <- "contr.sum"
 
 model <- TreeStan::fit_mpt(
-  eqn_file = file.path(study_folder, "WSW_exp3_wide.eqn")
+  model = file.path(study_folder, "WSW_exp3_wide.eqn")
   , restrictions = list(G = 1/8)
   , data = mpt_data_hierarchical
   , formula = ~ task_focus * study
