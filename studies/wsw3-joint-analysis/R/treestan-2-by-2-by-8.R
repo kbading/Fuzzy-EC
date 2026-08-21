@@ -20,7 +20,6 @@ model <- TreeStan::fit_mpt(
   , chains  = 4e0L
   , cores   = parallel::detectCores()
   , refresh = if(interactive()) 100 else 0
-  , model = "mediation"
 )
 
 dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
