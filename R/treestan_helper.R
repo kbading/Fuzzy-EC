@@ -1,5 +1,5 @@
 
-plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = "black", ...) {
+plot_regression <- function(x, pars, ylim = c(-2, 6), ...) {
   
   parameter_labels <- list(
     D   = expression(paste("Parameter"~italic(D), ""))
@@ -19,102 +19,16 @@ plot_regression <- function(x, pars, quantiles = c(.025, .5, .975), pt.col = "bl
     , G = "Guessing correct US identity"
   )
   
-  if(missing(pars)) pars <- names(x@parameter_index)
-  
-  three_stats <- function(x, ...) {
-    qs <- quantile(x, probs = quantiles, names = FALSE)
-    c(qs[1L], mean(x), qs[3L])
-  }
-  
-  y_marginalized <- rstan::extract(x, "y_marginalized")[[1L]] |>
-    apply(MARGIN = 2:3, FUN = three_stats)
-  
-  y_predicted <- rstan::extract(x, "predictions")[[1]] |>
-    apply(MARGIN = 2:3, FUN = three_stats)
-  
-  theta <- rstan::extract(x, "theta")[[1]] |>
-    apply(MARGIN = 2:3, FUN = three_stats)
-  
-  theta_m  <- rstan::extract(x, "theta_m" )[[1L]]
-  theta_sd <- rstan::extract(x, "theta_sd")[[1L]]
-  theta_c  <- rstan::extract(x, "theta_c" )[[1L]]
-  lm_beta  <- rstan::extract(x, "lm_beta" )[[1L]]
-  
-  theta_new <- seq(0, 1, length = 1e2L)
-  newdata_y_predict <- lapply(
-    X = theta_new
-    , FUN = function(x, mean, lm_beta) {
-      theta_c <- (x - mean) # / sd
-      theta_c * lm_beta
-    }
-    , mean = theta_m
-    # , sd = theta_sd
-    , lm_beta = lm_beta
-  )
-  
-  newdata_predicted <- lapply(newdata_y_predict, function(x) {
-    apply(X = x, MARGIN = 2, FUN = three_stats)
-  })
-  
-  
-  
-  
-
-  for(i in x@parameter_index[pars]) {
-    plot.new()
-    plot.window(xlim = c(0, 1), ylim = c(-2, 6))
-    
-    arrows(
-      x0 = theta[2, , i]
-      , y0 = y_marginalized[1, , i]
-      , y1 = y_marginalized[3, , i]
-      , length = .02
-      , code = 3
-      , angle = 90
-      , col = "grey70"
-    )
-    arrows(
-      x0 = theta[1, , i]
-      , x1 = theta[3, , i]
-      , y0 = y_marginalized[2, , i]
-      # , y1 = y_marginalized[3, , i]
-      , length = .02
-      , code = 3
-      , angle = 90
-      , col = "grey70"
-    )
-    
-    lines(
-      x = theta_new
-      , y = vapply(newdata_predicted, FUN = `[`, i = 2L, j = i, FUN.VALUE = numeric(1L)) * x@standata$lm_y_sd + x@standata$lm_y_m
-    )
-    lines(x = theta_new, y = vapply(newdata_predicted, FUN = `[`, i = 1L, j = i, FUN.VALUE = numeric(1L)) * x@standata$lm_y_sd + x@standata$lm_y_m, lty = "dashed")
-    lines(x = theta_new, y = vapply(newdata_predicted, FUN = `[`, i = 3L, j = i, FUN.VALUE = numeric(1L)) * x@standata$lm_y_sd + x@standata$lm_y_m, lty = "dashed")
-    # points(x = theta[, i], y = y_predicted[, i], pch = 16, col = 1)
-    
-
-    mf <- x@model_frame
-    if(ncol(mf) > 0) {
-      bg <- x@model_frame[[1L]]
-    } else {
-      bg <- 1
-    }
-    
-    points(x = theta[2, , i], y = y_marginalized[2, , i], pch = 21, col = pt.col, bg = bg)
-    axis(side = 1)
-    axis(side = 2)
-    p <- names(x@parameter_index)[[i]]
-    
-    title(
-      # main   = parameter_meanings[[p]]# paste("Parameter", names(x@parameter_index)[[i]])
-      xlab = parameter_labels[[p]]
-      , ylab = "Marginal EC effect"
-    )
-    title(
-      main   = parameter_meanings[[p]]# paste("Parameter", names(x@parameter_index)[[i]])
-      , line = 0
-    )
-  }
+  # use the new plot.treestanfit() from TreeStan v0.0.1.9002:
+  plot(
+    x
+    , pars = pars
+    , ylim = ylim
+    , xlab = parameter_labels
+    , main = parameter_meanings
+    , ...
+  ) 
+ 
 }
 
 bayes_factors <- function(x, y, pars = "lm_beta", prior_mean = 0, prior_sd = 2, ...) {

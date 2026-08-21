@@ -10,9 +10,9 @@ contrasts(mpt_data_hierarchical$task_focus) <- "contr.sum"
 contrasts(mpt_data_hierarchical$study     ) <- "contr.sum"
 
 model <- TreeStan::fit_mpt(
-  eqn_file = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
-  , restrictions = list(G = 1/8)
+  model = file.path(study_folder, "WSW_exp3_hierarchical.eqn")
   , data = mpt_data_hierarchical
+  , restrictions = list(G = 1/8)
   , formula = ~ task_focus * study
   , lm_y = mpt_data_hierarchical$ec_effect
   , warmup  = 2e3L
@@ -24,4 +24,16 @@ model <- TreeStan::fit_mpt(
 
 dir.create(file.path(study_folder, "model-objects"), showWarnings = FALSE)
 saveRDS(model, file = file.path(study_folder, "model-objects", "treestan-2-by-2.rds"))
-summary(model, pars = "beta")
+
+
+## Explore the model and methods
+summary(model)
+
+# plot regression
+wesanderson:: wes_palette("Zissou1", n = 3, type = "c") |>
+  palette()
+source(file.path(project_root, "R", "treestan_helper.R"))
+
+par(mfrow = c(2, 3), las = 1)
+plot_regression(model)
+
