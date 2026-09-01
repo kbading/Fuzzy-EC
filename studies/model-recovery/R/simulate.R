@@ -11,8 +11,12 @@ simulate_participant <- function(
   , n_dist
   , attitudes = list(mean = 0, sd = 0)
   , attitude_based_guessing = FALSE
+  , binary_guessing = FALSE
+  , rating = c("8-point-likert", "binary-attitude-based", "binary-memory-dominant", "continuous")
   , sid
 ) {
+  
+  rating <- match.arg(rating, several.ok = FALSE)
   
   stimulus_type <- factor(
     c(rep("CS", n_cs),  rep("Distractor", n_dist))
@@ -70,7 +74,11 @@ simulate_participant <- function(
   idx <- (cs_idx & valence_memory == 0 | dist_idx) & old_new == "old"
 
   if(attitude_based_guessing) {
-    p_positive <- pnorm(tau_attitude[idx])
+    if(binary_guessing) {
+      p_positive <- ifelse(tau_attitude[idx] > 0, 1, 0)
+    } else {
+      p_positive <- pnorm(tau_attitude[idx])
+    }
   } else {
     p_positive <- a
   }
@@ -107,7 +115,19 @@ simulate_participant <- function(
   memory_influence[idx] <- rnorm(n = sum(idx), mean = 1, sd = 1) * ifelse(us_valence[idx] == "positive", 1, -1)
   
   # evaluative_rating <- 1 + rbinom(n = n_cs + n_dist, size = 7, prob = pnorm(tau_attitude + memory_influence))
-  evaluative_rating <- round(pnorm(tau_attitude + memory_influence) * 7 + 1)
+  if(rating == "binary-attitude-based") {
+    evaluative_rating <- ifelse(tau_attitude > 0, "positive", "negative")
+  } else if (rating == "binary-memory-dominant") {
+    evaluative_rating <- rep(NA, n_cs + n_dist)
+    idx <- valence_memory == 1L & sample(c(T, F), size = length(valence_memory), replace = TRUE)
+    evaluative_rating[ idx] <- as.character(us_valence[idx])
+    evaluative_rating[!idx] <- ifelse(tau_attitude[!idx] > 0, "positive", "negative")
+  } else if(rating == "8-point-likert") {
+    evaluative_rating <- round(pnorm(tau_attitude + memory_influence) * 7 + 1)
+  } else {
+    stop("rating not properly defined")
+  }
+
   
   
   list2DF(list(
@@ -143,14 +163,14 @@ aggregate(
   ) ~ stimulus_type, data = d, FUN = mean
 )
 
-library(HMMTreeC)
+# library(HMMTreeC)
 
 model_file <- file.path(rprojroot::find_rstudio_root_file(), "model-equations", "wsw-6.eqn")
 response_levels <- MPTinR::check.mpt(model_file)$eqn.order.categories
 
 d$mpt_response <- factor(d$mpt_response, levels = response_levels)
 
-fit_mpt(
+HMMTreeC::fit_mpt(
   model = model_file
   , data = as.data.frame(unclass(table(d$sid, d$mpt_response)))
   , restrictions = list(G = 1/4)
@@ -168,7 +188,11 @@ simulate_experiment <- function(
   , b = .5
   , attitude_based_guessing = FALSE
   , attitudes = list(mean = 0, sd = 1)
+  , binary_guessing = FALSE
+  , rating = c("8-point-likert", "binary-attitude-based", "binary-memory-dominant", "continuous")
 ) {
+  
+  rating <- match.arg(rating, several.ok = FALSE)
   
   eta <- list(
     D   = D
@@ -213,6 +237,8 @@ simulate_experiment <- function(
     , sid = seq_along(theta$D)
     , attitude_based_guessing = attitude_based_guessing
     , attitudes = rep(list(attitudes), n_subjs)
+    , binary_guessing = binary_guessing
+    , rating = rating
   ) |>
     do.call(what = "rbind")
 }
@@ -297,4 +323,97 @@ sim5_model <- TreeStan::fit_mpt(
   , refresh = 50
 )
 summary(sim5_model)
-# TreeBUGS::withinSubjectEQN("model-equations/wsw-6.eqn", save = "model-equations/wsw-6-wide.eqn", constant = c("D", "C", "d", "G", "b"), labels = as.character(1:8))
+
+# Simulation 6 ----
+# What if both memory responses and evaluative ratings flow directly from true conditioned attitudes?
+
+TreeBUGS::withinSubjectEQN(
+  "model-equations/wsw-6.eqn"
+  , save = "model-equations/wsw-6-binary-ratings.eqn"
+  , constant = c("D", "C", "d", "G", "b")
+  , labels = c("positive", "negative")
+)
+d <- simulate_experiment(
+  n_subjs = 60
+  , C = .2
+  , d = 0.3
+  , attitude_based_guessing = TRUE
+  , attitudes = list(mean = 1, sd = 1)
+  , rating = "binary-attitude-based"
+  , binary_guessing = TRUE
+)
+d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
+
+response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
+
+d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
+
+mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+
+library(TreeStan)
+sim6_model <- TreeStan::fit_mpt(
+  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+  , data = mpt_data
+  , restrictions = list(G = 1/4) # , a = c("a_positive", "a_negative"))
+  , parameterization = "latent_location"
+  , refresh = 50
+)
+summary(sim6_model)
+
+# Simulation 7 ----
+d <- simulate_experiment(
+  n_subjs = 60
+  , C = .2
+  , d = 0.3
+  , attitude_based_guessing = TRUE
+  , attitudes = list(mean = 1, sd = 1)
+  , rating = "binary-memory-dominant"
+  , binary_guessing = TRUE
+)
+d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
+
+response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
+
+d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
+
+mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+
+
+sim7_model <- TreeStan::fit_mpt(
+  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+  , data = mpt_data
+  , restrictions = list(G = 1/4)
+  , parameterization = "latent_location"
+  , refresh = 50
+)
+summary(sim7_model)
+
+
+# Simulation 8 ----
+d <- simulate_experiment(
+  n_subjs = 60
+  , C = .2
+  , d = 0.3
+  , attitude_based_guessing = TRUE
+  , attitudes = list(mean = 0, sd = 1)
+  , rating = "binary-memory-dominant"
+  , binary_guessing = TRUE
+)
+d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
+
+response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
+
+d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
+
+mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+
+
+sim8_model <- TreeStan::fit_mpt(
+  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+  , data = mpt_data
+  , restrictions = list(G = 1/4)
+  , parameterization = "latent_location"
+  , refresh = 50
+)
+summary(sim8_model)
+
