@@ -1,5 +1,6 @@
+library(TreeStan)
 
-
+# Helper functions ----
 simulate_participant <- function(
   D
   , C 
@@ -28,8 +29,10 @@ simulate_participant <- function(
   us_valence <- rep("new", n_cs + n_dist)
   us_valence[cs_idx] <- rep(c("positive", "negative"), length.out = n_cs)
   
-  tau_attitude <- rnorm(n = n_cs + n_dist, mean = attitudes$mean, sd = attitudes$sd) * 
-    ifelse(us_valence == "positive", 1, -1)
+  tau_attitude <- rep(NA_real_, n_cs + n_dist)
+  tau_attitude[cs_idx] <- rnorm(n = n_cs, mean = attitudes$mean, sd = attitudes$sd) * 
+    ifelse(us_valence[cs_idx] == "positive", 1, -1)
+  tau_attitude[dist_idx] <- rnorm(n = n_dist, mean = 0, sd = attitudes$sd)
   
   
   discrimination <- rbinom(
@@ -154,27 +157,27 @@ simulate_participant <- function(
 
 
 
-d <- simulate_participant(D = .6, C = 0, d = 0, a = .5, b = .5, G = 1/4, n_cs = 1e5, n_dist = 1e5, attitude_based_guessing = TRUE, attitudes = list(mean = 1, sd = 2), sid = 1)
-aggregate(
-  cbind(
-    p_old = old_new == "old"
-    , correct_valence = chosen_valence == us_valence
-    , correct_us = correct_us == "cor"
-  ) ~ stimulus_type, data = d, FUN = mean
-)
+# d <- simulate_participant(D = .6, C = 0, d = 0, a = .5, b = .5, G = 1/4, n_cs = 1e5, n_dist = 1e5, attitude_based_guessing = TRUE, attitudes = list(mean = 1, sd = 2), sid = 1)
+# aggregate(
+#   cbind(
+#     p_old = old_new == "old"
+#     , correct_valence = chosen_valence == us_valence
+#     , correct_us = correct_us == "cor"
+#   ) ~ stimulus_type, data = d, FUN = mean
+# )
 
 # library(HMMTreeC)
 
-model_file <- file.path(rprojroot::find_rstudio_root_file(), "model-equations", "wsw-6.eqn")
-response_levels <- MPTinR::check.mpt(model_file)$eqn.order.categories
-
-d$mpt_response <- factor(d$mpt_response, levels = response_levels)
-
-HMMTreeC::fit_mpt(
-  model = model_file
-  , data = as.data.frame(unclass(table(d$sid, d$mpt_response)))
-  , restrictions = list(G = 1/4)
-)
+# 
+# 
+# 
+# d$mpt_response <- factor(d$mpt_response, levels = response_levels)
+# 
+# HMMTreeC::fit_mpt(
+#   model = model_file
+#   , data = as.data.frame(unclass(table(d$sid, d$mpt_response)))
+#   , restrictions = list(G = 1/4)
+# )
 
 simulate_experiment <- function(
   n_subjs
@@ -243,34 +246,41 @@ simulate_experiment <- function(
     do.call(what = "rbind")
 }
 
+# global presets ----
+model_file <- file.path(rprojroot::find_rstudio_root_file(), "model-equations", "wsw-6.eqn")
+response_levels <- MPTinR::check.mpt(model_file)$eqn.order.categories
+
 # Simulation 3 ----
 # 
 # Does consistent responding between assignment task and evaluative ratings inflate d?
 # For instance, pre-existing attitudes...
 
 d <- simulate_experiment(
-  n_subjs = 60
+  n_subjs = 200
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 0, sd = 1)
 )
-
 d$mpt_response <- factor(d$mpt_response, levels = response_levels)
-d$evaluative_rating
+summary(d$evaluative_rating)
 
 mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response)))
 
-hier_model <- TreeStan::fit_mpt(
+sim3_model <- TreeStan::fit_mpt(
   model = model_file
   , data = mpt_data
   , restrictions = list(G = 1/4)
   , parameterization = "latent_location"
 )
-summary(hier_model)
+summary(sim3_model)
+
+# Result:
+# No, guessing in line with pre-existing attitudes does not affect model parameters.
+
 
 # Simulation 4 ----
 # 
-# Does consistent responding between assignment task and evaluative ratings inflate d if
-# responses are based on conditioned attitudes?
+# Does consistent responding between assignment task and evaluative ratings inflate d
+# if responses are based on **conditioned attitudes**?
 
 d <- simulate_experiment(
   n_subjs = 60
@@ -279,11 +289,11 @@ d <- simulate_experiment(
 )
 
 d$mpt_response <- factor(d$mpt_response, levels = response_levels)
-d$evaluative_rating
+summary(d$evaluative_rating)
 
 mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response)))
 
-library(TreeStan)
+
 sim4_model <- TreeStan::fit_mpt(
   model = model_file
   , data = mpt_data
@@ -291,6 +301,21 @@ sim4_model <- TreeStan::fit_mpt(
   , parameterization = "latent_location"
 )
 summary(sim4_model)
+
+sim4_trial_model <- TreeStan::fit_mpt(
+  model = model_file
+  , data = d
+  , response = "mpt_response"
+  , formula = ~ 1 + (1 | sid)
+  , restrictions = list(G = 1/4)
+  , parameterization = "latent_location"
+)
+summary(sim4_trial_model)
+
+# Result:
+# Yes, attitude-based guessing in line with *conditioned* (i.e., correlated)
+# attitudes inflates the *d* parameter (heavily).
+# Other model parameters seem to be unimpressed.
 
 
 # Simulation 5 ----
@@ -323,6 +348,20 @@ sim5_model <- TreeStan::fit_mpt(
   , refresh = 50
 )
 summary(sim5_model)
+
+sim5_trial_model <- TreeStan::fit_mpt(
+  model = model_file
+  , data = d
+  , response = "mpt_response"
+  , formula = list(
+    ~ 1 + (1 | sid)
+    , a ~ evaluative_rating + (evaluative_rating | sid)
+  )
+  , restrictions = list(G = 1/4)
+  , parameterization = "latent_location"
+)
+
+summary(sim5_trial_model)
 
 # Simulation 6 ----
 # What if both memory responses and evaluative ratings flow directly from true conditioned attitudes?
@@ -416,4 +455,3 @@ sim8_model <- TreeStan::fit_mpt(
   , refresh = 50
 )
 summary(sim8_model)
-
