@@ -1,4 +1,17 @@
-library(TreeStan)
+---
+title: On the possible role of attitude-based guessing in the Who-said-what? model of evaluative conditioning 
+author: mariusbarth
+date: today
+code-fold: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r}
+#| label: setup
+#| include: false
 
 # Helper functions ----
 simulate_participant <- function(
@@ -119,14 +132,14 @@ simulate_participant <- function(
   
   # evaluative_rating <- 1 + rbinom(n = n_cs + n_dist, size = 7, prob = pnorm(tau_attitude + memory_influence))
   if(rating == "binary-attitude-based") {
-    evaluative_rating <- ifelse(tau_attitude > 0, "positive", "negative")
+    evaluative_rating <- ifelse(tau_attitude > 0, "positive", "negative") |> factor(levels = c("positive", "negative"))
   } else if (rating == "binary-memory-dominant") {
     evaluative_rating <- rep(NA, n_cs + n_dist)
     idx <- valence_memory == 1L & sample(c(T, F), size = length(valence_memory), replace = TRUE)
     evaluative_rating[ idx] <- as.character(us_valence[idx])
-    evaluative_rating[!idx] <- ifelse(tau_attitude[!idx] > 0, "positive", "negative")
+    evaluative_rating[!idx] <- ifelse(tau_attitude[!idx] > 0, "positive", "negative") |> factor(levels = c("positive", "negative"))
   } else if(rating == "8-point-likert") {
-    evaluative_rating <- round(pnorm(tau_attitude + memory_influence) * 7 + 1)
+    evaluative_rating <- round(pnorm(tau_attitude) * 7 + 1)
   } else {
     stop("rating not properly defined")
   }
@@ -154,30 +167,6 @@ simulate_participant <- function(
     , sid = rep(sid, length(stimulus_type))
   ))
 }
-
-
-
-# d <- simulate_participant(D = .6, C = 0, d = 0, a = .5, b = .5, G = 1/4, n_cs = 1e5, n_dist = 1e5, attitude_based_guessing = TRUE, attitudes = list(mean = 1, sd = 2), sid = 1)
-# aggregate(
-#   cbind(
-#     p_old = old_new == "old"
-#     , correct_valence = chosen_valence == us_valence
-#     , correct_us = correct_us == "cor"
-#   ) ~ stimulus_type, data = d, FUN = mean
-# )
-
-# library(HMMTreeC)
-
-# 
-# 
-# 
-# d$mpt_response <- factor(d$mpt_response, levels = response_levels)
-# 
-# HMMTreeC::fit_mpt(
-#   model = model_file
-#   , data = as.data.frame(unclass(table(d$sid, d$mpt_response)))
-#   , restrictions = list(G = 1/4)
-# )
 
 simulate_experiment <- function(
   n_subjs
@@ -246,22 +235,60 @@ simulate_experiment <- function(
     do.call(what = "rbind")
 }
 
-# global presets ----
+
+# global preferences ----
+library(TreeStan)
+
 model_file <- file.path(rprojroot::find_rstudio_root_file(), "model-equations", "wsw-6.eqn")
 response_levels <- MPTinR::check.mpt(model_file)$eqn.order.categories
 
-# Simulation 3 ----
-# 
-# Does consistent responding between assignment task and evaluative ratings inflate d?
-# For instance, pre-existing attitudes...
+knitr::opts_chunk$set(
+  message = FALSE
+  , warning = FALSE
+  , cache = TRUE
+)
+options(width = 250, contrasts = c("contr.sum", "contr.poly"))
+
+```
+
+Default simulation values
+
+```{r}
+x <- formals(simulate_experiment) |>
+  lapply(as.character)
+
+x$rating <- x$rating[[2]]
+
+knitr::kable(
+  list2DF(
+    list(
+      parameter = names(x)
+      , value = x
+    )
+  )
+)
+
+```
+
+
+
+
+## Simulation 3
+
+Does consistent responding between assignment task and evaluative ratings inflate parameter $d$?
+Thhis might be the case if participants have pre-existing attitudes that are not correlated with
+experimentally assigned US valence.
+
+```{r simulation-3}
+set.seed(123L)
 
 d <- simulate_experiment(
-  n_subjs = 200
+  n_subjs = 120
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 0, sd = 1)
 )
-d$mpt_response <- factor(d$mpt_response, levels = response_levels)
-summary(d$evaluative_rating)
+
+
 
 mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response)))
 
@@ -272,15 +299,22 @@ sim3_model <- TreeStan::fit_mpt(
   , parameterization = "latent_location"
 )
 summary(sim3_model)
+```
 
-# Result:
-# No, guessing in line with pre-existing attitudes does not affect model parameters.
+### Results
+
+Guessing in line with pre-existing attitudes does not affect model parameters.
 
 
-# Simulation 4 ----
-# 
-# Does consistent responding between assignment task and evaluative ratings inflate d
-# if responses are based on **conditioned attitudes**?
+
+# Simulation 4
+
+Does consistent responding between assignment task and evaluative ratings inflate $d$s
+if responses are based on **conditioned attitudes**?
+Conditioned attitudes are positively correlated with US valence, which might cause a problem.
+
+```{r simulation-4}
+set.seed(4L)
 
 d <- simulate_experiment(
   n_subjs = 60
@@ -292,7 +326,6 @@ d$mpt_response <- factor(d$mpt_response, levels = response_levels)
 summary(d$evaluative_rating)
 
 mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response)))
-
 
 sim4_model <- TreeStan::fit_mpt(
   model = model_file
@@ -311,43 +344,49 @@ sim4_trial_model <- TreeStan::fit_mpt(
   , parameterization = "latent_location"
 )
 summary(sim4_trial_model)
+```
 
-# Result:
-# Yes, attitude-based guessing in line with *conditioned* (i.e., correlated)
-# attitudes inflates the *d* parameter (heavily).
-# Other model parameters seem to be unimpressed.
+### Results
+
+Yes, attitude-based guessing in line with *conditioned* (i.e., correlated)
+attitudes inflates the *d* parameter (heavily).
+Other model parameters seem to be unimpressed.
 
 
-# Simulation 5 ----
-# 
-# Does consistent responding between assignment task and evaluative ratings inflate d if
-# responses are based on conditioned attitudes?
-# Does controlling for different a come to the rescue?
+
+## Simulation 5
+
+Given that attitude-based guessing may inflate parameter $d$,
+can we reduce (or even eliminate) the bias by adjusting $a$ with evaluative ratings?
+In this simulation, evaluations are given on an 8-point Likert scale (discretized true attitude).
+Attitude-based guessing is modeled as probabilistic $P(\mathrm{"positive"}) = \Phi(\tau)$.
+
+Here we use the trial-level MPT model where parameter $a$ (probability of guessing "positive")
+is predicted by the evaluative rating while all other parameters are constant across evaluative-rating values.
+This is the correction proposed by Klauer in his review.
+
+
+```{r simulation-5}
+set.seed(5L)
 
 d <- simulate_experiment(
-  n_subjs = 240
-  , C = .1
-  , d = 0.3
+  n_subjs = 60
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 1, sd = 1)
 )
-d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
 
-response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-wide.eqn"))$eqn.order.categories
-
-d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
-
-mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
-
-library(TreeStan)
-sim5_model <- TreeStan::fit_mpt(
-  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-wide.eqn")
-  , data = mpt_data
-  , restrictions = list(G = 1/4)
-  , parameterization = "latent_location"
-  , refresh = 50
-)
-summary(sim5_model)
+# subject-level data
+# response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-wide.eqn"))$eqn.order.categories
+# d$mpt_response_2 <- factor(paste0(d$evaluative_rating, "_", d$mpt_response), levels = response_levels)
+# mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+# 
+# sim5_model <- TreeStan::fit_mpt(
+#   model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-wide.eqn")
+#   , data = mpt_data
+#   , restrictions = list(G = 1/4)
+#   , parameterization = "latent_location"
+# )
+# summary(sim5_model)
 
 sim5_trial_model <- TreeStan::fit_mpt(
   model = model_file
@@ -362,96 +401,172 @@ sim5_trial_model <- TreeStan::fit_mpt(
 )
 
 summary(sim5_trial_model)
+```
 
-# Simulation 6 ----
-# What if both memory responses and evaluative ratings flow directly from true conditioned attitudes?
+### Results
 
-TreeBUGS::withinSubjectEQN(
-  "model-equations/wsw-6.eqn"
-  , save = "model-equations/wsw-6-binary-ratings.eqn"
-  , constant = c("D", "C", "d", "G", "b")
-  , labels = c("positive", "negative")
-)
+
+
+
+
+# Simulation 6
+
+This simulation repeats the last one, but measurement error/random variation is eliminated.
+To this end, both evaluative ratings and attitude-based guessing are determined by true attitude $\tau$:
+If $\tau > 0$, a "positive" response is given in the rating task; in the memory task, $a = 1$.
+If $\tau \leq 0$, a "negative" response in given in the rating task, in the memory task, $a = 0$.
+
+What if both memory responses and evaluative ratings flow directly from true conditioned attitudes?
+
+```{r simulation-6}
+#| eval: false
+# TreeBUGS::withinSubjectEQN(
+#   "model-equations/wsw-6.eqn"
+#   , save = "model-equations/wsw-6-binary-ratings.eqn"
+#   , constant = c("D", "C", "d", "G", "b")
+#   , labels = c("positive", "negative")
+# )
 d <- simulate_experiment(
   n_subjs = 60
-  , C = .2
-  , d = 0.3
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 1, sd = 1)
   , rating = "binary-attitude-based"
   , binary_guessing = TRUE
 )
-d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
 
-response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
+response_levels <- MPTinR::check.mpt(
+  file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+)$eqn.order.categories
 
-d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
-
+d$mpt_response_2 <- factor(paste0(d$evaluative_rating, "_", d$mpt_response), levels = response_levels)
 mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
 
-library(TreeStan)
+d$evaluative_rating <- factor(d$evaluative_rating)
+
+
 sim6_model <- TreeStan::fit_mpt(
   model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
   , data = mpt_data
   , restrictions = list(G = 1/4) # , a = c("a_positive", "a_negative"))
   , parameterization = "latent_location"
-  , refresh = 50
 )
 summary(sim6_model)
 
-# Simulation 7 ----
+sim6_trial_model <- TreeStan::fit_mpt(
+  model = model_file
+  , data = d
+  , response = "mpt_response"
+  , formula = list(
+    ~ 1 + (1 | sid)
+    , a ~ evaluative_rating + (evaluative_rating | sid)
+  )
+  , restrictions = list(G = 1/4)
+  , parameterization = "latent_location"
+)
+
+summary(sim6_trial_model)
+```
+
+### Results
+
+
+
+# Simulation 7
+
+Another simulation where ratings and guessing deterministically flow from latent states.
+Compared with Simulation 6, evaluative ratings are not only determined by latent attitude, but
+US valence memory is dominant (i.e., ratings are only affected by attitude if there is no pairing memory).
+
+We again use Klauer's correction.
+Because not only conditioned attitudes, but also US valence memory, affect evaluative ratings,
+controlling $a$ might result in an over-correction (i.e., deflation of $d$).
+
+```{r simulation-7}
+set.seed(7L)
+
 d <- simulate_experiment(
   n_subjs = 60
-  , C = .2
-  , d = 0.3
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 1, sd = 1)
   , rating = "binary-memory-dominant"
   , binary_guessing = TRUE
 )
-d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
-
-response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
-
-d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
-
-mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
 
 
-sim7_model <- TreeStan::fit_mpt(
-  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
-  , data = mpt_data
+# subject-level model
+# response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
+# d$mpt_response_2 <- factor(paste0(as.character(d$evaluative_rating), "_", d$mpt_response), levels = response_levels)
+# mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+# 
+# sim7_model <- TreeStan::fit_mpt(
+#   model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+#   , data = mpt_data
+#   , restrictions = list(G = 1/4)
+#   , parameterization = "latent_location"
+# )
+# summary(sim7_model)
+
+# trial-level model
+sim7_trial_model <- TreeStan::fit_mpt(
+  model = model_file
+  , data = d
+  , response = "mpt_response"
+  , formula = list(
+    ~ 1 + (1 | sid)
+    , a ~ evaluative_rating + (evaluative_rating | sid)
+  )
   , restrictions = list(G = 1/4)
   , parameterization = "latent_location"
-  , refresh = 50
 )
-summary(sim7_model)
+
+summary(sim7_trial_model)
+
+```
 
 
-# Simulation 8 ----
+### Results
+
+If US valence memory affects evaluative ratings,
+
+
+
+# Simulation 8
+
+Same as Simulation\ 7, but attitudes are not conditioned, but only pre-existing
+(i.e., not correlated with US valence).
+
+This scenario implements the idea that evaluative rating are affected by attitudes,
+but there is no such thing as conditioned attitude.
+We can therefore have a look if the over-correction persists under such a scenario.
+
+```{r simulation-8}
+set.seed(8L)
+
 d <- simulate_experiment(
   n_subjs = 60
-  , C = .2
-  , d = 0.3
   , attitude_based_guessing = TRUE
   , attitudes = list(mean = 0, sd = 1)
   , rating = "binary-memory-dominant"
   , binary_guessing = TRUE
 )
-d$mpt_response_2 <- paste0(d$evaluative_rating, "_", d$mpt_response)
-
-response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
-
-d$mpt_response_2 <- factor(d$mpt_response_2, levels = response_levels)
-
-mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
 
 
-sim8_model <- TreeStan::fit_mpt(
-  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
-  , data = mpt_data
+# Trial-level model
+sim8_trial_model <- TreeStan::fit_mpt(
+  model = model_file
+  , data = d
+  , response = "mpt_response"
+  , formula = list(
+    ~ 1 + (1 | sid)
+    , a ~ evaluative_rating + (evaluative_rating | sid)
+  )
   , restrictions = list(G = 1/4)
   , parameterization = "latent_location"
-  , refresh = 50
 )
-summary(sim8_model)
+
+summary(sim8_trial_model)
+
+```
+
+### Results
+
