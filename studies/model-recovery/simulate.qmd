@@ -3,6 +3,7 @@ title: On the potential role of attitude-based guessing in the "Who-said-what?" 
 author: Marius Barth
 date: today
 code-fold: true
+self-contained: true
 editor_options: 
   chunk_output_type: console
 ---
