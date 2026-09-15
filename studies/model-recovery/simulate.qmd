@@ -1,6 +1,6 @@
 ---
-title: On the possible role of attitude-based guessing in the Who-said-what? model of evaluative conditioning 
-author: mariusbarth
+title: On the potential role of attitude-based guessing in the "Who-said-what?" model of evaluative conditioning 
+author: Marius Barth
 date: today
 code-fold: true
 editor_options: 
@@ -8,10 +8,10 @@ editor_options:
 ---
 
 
+Data-generating model
 
 ```{r}
 #| label: setup
-#| include: false
 
 # Helper functions ----
 simulate_participant <- function(
@@ -132,12 +132,14 @@ simulate_participant <- function(
   
   # evaluative_rating <- 1 + rbinom(n = n_cs + n_dist, size = 7, prob = pnorm(tau_attitude + memory_influence))
   if(rating == "binary-attitude-based") {
-    evaluative_rating <- ifelse(tau_attitude > 0, "positive", "negative") |> factor(levels = c("positive", "negative"))
+    evaluative_rating <- ifelse(tau_attitude > 0, "positive", "negative")
+    evaluative_rating <- factor(evaluative_rating, levels = c("positive", "negative"))
   } else if (rating == "binary-memory-dominant") {
     evaluative_rating <- rep(NA, n_cs + n_dist)
-    idx <- valence_memory == 1L & sample(c(T, F), size = length(valence_memory), replace = TRUE)
+    idx <- valence_memory == 1L
     evaluative_rating[ idx] <- as.character(us_valence[idx])
-    evaluative_rating[!idx] <- ifelse(tau_attitude[!idx] > 0, "positive", "negative") |> factor(levels = c("positive", "negative"))
+    evaluative_rating[!idx] <- ifelse(tau_attitude[!idx] > 0, "positive", "negative")
+    evaluative_rating <- factor(evaluative_rating, levels = c("positive", "negative"))
   } else if(rating == "8-point-likert") {
     evaluative_rating <- round(pnorm(tau_attitude) * 7 + 1)
   } else {
@@ -247,7 +249,11 @@ knitr::opts_chunk$set(
   , warning = FALSE
   , cache = TRUE
 )
-options(width = 250, contrasts = c("contr.sum", "contr.poly"))
+options(
+  width = 250
+  , digits = 3L
+  , contrasts = c("contr.sum", "contr.poly")
+)
 
 ```
 
@@ -309,7 +315,7 @@ Guessing in line with pre-existing attitudes does not affect model parameters.
 
 # Simulation 4
 
-Does consistent responding between assignment task and evaluative ratings inflate $d$s
+Does consistent responding between assignment task and evaluative ratings inflate $d$
 if responses are based on **conditioned attitudes**?
 Conditioned attitudes are positively correlated with US valence, which might cause a problem.
 
@@ -348,7 +354,7 @@ summary(sim4_trial_model)
 
 ### Results
 
-Yes, attitude-based guessing in line with *conditioned* (i.e., correlated)
+Attitude-based guessing in line with *conditioned* (i.e., correlated)
 attitudes inflates the *d* parameter (heavily).
 Other model parameters seem to be unimpressed.
 
@@ -405,6 +411,10 @@ summary(sim5_trial_model)
 
 ### Results
 
+If evaluative ratings are only affected by (conditioned) attitudes,
+but US valence memory is not expressed in evaluative ratings,
+the correction proposed by Klauer indeed very much aligns the estimation of $d$.
+In fact, it is not yet clear whether there remains a small underestimation of $d$
 
 
 
@@ -416,16 +426,17 @@ To this end, both evaluative ratings and attitude-based guessing are determined 
 If $\tau > 0$, a "positive" response is given in the rating task; in the memory task, $a = 1$.
 If $\tau \leq 0$, a "negative" response in given in the rating task, in the memory task, $a = 0$.
 
-What if both memory responses and evaluative ratings flow directly from true conditioned attitudes?
+> What if both guess responses in the memory task and evaluative ratings flow directly from conditioned attitudes?
 
 ```{r simulation-6}
-#| eval: false
 # TreeBUGS::withinSubjectEQN(
 #   "model-equations/wsw-6.eqn"
 #   , save = "model-equations/wsw-6-binary-ratings.eqn"
 #   , constant = c("D", "C", "d", "G", "b")
 #   , labels = c("positive", "negative")
 # )
+set.seed(6L)
+
 d <- simulate_experiment(
   n_subjs = 60
   , attitude_based_guessing = TRUE
@@ -438,19 +449,17 @@ response_levels <- MPTinR::check.mpt(
   file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
 )$eqn.order.categories
 
-d$mpt_response_2 <- factor(paste0(d$evaluative_rating, "_", d$mpt_response), levels = response_levels)
-mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
 
-d$evaluative_rating <- factor(d$evaluative_rating)
-
-
-sim6_model <- TreeStan::fit_mpt(
-  model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
-  , data = mpt_data
-  , restrictions = list(G = 1/4) # , a = c("a_positive", "a_negative"))
-  , parameterization = "latent_location"
-)
-summary(sim6_model)
+# d$mpt_response_2 <- factor(paste0(d$evaluative_rating, "_", d$mpt_response), levels = response_levels)
+# mpt_data <- as.data.frame(unclass(table(d$sid, d$mpt_response_2)))
+# 
+# sim6_model <- TreeStan::fit_mpt(
+#   model = file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn")
+#   , data = mpt_data
+#   , restrictions = list(G = 1/4) # , a = c("a_positive", "a_negative"))
+#   , parameterization = "latent_location"
+# )
+# summary(sim6_model)
 
 sim6_trial_model <- TreeStan::fit_mpt(
   model = model_file
@@ -469,6 +478,9 @@ summary(sim6_trial_model)
 
 ### Results
 
+Simulation\ 6 demonstrates that, if evaluative ratings deterministically come from attitudes,
+the Klauer correction works---$d$ is estimated in an unbiased way.
+
 
 
 # Simulation 7
@@ -479,7 +491,7 @@ US valence memory is dominant (i.e., ratings are only affected by attitude if th
 
 We again use Klauer's correction.
 Because not only conditioned attitudes, but also US valence memory, affect evaluative ratings,
-controlling $a$ might result in an over-correction (i.e., deflation of $d$).
+controlling $a$ might result in an over-correction (i.e., under-estimation of $d$).
 
 ```{r simulation-7}
 set.seed(7L)
@@ -491,7 +503,6 @@ d <- simulate_experiment(
   , rating = "binary-memory-dominant"
   , binary_guessing = TRUE
 )
-
 
 # subject-level model
 # response_levels <- MPTinR::check.mpt(file.path(rprojroot::find_rstudio_root_file(), "model-equations/wsw-6-binary-ratings.eqn"))$eqn.order.categories
@@ -517,6 +528,7 @@ sim7_trial_model <- TreeStan::fit_mpt(
   )
   , restrictions = list(G = 1/4)
   , parameterization = "latent_location"
+  # , joint_prior = TRUE
 )
 
 summary(sim7_trial_model)
@@ -526,17 +538,19 @@ summary(sim7_trial_model)
 
 ### Results
 
-If US valence memory affects evaluative ratings,
+If both US valence memory and conditioned attitudes affect evaluative ratings,
+using evaluative ratings to predict $a$ results in severe under-estimation of $d$.
 
 
 
 # Simulation 8
 
-Same as Simulation\ 7, but attitudes are not conditioned, but only pre-existing
-(i.e., not correlated with US valence).
+Compared with Simulation\ 7, 
+attitudes are not conditioned, but pre-existing
+(i.e., not correlated with experimentally manipulated US valence).
 
-This scenario implements the idea that evaluative rating are affected by attitudes,
-but there is no such thing as conditioned attitude.
+This scenario implements the idea that evaluative ratings are affected by attitudes,
+but there is no such thing as conditioned attitudes.
 We can therefore have a look if the over-correction persists under such a scenario.
 
 ```{r simulation-8}
@@ -569,4 +583,6 @@ summary(sim8_trial_model)
 ```
 
 ### Results
+
+US valence memory (parameter $d$) is severely under-estimated.
 
