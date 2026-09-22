@@ -283,7 +283,7 @@ knitr::kable(
 ## Simulation 3
 
 Does consistent responding between assignment task and evaluative ratings inflate parameter $d$?
-Thhis might be the case if participants have pre-existing attitudes that are not correlated with
+This might be the case if participants have pre-existing attitudes that are not correlated with
 experimentally assigned US valence.
 
 ```{r simulation-3}
